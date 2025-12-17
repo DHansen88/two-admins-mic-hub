@@ -1,33 +1,9 @@
 import BlogCard from "./BlogCard";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import { allBlogs } from "@/data/blogData";
 
-const blogs = [
-  {
-    title: "5 Essential Leadership Skills Every Administrator Needs in 2025",
-    excerpt: "Discover the key leadership competencies that will set you apart as an effective administrator in today's rapidly evolving workplace.",
-    date: "December 10, 2025",
-    readTime: "5 min read",
-    category: "Leadership",
-    slug: "essential-leadership-skills-2025"
-  },
-  {
-    title: "Building a Culture of Empowerment in Your Organization",
-    excerpt: "Learn how to create an environment where team members feel valued, trusted, and motivated to take initiative.",
-    date: "December 5, 2025",
-    readTime: "7 min read",
-    category: "Team Building",
-    slug: "building-culture-empowerment"
-  },
-  {
-    title: "The Administrator's Guide to Effective Communication",
-    excerpt: "Master the art of clear, impactful communication that drives results and builds stronger relationships.",
-    date: "November 30, 2025",
-    readTime: "6 min read",
-    category: "Communication",
-    slug: "guide-effective-communication"
-  }
-];
+const latestBlogs = allBlogs.slice(0, 3);
 
 const LatestBlogs = () => {
   return (
@@ -44,7 +20,7 @@ const LatestBlogs = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 animate-slide-in">
-            {blogs.map((blog) => (
+            {latestBlogs.map((blog) => (
               <BlogCard key={blog.slug} {...blog} />
             ))}
           </div>
