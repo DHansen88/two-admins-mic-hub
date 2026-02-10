@@ -34,7 +34,7 @@ const Header = () => {
                 {item.label}
               </NavLink>)}
             <Button variant="default" className="bg-coral-accent hover:bg-coral-accent/90">
-              Subscribe
+              Newsletter
             </Button>
           </nav>
 
