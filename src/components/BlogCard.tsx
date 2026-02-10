@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader } from "./ui/card";
-import { Clock, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface BlogCardProps {
@@ -29,10 +29,7 @@ const BlogCard = ({ title, excerpt, date, readTime, category, slug }: BlogCardPr
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 text-sm text-muted-foreground">
             <span>{date}</span>
-            <span className="flex items-center space-x-1">
-              <Clock size={14} />
-              <span>{readTime}</span>
-            </span>
+            <span>{readTime}</span>
           </div>
           <Link 
             to={`/blog/${slug}`}
