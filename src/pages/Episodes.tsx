@@ -9,11 +9,13 @@ import { Search, ArrowUpDown } from "lucide-react";
 import { allEpisodes, type Topic } from "@/data/episodeData";
 import { Button } from "@/components/ui/button";
 
+const EPISODES_PER_PAGE = 6;
+
 const Episodes = () => {
   const [search, setSearch] = useState("");
   const [selectedTopics, setSelectedTopics] = useState<Topic[]>([]);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
-
+  const [visibleCount, setVisibleCount] = useState(EPISODES_PER_PAGE);
   const latestEpisode = allEpisodes[0];
 
   const filteredEpisodes = useMemo(() => {
@@ -44,6 +46,13 @@ const Episodes = () => {
 
     return episodes;
   }, [search, selectedTopics, sortOrder]);
+
+  // Reset pagination when filters change
+  const resetKey = `${search}-${selectedTopics.join()}-${sortOrder}`;
+  useMemo(() => setVisibleCount(EPISODES_PER_PAGE), [resetKey]);
+
+  const visibleEpisodes = filteredEpisodes.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredEpisodes.length;
 
   return (
     <div className="min-h-screen">
@@ -167,9 +176,28 @@ const Episodes = () => {
                       or topics.
                     </p>
                   ) : (
-                    filteredEpisodes.map((episode) => (
-                      <EpisodeCard key={episode.number} {...episode} />
-                    ))
+                    <>
+                      {visibleEpisodes.map((episode) => (
+                        <EpisodeCard key={episode.number} {...episode} />
+                      ))}
+                      {hasMore && (
+                        <div className="text-center pt-6">
+                          <Button
+                            variant="outline"
+                            className="px-8"
+                            onClick={() =>
+                              setVisibleCount((c) => c + EPISODES_PER_PAGE)
+                            }
+                          >
+                            Load More Episodes
+                          </Button>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Showing {visibleEpisodes.length} of{" "}
+                            {filteredEpisodes.length} episodes
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
