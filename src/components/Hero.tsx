@@ -1,5 +1,6 @@
 import { Button } from "./ui/button";
-import { Mic2, Play } from "lucide-react";
+import { Play } from "lucide-react";
+import heroLogo from "@/assets/hero-logo.png";
 
 const Hero = () => {
   return (
@@ -15,15 +16,14 @@ const Hero = () => {
       <div className="container mx-auto px-4 py-32 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-8 animate-fade-in">
 
-          {/* Main Title */}
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black leading-tight">
-            <span className="block text-background">Two Admins</span>
-            <span className="block">
-              <span className="text-coral">&</span>
-              <span className="text-background"> a </span>
-              <span className="text-teal">Mic</span>
-            </span>
-          </h1>
+          {/* Hero Logo */}
+          <div className="flex justify-center">
+            <img 
+              src={heroLogo} 
+              alt="Two Admins & a Mic" 
+              className="w-72 md:w-96 lg:w-[480px] h-auto drop-shadow-2xl" 
+            />
+          </div>
 
           {/* Subtitle */}
           <p className="text-xl md:text-2xl lg:text-3xl text-background/90 font-medium max-w-3xl mx-auto">
