@@ -53,7 +53,7 @@ const Hero = () => {
             </div>
             <div className="space-y-2">
               <div className="text-3xl md:text-4xl font-bold text-light-green">​</div>
-              <div className="text-sm md:text-base text-background/70">Rating</div>
+              
             </div>
           </div>
         </div>
