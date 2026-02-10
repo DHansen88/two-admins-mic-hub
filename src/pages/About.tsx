@@ -2,10 +2,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Users, Target, Heart } from "lucide-react";
-
 const About = () => {
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
@@ -104,18 +102,12 @@ const About = () => {
               <h2 className="text-4xl font-display font-bold text-foreground">
                 In Partnership With ConantLeadership
               </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                We're proud to partner with ConantLeadership, bringing together expertise and 
-                resources to deliver exceptional leadership content. Together, we're committed to 
-                building a community of empowered, confident leaders.
-              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">We're proud to partner with ConantLeadership. ConantLeadership is a mission-driven community of leaders and learners who are championing leadership that works in the 21st century. </p>
             </div>
           </div>
         </section>
       </main>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default About;
