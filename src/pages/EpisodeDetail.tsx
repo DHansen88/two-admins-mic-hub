@@ -106,23 +106,8 @@ const EpisodeDetail = () => {
       <Header />
       <main className="pt-20">
         {/* Hero Section — aligned structure with BlogPost */}
-        <section className="bg-gradient-to-b from-slate to-navy relative overflow-hidden">
-          {/* Manuscript lines — same as blog for visual consistency */}
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute h-px bg-white/[0.07]"
-              style={{
-                top: `${18 + i * 6.5}%`,
-                width: `${60 + (i % 4) * 10}%`,
-                left: `${-10 + (i % 3) * 5}%`,
-                animation: `manuscriptSlide ${14 + i * 1.5}s linear infinite`,
-                animationDelay: `${i * 0.8}s`,
-              }}
-            />
-          ))}
-
-          <div className="container mx-auto px-4 py-12 md:py-16 relative z-10">
+        <section className="bg-gradient-to-b from-slate to-navy">
+          <div className="container mx-auto px-4 py-12 md:py-16">
             <div className="max-w-6xl mx-auto space-y-8">
               {/* Back link */}
               <Link
