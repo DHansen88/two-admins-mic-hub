@@ -13,7 +13,7 @@ const Header = () => {
     label: "About"
   }, {
     to: "/episodes",
-    label: "Episodes"
+    label: "Podcast"
   }, {
     to: "/blog",
     label: "Blog"

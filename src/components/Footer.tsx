@@ -51,7 +51,7 @@ const Footer = () => {
                   About Us
                 </NavLink>
                 <NavLink to="/episodes" className="text-background/70 hover:text-teal transition-colors">
-                  Episodes
+                  Podcast
                 </NavLink>
                 <NavLink to="/contact" className="text-background/70 hover:text-teal transition-colors">
                   Contact
