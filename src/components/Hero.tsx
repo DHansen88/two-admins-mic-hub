@@ -44,15 +44,15 @@ const Hero = () => {
           {/* Social Proof / Stats */}
           <div className="grid grid-cols-3 gap-8 pt-16 max-w-2xl mx-auto">
             <div className="space-y-2">
-              <div className="text-3xl md:text-4xl font-bold text-teal">50+</div>
+              
               <div className="text-sm md:text-base text-background/70">Episodes</div>
             </div>
             <div className="space-y-2">
-              <div className="text-3xl md:text-4xl font-bold text-sky-blue">10k+</div>
+              
               <div className="text-sm md:text-base text-background/70">Listeners</div>
             </div>
             <div className="space-y-2">
-              <div className="text-3xl md:text-4xl font-bold text-light-green">4.8★</div>
+              <div className="text-3xl md:text-4xl font-bold text-light-green">​</div>
               <div className="text-sm md:text-base text-background/70">Rating</div>
             </div>
           </div>
