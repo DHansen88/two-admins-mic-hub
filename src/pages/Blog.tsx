@@ -11,34 +11,34 @@ const Blog = () => {
         <section className="py-20 bg-gradient-to-b from-slate to-navy relative overflow-hidden">
           {/* Oversized caret / text-cursor animation */}
           <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
-            {/* Large caret - left area */}
+            {/* Large caret - far left */}
             <div
               className="absolute w-[3px] md:w-[4px] rounded-full bg-background/[0.13]"
               style={{
                 height: '45%',
-                top: '28%',
-                left: '18%',
+                top: '20%',
+                left: '8%',
                 animation: 'caretBlink 3.2s ease-in-out infinite',
               }}
             />
-            {/* Medium caret - right area */}
+            {/* Medium caret - right of center */}
             <div
               className="absolute w-[2px] md:w-[3px] rounded-full bg-background/[0.09]"
               style={{
                 height: '30%',
-                top: '35%',
-                right: '22%',
+                top: '45%',
+                right: '12%',
                 animation: 'caretBlink 4s ease-in-out infinite',
                 animationDelay: '1.6s',
               }}
             />
-            {/* Small caret - subtle accent */}
+            {/* Small caret - upper right area */}
             <div
               className="absolute w-[2px] rounded-full bg-background/[0.06] hidden md:block"
               style={{
                 height: '20%',
-                top: '40%',
-                left: '42%',
+                top: '15%',
+                right: '30%',
                 animation: 'caretBlink 5s ease-in-out infinite',
                 animationDelay: '2.8s',
               }}
