@@ -9,14 +9,14 @@ const Header = () => {
     to: "/",
     label: "Home"
   }, {
-    to: "/about",
-    label: "About"
-  }, {
     to: "/episodes",
     label: "Podcast"
   }, {
     to: "/blog",
     label: "Blog"
+  }, {
+    to: "/about",
+    label: "About"
   }, {
     to: "/contact",
     label: "Contact"
