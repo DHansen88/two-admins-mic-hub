@@ -51,7 +51,7 @@ const Blog = () => {
           {/* Text content overlapping bottom of image */}
           <div className="container mx-auto px-4 relative z-10 pb-16 -mt-4">
             <div className="max-w-4xl mx-auto text-center space-y-4 animate-fade-in">
-              <p className="text-xl text-background/80 mt-[45px]">
+              <p className="text-background/80 mt-[45px] my-0 py-0 text-center text-2xl">
                 Insights, stories, and practical advice for administrators and leaders
               </p>
             </div>
