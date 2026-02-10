@@ -36,7 +36,7 @@ const BlogCard = ({ title, excerpt, date, readTime, category, slug }: BlogCardPr
             className="flex items-center space-x-1 text-coral-accent hover:text-coral-accent/80 font-medium text-sm transition-colors"
           >
             <span>Read More</span>
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            <ArrowRight size={16} strokeWidth={3} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
       </CardContent>
