@@ -12,7 +12,7 @@ const Hero = () => {
       </div>
 
       {/* Sound wave graphic */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.06 }}>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.15 }}>
         <svg
           viewBox="0 0 1200 200"
           className="w-full max-w-[1400px] h-auto"
@@ -20,12 +20,20 @@ const Hero = () => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
+          <style>{`
+            @keyframes eq-pulse {
+              0%, 100% { transform: scaleY(1); }
+              50% { transform: scaleY(0.6); }
+            }
+          `}</style>
           {/* Sound wave bars */}
           {Array.from({ length: 80 }).map((_, i) => {
             const center = 40;
             const dist = Math.abs(i - center) / center;
             const height = Math.max(8, (1 - dist * dist) * 180 * (0.5 + 0.5 * Math.sin(i * 0.7)));
             const x = (i / 80) * 1200 + 7.5;
+            const delay = (Math.sin(i * 0.5) * 1.5 + 1.5).toFixed(2);
+            const duration = (2 + Math.sin(i * 0.3) * 1).toFixed(2);
             return (
               <rect
                 key={i}
@@ -35,6 +43,10 @@ const Hero = () => {
                 height={height}
                 rx={3}
                 fill="hsl(var(--slate))"
+                style={{
+                  transformOrigin: `${x + 3}px 100px`,
+                  animation: `eq-pulse ${duration}s ease-in-out ${delay}s infinite`,
+                }}
               />
             );
           })}
