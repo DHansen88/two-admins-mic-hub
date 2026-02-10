@@ -14,29 +14,14 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
       onClick={() => navigate(`/episodes/${episode.slug}`)}
     >
       <div className="flex flex-col md:flex-row">
-        {/* Thumbnail / Video Preview */}
+        {/* Thumbnail */}
         <div className="relative w-full md:w-64 lg:w-72 shrink-0 aspect-video md:aspect-auto bg-muted overflow-hidden">
-          {episode.videoUrl ? (
-            <video
-              src={episode.videoUrl}
-              poster={episode.thumbnailUrl}
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-              onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
-              onMouseLeave={(e) => {
-                e.currentTarget.pause();
-                e.currentTarget.currentTime = 0;
-              }}
-            />
-          ) : (
-            <img
-              src={episode.thumbnailUrl || "/placeholder.svg"}
-              alt={episode.title}
-              className="w-full h-full object-cover"
-            />
-          )}
-          {/* Play icon overlay */}
+          <img
+            src={episode.thumbnailUrl || "/placeholder.svg"}
+            alt={episode.title}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
           <div className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors">
             <div className="w-12 h-12 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Play className="h-5 w-5 text-foreground ml-0.5" />
