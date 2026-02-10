@@ -1,3 +1,14 @@
+export const BLOG_TOPICS = [
+  "Leadership",
+  "Communication",
+  "Team Building",
+  "Wellness",
+  "Career Growth",
+  "Technology",
+] as const;
+
+export type BlogTopic = (typeof BLOG_TOPICS)[number];
+
 export interface Author {
   name: string;
   role: string;
@@ -11,9 +22,10 @@ export interface BlogPost {
   content: string;
   date: string;
   readTime: string;
-  category: string;
+  topics: BlogTopic[];
   slug: string;
   author: Author;
+  featuredImage?: string;
 }
 
 const authors: Record<string, Author> = {
@@ -91,7 +103,7 @@ Remember: leadership isn't about titles—it's about influence and impact. As an
     `,
     date: "December 10, 2025",
     readTime: "5 min read",
-    category: "Leadership",
+    topics: ["Leadership", "Career Growth"],
     slug: "essential-leadership-skills-2025",
     author: authors.sarah
   },
@@ -165,7 +177,7 @@ The investment is worth it. Empowered teams are more engaged, more innovative, a
     `,
     date: "December 5, 2025",
     readTime: "7 min read",
-    category: "Team Building",
+    topics: ["Team Building", "Leadership"],
     slug: "building-culture-empowerment",
     author: authors.marcus
   },
@@ -249,7 +261,7 @@ Great communicators never stop learning. Seek feedback on your communication, ob
     `,
     date: "November 30, 2025",
     readTime: "6 min read",
-    category: "Communication",
+    topics: ["Communication"],
     slug: "guide-effective-communication",
     author: authors.sarah
   },
@@ -334,7 +346,7 @@ Remember: having difficult conversations is an act of respect. It shows you care
     `,
     date: "November 25, 2025",
     readTime: "8 min read",
-    category: "Communication",
+    topics: ["Communication", "Leadership"],
     slug: "navigating-difficult-conversations",
     author: authors.marcus
   },
@@ -432,7 +444,7 @@ Start today. In your next conversation, commit to listening fully before you res
     `,
     date: "November 20, 2025",
     readTime: "4 min read",
-    category: "Leadership",
+    topics: ["Leadership", "Communication"],
     slug: "power-active-listening",
     author: authors.sarah
   },
@@ -506,7 +518,7 @@ You have more control over your balance than you might think. Start with one sma
     `,
     date: "November 15, 2025",
     readTime: "6 min read",
-    category: "Wellness",
+    topics: ["Wellness", "Career Growth"],
     slug: "work-life-balance-myths",
     author: authors.marcus
   }
@@ -520,13 +532,14 @@ export const getRelatedPosts = (currentSlug: string, limit: number = 3): BlogPos
   const currentPost = getBlogBySlug(currentSlug);
   if (!currentPost) return allBlogs.slice(0, limit);
   
-  // Prioritize same category, then other posts
-  const sameCategory = allBlogs.filter(
-    blog => blog.category === currentPost.category && blog.slug !== currentSlug
-  );
-  const otherPosts = allBlogs.filter(
-    blog => blog.category !== currentPost.category && blog.slug !== currentSlug
-  );
-  
-  return [...sameCategory, ...otherPosts].slice(0, limit);
+  // Prioritize posts sharing topic tags
+  const scored = allBlogs
+    .filter(blog => blog.slug !== currentSlug)
+    .map(blog => ({
+      blog,
+      score: blog.topics.filter(t => currentPost.topics.includes(t)).length,
+    }))
+    .sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, limit).map(s => s.blog);
 };
