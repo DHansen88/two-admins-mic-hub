@@ -3,14 +3,18 @@ import { useParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import EpisodeCard from "@/components/EpisodeCard";
+import BlogCard from "@/components/BlogCard";
+import TopicTag from "@/components/TopicTag";
 import { Button } from "@/components/ui/button";
 import {
   getEpisodeBySlug,
   getRelatedEpisodes,
 } from "@/data/episodeData";
+import { getRelatedBlogsForEpisode } from "@/data/crossLinks";
 import {
   Play,
   Clock,
+  Calendar,
   Link as LinkIcon,
   Linkedin,
   Mail,
@@ -18,6 +22,9 @@ import {
   ChevronUp,
   ExternalLink,
   Search,
+  Share2,
+  ArrowLeft,
+  Lightbulb,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -50,6 +57,7 @@ const EpisodeDetail = () => {
   }
 
   const relatedEpisodes = getRelatedEpisodes(episode);
+  const relatedBlogs = getRelatedBlogsForEpisode(slug || "", 3);
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -97,10 +105,34 @@ const EpisodeDetail = () => {
     <div className="min-h-screen">
       <Header />
       <main className="pt-20">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-br from-slate via-navy to-deep-blue">
-          <div className="container mx-auto px-4 py-12 md:py-16">
+        {/* Hero Section — aligned structure with BlogPost */}
+        <section className="bg-gradient-to-b from-slate to-navy relative overflow-hidden">
+          {/* Manuscript lines — same as blog for visual consistency */}
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute h-px bg-white/[0.07]"
+              style={{
+                top: `${18 + i * 6.5}%`,
+                width: `${60 + (i % 4) * 10}%`,
+                left: `${-10 + (i % 3) * 5}%`,
+                animation: `manuscriptSlide ${14 + i * 1.5}s linear infinite`,
+                animationDelay: `${i * 0.8}s`,
+              }}
+            />
+          ))}
+
+          <div className="container mx-auto px-4 py-12 md:py-16 relative z-10">
             <div className="max-w-6xl mx-auto space-y-8">
+              {/* Back link */}
+              <Link
+                to="/episodes"
+                className="inline-flex items-center space-x-2 text-background/70 hover:text-background transition-colors"
+              >
+                <ArrowLeft size={18} />
+                <span>Back to Episodes</span>
+              </Link>
+
               {/* Riverside Video Embed — primary hero element */}
               {hasVideo ? (
                 <div className="w-full aspect-video rounded-lg overflow-hidden bg-foreground/10">
@@ -142,70 +174,66 @@ const EpisodeDetail = () => {
                 </div>
               )}
 
-              {/* Episode Info */}
+              {/* Episode Info — aligned with BlogPost header structure */}
               <div className="space-y-4 text-background">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="font-bold bg-accent text-accent-foreground px-3 py-1 rounded-full text-xs">
-                    Episode {episode.number}
-                  </span>
-                  <span className="flex items-center gap-1 text-sm text-background/70">
-                    <Clock className="h-3.5 w-3.5" />
-                    {episode.duration}
-                  </span>
-                  <span className="text-sm text-background/70">
-                    {episode.date}
-                  </span>
+                {/* Topic Tags (clickable) */}
+                <div className="flex flex-wrap gap-2">
+                  {episode.topics.map((topic) => (
+                    <TopicTag key={topic} topic={topic} variant="light" />
+                  ))}
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-display font-bold leading-tight">
+                {/* Title (H1) */}
+                <h1 className="text-4xl md:text-5xl font-display font-bold leading-tight">
                   {episode.title}
                 </h1>
 
-                <p className="text-lg text-background/80 leading-relaxed max-w-3xl">
+                {/* Description / intro */}
+                <p className="text-lg text-background/70 leading-relaxed max-w-3xl">
                   {episode.description}
                 </p>
 
-                <div className="flex flex-wrap items-center gap-4">
-                  {episode.topics.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {episode.topics.map((topic) => (
-                        <span
-                          key={topic}
-                          className="text-xs bg-background/15 text-background px-3 py-1 rounded-full"
-                        >
-                          {topic}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                {/* Meta info — matching blog layout */}
+                <div className="flex flex-wrap items-center gap-6 text-background/70">
+                  <span className="font-bold bg-accent text-accent-foreground px-3 py-1 rounded-full text-xs">
+                    Episode {episode.number}
+                  </span>
+                  <span className="flex items-center space-x-2">
+                    <Calendar size={16} />
+                    <span>{episode.date}</span>
+                  </span>
+                  <span className="flex items-center space-x-2">
+                    <Clock size={16} />
+                    <span>{episode.duration}</span>
+                  </span>
+                </div>
 
-                  {/* Share Actions */}
-                  <div className="flex items-center gap-1 ml-auto">
-                    <span className="text-sm text-background/60 mr-1">
-                      Share:
-                    </span>
-                    <button
-                      onClick={copyLink}
-                      className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
-                      title="Copy link"
-                    >
-                      <LinkIcon className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={shareLinkedIn}
-                      className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
-                      title="Share on LinkedIn"
-                    >
-                      <Linkedin className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={shareEmail}
-                      className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
-                      title="Share via email"
-                    >
-                      <Mail className="h-4 w-4" />
-                    </button>
-                  </div>
+                {/* Share Actions — matching blog layout */}
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-background/60 text-sm flex items-center gap-1.5">
+                    <Share2 size={14} /> Share
+                  </span>
+                  <button
+                    onClick={copyLink}
+                    className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
+                    title="Copy link"
+                  >
+                    <LinkIcon className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={shareLinkedIn}
+                    className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
+                    title="Share on LinkedIn"
+                  >
+                    <Linkedin className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={shareEmail}
+                    className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
+                    title="Share via email"
+                  >
+                    <Mail className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -266,6 +294,7 @@ const EpisodeDetail = () => {
           </section>
         )}
 
+        {/* Content Body — consistent spacing with blog */}
         <div className="container mx-auto px-4 py-12 md:py-16">
           <div className="max-w-4xl mx-auto space-y-16">
             {/* Shareable Clips */}
@@ -280,7 +309,6 @@ const EpisodeDetail = () => {
                       key={i}
                       className="border border-border rounded-lg overflow-hidden hover:border-accent transition-colors"
                     >
-                      {/* Inline Riverside clip embed */}
                       {clip.embedUrl ? (
                         <div className="aspect-video">
                           <iframe
@@ -396,10 +424,11 @@ const EpisodeDetail = () => {
               </section>
             )}
 
-            {/* Show Notes */}
+            {/* Key Takeaways / Show Notes — styled same as blog key takeaways */}
             {episode.showNotes && episode.showNotes.length > 0 && (
               <section>
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">
+                <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+                  <Lightbulb className="h-6 w-6 text-accent" />
                   Key Takeaways
                 </h2>
                 <ul className="space-y-3">
@@ -418,9 +447,43 @@ const EpisodeDetail = () => {
           </div>
         </div>
 
+        {/* Topic Tags at bottom — matching blog */}
+        <div className="bg-background py-8 border-t border-border">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <h3 className="text-sm font-display font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                Topics
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {episode.topics.map((topic) => (
+                  <TopicTag key={topic} topic={topic} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Related Blog Posts */}
+        {relatedBlogs.length > 0 && (
+          <section className="py-16 bg-muted/40 border-t border-border">
+            <div className="container mx-auto px-4">
+              <div className="max-w-6xl mx-auto">
+                <h2 className="text-2xl font-display font-bold text-foreground mb-8">
+                  Related Blog Posts
+                </h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {relatedBlogs.map((blog) => (
+                    <BlogCard key={blog.slug} {...blog} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Related Episodes */}
         {relatedEpisodes.length > 0 && (
-          <section className="bg-muted/40 border-t border-border py-16">
+          <section className="bg-muted border-t border-border py-16">
             <div className="container mx-auto px-4">
               <div className="max-w-6xl mx-auto">
                 <h2 className="text-2xl font-display font-bold text-foreground mb-8">

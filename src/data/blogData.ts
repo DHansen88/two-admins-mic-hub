@@ -1,13 +1,8 @@
-export const BLOG_TOPICS = [
-  "Leadership",
-  "Communication",
-  "Team Building",
-  "Wellness",
-  "Career Growth",
-  "Technology",
-] as const;
+import { SHARED_TOPICS, type SharedTopic } from "./topics";
 
-export type BlogTopic = (typeof BLOG_TOPICS)[number];
+/** @deprecated Use SharedTopic from topics.ts */
+export const BLOG_TOPICS = SHARED_TOPICS;
+export type BlogTopic = SharedTopic;
 
 export interface Author {
   name: string;
@@ -22,10 +17,11 @@ export interface BlogPost {
   content: string;
   date: string;
   readTime: string;
-  topics: BlogTopic[];
+  topics: SharedTopic[];
   slug: string;
   author: Author;
   featuredImage?: string;
+  keyTakeaways?: string[];
 }
 
 const authors: Record<string, Author> = {
@@ -105,7 +101,13 @@ Remember: leadership isn't about titles—it's about influence and impact. As an
     readTime: "5 min read",
     topics: ["Leadership", "Career Growth"],
     slug: "essential-leadership-skills-2025",
-    author: authors.sarah
+    author: authors.sarah,
+    keyTakeaways: [
+      "Emotional intelligence is essential for navigating remote and hybrid teams",
+      "Administrators must think strategically, not just execute tasks",
+      "Digital fluency and change management set top performers apart",
+      "Coaching and mentorship create lasting organizational impact",
+    ]
   },
   {
     title: "Building a Culture of Empowerment in Your Organization",
@@ -179,7 +181,13 @@ The investment is worth it. Empowered teams are more engaged, more innovative, a
     readTime: "7 min read",
     topics: ["Team Building", "Leadership"],
     slug: "building-culture-empowerment",
-    author: authors.marcus
+    author: authors.marcus,
+    keyTakeaways: [
+      "Empowerment is about trust—not just delegation",
+      "Psychological safety is a prerequisite for initiative",
+      "Micromanagement is the fastest way to kill empowerment",
+      "Start small: give one person more autonomy and learn from the experience",
+    ]
   },
   {
     title: "The Administrator's Guide to Effective Communication",
@@ -263,7 +271,13 @@ Great communicators never stop learning. Seek feedback on your communication, ob
     readTime: "6 min read",
     topics: ["Communication"],
     slug: "guide-effective-communication",
-    author: authors.sarah
+    author: authors.sarah,
+    keyTakeaways: [
+      "Always define what you want the recipient to understand, feel, or do",
+      "Choose the right communication channel for each message type",
+      "Active listening is as important as clear speaking",
+      "Great communicators never stop learning and seeking feedback",
+    ]
   },
   {
     title: "Navigating Difficult Conversations with Confidence",
