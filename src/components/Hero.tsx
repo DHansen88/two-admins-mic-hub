@@ -11,6 +11,36 @@ const Hero = () => {
       }}></div>
       </div>
 
+      {/* Sound wave graphic */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.06 }}>
+        <svg
+          viewBox="0 0 1200 200"
+          className="w-full max-w-[1400px] h-auto"
+          preserveAspectRatio="xMidYMid meet"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Sound wave bars */}
+          {Array.from({ length: 80 }).map((_, i) => {
+            const center = 40;
+            const dist = Math.abs(i - center) / center;
+            const height = Math.max(8, (1 - dist * dist) * 180 * (0.5 + 0.5 * Math.sin(i * 0.7)));
+            const x = (i / 80) * 1200 + 7.5;
+            return (
+              <rect
+                key={i}
+                x={x}
+                y={100 - height / 2}
+                width={6}
+                height={height}
+                rx={3}
+                fill="hsl(var(--slate))"
+              />
+            );
+          })}
+        </svg>
+      </div>
+
       <div className="container mx-auto px-4 py-32 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-8 animate-fade-in">
 
