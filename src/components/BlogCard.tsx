@@ -10,7 +10,7 @@ interface BlogCardProps {
   slug: string;
 }
 
-const BlogCard = ({ title, excerpt, date, readTime, topics, slug }: BlogCardProps) => {
+const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug }: BlogCardProps) => {
   return (
     <Link to={`/blog/${slug}`} className="block group">
       <Card className="h-full bg-card hover:bg-card/80 border-border hover:border-teal transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
