@@ -1,11 +1,8 @@
 import { Mic2, Mail, Instagram, Twitter, Linkedin } from "lucide-react";
 import { NavLink } from "./NavLink";
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
-  return (
-    <footer className="bg-slate text-background py-16">
+  return <footer className="bg-slate text-background py-16">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
@@ -16,7 +13,7 @@ const Footer = () => {
                 <div className="text-xl font-display font-bold">
                   <span className="text-teal">Two Admins</span>
                   <span className="text-coral"> & </span>
-                  <span className="text-sky-blue">a Mic</span>
+                  
                 </div>
               </div>
               <p className="text-background/70 leading-relaxed">
@@ -24,32 +21,16 @@ const Footer = () => {
                 leadership, and professional growth. Join us every week for new episodes.
               </p>
               <div className="flex space-x-4">
-                <a 
-                  href="#" 
-                  className="hover:text-teal transition-colors"
-                  aria-label="Instagram"
-                >
+                <a href="#" className="hover:text-teal transition-colors" aria-label="Instagram">
                   <Instagram className="h-5 w-5" />
                 </a>
-                <a 
-                  href="#" 
-                  className="hover:text-sky-blue transition-colors"
-                  aria-label="Twitter"
-                >
+                <a href="#" className="hover:text-sky-blue transition-colors" aria-label="Twitter">
                   <Twitter className="h-5 w-5" />
                 </a>
-                <a 
-                  href="#" 
-                  className="hover:text-coral transition-colors"
-                  aria-label="LinkedIn"
-                >
+                <a href="#" className="hover:text-coral transition-colors" aria-label="LinkedIn">
                   <Linkedin className="h-5 w-5" />
                 </a>
-                <a 
-                  href="#" 
-                  className="hover:text-light-green transition-colors"
-                  aria-label="Email"
-                >
+                <a href="#" className="hover:text-light-green transition-colors" aria-label="Email">
                   <Mail className="h-5 w-5" />
                 </a>
               </div>
@@ -112,8 +93,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
