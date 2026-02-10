@@ -1,4 +1,4 @@
-import { Mic2, Mail, Instagram, Twitter, Linkedin } from "lucide-react";
+import { Mail, Instagram, Twitter, Linkedin } from "lucide-react";
 import { NavLink } from "./NavLink";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -8,8 +8,7 @@ const Footer = () => {
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             {/* Brand */}
             <div className="md:col-span-2 space-y-4">
-              <div className="flex items-center space-x-3">
-                <Mic2 className="h-8 w-8 text-teal" />
+              <div className="flex items-center">
                 <div className="text-xl font-display font-bold">
                   <span className="text-teal">Two Admins</span>
                   <span className="text-coral"> & </span>
