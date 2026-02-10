@@ -14,13 +14,6 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 py-32 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-8 animate-fade-in">
-          {/* Microphone Icon */}
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="absolute inset-0 bg-teal/30 blur-3xl rounded-full"></div>
-              <Mic2 className="relative w-20 h-20 md:w-24 md:h-24 text-teal" strokeWidth={1.5} />
-            </div>
-          </div>
 
           {/* Main Title */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black leading-tight">
