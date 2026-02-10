@@ -43,7 +43,24 @@ const Blog = () => {
         <section className="relative overflow-hidden" style={{
         background: 'linear-gradient(to bottom, #3a9e9e 0%, #2a7a8a 40%, #1a5a6a 70%, hsl(199, 62%, 21%) 100%)'
       }}>
-          {/* Blog banner image */}
+           {/* Animated manuscript lines */}
+           <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+             {Array.from({ length: 12 }).map((_, i) => (
+               <div
+                 key={i}
+                 className="absolute h-px bg-white/[0.07]"
+                 style={{
+                   top: `${18 + i * 6.5}%`,
+                   left: '-10%',
+                   width: `${60 + (i % 3) * 20}%`,
+                   animation: `manuscriptSlide ${14 + i * 1.5}s linear infinite`,
+                   animationDelay: `${i * 0.8}s`,
+                 }}
+               />
+             ))}
+           </div>
+
+           {/* Blog banner image */}
           <div className="flex justify-center pt-10 pb-0 relative z-10">
             <img src={blogBanner} alt="Two Admins & a Blog" className="w-72 md:w-96 lg:w-[480px] h-auto drop-shadow-2xl mix-blend-multiply" />
           </div>
