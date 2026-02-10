@@ -56,20 +56,13 @@ const EpisodeCard = ({
           )}
         </div>
 
-        <div className="flex items-center gap-3 pt-2">
+        <div className="pt-2">
           <Button
             size="sm"
             className="bg-coral-accent hover:bg-coral-accent/90 group-hover:scale-105 transition-transform"
           >
             <Play className="h-4 w-4 mr-2" />
             Listen Now
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-          >
-            Show Notes
           </Button>
         </div>
       </div>
