@@ -13,7 +13,10 @@ export type Topic = (typeof TOPICS)[number];
 export interface ShareableClip {
   title: string;
   duration: string;
-  url: string;
+  /** Riverside embed/share URL for the clip */
+  embedUrl?: string;
+  /** Direct MP4 link if available */
+  mp4Url?: string;
 }
 
 export interface PlatformLinks {
@@ -31,8 +34,11 @@ export interface Episode {
   duration: string;
   date: string;
   topics: Topic[];
-  videoUrl?: string;
+  /** Riverside embed/share URL for the full episode video */
+  riversideEmbedUrl?: string;
+  /** Thumbnail image (auto-generated from Riverside or manually uploaded) */
   thumbnailUrl?: string;
+  /** Audio-only URL (fallback when no video) */
   audioUrl?: string;
   platformLinks?: PlatformLinks;
   clips?: ShareableClip[];
@@ -66,6 +72,8 @@ export const allEpisodes: Episode[] = [
     duration: "42 min",
     date: "November 28, 2025",
     topics: ["Leadership", "Admin Life"],
+    // Replace with actual Riverside embed URL when available
+    // riversideEmbedUrl: "https://riverside.fm/embed/your-episode-id",
     thumbnailUrl: "/placeholder.svg",
     transcript:
       "Welcome to Two Admins and a Mic. In today's episode, we're diving deep into strategies for leading through change...\n\nChange is inevitable in any organization, but how we navigate it makes all the difference. Our guest today shares practical frameworks that administrators can use to guide their teams through uncertainty.\n\nKey insight: Communication frequency should increase during times of change, not decrease. Many leaders make the mistake of waiting until they have all the answers before communicating, but teams need to hear from leadership regularly, even if the message is simply 'we're working on it.'\n\nAnother critical strategy is involving team members in the change process itself. When people feel ownership over the transition, resistance decreases dramatically.\n\nWe also discussed the importance of acknowledging the emotional impact of change. It's not just about new processes or structures—it's about people adjusting to a new reality.\n\nThank you for listening to Two Admins and a Mic. See you next week!",
@@ -84,12 +92,12 @@ export const allEpisodes: Episode[] = [
       {
         title: "Why communication matters most during change",
         duration: "1:42",
-        url: "#",
+        // embedUrl: "https://riverside.fm/embed/clip-id-1",
       },
       {
         title: "The ownership framework for transitions",
         duration: "2:15",
-        url: "#",
+        // embedUrl: "https://riverside.fm/embed/clip-id-2",
       },
     ],
   },

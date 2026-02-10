@@ -16,7 +16,7 @@ import {
   Mail,
   ChevronDown,
   ChevronUp,
-  Download,
+  ExternalLink,
   Search,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -75,14 +75,23 @@ const EpisodeDetail = () => {
 
   const highlightSearch = (text: string, query: string) => {
     if (!query.trim()) return text;
-    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
-    return text.replace(regex, '<mark class="bg-accent/30 rounded px-0.5">$1</mark>');
+    const regex = new RegExp(
+      `(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+      "gi"
+    );
+    return text.replace(
+      regex,
+      '<mark class="bg-accent/30 rounded px-0.5">$1</mark>'
+    );
   };
 
   const displayedTranscript = transcriptExpanded
     ? transcriptText
     : transcriptText.slice(0, transcriptPreviewLength) +
       (hasLongTranscript ? "..." : "");
+
+  const hasVideo = !!episode.riversideEmbedUrl;
+  const hasAudio = !!episode.audioUrl;
 
   return (
     <div className="min-h-screen">
@@ -91,47 +100,50 @@ const EpisodeDetail = () => {
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-slate via-navy to-deep-blue">
           <div className="container mx-auto px-4 py-12 md:py-16">
-            <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
-              {/* Video / Audio Player */}
-              <div className="w-full lg:w-[560px] shrink-0">
-                <div className="relative aspect-video rounded-lg overflow-hidden bg-foreground/10">
-                  {episode.videoUrl ? (
-                    <video
-                      src={episode.videoUrl}
-                      poster={episode.thumbnailUrl}
-                      controls
-                      className="w-full h-full object-cover"
-                    />
-                  ) : episode.audioUrl ? (
-                    <div className="flex flex-col items-center justify-center h-full gap-4 p-6">
-                      <img
-                        src={episode.thumbnailUrl || "/placeholder.svg"}
-                        alt={episode.title}
-                        className="w-full h-full object-cover absolute inset-0"
-                      />
-                      <div className="relative z-10 w-full mt-auto p-4">
-                        <audio src={episode.audioUrl} controls className="w-full" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <img
-                        src={episode.thumbnailUrl || "/placeholder.svg"}
-                        alt={episode.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-foreground/20">
-                        <div className="w-16 h-16 rounded-full bg-background/80 flex items-center justify-center">
-                          <Play className="h-7 w-7 text-foreground ml-1" />
-                        </div>
-                      </div>
-                    </div>
-                  )}
+            <div className="max-w-6xl mx-auto space-y-8">
+              {/* Riverside Video Embed — primary hero element */}
+              {hasVideo ? (
+                <div className="w-full aspect-video rounded-lg overflow-hidden bg-foreground/10">
+                  <iframe
+                    src={episode.riversideEmbedUrl}
+                    title={episode.title}
+                    className="w-full h-full border-0"
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
                 </div>
-              </div>
+              ) : hasAudio ? (
+                <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-foreground/10">
+                  <img
+                    src={episode.thumbnailUrl || "/placeholder.svg"}
+                    alt={episode.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-foreground/80 to-transparent">
+                    <audio
+                      src={episode.audioUrl}
+                      controls
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-foreground/10">
+                  <img
+                    src={episode.thumbnailUrl || "/placeholder.svg"}
+                    alt={episode.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-foreground/20">
+                    <div className="w-20 h-20 rounded-full bg-background/80 flex items-center justify-center">
+                      <Play className="h-8 w-8 text-foreground ml-1" />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Episode Info */}
-              <div className="flex-1 space-y-4 text-background">
+              <div className="space-y-4 text-background">
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="font-bold bg-accent text-accent-foreground px-3 py-1 rounded-full text-xs">
                     Episode {episode.number}
@@ -140,54 +152,60 @@ const EpisodeDetail = () => {
                     <Clock className="h-3.5 w-3.5" />
                     {episode.duration}
                   </span>
-                  <span className="text-sm text-background/70">{episode.date}</span>
+                  <span className="text-sm text-background/70">
+                    {episode.date}
+                  </span>
                 </div>
 
                 <h1 className="text-3xl md:text-4xl font-display font-bold leading-tight">
                   {episode.title}
                 </h1>
 
-                <p className="text-lg text-background/80 leading-relaxed">
+                <p className="text-lg text-background/80 leading-relaxed max-w-3xl">
                   {episode.description}
                 </p>
 
-                {episode.topics.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {episode.topics.map((topic) => (
-                      <span
-                        key={topic}
-                        className="text-xs bg-background/15 text-background px-3 py-1 rounded-full"
-                      >
-                        {topic}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <div className="flex flex-wrap items-center gap-4">
+                  {episode.topics.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {episode.topics.map((topic) => (
+                        <span
+                          key={topic}
+                          className="text-xs bg-background/15 text-background px-3 py-1 rounded-full"
+                        >
+                          {topic}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
-                {/* Share Actions */}
-                <div className="flex items-center gap-2 pt-2">
-                  <span className="text-sm text-background/60 mr-1">Share:</span>
-                  <button
-                    onClick={copyLink}
-                    className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
-                    title="Copy link"
-                  >
-                    <LinkIcon className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={shareLinkedIn}
-                    className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
-                    title="Share on LinkedIn"
-                  >
-                    <Linkedin className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={shareEmail}
-                    className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
-                    title="Share via email"
-                  >
-                    <Mail className="h-4 w-4" />
-                  </button>
+                  {/* Share Actions */}
+                  <div className="flex items-center gap-1 ml-auto">
+                    <span className="text-sm text-background/60 mr-1">
+                      Share:
+                    </span>
+                    <button
+                      onClick={copyLink}
+                      className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
+                      title="Copy link"
+                    >
+                      <LinkIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={shareLinkedIn}
+                      className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
+                      title="Share on LinkedIn"
+                    >
+                      <Linkedin className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={shareEmail}
+                      className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
+                      title="Share via email"
+                    >
+                      <Mail className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -199,7 +217,9 @@ const EpisodeDetail = () => {
           <section className="border-b border-border bg-muted/40">
             <div className="container mx-auto px-4 py-6">
               <div className="max-w-6xl mx-auto flex flex-wrap items-center gap-4">
-                <span className="text-sm font-semibold text-foreground">Listen on:</span>
+                <span className="text-sm font-semibold text-foreground">
+                  Listen on:
+                </span>
                 {episode.platformLinks.apple && (
                   <a
                     href={episode.platformLinks.apple}
@@ -254,32 +274,58 @@ const EpisodeDetail = () => {
                 <h2 className="text-2xl font-display font-bold text-foreground mb-6">
                   Shareable Clips
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-6">
                   {episode.clips.map((clip, i) => (
                     <div
                       key={i}
-                      className="border border-border rounded-lg p-4 flex items-center justify-between gap-4 hover:border-accent transition-colors"
+                      className="border border-border rounded-lg overflow-hidden hover:border-accent transition-colors"
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-                          <Play className="h-4 w-4 text-foreground ml-0.5" />
+                      {/* Inline Riverside clip embed */}
+                      {clip.embedUrl ? (
+                        <div className="aspect-video">
+                          <iframe
+                            src={clip.embedUrl}
+                            title={clip.title}
+                            className="w-full h-full border-0"
+                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">
-                            {clip.title}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{clip.duration}</p>
+                      ) : clip.mp4Url ? (
+                        <div className="aspect-video bg-muted">
+                          <video
+                            src={clip.mp4Url}
+                            controls
+                            className="w-full h-full object-cover"
+                          />
                         </div>
+                      ) : null}
+                      <div className="p-4 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                            <Play className="h-4 w-4 text-foreground ml-0.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-foreground truncate">
+                              {clip.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {clip.duration}
+                            </p>
+                          </div>
+                        </div>
+                        {(clip.embedUrl || clip.mp4Url) && (
+                          <a
+                            href={clip.embedUrl || clip.mp4Url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shrink-0 p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                            title="Open clip"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        )}
                       </div>
-                      <a
-                        href={clip.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="shrink-0 p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-                        title="Download clip"
-                      >
-                        <Download className="h-4 w-4" />
-                      </a>
                     </div>
                   ))}
                 </div>
@@ -294,14 +340,15 @@ const EpisodeDetail = () => {
                     Transcript
                   </h2>
                   <button
-                    onClick={() => navigator.clipboard.writeText(transcriptText)}
+                    onClick={() =>
+                      navigator.clipboard.writeText(transcriptText)
+                    }
                     className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
                   >
                     Copy transcript
                   </button>
                 </div>
 
-                {/* Search in transcript */}
                 <div className="relative mb-4">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -320,12 +367,17 @@ const EpisodeDetail = () => {
                   <div
                     className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line"
                     dangerouslySetInnerHTML={{
-                      __html: highlightSearch(displayedTranscript, transcriptSearch),
+                      __html: highlightSearch(
+                        displayedTranscript,
+                        transcriptSearch
+                      ),
                     }}
                   />
                   {hasLongTranscript && (
                     <button
-                      onClick={() => setTranscriptExpanded(!transcriptExpanded)}
+                      onClick={() =>
+                        setTranscriptExpanded(!transcriptExpanded)
+                      }
                       className="mt-4 flex items-center gap-1 text-sm font-medium text-accent hover:text-accent/80 transition-colors"
                     >
                       {transcriptExpanded ? (
@@ -334,7 +386,8 @@ const EpisodeDetail = () => {
                         </>
                       ) : (
                         <>
-                          Read full transcript <ChevronDown className="h-4 w-4" />
+                          Read full transcript{" "}
+                          <ChevronDown className="h-4 w-4" />
                         </>
                       )}
                     </button>
