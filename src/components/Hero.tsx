@@ -47,10 +47,7 @@ const Hero = () => {
               
               <div className="text-sm md:text-base text-background/70">Episodes</div>
             </div>
-            <div className="space-y-2">
-              
-              <div className="text-sm md:text-base text-background/70">Listeners</div>
-            </div>
+            
             <div className="space-y-2">
               <div className="text-3xl md:text-4xl font-bold text-light-green">​</div>
               
