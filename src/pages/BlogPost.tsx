@@ -30,8 +30,22 @@ const BlogPost = () => {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="py-16 bg-gradient-to-b from-slate to-navy">
-          <div className="container mx-auto px-4">
+        <section className="py-16 bg-gradient-to-b from-slate to-navy relative overflow-hidden">
+          {/* Manuscript lines */}
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute h-px bg-white/[0.07]"
+              style={{
+                top: `${18 + i * 6.5}%`,
+                width: `${60 + (i % 4) * 10}%`,
+                left: `${-10 + (i % 3) * 5}%`,
+                animation: `manuscriptSlide ${14 + i * 1.5}s linear infinite`,
+                animationDelay: `${i * 0.8}s`,
+              }}
+            />
+          ))}
+          <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto animate-fade-in">
               <Link
                 to="/blog"
