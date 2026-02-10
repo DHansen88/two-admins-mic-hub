@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowUpDown } from "lucide-react";
 import { allBlogs, type BlogTopic } from "@/data/blogData";
+import blogBanner from "@/assets/blog-banner.png";
 
 const POSTS_PER_PAGE = 9;
 
@@ -56,52 +57,19 @@ const Blog = () => {
       <Header />
       <main className="pt-20">
         {/* Hero Banner */}
-        <section className="py-20 bg-gradient-to-b from-slate to-navy relative overflow-hidden">
-          {/* Oversized caret / text-cursor animation */}
-          <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
-            <div
-              className="absolute w-[3px] md:w-[4px] rounded-full bg-background/[0.13]"
-              style={{
-                height: '45%',
-                top: '20%',
-                left: '8%',
-                animation: 'caretBlink 3.2s ease-in-out infinite',
-              }}
-            />
-            <div
-              className="absolute w-[2px] md:w-[3px] rounded-full bg-background/[0.09]"
-              style={{
-                height: '30%',
-                top: '45%',
-                right: '12%',
-                animation: 'caretBlink 4s ease-in-out infinite',
-                animationDelay: '1.6s',
-              }}
-            />
-            <div
-              className="absolute w-[2px] rounded-full bg-background/[0.06] hidden md:block"
-              style={{
-                height: '20%',
-                top: '15%',
-                right: '30%',
-                animation: 'caretBlink 5s ease-in-out infinite',
-                animationDelay: '2.8s',
-              }}
+        <section className="relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, #3a9e9e 0%, #2a7a8a 40%, #1a5a6a 70%, hsl(199, 62%, 21%) 100%)' }}>
+          {/* Blog banner image */}
+          <div className="flex justify-center pt-10 pb-0 relative z-10">
+            <img
+              src={blogBanner}
+              alt="Two Admins & a Blog"
+              className="w-full max-w-2xl h-auto object-contain"
             />
           </div>
 
-          <style>{`
-            @keyframes caretBlink {
-              0%, 100% { opacity: 0; }
-              30%, 70% { opacity: 1; }
-            }
-          `}</style>
-
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
-              <h1 className="text-5xl md:text-6xl font-display font-bold text-background">
-                Blog
-              </h1>
+          {/* Text content overlapping bottom of image */}
+          <div className="container mx-auto px-4 relative z-10 pb-16 -mt-4">
+            <div className="max-w-4xl mx-auto text-center space-y-4 animate-fade-in">
               <p className="text-xl text-background/80">
                 Insights, stories, and practical advice for administrators and leaders
               </p>
