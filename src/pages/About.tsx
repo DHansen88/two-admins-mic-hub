@@ -24,45 +24,7 @@ const About = () => {
         {/* Mission Section */}
         <section className="py-20 bg-background">
           <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid md:grid-cols-3 gap-8">
-                <Card className="p-8 text-center space-y-4 hover:shadow-xl transition-shadow border-border">
-                  <div className="flex justify-center">
-                    <div className="bg-teal/10 p-4 rounded-full">
-                      <Users className="h-8 w-8 text-teal" />
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Community</h3>
-                  <p className="text-muted-foreground">
-                    Building a supportive community of leaders and administrators who learn and grow together.
-                  </p>
-                </Card>
-
-                <Card className="p-8 text-center space-y-4 hover:shadow-xl transition-shadow border-border">
-                  <div className="flex justify-center">
-                    <div className="bg-sky-blue/10 p-4 rounded-full">
-                      <Target className="h-8 w-8 text-sky-blue" />
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Purpose</h3>
-                  <p className="text-muted-foreground">
-                    Delivering actionable insights and strategies that make a real difference in your leadership journey.
-                  </p>
-                </Card>
-
-                <Card className="p-8 text-center space-y-4 hover:shadow-xl transition-shadow border-border">
-                  <div className="flex justify-center">
-                    <div className="bg-coral/10 p-4 rounded-full">
-                      <Heart className="h-8 w-8 text-coral" />
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Passion</h3>
-                  <p className="text-muted-foreground">
-                    We're passionate about empowering administrators to lead with confidence and authenticity.
-                  </p>
-                </Card>
-              </div>
-            </div>
+            
           </div>
         </section>
 
