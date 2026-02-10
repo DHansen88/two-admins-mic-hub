@@ -1,69 +1,50 @@
+import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import EpisodeCard from "@/components/EpisodeCard";
+import FeaturedEpisode from "@/components/FeaturedEpisode";
+import TopicFilter from "@/components/TopicFilter";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-
-const allEpisodes = [
-  {
-    number: 12,
-    title: "Leading Through Change: Strategies for Modern Administrators",
-    description: "Explore practical approaches to navigating organizational change while maintaining team morale and productivity.",
-    duration: "42 min",
-    date: "November 28, 2025"
-  },
-  {
-    number: 11,
-    title: "The Power of Empowerment: Building Confident Teams",
-    description: "Discover how empowering your team members leads to better outcomes and a more engaged workplace culture.",
-    duration: "38 min",
-    date: "November 21, 2025"
-  },
-  {
-    number: 10,
-    title: "Communication Excellence in Leadership",
-    description: "Master the art of clear, effective communication that inspires action and builds trust with your team.",
-    duration: "45 min",
-    date: "November 14, 2025"
-  },
-  {
-    number: 9,
-    title: "Time Management for Busy Administrators",
-    description: "Learn proven time management techniques that help administrators balance competing priorities effectively.",
-    duration: "35 min",
-    date: "November 7, 2025"
-  },
-  {
-    number: 8,
-    title: "Building Resilience in Leadership Roles",
-    description: "Develop the mental and emotional resilience needed to thrive in challenging leadership positions.",
-    duration: "40 min",
-    date: "October 31, 2025"
-  },
-  {
-    number: 7,
-    title: "Data-Driven Decision Making for Administrators",
-    description: "Learn how to leverage data and analytics to make informed decisions that drive organizational success.",
-    duration: "43 min",
-    date: "October 24, 2025"
-  },
-  {
-    number: 6,
-    title: "Cultivating Innovation in Your Organization",
-    description: "Discover strategies for fostering a culture of innovation and creative problem-solving in your team.",
-    duration: "37 min",
-    date: "October 17, 2025"
-  },
-  {
-    number: 5,
-    title: "Conflict Resolution Strategies for Leaders",
-    description: "Master essential techniques for addressing and resolving workplace conflicts constructively.",
-    duration: "41 min",
-    date: "October 10, 2025"
-  }
-];
+import { Search, ArrowUpDown } from "lucide-react";
+import { allEpisodes, type Topic } from "@/data/episodeData";
+import { Button } from "@/components/ui/button";
 
 const Episodes = () => {
+  const [search, setSearch] = useState("");
+  const [selectedTopics, setSelectedTopics] = useState<Topic[]>([]);
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+
+  const latestEpisode = allEpisodes[0];
+
+  const filteredEpisodes = useMemo(() => {
+    const query = search.toLowerCase().trim();
+    let episodes = [...allEpisodes];
+
+    // Filter by topics
+    if (selectedTopics.length > 0) {
+      episodes = episodes.filter((ep) =>
+        selectedTopics.some((topic) => ep.topics.includes(topic))
+      );
+    }
+
+    // Filter by search
+    if (query) {
+      episodes = episodes.filter(
+        (ep) =>
+          ep.title.toLowerCase().includes(query) ||
+          ep.description.toLowerCase().includes(query) ||
+          ep.topics.some((t) => t.toLowerCase().includes(query))
+      );
+    }
+
+    // Sort
+    episodes.sort((a, b) =>
+      sortOrder === "newest" ? b.number - a.number : a.number - b.number
+    );
+
+    return episodes;
+  }, [search, selectedTopics, sortOrder]);
+
   return (
     <div className="min-h-screen">
       <Header />
@@ -71,7 +52,10 @@ const Episodes = () => {
         {/* Hero Section */}
         <section className="relative py-20 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
           {/* Sound wave graphic */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.13 }}>
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{ opacity: 0.13 }}
+          >
             <svg
               viewBox="0 0 1200 200"
               className="w-full max-w-[1400px] h-auto"
@@ -88,7 +72,10 @@ const Episodes = () => {
               {Array.from({ length: 80 }).map((_, i) => {
                 const center = 40;
                 const dist = Math.abs(i - center) / center;
-                const height = Math.max(8, (1 - dist * dist) * 180 * (0.5 + 0.5 * Math.sin(i * 0.7)));
+                const height = Math.max(
+                  8,
+                  (1 - dist * dist) * 180 * (0.5 + 0.5 * Math.sin(i * 0.7))
+                );
                 const x = (i / 80) * 1200 + 7.5;
                 const delay = (Math.sin(i * 0.5) * 1.5 + 1.5).toFixed(2);
                 const duration = (2 + Math.sin(i * 0.3) * 1).toFixed(2);
@@ -122,27 +109,69 @@ const Episodes = () => {
           </div>
         </section>
 
-        {/* Search and Episodes */}
-        <section className="py-20 bg-background">
+        {/* Featured Latest Episode */}
+        <FeaturedEpisode episode={latestEpisode} />
+
+        {/* Browse Episodes */}
+        <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto space-y-12">
-              {/* Search Bar */}
-              <div className="max-w-2xl mx-auto">
-                <div className="relative">
+            <div className="max-w-6xl mx-auto">
+              {/* Search & Sort Bar */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                <div className="relative flex-1">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
                     type="search"
-                    placeholder="Search episodes..."
-                    className="pl-12 h-14 text-lg border-2 focus:border-accent"
+                    placeholder="Search episodes by title, description, or topic..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-12 h-12 border-2 focus:border-accent"
                   />
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-12 px-4 shrink-0"
+                  onClick={() =>
+                    setSortOrder((s) =>
+                      s === "newest" ? "oldest" : "newest"
+                    )
+                  }
+                >
+                  <ArrowUpDown className="h-4 w-4 mr-2" />
+                  {sortOrder === "newest" ? "Newest" : "Oldest"}
+                </Button>
               </div>
 
-              {/* Episodes Grid */}
-              <div className="grid md:grid-cols-2 gap-6 animate-slide-in">
-                {allEpisodes.map((episode) => (
-                  <EpisodeCard key={episode.number} {...episode} />
-                ))}
+              {/* Mobile topic filter */}
+              <div className="lg:hidden mb-6">
+                <TopicFilter
+                  selected={selectedTopics}
+                  onChange={setSelectedTopics}
+                />
+              </div>
+
+              {/* Sidebar + Episode List */}
+              <div className="flex gap-10">
+                {/* Desktop sidebar */}
+                <TopicFilter
+                  selected={selectedTopics}
+                  onChange={setSelectedTopics}
+                />
+
+                {/* Episode list */}
+                <div className="flex-1 space-y-5">
+                  {filteredEpisodes.length === 0 ? (
+                    <p className="text-center py-16 text-muted-foreground">
+                      No episodes match your filters. Try adjusting your search
+                      or topics.
+                    </p>
+                  ) : (
+                    filteredEpisodes.map((episode) => (
+                      <EpisodeCard key={episode.number} {...episode} />
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
