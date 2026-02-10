@@ -2,6 +2,7 @@ import { NavLink } from "./NavLink";
 import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import logo from "@/assets/logo.png";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navItems = [{
@@ -24,11 +25,7 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <NavLink to="/" className="flex items-center space-x-3">
-            <div className="text-2xl md:text-3xl font-bold font-display">
-              <span className="text-teal">Two Admins</span>
-              <span className="text-coral"> ​ </span>
-              
-            </div>
+            <img src={logo} alt="Two Admins & a Mic" className="h-12 md:h-14 w-auto" />
           </NavLink>
 
           {/* Desktop Navigation */}
