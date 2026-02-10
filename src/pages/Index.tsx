@@ -11,7 +11,7 @@ const Index = () => {
         <LatestEpisodes />
         <LatestBlogs />
       </main>
-      <Footer className="" />
+      <Footer />
     </div>;
 };
 export default Index;
