@@ -7,7 +7,7 @@ import hostMelinda from "@/assets/host-melinda.jpg";
 
 const hosts = [
   {
-    name: "Dianna Hansen",
+    name: "Diana Hansen",
     title: "Co-Founder & Co-Host",
     image: hostDmh,
     bio: "With decades of experience in educational leadership and administration, Donna Marie brings a grounded, people-first perspective to every conversation. She believes the best leaders are lifelong learners who lead with empathy and clarity.",
