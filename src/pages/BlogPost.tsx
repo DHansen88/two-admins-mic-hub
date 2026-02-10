@@ -2,8 +2,11 @@ import { useParams, Link, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
+import EpisodeCard from "@/components/EpisodeCard";
+import TopicTag from "@/components/TopicTag";
 import { getBlogBySlug, getRelatedPosts } from "@/data/blogData";
-import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Link as LinkIcon, Mail } from "lucide-react";
+import { getRelatedEpisodesForBlog } from "@/data/crossLinks";
+import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Link as LinkIcon, Mail, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
@@ -12,6 +15,7 @@ const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const post = slug ? getBlogBySlug(slug) : undefined;
   const relatedPosts = slug ? getRelatedPosts(slug, 3) : [];
+  const relatedEpisodes = slug ? getRelatedEpisodesForBlog(slug, 3) : [];
   const { toast } = useToast();
 
   if (!post) {
@@ -55,23 +59,22 @@ const BlogPost = () => {
                 <span>Back to Blog</span>
               </Link>
 
+              {/* Topic Tags */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {post.topics.map((topic) => (
-                  <span
-                    key={topic}
-                    className="inline-block text-sm font-semibold uppercase tracking-wider text-teal bg-teal/10 px-3 py-1 rounded-full"
-                  >
-                    {topic}
-                  </span>
+                  <TopicTag key={topic} topic={topic} variant="light" />
                 ))}
               </div>
 
+              {/* Title */}
               <h1 className="text-4xl md:text-5xl font-display font-bold text-background mb-4">
                 {post.title}
               </h1>
 
+              {/* Intro/Summary */}
               <p className="text-lg text-background/70 mb-6">{post.excerpt}</p>
 
+              {/* Meta info */}
               <div className="flex flex-wrap items-center gap-6 text-background/70">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-10 w-10">
@@ -194,6 +197,47 @@ const BlogPost = () => {
           </div>
         </section>
 
+        {/* Key Takeaways */}
+        {post.keyTakeaways && post.keyTakeaways.length > 0 && (
+          <section className="py-12 bg-muted/40 border-t border-border">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+                  <Lightbulb className="h-6 w-6 text-accent" />
+                  Key Takeaways
+                </h2>
+                <ul className="space-y-3">
+                  {post.keyTakeaways.map((takeaway, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-3 text-foreground/80"
+                    >
+                      <span className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0" />
+                      <span className="text-sm leading-relaxed">{takeaway}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Topic Tags at bottom */}
+        <div className="bg-background py-8 border-t border-border">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <h3 className="text-sm font-display font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                Topics
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {post.topics.map((topic) => (
+                  <TopicTag key={topic} topic={topic} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Back to Blog */}
         <div className="bg-background pb-4">
           <div className="container mx-auto px-4">
@@ -209,12 +253,30 @@ const BlogPost = () => {
           </div>
         </div>
 
+        {/* Related Podcast Episodes */}
+        {relatedEpisodes.length > 0 && (
+          <section className="py-16 bg-muted/40 border-t border-border">
+            <div className="container mx-auto px-4">
+              <div className="max-w-6xl mx-auto">
+                <h2 className="text-2xl font-display font-bold text-foreground mb-8">
+                  Related Podcast Episodes
+                </h2>
+                <div className="space-y-5">
+                  {relatedEpisodes.map((ep) => (
+                    <EpisodeCard key={ep.number} {...ep} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Related Posts */}
         {relatedPosts.length > 0 && (
           <section className="py-16 bg-muted">
             <div className="container mx-auto px-4">
               <div className="max-w-6xl mx-auto">
-                <h2 className="text-3xl font-display font-bold text-foreground mb-8">
+                <h2 className="text-2xl font-display font-bold text-foreground mb-8">
                   Related Articles
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

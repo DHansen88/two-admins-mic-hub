@@ -1,14 +1,8 @@
-export const TOPICS = [
-  "Leadership",
-  "Career Growth",
-  "Technology",
-  "Admin Life",
-  "Communication",
-  "Wellness",
-  "Humor & Human Moments",
-] as const;
+import { SHARED_TOPICS, type SharedTopic } from "./topics";
 
-export type Topic = (typeof TOPICS)[number];
+/** @deprecated Use SharedTopic from topics.ts */
+export const TOPICS = SHARED_TOPICS;
+export type Topic = SharedTopic;
 
 export interface ShareableClip {
   title: string;
