@@ -10,7 +10,7 @@ const hosts = [
     name: "Diana Hansen",
     title: "Co-Founder & Co-Host",
     image: hostDmh,
-    bio: "With decades of experience in educational leadership and administration, Donna Marie brings a grounded, people-first perspective to every conversation. She believes the best leaders are lifelong learners who lead with empathy and clarity.",
+    bio: "With decades of experience in educational leadership and administration, Diana brings a grounded, people-first perspective to every conversation. She believes the best leaders are lifelong learners who lead with empathy and clarity.",
     tags: ["Leadership", "Career Growth", "Communication"],
     micBullets: [
       "Practical frameworks for leading with confidence",
