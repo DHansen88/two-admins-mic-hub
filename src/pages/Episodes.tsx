@@ -71,7 +71,7 @@ const Episodes = () => {
         {/* Hero Section */}
         <section className="relative py-20 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
           {/* Sound wave graphic */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.10 }}>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.13 }}>
             <svg
               viewBox="0 0 1200 200"
               className="w-full max-w-[1400px] h-auto"
