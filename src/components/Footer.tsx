@@ -1,5 +1,6 @@
 import { Mail, Instagram, Twitter, Linkedin } from "lucide-react";
 import { NavLink } from "./NavLink";
+import footerLogo from "@/assets/footer-logo.png";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   return <footer className="bg-slate text-background py-16">
@@ -9,11 +10,7 @@ const Footer = () => {
             {/* Brand */}
             <div className="md:col-span-2 space-y-4">
               <div className="flex items-center">
-                <div className="text-xl font-display font-bold">
-                  <span className="text-teal">Two Admins</span>
-                  <span className="text-coral"> & </span>
-                  
-                </div>
+                <img src={footerLogo} alt="Two Admins & a Mic" className="h-12 w-auto" />
               </div>
               <p className="text-background/70 leading-relaxed">
                 Empowering leaders through insightful conversations on administration, 
