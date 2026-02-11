@@ -434,7 +434,7 @@ const BlueprintSection = ({ externalRef }: { externalRef?: React.RefObject<HTMLD
     <section ref={(node: HTMLDivElement | null) => {
       (sectionRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
       if (externalRef) (externalRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-    }} className="py-20 md:py-28 bg-background">
+    }} className="py-10 md:py-14 bg-background">
       <div
         className={`container mx-auto px-4 transition-all duration-700 ease-out ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
