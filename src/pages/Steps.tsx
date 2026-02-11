@@ -294,35 +294,8 @@ const Steps = () => {
           </div>
         </section>
 
-        {/* ─── 2. WHY THIS MATTERS ─── */}
-        <section ref={learnMoreRef} className="py-20 md:py-28 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto space-y-8">
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground text-center">
-                Why This Matters
-              </h2>
-              <div className="w-16 h-1 bg-teal mx-auto rounded-full" />
-              <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
-                <p>
-                  Executive and administrative professionals are the backbone of
-                  every organization—but too often, leadership development stops
-                  at tactical training. STEPS honors the whole leader by
-                  offering a leadership framework built for real life, not just
-                  task mastery.
-                </p>
-                <p>
-                  Inspired by conversations between a renowned leadership expert
-                  and an executive assistant, STEPS was created to take the same
-                  leadership process taught to C-Suite leaders and make it
-                  accessible for those who make everything happen every day.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── 3. FEATURED VIDEO ─── */}
-        <section className="py-20 md:py-28 bg-muted">
+        {/* ─── 2. FEATURED VIDEO ─── */}
+        <section ref={learnMoreRef} className="py-20 md:py-28 bg-muted">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto space-y-10">
               <div className="text-center space-y-4">
@@ -350,6 +323,33 @@ const Steps = () => {
                 framework that helps administrative professionals uncover their
                 leadership voice and influence.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── 3. WHY THIS MATTERS ─── */}
+        <section className="py-20 md:py-28 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto space-y-8">
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground text-center">
+                Why This Matters
+              </h2>
+              <div className="w-16 h-1 bg-teal mx-auto rounded-full" />
+              <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+                <p>
+                  Executive and administrative professionals are the backbone of
+                  every organization—but too often, leadership development stops
+                  at tactical training. STEPS honors the whole leader by
+                  offering a leadership framework built for real life, not just
+                  task mastery.
+                </p>
+                <p>
+                  Inspired by conversations between a renowned leadership expert
+                  and an executive assistant, STEPS was created to take the same
+                  leadership process taught to C-Suite leaders and make it
+                  accessible for those who make everything happen every day.
+                </p>
+              </div>
             </div>
           </div>
         </section>
