@@ -264,7 +264,7 @@ const Steps = () => {
               <div className="relative w-full overflow-hidden rounded-xl shadow-2xl" style={{ paddingTop: "56.25%" }}>
                 <iframe
                   className="absolute inset-0 w-full h-full"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  src="https://www.youtube.com/embed/nkWiYix5m-w"
                   title="STEPS Leadership — Doug Conant"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
