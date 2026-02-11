@@ -167,7 +167,7 @@ const About = () => {
         </section>
 
         {/* Partnership Banner */}
-        <section className="py-20" style={{ background: 'linear-gradient(135deg, #F26D7D 0%, #E85D6F 30%, #D94F63 60%, #C44058 100%)' }}>
+        <section className="py-20" style={{ background: 'linear-gradient(135deg, #C44058 0%, #D94F63 30%, #E85D6F 60%, #F26D7D 100%)' }}>
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center space-y-6">
               <img src={conantLogo} alt="ConantLeadership" className="h-10 md:h-12 mx-auto" />
