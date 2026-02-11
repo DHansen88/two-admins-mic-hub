@@ -625,10 +625,6 @@ const Steps = () => {
               <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground text-center">
                 What is STEPS?
               </h2>
-              <div className="text-muted-foreground text-lg leading-relaxed text-justify space-y-4">
-                <p>Executive and administrative professionals are the backbone of every organization—but too often, leadership development stops at tactical training. STEPS honors the whole leader by offering a leadership framework built for real life, not just task mastery.</p>
-                <p>Inspired by conversations between a renowned leadership expert and an executive assistant, STEPS was created to take the same leadership process taught to C-Suite leaders and make it accessible for those who make everything happen every day.</p>
-              </div>
               <div className="max-w-4xl mx-auto">
                 <HoverVideo videoId="nkWiYix5m-w" title="STEPS Leadership — Doug Conant" />
               </div>
