@@ -170,7 +170,9 @@ const About = () => {
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center space-y-6">
-              <img src={conantLogo} alt="ConantLeadership" className="h-10 md:h-12 mx-auto" />
+              <a href="https://conantleadership.com/" target="_blank" rel="noopener noreferrer">
+                <img src={conantLogo} alt="ConantLeadership" className="h-10 md:h-12 mx-auto hover:opacity-80 transition-opacity" />
+              </a>
               <h2 className="text-4xl font-display font-bold" style={{ color: '#F26D7D' }}>
                 In Partnership With ConantLeadership
               </h2>
