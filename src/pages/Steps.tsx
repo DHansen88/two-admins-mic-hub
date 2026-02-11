@@ -123,14 +123,14 @@ const BenefitsCarousel = () => {
           {benefits.map(benefit => {
           const Icon = benefit.icon;
           return <div key={benefit.title} className="flex-[0_0_100%] sm:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0">
-                <div className="text-center space-y-3 p-6 rounded-xl bg-background/5 backdrop-blur-sm border border-background/10 hover:bg-background/10 transition-all duration-300 group cursor-default">
-                  <div className="w-14 h-14 rounded-full bg-teal/15 flex items-center justify-center mx-auto group-hover:bg-teal/25 transition-colors">
+                <div className="text-center space-y-3 p-6 rounded-xl bg-background/5 backdrop-blur-sm border border-background/10 hover:bg-background/10 transition-all duration-300 group cursor-default h-full flex flex-col items-center justify-start">
+                  <div className="w-14 h-14 rounded-full bg-teal/15 flex items-center justify-center mx-auto group-hover:bg-teal/25 transition-colors flex-shrink-0">
                     <Icon className="w-6 h-6 text-teal animate-[pulse_3s_ease-in-out_infinite] group-hover:animate-[bounce_0.4s_ease-in-out_1]" />
                   </div>
                   <h3 className="text-base font-display font-semibold text-background">
                     {benefit.title}
                   </h3>
-                  <p className="text-background/60 text-sm leading-relaxed">
+                  <p className="text-background/60 text-sm leading-relaxed flex-grow">
                     {benefit.description}
                   </p>
                 </div>
