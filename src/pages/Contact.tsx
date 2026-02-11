@@ -35,11 +35,11 @@ const Contact = () => {
             {/* Dotted wave trail path */}
             <svg
               className="absolute inset-0 w-full h-full opacity-[0.08]"
-              viewBox="0 0 1200 400"
+              viewBox="0 0 2300 400"
               preserveAspectRatio="none"
             >
               <path
-                d="M-100,200 C100,80 300,320 500,200 C700,80 900,320 1100,200 C1300,80 1500,320 1700,200"
+                d="M-200,200 C0,80 200,320 500,200 C800,80 1000,320 1300,200 C1600,80 1800,320 2100,200"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.5"

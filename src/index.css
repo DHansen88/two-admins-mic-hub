@@ -145,10 +145,10 @@ All colors MUST be HSL.
   left: 0;
   width: 64px;
   height: 64px;
-  offset-path: path("M-100,200 C100,80 300,320 500,200 C700,80 900,320 1100,200 C1300,80 1500,320 1700,200");
+  offset-path: path("M-200,200 C0,80 200,320 500,200 C800,80 1000,320 1300,200 C1600,80 1800,320 2100,200");
   offset-distance: 0%;
   offset-rotate: auto;
-  animation: airplaneFly 16s ease-in-out infinite;
+  animation: airplaneFly 24s linear infinite;
 }
 
 @keyframes airplaneFly {
@@ -161,17 +161,17 @@ All colors MUST be HSL.
 }
 
 .airplane-tilt {
-  animation: airplaneTilt 4s ease-in-out infinite;
+  animation: airplaneTilt 5s ease-in-out infinite;
 }
 
 @keyframes airplaneTilt {
-  0%, 100% { transform: rotate(-8deg); }
-  50% { transform: rotate(8deg); }
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
 }
 
 @media (max-width: 768px) {
   .airplane-fly {
-    animation-duration: 22s;
+    animation-duration: 30s;
     width: 48px;
     height: 48px;
   }
