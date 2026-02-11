@@ -160,7 +160,7 @@ const About = () => {
                 Two Admins. Two perspectives. One mic—built to elevate the
                 profession through practical leadership conversations.
               </p>
-              <p className="text-base md:text-lg text-background/80 leading-relaxed">
+              <p className="text-lg md:text-xl text-background/80 leading-relaxed">
                 Empowering leaders through authentic conversations on
                 administration, leadership, and professional growth.
               </p>
