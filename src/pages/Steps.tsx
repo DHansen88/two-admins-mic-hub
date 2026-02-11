@@ -1,8 +1,9 @@
-import { useRef } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import useEmblaCarousel from "embla-carousel-react";
 import {
   Eye,
   Search,
@@ -19,6 +20,8 @@ import {
   Target,
   Heart,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   Quote,
 } from "lucide-react";
@@ -149,6 +152,77 @@ const accentTextMap: Record<string, string> = {
   "sky-blue": "text-sky-blue",
   navy: "text-navy",
   coral: "text-coral",
+};
+
+const BenefitsCarousel = () => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    loop: true,
+    slidesToScroll: 1,
+  });
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(true);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    return () => { emblaApi.off("select", onSelect); };
+  }, [emblaApi, onSelect]);
+
+  return (
+    <div className="relative group/carousel">
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex gap-6">
+          {benefits.map((benefit) => {
+            const Icon = benefit.icon;
+            return (
+              <div
+                key={benefit.title}
+                className="flex-[0_0_100%] sm:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0"
+              >
+                <div className="text-center space-y-3 p-6 rounded-xl bg-background/5 backdrop-blur-sm border border-background/10 hover:bg-background/10 transition-all duration-300 group cursor-default">
+                  <div className="w-14 h-14 rounded-full bg-teal/15 flex items-center justify-center mx-auto group-hover:bg-teal/25 transition-colors">
+                    <Icon className="w-6 h-6 text-teal animate-[pulse_3s_ease-in-out_infinite] group-hover:animate-[bounce_0.4s_ease-in-out_1]" />
+                  </div>
+                  <h3 className="text-base font-display font-semibold text-background">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-background/60 text-sm leading-relaxed">
+                    {benefit.description}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Navigation arrows */}
+      <button
+        onClick={() => emblaApi?.scrollPrev()}
+        disabled={!canScrollPrev}
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 w-9 h-9 rounded-full bg-background/15 backdrop-blur-sm flex items-center justify-center text-background hover:bg-background/25 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        aria-label="Previous benefit"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
+      <button
+        onClick={() => emblaApi?.scrollNext()}
+        disabled={!canScrollNext}
+        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 w-9 h-9 rounded-full bg-background/15 backdrop-blur-sm flex items-center justify-center text-background hover:bg-background/25 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        aria-label="Next benefit"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
+    </div>
+  );
 };
 
 const Steps = () => {
@@ -334,33 +408,45 @@ const Steps = () => {
         </section>
 
         {/* ─── 5. KEY BENEFITS ─── */}
-        <section className="py-20 md:py-28 bg-gradient-to-br from-slate via-navy to-deep-blue">
+        <section className="py-14 md:py-20 bg-gradient-to-br from-slate via-navy to-deep-blue">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <div className="text-center space-y-4 mb-16">
+              <div className="text-center space-y-3 mb-10">
                 <h2 className="text-3xl md:text-4xl font-display font-bold text-background">
                   What You'll Gain
                 </h2>
                 <div className="w-16 h-1 bg-teal mx-auto rounded-full" />
               </div>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Carousel */}
+              <BenefitsCarousel />
+
+              <div className="text-center mt-8">
+                <button
+                  onClick={() => {
+                    const el = document.getElementById("benefits-expanded");
+                    if (el) {
+                      el.classList.toggle("hidden");
+                    }
+                  }}
+                  className="text-teal hover:text-teal/80 text-sm font-medium transition-colors inline-flex items-center gap-1.5"
+                >
+                  See all benefits
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Expanded view (hidden by default) */}
+              <div id="benefits-expanded" className="hidden mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {benefits.map((benefit) => {
                   const Icon = benefit.icon;
                   return (
-                    <div
-                      key={benefit.title}
-                      className="text-center space-y-4 group"
-                    >
-                      <div className="w-16 h-16 rounded-full bg-teal/15 flex items-center justify-center mx-auto group-hover:bg-teal/25 transition-colors">
-                        <Icon className="w-7 h-7 text-teal" />
+                    <div key={benefit.title} className="text-center space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-teal/15 flex items-center justify-center mx-auto">
+                        <Icon className="w-5 h-5 text-teal" />
                       </div>
-                      <h3 className="text-lg font-display font-semibold text-background">
-                        {benefit.title}
-                      </h3>
-                      <p className="text-background/65 text-sm leading-relaxed">
-                        {benefit.description}
-                      </p>
+                      <h3 className="text-base font-display font-semibold text-background">{benefit.title}</h3>
+                      <p className="text-background/65 text-sm leading-relaxed">{benefit.description}</p>
                     </div>
                   );
                 })}
