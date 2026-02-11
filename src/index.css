@@ -138,51 +138,48 @@ All colors MUST be HSL.
   }
 }
 
-/* Paper airplane orbit animation for Contact hero */
-.airplane-orbit {
+/* Paper airplane wave-flight animation for Contact hero */
+.airplane-fly {
   position: absolute;
-  top: calc(50% - 32px);
-  right: 5%;
-  width: 0;
-  height: 0;
-  animation: airplaneCircle 18s linear infinite;
+  top: 0;
+  left: 0;
+  width: 64px;
+  height: 64px;
+  offset-path: path("M-100,200 C100,80 300,320 500,200 C700,80 900,320 1100,200 C1300,80 1500,320 1700,200");
+  offset-distance: 0%;
+  offset-rotate: auto;
+  animation: airplaneFly 16s ease-in-out infinite;
 }
 
-@keyframes airplaneCircle {
-  0% { transform: rotate(0deg) translate(180px) rotate(0deg); }
-  100% { transform: rotate(360deg) translate(180px) rotate(-360deg); }
+@keyframes airplaneFly {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
 }
 
-.airplane-rotate {
-  animation: airplaneAngle 18s linear infinite;
+.airplane-tilt {
+  animation: airplaneTilt 4s ease-in-out infinite;
 }
 
-@keyframes airplaneAngle {
-  0% { transform: rotate(80deg); }
-  25% { transform: rotate(170deg); }
-  50% { transform: rotate(260deg); }
-  75% { transform: rotate(350deg); }
-  100% { transform: rotate(440deg); }
+@keyframes airplaneTilt {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
 }
 
 @media (max-width: 768px) {
-  .airplane-orbit {
-    animation-duration: 25s;
-    right: 15%;
+  .airplane-fly {
+    animation-duration: 22s;
+    width: 48px;
+    height: 48px;
   }
-  .airplane-orbit {
-    animation-name: airplaneCircleMobile;
-  }
-}
-
-@keyframes airplaneCircleMobile {
-  0% { transform: rotate(0deg) translate(90px) rotate(0deg); }
-  100% { transform: rotate(360deg) translate(90px) rotate(-360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .airplane-orbit,
-  .airplane-rotate {
+  .airplane-fly,
+  .airplane-tilt {
     animation: none;
   }
 }
