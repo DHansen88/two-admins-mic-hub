@@ -82,19 +82,161 @@ const testimonials = [{
   author: "Senior Administrative Partner",
   role: "Technology Sector"
 }];
-const accentColorMap: Record<string, string> = {
-  teal: "bg-teal",
-  "deep-blue": "bg-deep-blue",
-  "sky-blue": "bg-sky-blue",
-  navy: "bg-navy",
-  coral: "bg-coral"
-};
-const accentTextMap: Record<string, string> = {
-  teal: "text-teal",
-  "deep-blue": "text-deep-blue",
-  "sky-blue": "text-sky-blue",
-  navy: "text-navy",
-  coral: "text-coral"
+const stepAccents = [
+  { bg: "bg-light-green", text: "text-light-green", border: "border-light-green", bgLight: "bg-light-green/10", ring: "ring-light-green/30" },
+  { bg: "bg-teal", text: "text-teal", border: "border-teal", bgLight: "bg-teal/10", ring: "ring-teal/30" },
+  { bg: "bg-sky-blue", text: "text-sky-blue", border: "border-sky-blue", bgLight: "bg-sky-blue/10", ring: "ring-sky-blue/30" },
+  { bg: "bg-deep-blue", text: "text-deep-blue", border: "border-deep-blue", bgLight: "bg-deep-blue/10", ring: "ring-deep-blue/30" },
+  { bg: "bg-navy", text: "text-navy", border: "border-navy", bgLight: "bg-navy/10", ring: "ring-navy/30" },
+  { bg: "bg-coral", text: "text-coral", border: "border-coral", bgLight: "bg-coral/10", ring: "ring-coral/30" },
+];
+
+const BlueprintStepper = () => {
+  const [activeStep, setActiveStep] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState<number | null>(0);
+
+  const active = blueprintSteps[activeStep];
+  const ActiveIcon = active.icon;
+  const accent = stepAccents[activeStep];
+
+  return (
+    <>
+      {/* ── Desktop: stepper left + spotlight right ── */}
+      <div className="hidden md:grid md:grid-cols-[280px_1fr] gap-10 items-start">
+        {/* Left stepper */}
+        <nav className="relative" aria-label="Leadership steps">
+          {/* Vertical track */}
+          <div className="absolute left-[19px] top-4 bottom-4 w-[2px] bg-border" />
+          {/* Progress fill */}
+          <div
+            className="absolute left-[19px] top-4 w-[2px] bg-teal transition-all duration-500 ease-out rounded-full"
+            style={{ height: `${(activeStep / (blueprintSteps.length - 1)) * 100}%` }}
+          />
+
+          <ul className="relative space-y-1">
+            {blueprintSteps.map((step, i) => {
+              const isActive = i === activeStep;
+              const isPast = i < activeStep;
+              const color = stepAccents[i];
+              return (
+                <li key={step.number}>
+                  <button
+                    onClick={() => setActiveStep(i)}
+                    className={`
+                      w-full flex items-center gap-4 px-3 py-3 rounded-lg text-left transition-all duration-300
+                      ${isActive ? `${color.bgLight} ring-1 ${color.ring}` : "hover:bg-muted/60"}
+                    `}
+                  >
+                    {/* Step dot */}
+                    <span
+                      className={`
+                        relative z-10 w-[10px] h-[10px] rounded-full flex-shrink-0 transition-all duration-300
+                        ${isActive ? `${color.bg} scale-150 shadow-md` : isPast ? "bg-teal" : "bg-border"}
+                      `}
+                    />
+                    <span className="flex items-baseline gap-2">
+                      <span className={`text-xs font-mono font-bold transition-colors duration-300 ${isActive ? color.text : "text-muted-foreground/50"}`}>
+                        {step.number}
+                      </span>
+                      <span className={`text-sm font-display font-semibold transition-colors duration-300 ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+                        {step.title}
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        {/* Right spotlight */}
+        <div
+          key={activeStep}
+          className="rounded-2xl border border-border bg-muted/40 p-10 animate-fade-in min-h-[320px] flex flex-col justify-center"
+        >
+          <div className="flex items-center gap-4 mb-6">
+            <div className={`w-14 h-14 rounded-xl ${accent.bg} flex items-center justify-center`}>
+              <ActiveIcon className="w-7 h-7 text-background" />
+            </div>
+            <span className={`text-5xl font-display font-black ${accent.text} opacity-20`}>
+              {active.number}
+            </span>
+          </div>
+          <h3 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-3">
+            {active.title}
+          </h3>
+          <p className="text-muted-foreground text-lg leading-relaxed mb-4">
+            {active.description}
+          </p>
+          <p className="text-muted-foreground/70 text-base leading-relaxed mb-8">
+            {active.detail}
+          </p>
+          {/* Nav arrows */}
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={activeStep === 0}
+              onClick={() => setActiveStep(prev => prev - 1)}
+              className="gap-1"
+            >
+              <ChevronLeft className="w-4 h-4" /> Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={activeStep === blueprintSteps.length - 1}
+              onClick={() => setActiveStep(prev => prev + 1)}
+              className="gap-1"
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Mobile: accordion ── */}
+      <div className="md:hidden space-y-2">
+        {blueprintSteps.map((step, i) => {
+          const isOpen = mobileOpen === i;
+          const Icon = step.icon;
+          const color = stepAccents[i];
+          return (
+            <div key={step.number} className={`rounded-xl border transition-all duration-300 ${isOpen ? `${color.border} ${color.bgLight}` : "border-border"}`}>
+              <button
+                onClick={() => setMobileOpen(isOpen ? null : i)}
+                className="w-full flex items-center gap-3 px-4 py-4 text-left"
+              >
+                <span className={`w-8 h-8 rounded-lg ${color.bg} flex items-center justify-center flex-shrink-0`}>
+                  <Icon className="w-4 h-4 text-background" />
+                </span>
+                <span className="flex-1">
+                  <span className={`text-xs font-mono ${color.text}`}>{step.number}</span>
+                  <span className="ml-2 text-sm font-display font-semibold text-foreground">{step.title}</span>
+                </span>
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+              </button>
+              <div
+                className={`overflow-hidden transition-all duration-300 ease-out ${isOpen ? "max-h-48 opacity-100" : "max-h-0 opacity-0"}`}
+              >
+                <div className="px-4 pb-4 pl-[60px] space-y-2">
+                  <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+                  <p className="text-muted-foreground/60 text-xs leading-relaxed">{step.detail}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* CTA */}
+      <div className="text-center mt-12">
+        <Button asChild size="lg" className="bg-teal hover:bg-teal/90 text-background font-semibold px-8 py-6 text-base">
+          <a href="/contact">Explore the STEPS Program</a>
+        </Button>
+      </div>
+    </>
+  );
 };
 const BenefitsCarousel = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -239,29 +381,7 @@ const Steps = () => {
                 <div className="w-16 h-1 bg-coral mx-auto rounded-full" />
               </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {blueprintSteps.map(step => {
-                const Icon = step.icon;
-                return <Card key={step.number} className="group border-border hover:border-teal/40 transition-all duration-300 hover:shadow-lg overflow-hidden">
-                      <CardContent className="p-6 space-y-4">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-12 h-12 rounded-lg ${accentColorMap[step.accent]} flex items-center justify-center flex-shrink-0`}>
-                            <Icon className="w-6 h-6 text-background" />
-                          </div>
-                          <span className={`text-3xl font-display font-bold ${accentTextMap[step.accent]} opacity-30`}>
-                            {step.number}
-                          </span>
-                        </div>
-                        <h3 className="text-lg font-display font-bold text-foreground">
-                          {step.title}
-                        </h3>
-                        <p className="text-muted-foreground text-sm leading-relaxed">
-                          {step.description}
-                        </p>
-                      </CardContent>
-                    </Card>;
-              })}
-              </div>
+              <BlueprintStepper />
             </div>
           </div>
         </section>
