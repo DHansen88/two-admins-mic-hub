@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { Mic, Users, Target, Heart } from "lucide-react";
 import hostDmh from "@/assets/host-dmh.jpg";
 import hostMelinda from "@/assets/host-melinda.jpg";
+import conantLogo from "@/assets/conant-leadership-logo.png";
 const hosts = [{
   name: "Diana Hansen",
   title: "Co-Founder & Co-Host",
@@ -169,9 +170,7 @@ const About = () => {
         <section className="py-20 bg-gradient-to-r from-navy to-deep-blue">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center space-y-6">
-              <p className="text-sm font-semibold uppercase tracking-widest text-sky-blue/70">
-                Proud Partnership
-              </p>
+              <img src={conantLogo} alt="ConantLeadership" className="h-10 md:h-12 mx-auto" />
               <h2 className="text-4xl font-display font-bold text-background">
                 In Partnership With ConantLeadership
               </h2>
