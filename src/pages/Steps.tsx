@@ -597,9 +597,6 @@ const Steps = () => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
               <img src={stepsLogo} alt="STEPS – Success Through Empowering Professional Support" className="h-[4.375rem] md:h-[6.25rem] mx-auto" />
-              <p className="text-sm md:text-base font-semibold uppercase tracking-[0.2em] text-teal">
-                STEPS Leadership Program
-              </p>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-background leading-tight">
                 Step Into Your
                 <br />
