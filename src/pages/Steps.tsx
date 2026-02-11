@@ -524,7 +524,7 @@ const Steps = () => {
       <Header />
       <main className="pt-20">
         {/* ─── 1. HERO ─── */}
-        <section className="relative py-24 md:py-32 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
+        <section className="relative py-16 md:py-24 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
           {/* Subtle background motif — ascending steps */}
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="absolute bg-teal/[0.04] rounded-sm" style={{
