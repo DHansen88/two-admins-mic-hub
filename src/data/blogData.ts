@@ -535,6 +535,251 @@ You have more control over your balance than you might think. Start with one sma
     topics: ["Wellness", "Career Growth"],
     slug: "work-life-balance-myths",
     author: authors.marcus
+  },
+  {
+    title: "How to Streamline Your Office with the Right Tech Stack",
+    excerpt: "A practical breakdown of tools and platforms that can save administrators hours each week.",
+    content: `
+Technology should make your life easier, not harder. Yet many administrators find themselves overwhelmed by the sheer number of tools available. The key isn't having more tools—it's having the right ones that work together seamlessly.
+
+## Assess Before You Adopt
+
+Before adding any new tool, ask: What problem does this solve? If you can't articulate a clear pain point, you probably don't need it.
+
+## The Core Stack
+
+Every administrator needs reliable solutions in these categories:
+
+- **Communication**: A unified platform for chat, video, and async updates
+- **Project Management**: Task tracking with visibility for all stakeholders  
+- **Document Management**: Cloud-based storage with version control
+- **Scheduling**: Calendar tools that reduce back-and-forth
+
+## Integration Is Everything
+
+The best tools talk to each other. Look for platforms with robust integrations so data flows automatically instead of requiring manual transfers.
+
+## Training Matters
+
+A powerful tool is useless if no one knows how to use it. Invest time in proper onboarding and create quick-reference guides for your team.
+
+Start with one area that causes the most friction and optimize there first. Small wins build momentum for larger changes.
+    `,
+    date: "November 10, 2025",
+    readTime: "5 min read",
+    topics: ["Technology", "Admin Life"],
+    slug: "streamline-office-tech-stack",
+    author: authors.sarah,
+    keyTakeaways: [
+      "Assess pain points before adopting new tools",
+      "Focus on integration between platforms",
+      "Training is just as important as the tool itself",
+    ]
+  },
+  {
+    title: "Setting Boundaries Without Burning Bridges",
+    excerpt: "How to protect your time and energy while maintaining strong professional relationships.",
+    content: `
+Boundaries are essential for sustainable performance, but many administrators struggle to set them for fear of being seen as unhelpful or uncommitted.
+
+## Why Boundaries Matter
+
+Without boundaries, you become everyone's go-to for everything—and that's a fast track to burnout. Healthy boundaries actually make you more effective, not less.
+
+## The Art of Saying No
+
+Saying no doesn't have to be confrontational. Try these approaches:
+
+- "I'd love to help, but my plate is full this week. Can we revisit next Tuesday?"
+- "That's outside my area—let me connect you with the right person."
+- "I can take that on if we deprioritize something else. What should we move?"
+
+## Communicate Proactively
+
+Don't wait until you're overwhelmed. Let people know your availability and response times upfront. Most people respect boundaries when they're communicated clearly.
+
+## Protect Your Calendar
+
+Block focus time on your calendar and treat it as non-negotiable. If everything is urgent, nothing is.
+
+Remember: boundaries aren't walls. They're the framework that allows you to show up fully for the things that matter most.
+    `,
+    date: "November 5, 2025",
+    readTime: "4 min read",
+    topics: ["Wellness", "Communication"],
+    slug: "setting-boundaries-without-burning-bridges",
+    author: authors.marcus,
+    keyTakeaways: [
+      "Boundaries make you more effective, not less",
+      "Learn diplomatic ways to say no",
+      "Proactive communication prevents overwhelm",
+    ]
+  },
+  {
+    title: "From Admin to Strategic Partner: Elevating Your Role",
+    excerpt: "Practical steps to transition from task executor to trusted strategic advisor in your organization.",
+    content: `
+The most impactful administrators don't just manage tasks—they shape strategy. Making this shift requires intentional effort, but it's achievable for anyone willing to grow.
+
+## Think Beyond the Task
+
+When given a task, ask yourself: What's the bigger goal here? Understanding the "why" positions you to contribute ideas, not just execution.
+
+## Build Business Acumen
+
+Learn how your organization makes money, serves customers, and measures success. This context transforms how you approach every responsibility.
+
+## Speak the Language of Leadership
+
+Frame your contributions in terms of impact: time saved, costs reduced, risks mitigated, revenue enabled. Numbers tell stories that resonate with executives.
+
+## Be Proactive, Not Reactive
+
+Anticipate needs before they're expressed. When you consistently stay ahead of problems, leadership starts to see you as indispensable.
+
+## Seek Visibility
+
+Volunteer for cross-functional projects. Present at team meetings. Share insights in writing. The more people see your strategic thinking, the more opportunities come your way.
+
+The transition doesn't happen overnight, but every strategic conversation you initiate moves you closer to the role you want.
+    `,
+    date: "October 28, 2025",
+    readTime: "5 min read",
+    topics: ["Career Growth", "Leadership"],
+    slug: "admin-to-strategic-partner",
+    author: authors.sarah,
+    keyTakeaways: [
+      "Understand the 'why' behind every task",
+      "Frame contributions in terms of business impact",
+      "Proactively anticipate needs to build trust",
+    ]
+  },
+  {
+    title: "The Unwritten Rules of Office Culture",
+    excerpt: "Decoding the informal norms that shape every workplace—and how to navigate them gracefully.",
+    content: `
+Every office has two sets of rules: the ones in the employee handbook and the ones nobody tells you about. Understanding both is critical for success.
+
+## Reading the Room
+
+Pay attention to how decisions really get made. Is it in meetings, or in hallway conversations beforehand? Who are the informal influencers? How do people prefer to communicate?
+
+## Common Unwritten Rules
+
+- **Response time expectations**: Some teams expect instant replies; others are fine with a few hours
+- **Meeting culture**: Are people expected to speak up, or defer to seniority?
+- **Dress code nuances**: "Business casual" means different things in different offices
+- **After-hours expectations**: Is staying late rewarded, or is efficiency valued more?
+
+## When to Follow and When to Challenge
+
+Not all unwritten rules are healthy. If a norm is toxic—like never taking PTO or tolerating disrespect—you can challenge it respectfully by modeling better behavior.
+
+## For New Administrators
+
+Your first 90 days are about observation. Watch, listen, and ask trusted colleagues about the real dynamics before trying to change anything.
+
+Understanding office culture isn't about being political—it's about being effective. The best administrators navigate these waters with authenticity and awareness.
+    `,
+    date: "October 20, 2025",
+    readTime: "4 min read",
+    topics: ["Admin Life", "Team Building"],
+    slug: "unwritten-rules-office-culture",
+    author: authors.marcus,
+    keyTakeaways: [
+      "Observe informal dynamics before trying to change them",
+      "Understand how decisions really get made",
+      "Challenge toxic norms by modeling better behavior",
+    ]
+  },
+  {
+    title: "Mastering the Art of Meeting Management",
+    excerpt: "Turn unproductive meetings into focused, outcome-driven sessions that respect everyone's time.",
+    content: `
+Meetings are one of the biggest time investments in any organization—and one of the most frequently wasted. As an administrator, you're uniquely positioned to transform meeting culture.
+
+## Before the Meeting
+
+- **Question the need**: Could this be an email or async update instead?
+- **Set a clear agenda**: Share it 24 hours in advance with time allocations
+- **Invite intentionally**: Only include people who need to be there
+- **Prepare materials**: Distribute relevant documents ahead of time
+
+## During the Meeting
+
+- **Start on time**: Respect punctual attendees by not waiting for latecomers
+- **Assign roles**: Designate a facilitator, note-taker, and timekeeper
+- **Park tangents**: Use a "parking lot" for important but off-topic items
+- **Drive to decisions**: End each discussion point with a clear outcome
+
+## After the Meeting
+
+- **Send notes within 24 hours**: Include decisions, action items, owners, and deadlines
+- **Follow up on action items**: Don't let commitments fade into the void
+- **Solicit feedback**: Ask attendees what worked and what could improve
+
+## The 15-Minute Meeting
+
+Challenge yourself to default to 15-minute meetings instead of 30 or 60. You'll be amazed how much more focused conversations become when time is scarce.
+
+Great meeting management is a superpower. Master it, and you'll earn the gratitude of every colleague whose time you've saved.
+    `,
+    date: "October 15, 2025",
+    readTime: "5 min read",
+    topics: ["Admin Life", "Communication"],
+    slug: "mastering-meeting-management",
+    author: authors.sarah,
+    keyTakeaways: [
+      "Always question whether a meeting is necessary",
+      "Share agendas 24 hours in advance",
+      "Default to 15-minute meetings for focus",
+      "Follow up on action items to maintain accountability",
+    ]
+  },
+  {
+    title: "Humor in the Workplace: Why Laughter Is Serious Business",
+    excerpt: "How a healthy sense of humor can boost morale, build connections, and make work more enjoyable for everyone.",
+    content: `
+Laughter might be the most underrated leadership tool. Research consistently shows that humor in the workplace reduces stress, increases engagement, and strengthens team bonds.
+
+## The Science of Workplace Humor
+
+Studies from Harvard Business Review found that leaders who use humor are perceived as more competent and confident. Teams that laugh together report higher satisfaction and better collaboration.
+
+## Types of Workplace Humor
+
+- **Self-deprecating**: Shows humility and approachability (use sparingly)
+- **Observational**: Pointing out the absurdities we all recognize
+- **Celebratory**: Making wins fun and memorable
+- **Coping humor**: Finding lightness in stressful situations
+
+## The Lines You Shouldn't Cross
+
+Humor should never punch down, target individuals, or make anyone uncomfortable. If you're unsure whether a joke is appropriate, it probably isn't.
+
+## Building a Fun Culture
+
+- Start meetings with a lighthearted moment
+- Celebrate quirky team traditions
+- Share funny (appropriate) stories from your week
+- Don't take yourself too seriously
+
+## When Things Get Tough
+
+Some of the most powerful moments of humor come during challenging times. A well-timed laugh can release tension and remind everyone that we're all human.
+
+The goal isn't to become a comedian—it's to create an environment where people feel comfortable being themselves, including their funny selves.
+    `,
+    date: "October 10, 2025",
+    readTime: "4 min read",
+    topics: ["Humor & Human Moments", "Team Building"],
+    slug: "humor-in-the-workplace",
+    author: authors.marcus,
+    keyTakeaways: [
+      "Humor increases perceived competence and team satisfaction",
+      "Never use humor that punches down or targets individuals",
+      "Small lighthearted moments build stronger team bonds",
+    ]
   }
 ];
 
