@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import useEmblaCarousel from "embla-carousel-react";
 import { Eye, Search, BookOpen, PenTool, Hammer, RefreshCw, Award, Compass, Sparkles, TrendingUp, Users, Clock, Target, Heart, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Quote } from "lucide-react";
+import stepsLogo from "@/assets/steps-logo.webp";
 const blueprintSteps = [{
   number: "01",
   title: "Reach High — Envision",
@@ -438,6 +439,7 @@ const BlueprintSection = () => {
       >
         <div className="max-w-5xl mx-auto">
           <div className="text-center space-y-4 mb-16">
+            <img src={stepsLogo} alt="STEPS – Success Through Empowering Professional Support" className="h-12 md:h-16 mx-auto" />
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
               The Leadership Blueprint
             </h2>
