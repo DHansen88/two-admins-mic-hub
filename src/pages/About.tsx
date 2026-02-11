@@ -100,14 +100,14 @@ const About = () => {
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             {/* Microphone icon */}
             <svg
-              className="absolute right-[10%] top-1/2 -translate-y-1/2 w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96"
+              className="absolute right-[10%] top-1/2 w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96"
               viewBox="0 0 100 120"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              style={{ color: 'hsl(var(--teal))', opacity: 0.11 }}
+              style={{ color: 'hsl(var(--teal))', opacity: 0.11, transform: 'translateX(50%) translateY(-50%)' }}
             >
               {/* Pill-shaped mic head */}
               <path d="M35 45 L35 18 Q35 5 50 5 Q65 5 65 18 L65 45 Q65 52 50 52 Q35 52 35 45Z" />
@@ -134,14 +134,14 @@ const About = () => {
 
             {/* Mirrored microphone icon (left side) */}
             <svg
-              className="absolute left-[10%] top-1/2 -translate-y-1/2 w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96"
+              className="absolute left-[10%] top-1/2 w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96"
               viewBox="0 0 100 120"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              style={{ color: 'hsl(var(--teal))', opacity: 0.11, transform: 'translateY(-50%) scaleX(-1)' }}
+              style={{ color: 'hsl(var(--teal))', opacity: 0.11, transform: 'translateX(-50%) translateY(-50%) scaleX(-1)' }}
             >
               <path d="M35 45 L35 18 Q35 5 50 5 Q65 5 65 18 L65 45 Q65 52 50 52 Q35 52 35 45Z" />
               <line x1="37" y1="14" x2="63" y2="14" />
