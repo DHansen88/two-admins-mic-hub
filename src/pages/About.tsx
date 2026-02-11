@@ -156,7 +156,7 @@ const About = () => {
               <h2 className="text-3xl md:text-4xl font-display font-bold text-background pt-6">
                 About the Hosts
               </h2>
-              <p className="text-lg text-background/70 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-background/70 max-w-2xl mx-auto leading-relaxed">
                 Two Admins. Two perspectives. One mic—built to elevate the
                 profession through practical leadership conversations.
               </p>
