@@ -32,17 +32,14 @@ const Contact = () => {
         <section className="py-20 bg-gradient-to-br from-slate via-navy to-deep-blue relative overflow-hidden">
           {/* Paper airplane animation */}
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-            {/* Dotted trail path */}
+            {/* Dotted wave trail path */}
             <svg
               className="absolute inset-0 w-full h-full opacity-[0.08]"
-              viewBox="0 0 1000 400"
-              preserveAspectRatio="xMidYMid slice"
+              viewBox="0 0 1200 400"
+              preserveAspectRatio="none"
             >
-              <ellipse
-                cx="720"
-                cy="200"
-                rx="200"
-                ry="120"
+              <path
+                d="M-100,200 C100,80 300,320 500,200 C700,80 900,320 1100,200 C1300,80 1500,320 1700,200"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.5"
@@ -51,11 +48,9 @@ const Contact = () => {
               />
             </svg>
             {/* Animated airplane */}
-            <div className="absolute inset-0">
-              <div className="airplane-orbit opacity-[0.11]">
-                <div className="airplane-rotate">
-                  <PaperAirplaneSVG />
-                </div>
+            <div className="airplane-fly opacity-[0.11]">
+              <div className="airplane-tilt">
+                <PaperAirplaneSVG />
               </div>
             </div>
           </div>
