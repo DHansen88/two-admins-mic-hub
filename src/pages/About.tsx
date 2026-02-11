@@ -95,8 +95,63 @@ const About = () => {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="py-20 bg-gradient-to-br from-slate via-navy to-deep-blue">
-          <div className="container mx-auto px-4">
+        <section className="relative py-20 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
+          {/* Animated Microphone Background */}
+          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+            {/* Microphone icon */}
+            <svg
+              className="absolute right-[10%] top-1/2 -translate-y-1/2 w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ color: 'hsl(var(--teal))', opacity: 0.11 }}
+            >
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              <line x1="12" x2="12" y1="19" y2="22" />
+            </svg>
+
+            {/* Sound wave arcs radiating from mic */}
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className="absolute rounded-full border"
+                style={{
+                  right: `calc(10% + ${i === 1 ? '6rem' : i === 2 ? '6rem' : i === 3 ? '6rem' : i === 4 ? '6rem' : '6rem'})`,
+                  top: '50%',
+                  width: `${8 + i * 5}rem`,
+                  height: `${8 + i * 5}rem`,
+                  transform: 'translate(50%, -50%)',
+                  borderColor: 'hsl(var(--teal))',
+                  opacity: 0.11 - i * 0.015,
+                  animation: `aboutMicPulse ${6 + i * 1.5}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.8}s`,
+                }}
+              />
+            ))}
+
+            {/* Gentle horizontal wave lines from mic area */}
+            {[0, 1, 2].map((i) => (
+              <div
+                key={`wave-${i}`}
+                className="absolute h-px"
+                style={{
+                  right: '5%',
+                  top: `${40 + i * 10}%`,
+                  width: '30%',
+                  background: `linear-gradient(to left, transparent, hsl(var(--teal)) 40%, transparent)`,
+                  opacity: 0.08,
+                  animation: `aboutWaveSlide ${10 + i * 2}s ease-in-out infinite`,
+                  animationDelay: `${i * 1.2}s`,
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
               
               <h2 className="text-3xl font-display font-bold text-background pt-6 md:text-6xl">
