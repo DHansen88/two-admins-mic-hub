@@ -448,7 +448,7 @@ const BlueprintSection = ({ externalRef }: { externalRef?: React.RefObject<HTMLD
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
               The Leadership Blueprint
             </h2>
-            <p className="text-muted-foreground text-lg">The Six Core Steps</p>
+            <p className="text-muted-foreground text-2xl md:text-4xl">The <span className="font-bold">6</span> Core Steps</p>
             <div className="w-16 h-1 bg-coral mx-auto rounded-full" />
           </div>
           <BlueprintStepper />
