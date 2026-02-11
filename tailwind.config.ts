@@ -101,6 +101,23 @@ export default {
             opacity: "1"
           }
         },
+        "spin-drop": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(-30px) rotate(-360deg) scale(0.5)"
+          },
+          "60%": {
+            opacity: "1",
+            transform: "translateY(5px) rotate(0deg) scale(1.1)"
+          },
+          "80%": {
+            transform: "translateY(-3px) scale(0.95)"
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0) rotate(0deg) scale(1)"
+          }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
