@@ -1,6 +1,8 @@
 import { Button } from "./ui/button";
 import { Play } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroLogo from "@/assets/hero-logo.png";
+import { allEpisodes } from "@/data/episodeData";
 const Hero = () => {
   return <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate via-navy to-deep-blue">
       {/* Background pattern */}
@@ -74,9 +76,11 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8 py-[28px]">
-            <Button size="lg" className="bg-coral-accent hover:bg-coral-accent/90 text-lg px-8 py-6 group">
-              <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-              Latest Episode
+            <Button asChild size="lg" className="bg-coral-accent hover:bg-coral-accent/90 text-lg px-8 py-6 group">
+              <Link to={`/episodes/${allEpisodes[0]?.slug || ''}`}>
+                <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                Latest Episode
+              </Link>
             </Button>
             <Button size="lg" variant="outline" className="bg-transparent border-2 border-background text-background hover:bg-background hover:text-navy text-lg px-8 py-6">
               View All Episodes
