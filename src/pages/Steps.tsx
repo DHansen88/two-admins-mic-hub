@@ -507,6 +507,44 @@ const BenefitsCarousel = () => {
       </button>
     </div>;
 };
+const HoverVideo = ({ videoId, title }: { videoId: string; title: string }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      className="relative w-full overflow-hidden rounded-xl shadow-2xl cursor-pointer"
+      style={{ paddingTop: "56.25%" }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {isHovered ? (
+        <iframe
+          className="absolute inset-0 w-full h-full"
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      ) : (
+        <>
+          <img
+            className="absolute inset-0 w-full h-full object-cover"
+            src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
+            alt={title}
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-red-600 flex items-center justify-center shadow-lg">
+              <svg className="w-7 h-7 md:w-9 md:h-9 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 const Steps = () => {
   const learnMoreRef = useRef<HTMLDivElement>(null);
   const blueprintRef = useRef<HTMLDivElement>(null);
@@ -579,12 +617,8 @@ const Steps = () => {
                 </p>
               </div>
 
-              {/* Responsive Video Embed */}
-              <div className="relative w-full overflow-hidden rounded-xl shadow-2xl" style={{
-              paddingTop: "56.25%"
-            }}>
-                <iframe className="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/nkWiYix5m-w" title="STEPS Leadership — Doug Conant" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
-              </div>
+              {/* Responsive Video Embed — hover to play */}
+              <HoverVideo videoId="nkWiYix5m-w" title="STEPS Leadership — Doug Conant" />
 
               <div className="text-muted-foreground text-lg leading-relaxed w-full text-justify space-y-4">
                 <p>Executive and administrative professionals are the backbone of every organization—but too often, leadership development stops at tactical training. STEPS honors the whole leader by offering a leadership framework built for real life, not just task mastery.</p>
