@@ -288,9 +288,6 @@ Inspired by conversations between a renowned leadership expert and an executive 
                         <p className="text-muted-foreground text-sm leading-relaxed">
                           {step.description}
                         </p>
-                        <p className="text-muted-foreground/70 text-xs leading-relaxed">
-                          {step.detail}
-                        </p>
                       </CardContent>
                     </Card>;
               })}
