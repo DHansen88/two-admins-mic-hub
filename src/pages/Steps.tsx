@@ -441,6 +441,9 @@ const BlueprintSection = ({ externalRef }: { externalRef?: React.RefObject<HTMLD
         }`}
       >
         <div className="max-w-5xl mx-auto">
+          <div className="max-w-4xl mx-auto mb-12">
+            <HoverVideo videoId="nkWiYix5m-w" title="STEPS Leadership — Doug Conant" />
+          </div>
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
               The Leadership Blueprint
