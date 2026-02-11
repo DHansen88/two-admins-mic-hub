@@ -621,6 +621,21 @@ const Steps = () => {
         </section>
 
 
+        {/* ─── 2. ABOUT STEPS ─── */}
+        <section ref={learnMoreRef} className="py-14 md:py-20 bg-muted">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto space-y-6">
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground text-center">
+                What is STEPS?
+              </h2>
+              <div className="text-muted-foreground text-lg leading-relaxed text-justify space-y-4">
+                <p>Executive and administrative professionals are the backbone of every organization—but too often, leadership development stops at tactical training. STEPS honors the whole leader by offering a leadership framework built for real life, not just task mastery.</p>
+                <p>Inspired by conversations between a renowned leadership expert and an executive assistant, STEPS was created to take the same leadership process taught to C-Suite leaders and make it accessible for those who make everything happen every day.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ─── 3. THE 6-STEP BLUEPRINT ─── */}
         <BlueprintSection externalRef={blueprintRef} />
 
