@@ -14,6 +14,7 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkCompatProps>(
       <RouterNavLink
         ref={ref}
         to={to}
+        onClick={() => window.scrollTo(0, 0)}
         className={({ isActive, isPending }) =>
           cn(className, isActive && activeClassName, isPending && pendingClassName)
         }
