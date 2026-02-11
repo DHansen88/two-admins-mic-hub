@@ -101,28 +101,35 @@ const About = () => {
             {/* Microphone icon */}
             <svg
               className="absolute right-[10%] top-1/2 -translate-y-1/2 w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96"
-              viewBox="0 0 64 64"
+              viewBox="0 0 100 120"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.2"
+              strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
               style={{ color: 'hsl(var(--teal))', opacity: 0.11 }}
             >
-              {/* Round vintage mic head */}
-              <circle cx="32" cy="18" r="12" />
-              {/* Horizontal grill lines */}
-              <line x1="22" y1="14" x2="42" y2="14" />
-              <line x1="21" y1="18" x2="43" y2="18" />
-              <line x1="22" y1="22" x2="42" y2="22" />
-              {/* Neck connector */}
-              <path d="M28 30 L28 34 Q28 36 30 36 L34 36 Q36 36 36 34 L36 30" />
-              {/* Stand pole */}
-              <line x1="32" y1="36" x2="32" y2="54" />
-              {/* Tripod base */}
-              <path d="M32 54 L22 60" />
-              <path d="M32 54 L42 60" />
-              <path d="M32 54 L32 62" />
+              {/* Pill-shaped mic head */}
+              <path d="M35 45 L35 18 Q35 5 50 5 Q65 5 65 18 L65 45 Q65 52 50 52 Q35 52 35 45Z" />
+              {/* Horizontal grill lines across head */}
+              <line x1="37" y1="14" x2="63" y2="14" />
+              <line x1="36" y1="19" x2="64" y2="19" />
+              <line x1="36" y1="24" x2="64" y2="24" />
+              <line x1="36" y1="29" x2="64" y2="29" />
+              <line x1="36" y1="34" x2="64" y2="34" />
+              <line x1="36" y1="39" x2="64" y2="39" />
+              <line x1="37" y1="44" x2="63" y2="44" />
+              {/* Side mounting bracket */}
+              <path d="M35 35 Q30 35 30 40 L30 48 Q30 53 35 53" />
+              <circle cx="30" cy="44" r="2" />
+              {/* Neck / yoke connector */}
+              <path d="M44 52 L44 58 Q44 62 50 62 Q56 62 56 58 L56 52" />
+              {/* Stand shaft */}
+              <line x1="50" y1="62" x2="50" y2="98" />
+              {/* Cable wrapping around stand */}
+              <path d="M56 58 Q62 64 56 70 Q50 76 56 82 Q60 86 54 92" />
+              {/* Base */}
+              <ellipse cx="50" cy="100" rx="16" ry="4" />
             </svg>
 
             {/* Sound wave arcs radiating from mic */}
