@@ -4,49 +4,59 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import useEmblaCarousel from "embla-carousel-react";
-import { Eye, Search, BookOpen, PenTool, Hammer, RefreshCw, Award, Compass, Sparkles, TrendingUp, Users, Clock, Target, Heart, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Quote } from "lucide-react";
+import { Eye, Search, BookOpen, PenTool, Hammer, RefreshCw, Award, Compass, Sparkles, TrendingUp, Users, Clock, Target, Heart, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Quote, ArrowRight } from "lucide-react";
+
+const stepColors = [
+  { bg: "bg-light-green", text: "text-light-green", border: "border-light-green", ring: "ring-light-green" },
+  { bg: "bg-teal", text: "text-teal", border: "border-teal", ring: "ring-teal" },
+  { bg: "bg-sky-blue", text: "text-sky-blue", border: "border-sky-blue", ring: "ring-sky-blue" },
+  { bg: "bg-deep-blue", text: "text-deep-blue", border: "border-deep-blue", ring: "ring-deep-blue" },
+  { bg: "bg-navy", text: "text-navy", border: "border-navy", ring: "ring-navy" },
+  { bg: "bg-coral", text: "text-coral", border: "border-coral", ring: "ring-coral" },
+];
+
 const blueprintSteps = [{
   number: "01",
   title: "Reach High — Envision",
   description: "Envision what leadership success looks like for you and articulate your purpose.",
   detail: "Define your aspirations and create a compelling vision that drives your daily leadership choices.",
   icon: Eye,
-  accent: "teal"
+  colorIdx: 0
 }, {
   number: "02",
   title: "Dig Deep — Reflect",
   description: "Reflect on what shapes your leadership—your experiences, values, and strengths.",
   detail: "Examine the moments, mentors, and values that have shaped who you are as a professional and leader.",
   icon: Search,
-  accent: "deep-blue"
+  colorIdx: 1
 }, {
   number: "03",
   title: "Prepare — Study",
   description: "Study frameworks and leadership insights that fill the gaps and expand your perspective.",
   detail: "Engage with proven leadership models and research to build a well-rounded foundation for growth.",
   icon: BookOpen,
-  accent: "sky-blue"
+  colorIdx: 2
 }, {
   number: "04",
   title: "Design — Plan",
   description: "Design your personal Leadership Model based on purpose and beliefs.",
   detail: "Craft a personalized leadership blueprint that reflects your unique strengths and professional context.",
   icon: PenTool,
-  accent: "teal"
+  colorIdx: 3
 }, {
   number: "05",
   title: "Build — Practice",
   description: "Build real, actionable habits that bring your leadership to life.",
   detail: "Translate your leadership model into daily practices, routines, and touchpoints that make an impact.",
   icon: Hammer,
-  accent: "navy"
+  colorIdx: 4
 }, {
   number: "06",
   title: "Reinforce — Improve",
   description: "Reinforce and refine your approach, aligning it with your organization's needs.",
   detail: "Continuously evaluate and evolve your leadership, staying aligned with both personal growth and organizational goals.",
   icon: RefreshCw,
-  accent: "coral"
+  colorIdx: 5
 }];
 const benefits = [{
   icon: Compass,
@@ -96,6 +106,182 @@ const accentTextMap: Record<string, string> = {
   navy: "text-navy",
   coral: "text-coral"
 };
+const BlueprintStepper = () => {
+  const [activeStep, setActiveStep] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState<number | null>(0);
+
+  const active = blueprintSteps[activeStep];
+  const ActiveIcon = active.icon;
+  const colors = stepColors[active.colorIdx];
+
+  return (
+    <section className="py-20 md:py-28 bg-background">
+      <div className="container mx-auto px-4">
+        <div className="max-w-5xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center space-y-4 mb-14">
+            {/* Ascending steps motif */}
+            <div className="flex items-end justify-center gap-1 mb-4" aria-hidden="true">
+              {stepColors.map((c, i) => (
+                <div
+                  key={i}
+                  className={`${c.bg} rounded-sm transition-all duration-300 ${i === activeStep ? 'opacity-100' : 'opacity-40'}`}
+                  style={{ width: 12, height: 10 + i * 6 }}
+                />
+              ))}
+            </div>
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
+              The Leadership Blueprint
+            </h2>
+            <p className="text-muted-foreground text-lg">The Six Core Steps</p>
+          </div>
+
+          {/* Progress bar */}
+          <div className="hidden md:flex items-center gap-0 max-w-2xl mx-auto mb-14">
+            {blueprintSteps.map((step, i) => (
+              <div key={i} className="flex items-center flex-1 last:flex-initial">
+                <button
+                  onClick={() => setActiveStep(i)}
+                  className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 flex-shrink-0
+                    ${i === activeStep
+                      ? `${stepColors[i].bg} text-background ring-4 ${stepColors[i].ring}/20 scale-110`
+                      : i < activeStep
+                        ? `${stepColors[i].bg} text-background opacity-70`
+                        : 'bg-muted text-muted-foreground'
+                    }`}
+                >
+                  {step.number}
+                </button>
+                {i < blueprintSteps.length - 1 && (
+                  <div className="flex-1 h-0.5 mx-1">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        i < activeStep ? stepColors[i].bg : 'bg-border'
+                      }`}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: Timeline left + Spotlight right */}
+          <div className="hidden md:grid md:grid-cols-[220px_1fr] gap-8 items-start">
+            {/* Left - vertical step list */}
+            <div className="space-y-1">
+              {blueprintSteps.map((step, i) => {
+                const sc = stepColors[step.colorIdx];
+                const isActive = i === activeStep;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setActiveStep(i)}
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-300 flex items-center gap-3 group
+                      ${isActive
+                        ? `bg-muted border-l-4 ${sc.border}`
+                        : 'hover:bg-muted/50 border-l-4 border-transparent'
+                      }`}
+                  >
+                    <span className={`text-xs font-bold font-display transition-colors duration-300 ${isActive ? sc.text : 'text-muted-foreground'}`}>
+                      {step.number}
+                    </span>
+                    <span className={`text-sm font-medium transition-colors duration-300 ${isActive ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'}`}>
+                      {step.title.split(' — ')[0]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Right - spotlight content */}
+            <div
+              key={activeStep}
+              className="bg-muted rounded-2xl p-10 animate-fade-in relative overflow-hidden"
+            >
+              {/* Subtle color accent bar */}
+              <div className={`absolute top-0 left-0 w-full h-1 ${colors.bg}`} />
+
+              <div className="flex items-start gap-6">
+                <div className={`w-16 h-16 rounded-xl ${colors.bg} flex items-center justify-center flex-shrink-0`}>
+                  <ActiveIcon className="w-8 h-8 text-background" />
+                </div>
+                <div className="space-y-3 flex-1">
+                  <div className="flex items-center gap-3">
+                    <span className={`text-4xl font-display font-bold ${colors.text} opacity-30`}>{active.number}</span>
+                    <h3 className="text-xl font-display font-bold text-foreground">{active.title}</h3>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">{active.description}</p>
+                  <p className="text-muted-foreground/80 text-sm leading-relaxed">{active.detail}</p>
+                </div>
+              </div>
+
+              {/* Step navigation */}
+              <div className="flex justify-between mt-8 pt-6 border-t border-border">
+                <button
+                  onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
+                  disabled={activeStep === 0}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Previous
+                </button>
+                <button
+                  onClick={() => setActiveStep(Math.min(blueprintSteps.length - 1, activeStep + 1))}
+                  disabled={activeStep === blueprintSteps.length - 1}
+                  className={`text-sm font-medium ${colors.text} hover:opacity-80 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1`}
+                >
+                  Next <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile: Accordion steps */}
+          <div className="md:hidden space-y-2">
+            {blueprintSteps.map((step, i) => {
+              const Icon = step.icon;
+              const sc = stepColors[step.colorIdx];
+              const isOpen = mobileOpen === i;
+              return (
+                <div key={i} className={`rounded-xl border transition-all duration-300 ${isOpen ? `${sc.border} border-2` : 'border-border'}`}>
+                  <button
+                    onClick={() => setMobileOpen(isOpen ? null : i)}
+                    className="w-full flex items-center gap-3 p-4 text-left"
+                  >
+                    <div className={`w-10 h-10 rounded-lg ${sc.bg} flex items-center justify-center flex-shrink-0`}>
+                      <Icon className="w-5 h-5 text-background" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-xs font-bold ${sc.text}`}>{step.number}</span>
+                      <p className="text-sm font-display font-semibold text-foreground truncate">{step.title}</p>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="px-4 pb-4 space-y-2">
+                      <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+                      <p className="text-muted-foreground/70 text-xs leading-relaxed">{step.detail}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-12">
+            <Button asChild className="bg-teal hover:bg-teal/90 text-background font-semibold px-8">
+              <a href="#benefits">
+                Explore the STEPS Program
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </a>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const BenefitsCarousel = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
@@ -252,46 +438,8 @@ const Steps = () => {
           </div>
         </section>
 
-        {/* ─── 4. THE 6-STEP BLUEPRINT ─── */}
-        <section className="py-20 md:py-28 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center space-y-4 mb-16">
-                <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-                  The Leadership Blueprint
-                </h2>
-                <p className="text-muted-foreground text-lg">
-                  The Six Core Steps
-                </p>
-                <div className="w-16 h-1 bg-coral mx-auto rounded-full" />
-              </div>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {blueprintSteps.map(step => {
-                const Icon = step.icon;
-                return <Card key={step.number} className="group border-border hover:border-teal/40 transition-all duration-300 hover:shadow-lg overflow-hidden">
-                      <CardContent className="p-6 space-y-4">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-12 h-12 rounded-lg ${accentColorMap[step.accent]} flex items-center justify-center flex-shrink-0`}>
-                            <Icon className="w-6 h-6 text-background" />
-                          </div>
-                          <span className={`text-3xl font-display font-bold ${accentTextMap[step.accent]} opacity-30`}>
-                            {step.number}
-                          </span>
-                        </div>
-                        <h3 className="text-lg font-display font-bold text-foreground">
-                          {step.title}
-                        </h3>
-                        <p className="text-muted-foreground text-sm leading-relaxed">
-                          {step.description}
-                        </p>
-                      </CardContent>
-                    </Card>;
-              })}
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* ─── 4. THE 6-STEP BLUEPRINT (Interactive Stepper) ─── */}
+        <BlueprintStepper />
 
         {/* ─── 5. KEY BENEFITS ─── */}
         <section className="py-14 md:py-20 bg-gradient-to-br from-slate via-navy to-deep-blue">
