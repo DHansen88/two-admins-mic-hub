@@ -101,17 +101,28 @@ const About = () => {
             {/* Microphone icon */}
             <svg
               className="absolute right-[10%] top-1/2 -translate-y-1/2 w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96"
-              viewBox="0 0 24 24"
+              viewBox="0 0 64 64"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1"
+              strokeWidth="1.2"
               strokeLinecap="round"
               strokeLinejoin="round"
               style={{ color: 'hsl(var(--teal))', opacity: 0.11 }}
             >
-              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-              <line x1="12" x2="12" y1="19" y2="22" />
+              {/* Round vintage mic head */}
+              <circle cx="32" cy="18" r="12" />
+              {/* Horizontal grill lines */}
+              <line x1="22" y1="14" x2="42" y2="14" />
+              <line x1="21" y1="18" x2="43" y2="18" />
+              <line x1="22" y1="22" x2="42" y2="22" />
+              {/* Neck connector */}
+              <path d="M28 30 L28 34 Q28 36 30 36 L34 36 Q36 36 36 34 L36 30" />
+              {/* Stand pole */}
+              <line x1="32" y1="36" x2="32" y2="54" />
+              {/* Tripod base */}
+              <path d="M32 54 L22 60" />
+              <path d="M32 54 L42 60" />
+              <path d="M32 54 L32 62" />
             </svg>
 
             {/* Sound wave arcs radiating from mic */}
