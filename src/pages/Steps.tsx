@@ -567,7 +567,7 @@ const Steps = () => {
         </section>
 
         {/* ─── 2. FEATURED VIDEO ─── */}
-        <section ref={learnMoreRef} className="py-20 md:py-28 bg-muted">
+        <section ref={learnMoreRef} className="py-14 md:py-20 bg-muted">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto space-y-10">
               <div className="text-center space-y-4">
