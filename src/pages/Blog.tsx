@@ -56,10 +56,7 @@ const Blog = () => {
           }} />)}
            </div>
 
-           {/* Blog banner image */}
-          <div className="flex justify-center pt-10 pb-0 relative z-10">
-            <img src={blogBanner} alt="Two Admins & a Blog" className="w-72 md:w-96 lg:w-[480px] h-auto drop-shadow-2xl" />
-          </div>
+
 
           {/* Text content overlapping bottom of image */}
           <div className="container mx-auto px-4 relative z-10 pb-16 -mt-4">
