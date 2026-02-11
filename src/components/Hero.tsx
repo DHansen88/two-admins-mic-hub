@@ -82,8 +82,8 @@ const Hero = () => {
                 Latest Episode
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="bg-transparent border-2 border-background text-background hover:bg-background hover:text-navy text-lg px-8 py-6">
-              View All Episodes
+            <Button asChild size="lg" variant="outline" className="bg-transparent border-2 border-background text-background hover:bg-background hover:text-navy text-lg px-8 py-6">
+              <Link to="/episodes">View All Episodes</Link>
             </Button>
           </div>
 
