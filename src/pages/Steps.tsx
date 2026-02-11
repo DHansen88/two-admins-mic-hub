@@ -93,55 +93,85 @@ const stepAccents = [
 
 const BlueprintStepper = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [mobileOpen, setMobileOpen] = useState<number | null>(0);
+  const [visited, setVisited] = useState<Set<number>>(new Set([0]));
+
+  const handleStepChange = (i: number) => {
+    setActiveStep(i);
+    setVisited(prev => new Set(prev).add(i));
+  };
 
   const active = blueprintSteps[activeStep];
   const ActiveIcon = active.icon;
   const accent = stepAccents[activeStep];
+  const isComplete = visited.size === blueprintSteps.length;
+
+  /* Completion meter gradient stops */
+  const meterColors = ["#9CCC66", "#4ABC94", "#49C2F2", "#0086BF", "#00628C", "#F26D7D"];
 
   return (
     <>
-      {/* ── Desktop: stepper left + spotlight right ── */}
-      <div className="hidden md:grid md:grid-cols-[280px_1fr] gap-10 items-start">
-        {/* Left stepper */}
-        <nav className="relative" aria-label="Leadership steps">
-          {/* Vertical track */}
-          <div className="absolute left-[19px] top-4 bottom-4 w-[2px] bg-border" />
-          {/* Progress fill */}
+      {/* ══════════ DESKTOP ══════════ */}
+      <div className="hidden md:grid md:grid-cols-[260px_1fr] gap-8 items-start">
+
+        {/* ── Left: Sidebar Stepper ── */}
+        <nav className="relative py-2" aria-label="Leadership steps">
+          {/* Vertical track background */}
+          <div className="absolute left-[18px] top-6 bottom-6 w-[3px] rounded-full bg-border/60" />
+          {/* Vertical track fill */}
           <div
-            className="absolute left-[19px] top-4 w-[2px] bg-teal transition-all duration-500 ease-out rounded-full"
-            style={{ height: `${(activeStep / (blueprintSteps.length - 1)) * 100}%` }}
+            className="absolute left-[18px] top-6 w-[3px] rounded-full transition-all duration-500 ease-out"
+            style={{
+              height: `${(activeStep / (blueprintSteps.length - 1)) * 100}%`,
+              background: `linear-gradient(to bottom, ${meterColors.slice(0, activeStep + 1).join(", ")})`
+            }}
           />
 
-          <ul className="relative space-y-1">
+          <ul className="relative space-y-0">
             {blueprintSteps.map((step, i) => {
               const isActive = i === activeStep;
-              const isPast = i < activeStep;
+              const isPast = visited.has(i) && i !== activeStep;
               const color = stepAccents[i];
+              const StepIcon = step.icon;
               return (
                 <li key={step.number}>
                   <button
-                    onClick={() => setActiveStep(i)}
+                    onClick={() => handleStepChange(i)}
                     className={`
-                      w-full flex items-center gap-4 px-3 py-3 rounded-lg text-left transition-all duration-300
-                      ${isActive ? `${color.bgLight} ring-1 ${color.ring}` : "hover:bg-muted/60"}
+                      w-full flex items-center gap-4 pl-2 pr-3 py-4 rounded-xl text-left
+                      transition-all duration-300 ease-out group
+                      ${isActive
+                        ? `${color.bgLight} ring-1 ${color.ring} shadow-sm scale-[1.03]`
+                        : "hover:bg-muted/50 scale-100"
+                      }
                     `}
                   >
-                    {/* Step dot */}
+                    {/* Step marker */}
                     <span
                       className={`
-                        relative z-10 w-[10px] h-[10px] rounded-full flex-shrink-0 transition-all duration-300
-                        ${isActive ? `${color.bg} scale-150 shadow-md` : isPast ? "bg-teal" : "bg-border"}
+                        relative z-10 w-[14px] h-[14px] rounded-full flex-shrink-0
+                        transition-all duration-300 ease-out
+                        ${isActive
+                          ? `${color.bg} scale-[1.6] shadow-lg ring-4 ${color.ring}`
+                          : isPast
+                            ? `${color.bg} opacity-70`
+                            : "bg-border"
+                        }
                       `}
                     />
-                    <span className="flex items-baseline gap-2">
-                      <span className={`text-xs font-mono font-bold transition-colors duration-300 ${isActive ? color.text : "text-muted-foreground/50"}`}>
-                        {step.number}
+
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <span className={`text-[10px] font-mono font-bold uppercase tracking-wider transition-colors duration-300 ${isActive ? color.text : "text-muted-foreground/40"}`}>
+                        Step {step.number}
                       </span>
-                      <span className={`text-sm font-display font-semibold transition-colors duration-300 ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+                      <span className={`text-sm font-display font-semibold leading-tight transition-colors duration-300 ${isActive ? "text-foreground" : isPast ? "text-muted-foreground/80" : "text-muted-foreground/60"}`}>
                         {step.title}
                       </span>
-                    </span>
+                    </div>
+
+                    {/* Active step icon */}
+                    {isActive && (
+                      <StepIcon className={`w-4 h-4 ml-auto flex-shrink-0 ${color.text} opacity-60`} />
+                    )}
                   </button>
                 </li>
               );
@@ -149,90 +179,235 @@ const BlueprintStepper = () => {
           </ul>
         </nav>
 
-        {/* Right spotlight */}
-        <div
-          key={activeStep}
-          className="rounded-2xl border border-border bg-muted/40 p-10 animate-fade-in min-h-[320px] flex flex-col justify-center"
-        >
-          <div className="flex items-center gap-4 mb-6">
-            <div className={`w-14 h-14 rounded-xl ${accent.bg} flex items-center justify-center`}>
-              <ActiveIcon className="w-7 h-7 text-background" />
+        {/* ── Right: Completion Meter + Spotlight ── */}
+        <div className="space-y-5">
+
+          {/* Blueprint Completion Meter */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground/60">
+                Leadership Journey Progress
+              </span>
+              {isComplete && (
+                <span className="text-xs font-semibold text-teal flex items-center gap-1 animate-fade-in">
+                  <Award className="w-3.5 h-3.5" />
+                  Blueprint Complete
+                </span>
+              )}
             </div>
-            <span className={`text-5xl font-display font-black ${accent.text} opacity-20`}>
+            <div className="relative h-[6px] bg-border/40 rounded-full overflow-hidden">
+              {/* Fill */}
+              <div
+                className={`absolute inset-y-0 left-0 rounded-full transition-all duration-500 ease-out ${isComplete ? "animate-[pulse_2s_ease-in-out_2]" : ""}`}
+                style={{
+                  width: `${((activeStep + 1) / blueprintSteps.length) * 100}%`,
+                  background: `linear-gradient(90deg, ${meterColors.slice(0, activeStep + 1).join(", ")})`
+                }}
+              />
+              {/* Markers */}
+              {blueprintSteps.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleStepChange(i)}
+                  className={`
+                    absolute top-1/2 -translate-y-1/2 w-[10px] h-[10px] rounded-full border-2 border-background
+                    transition-all duration-300
+                    ${visited.has(i) ? "" : "bg-border/60"}
+                  `}
+                  style={{
+                    left: `calc(${((i + 0.5) / blueprintSteps.length) * 100}% - 5px)`,
+                    backgroundColor: visited.has(i) ? meterColors[i] : undefined
+                  }}
+                  aria-label={`Go to step ${i + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Spotlight Panel */}
+          <div
+            key={activeStep}
+            className="relative rounded-2xl border border-border bg-muted/30 p-8 md:p-10 min-h-[340px] flex flex-col justify-center overflow-hidden
+              animate-fade-in shadow-sm hover:shadow-md transition-shadow duration-300"
+          >
+            {/* Watermark step number */}
+            <span
+              className={`absolute -right-4 -top-6 text-[10rem] font-display font-black leading-none pointer-events-none select-none ${accent.text} opacity-[0.04]`}
+            >
               {active.number}
             </span>
-          </div>
-          <h3 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-3">
-            {active.title}
-          </h3>
-          <p className="text-muted-foreground text-lg leading-relaxed mb-4">
-            {active.description}
-          </p>
-          <p className="text-muted-foreground/70 text-base leading-relaxed mb-8">
-            {active.detail}
-          </p>
-          {/* Nav arrows */}
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={activeStep === 0}
-              onClick={() => setActiveStep(prev => prev - 1)}
-              className="gap-1"
-            >
-              <ChevronLeft className="w-4 h-4" /> Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={activeStep === blueprintSteps.length - 1}
-              onClick={() => setActiveStep(prev => prev + 1)}
-              className="gap-1"
-            >
-              Next <ChevronRight className="w-4 h-4" />
-            </Button>
+
+            <div className="relative z-10">
+              {/* Icon + step label */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className={`w-14 h-14 rounded-xl ${accent.bg} flex items-center justify-center shadow-md transition-transform duration-300`}>
+                  <ActiveIcon className="w-7 h-7 text-background" />
+                </div>
+                <span className={`text-[10px] font-mono font-bold uppercase tracking-widest ${accent.text}`}>
+                  Step {active.number} of 06
+                </span>
+              </div>
+
+              {/* Title */}
+              <h3 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-4">
+                {active.title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-muted-foreground text-lg leading-relaxed mb-3">
+                {active.description}
+              </p>
+
+              {/* Detail */}
+              <p className="text-muted-foreground/70 text-base leading-relaxed mb-4">
+                {active.detail}
+              </p>
+
+              {/* Reflection prompt */}
+              <p className={`italic text-sm ${accent.text} opacity-70 mb-8`}>
+                {activeStep === 0 && "What does leadership success look like in your world?"}
+                {activeStep === 1 && "What moments have shaped the leader you are today?"}
+                {activeStep === 2 && "Where are the gaps in your leadership knowledge?"}
+                {activeStep === 3 && "What principles will anchor your leadership model?"}
+                {activeStep === 4 && "What one habit would transform your daily leadership?"}
+                {activeStep === 5 && "How will you measure your leadership growth?"}
+              </p>
+
+              {/* Controls */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={activeStep === 0}
+                  onClick={() => handleStepChange(activeStep - 1)}
+                  className="gap-1"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={activeStep === blueprintSteps.length - 1}
+                  onClick={() => handleStepChange(activeStep + 1)}
+                  className="gap-1"
+                >
+                  Next <ChevronRight className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`ml-auto ${accent.text} hover:${accent.bgLight} gap-1 text-xs`}
+                  asChild
+                >
+                  <a href="/contact">
+                    Apply This Step <ExternalLink className="w-3 h-3" />
+                  </a>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── Mobile: accordion ── */}
-      <div className="md:hidden space-y-2">
-        {blueprintSteps.map((step, i) => {
-          const isOpen = mobileOpen === i;
-          const Icon = step.icon;
-          const color = stepAccents[i];
-          return (
-            <div key={step.number} className={`rounded-xl border transition-all duration-300 ${isOpen ? `${color.border} ${color.bgLight}` : "border-border"}`}>
+      {/* ══════════ MOBILE ══════════ */}
+      <div className="md:hidden space-y-5">
+
+        {/* Mobile: Horizontal step tracker */}
+        <div className="space-y-2">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground/60 block text-center">
+            Leadership Journey Progress
+          </span>
+          <div className="flex items-center gap-1 px-2">
+            {blueprintSteps.map((_, i) => (
               <button
-                onClick={() => setMobileOpen(isOpen ? null : i)}
-                className="w-full flex items-center gap-3 px-4 py-4 text-left"
+                key={i}
+                onClick={() => handleStepChange(i)}
+                className="flex-1 h-[6px] rounded-full transition-all duration-400"
+                style={{
+                  backgroundColor: i <= activeStep ? meterColors[i] : undefined
+                }}
+                aria-label={`Go to step ${i + 1}`}
               >
-                <span className={`w-8 h-8 rounded-lg ${color.bg} flex items-center justify-center flex-shrink-0`}>
-                  <Icon className="w-4 h-4 text-background" />
-                </span>
-                <span className="flex-1">
-                  <span className={`text-xs font-mono ${color.text}`}>{step.number}</span>
-                  <span className="ml-2 text-sm font-display font-semibold text-foreground">{step.title}</span>
-                </span>
-                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                {i > activeStep && <div className="w-full h-full rounded-full bg-border/50" />}
               </button>
-              <div
-                className={`overflow-hidden transition-all duration-300 ease-out ${isOpen ? "max-h-48 opacity-100" : "max-h-0 opacity-0"}`}
-              >
-                <div className="px-4 pb-4 pl-[60px] space-y-2">
-                  <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
-                  <p className="text-muted-foreground/60 text-xs leading-relaxed">{step.detail}</p>
-                </div>
+            ))}
+          </div>
+          {isComplete && (
+            <p className="text-center text-xs font-semibold text-teal flex items-center justify-center gap-1 animate-fade-in">
+              <Award className="w-3.5 h-3.5" /> Blueprint Complete
+            </p>
+          )}
+        </div>
+
+        {/* Mobile: Spotlight card */}
+        <div
+          key={`mobile-${activeStep}`}
+          className={`rounded-xl border ${accent.border} ${accent.bgLight} p-5 animate-fade-in relative overflow-hidden`}
+        >
+          {/* Watermark */}
+          <span className={`absolute -right-2 -top-4 text-[7rem] font-display font-black leading-none pointer-events-none select-none ${accent.text} opacity-[0.05]`}>
+            {active.number}
+          </span>
+
+          <div className="relative z-10 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-lg ${accent.bg} flex items-center justify-center`}>
+                <ActiveIcon className="w-5 h-5 text-background" />
               </div>
+              <span className={`text-[10px] font-mono font-bold uppercase tracking-widest ${accent.text}`}>
+                Step {active.number} of 06
+              </span>
             </div>
-          );
-        })}
+
+            <h3 className="text-xl font-display font-bold text-foreground">
+              {active.title}
+            </h3>
+
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              {active.description}
+            </p>
+            <p className="text-muted-foreground/60 text-xs leading-relaxed">
+              {active.detail}
+            </p>
+
+            <p className={`italic text-xs ${accent.text} opacity-70`}>
+              {activeStep === 0 && "What does leadership success look like in your world?"}
+              {activeStep === 1 && "What moments have shaped the leader you are today?"}
+              {activeStep === 2 && "Where are the gaps in your leadership knowledge?"}
+              {activeStep === 3 && "What principles will anchor your leadership model?"}
+              {activeStep === 4 && "What one habit would transform your daily leadership?"}
+              {activeStep === 5 && "How will you measure your leadership growth?"}
+            </p>
+
+            {/* Mobile nav */}
+            <div className="flex items-center gap-2 pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={activeStep === 0}
+                onClick={() => handleStepChange(activeStep - 1)}
+                className="gap-1 text-xs flex-1"
+              >
+                <ChevronLeft className="w-3 h-3" /> Prev
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={activeStep === blueprintSteps.length - 1}
+                onClick={() => handleStepChange(activeStep + 1)}
+                className="gap-1 text-xs flex-1"
+              >
+                Next <ChevronRight className="w-3 h-3" />
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* CTA */}
       <div className="text-center mt-12">
         <Button asChild size="lg" className="bg-teal hover:bg-teal/90 text-background font-semibold px-8 py-6 text-base">
-          <a href="/contact">Explore the STEPS Program</a>
+          <a href="/contact">Start Your Leadership Blueprint</a>
         </Button>
       </div>
     </>
