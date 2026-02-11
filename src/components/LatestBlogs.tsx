@@ -26,7 +26,7 @@ const LatestBlogs = () => {
           </div>
 
           <div className="text-center">
-            <Link to="/blog">
+            <Link to="/blog" onClick={() => window.scrollTo(0, 0)}>
               <Button variant="outline" size="lg" className="border-teal text-teal hover:bg-teal hover:text-background">
                 View All Posts
               </Button>
