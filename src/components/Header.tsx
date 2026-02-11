@@ -15,6 +15,7 @@ const Header = () => {
     { to: "/", label: "Home" },
     { to: "/episodes", label: "Podcast" },
     { to: "/blog", label: "Blog" },
+    { to: "/steps", label: "Steps" },
   ];
 
   const moreItems = [
