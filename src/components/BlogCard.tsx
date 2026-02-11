@@ -12,7 +12,7 @@ interface BlogCardProps {
 
 const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug }: BlogCardProps) => {
   return (
-    <Link to={`/blog/${slug}`} className="block group">
+    <Link to={`/blog/${slug}`} className="block group" onClick={() => window.scrollTo(0, 0)}>
       <Card className="h-full bg-card hover:bg-card/80 border-border hover:border-teal transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
         <CardHeader className="pb-2">
           <div className="flex flex-wrap gap-2 mb-2">
