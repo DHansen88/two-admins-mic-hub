@@ -415,7 +415,7 @@ const BlueprintStepper = () => {
   );
 };
 
-const BlueprintSection = () => {
+const BlueprintSection = ({ externalRef }: { externalRef?: React.RefObject<HTMLDivElement> }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -431,7 +431,10 @@ const BlueprintSection = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 md:py-28 bg-background">
+    <section ref={(node: HTMLDivElement | null) => {
+      (sectionRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      if (externalRef) (externalRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    }} className="py-20 md:py-28 bg-background">
       <div
         className={`container mx-auto px-4 transition-all duration-700 ease-out ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -506,8 +509,14 @@ const BenefitsCarousel = () => {
 };
 const Steps = () => {
   const learnMoreRef = useRef<HTMLDivElement>(null);
+  const blueprintRef = useRef<HTMLDivElement>(null);
   const scrollToLearnMore = () => {
     learnMoreRef.current?.scrollIntoView({
+      behavior: "smooth"
+    });
+  };
+  const scrollToBlueprint = () => {
+    blueprintRef.current?.scrollIntoView({
       behavior: "smooth"
     });
   };
@@ -549,8 +558,8 @@ const Steps = () => {
                 A leadership journey inspired by EA experience and taught
                 through the Blueprint process used by senior executives.
               </p>
-              <Button onClick={scrollToLearnMore} size="lg" className="bg-teal hover:bg-teal/90 text-background font-semibold px-8 py-6 text-base">
-                Learn More
+              <Button onClick={scrollToBlueprint} size="lg" className="bg-teal hover:bg-teal/90 text-background font-semibold px-8 py-6 text-base">
+                Explore the Blueprint
                 <ChevronDown className="ml-2 h-5 w-5" />
               </Button>
             </div>
@@ -583,7 +592,7 @@ const Steps = () => {
         </section>
 
         {/* ─── 3. THE 6-STEP BLUEPRINT ─── */}
-        <BlueprintSection />
+        <BlueprintSection externalRef={blueprintRef} />
 
         {/* ─── 5. KEY BENEFITS ─── */}
         <section className="py-14 md:py-20 bg-gradient-to-br from-slate via-navy to-deep-blue">
