@@ -6,14 +6,61 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Mail, MessageSquare, Send } from "lucide-react";
 
+const PaperAirplaneSVG = () => (
+  <svg
+    width="64"
+    height="64"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="text-background"
+  >
+    <path d="M22 2 11 13" />
+    <path d="M22 2 15 22 11 13 2 9z" />
+  </svg>
+);
+
 const Contact = () => {
   return (
     <div className="min-h-screen">
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="py-20 bg-gradient-to-br from-slate via-navy to-deep-blue">
-          <div className="container mx-auto px-4">
+        <section className="py-20 bg-gradient-to-br from-slate via-navy to-deep-blue relative overflow-hidden">
+          {/* Paper airplane animation */}
+          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+            {/* Dotted trail path */}
+            <svg
+              className="absolute inset-0 w-full h-full opacity-[0.08]"
+              viewBox="0 0 1000 400"
+              preserveAspectRatio="xMidYMid slice"
+            >
+              <ellipse
+                cx="720"
+                cy="200"
+                rx="200"
+                ry="120"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeDasharray="6 8"
+                className="text-background"
+              />
+            </svg>
+            {/* Animated airplane */}
+            <div className="absolute inset-0">
+              <div className="airplane-orbit opacity-[0.11]">
+                <div className="airplane-rotate">
+                  <PaperAirplaneSVG />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
               <h1 className="text-5xl md:text-6xl font-display font-bold text-background">
                 Get In Touch

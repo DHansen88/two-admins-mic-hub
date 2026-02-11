@@ -137,3 +137,52 @@ All colors MUST be HSL.
     opacity: 0.09;
   }
 }
+
+/* Paper airplane orbit animation for Contact hero */
+.airplane-orbit {
+  position: absolute;
+  top: calc(50% - 32px);
+  right: 5%;
+  width: 0;
+  height: 0;
+  animation: airplaneCircle 18s linear infinite;
+}
+
+@keyframes airplaneCircle {
+  0% { transform: rotate(0deg) translate(180px) rotate(0deg); }
+  100% { transform: rotate(360deg) translate(180px) rotate(-360deg); }
+}
+
+.airplane-rotate {
+  animation: airplaneAngle 18s linear infinite;
+}
+
+@keyframes airplaneAngle {
+  0% { transform: rotate(80deg); }
+  25% { transform: rotate(170deg); }
+  50% { transform: rotate(260deg); }
+  75% { transform: rotate(350deg); }
+  100% { transform: rotate(440deg); }
+}
+
+@media (max-width: 768px) {
+  .airplane-orbit {
+    animation-duration: 25s;
+    right: 15%;
+  }
+  .airplane-orbit {
+    animation-name: airplaneCircleMobile;
+  }
+}
+
+@keyframes airplaneCircleMobile {
+  0% { transform: rotate(0deg) translate(90px) rotate(0deg); }
+  100% { transform: rotate(360deg) translate(90px) rotate(-360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .airplane-orbit,
+  .airplane-rotate {
+    animation: none;
+  }
+}
