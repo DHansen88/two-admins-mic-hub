@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { Mail, MessageSquare, Send } from "lucide-react";
+import { Mail, Send, ExternalLink } from "lucide-react";
 
 const PaperAirplaneSVG = () => (
   <svg
@@ -99,16 +99,66 @@ const Contact = () => {
                     </Card>
 
                     <Card className="p-6 border-border hover:border-accent transition-colors">
-                      <div className="flex items-start space-x-4">
-                        <div className="bg-sky-blue/10 p-3 rounded-lg">
-                          <MessageSquare className="h-6 w-6 text-sky-blue" />
+                      <div className="space-y-4">
+                        <h3 className="font-bold text-foreground">Connect With Us</h3>
+                        <div className="flex items-center space-x-4">
+                          <a
+                            href="https://www.instagram.com/twoadminsamic"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-sky-blue/10 p-3 rounded-lg hover:bg-sky-blue/20 transition-colors"
+                            aria-label="Instagram"
+                          >
+                            <svg className="h-5 w-5 text-sky-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                            </svg>
+                          </a>
+                          <a
+                            href="https://x.com/twoadminsamic"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-sky-blue/10 p-3 rounded-lg hover:bg-sky-blue/20 transition-colors"
+                            aria-label="X / Twitter"
+                          >
+                            <svg className="h-5 w-5 text-sky-blue" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                          </a>
+                          <a
+                            href="https://www.linkedin.com/groups/17735025"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-sky-blue/10 p-3 rounded-lg hover:bg-sky-blue/20 transition-colors"
+                            aria-label="LinkedIn"
+                          >
+                            <svg className="h-5 w-5 text-sky-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                              <rect width="4" height="12" x="2" y="9" />
+                              <circle cx="4" cy="4" r="2" />
+                            </svg>
+                          </a>
+                          <a
+                            href="https://linktr.ee/twoadminsandamic"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-muted/60 p-3 rounded-lg hover:bg-muted transition-colors group"
+                            aria-label="More links on Linktree"
+                          >
+                            <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                          </a>
                         </div>
-                        <div>
-                          <h3 className="font-bold text-foreground mb-1">Social Media</h3>
-                          <p className="text-muted-foreground">
-                            Connect with us on Instagram, Twitter, and LinkedIn
-                          </p>
-                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          <a
+                            href="https://linktr.ee/twoadminsandamic"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-foreground transition-colors underline underline-offset-2"
+                          >
+                            View all our links →
+                          </a>
+                        </p>
                       </div>
                     </Card>
                   </div>
