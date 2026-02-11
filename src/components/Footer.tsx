@@ -20,16 +20,16 @@ const Footer = () => {
                 <a href="https://www.instagram.com/twoadminsamic/" target="_blank" rel="noopener noreferrer" className="hover:text-teal transition-colors" aria-label="Instagram">
                   <Instagram className="h-5 w-5" />
                 </a>
-                <a href="#" className="hover:text-sky-blue transition-colors" aria-label="Twitter">
+                <a href="https://twitter.com/twoadminsamic" target="_blank" rel="noopener noreferrer" className="hover:text-sky-blue transition-colors" aria-label="Twitter">
                   <Twitter className="h-5 w-5" />
                 </a>
-                <a href="#" className="hover:text-coral transition-colors" aria-label="LinkedIn">
+                <a href="https://www.linkedin.com/groups/17735025/" target="_blank" rel="noopener noreferrer" className="hover:text-coral transition-colors" aria-label="LinkedIn">
                   <Linkedin className="h-5 w-5" />
                 </a>
-                <a href="#" className="hover:text-deep-blue transition-colors" aria-label="YouTube">
+                <a href="https://www.youtube.com/@TwoAdminsAMic" target="_blank" rel="noopener noreferrer" className="hover:text-deep-blue transition-colors" aria-label="YouTube">
                   <Youtube className="h-5 w-5" />
                 </a>
-                <a href="#" className="hover:text-coral transition-colors" aria-label="TikTok">
+                <a href="https://www.tiktok.com/@twoadminsamic" target="_blank" rel="noopener noreferrer" className="hover:text-coral transition-colors" aria-label="TikTok">
                   <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.7a8.16 8.16 0 0 0 4.76 1.52v-3.4a4.85 4.85 0 0 1-1-.13z"/>
                   </svg>
