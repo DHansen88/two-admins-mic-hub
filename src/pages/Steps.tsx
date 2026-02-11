@@ -439,7 +439,6 @@ const BlueprintSection = () => {
       >
         <div className="max-w-5xl mx-auto">
           <div className="text-center space-y-4 mb-16">
-            <img src={stepsLogo} alt="STEPS – Success Through Empowering Professional Support" className="h-12 md:h-16 mx-auto" />
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
               The Leadership Blueprint
             </h2>
@@ -537,6 +536,7 @@ const Steps = () => {
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
+              <img src={stepsLogo} alt="STEPS – Success Through Empowering Professional Support" className="h-14 md:h-20 mx-auto" />
               <p className="text-sm md:text-base font-semibold uppercase tracking-[0.2em] text-teal">
                 STEPS Leadership Program
               </p>
