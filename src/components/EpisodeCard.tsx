@@ -11,7 +11,7 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
   return (
     <Card
       className="group hover:shadow-xl transition-all duration-300 overflow-hidden border-border hover:border-accent cursor-pointer"
-      onClick={() => navigate(`/episodes/${episode.slug}`)}
+      onClick={() => { navigate(`/episodes/${episode.slug}`); window.scrollTo(0, 0); }}
     >
       <div className="flex flex-col md:flex-row">
         {/* Thumbnail */}
