@@ -220,10 +220,7 @@ const Steps = () => {
                 <iframe className="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/nkWiYix5m-w" title="STEPS Leadership — Doug Conant" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
               </div>
 
-              <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto text-justify">Executive and administrative professionals are the backbone of every organization—but too often, leadership development stops at tactical training. STEPS honors the whole leader by offering a leadership framework built for real life, not just task mastery.  
-
-
-Inspired by conversations between a renowned leadership expert and an executive assistant, STEPS was created to take the same leadership process taught to C-Suite leaders and make it accessible for those who make everything happen every day.</p>
+              <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto text-justify">Executive and administrative professionals are the backbone of every organization—but too often, leadership development stops at tactical training. STEPS honors the whole leader by offering a leadership framework built for real life, not just task mastery. Inspired by conversations between a renowned leadership expert and an executive assistant, STEPS was created to take the same leadership process taught to C-Suite leaders and make it accessible for those who make everything happen every day.</p>
             </div>
           </div>
         </section>
@@ -310,31 +307,6 @@ Inspired by conversations between a renowned leadership expert and an executive 
               {/* Carousel */}
               <BenefitsCarousel />
 
-              <div className="text-center mt-8">
-                <button onClick={() => {
-                const el = document.getElementById("benefits-expanded");
-                if (el) {
-                  el.classList.toggle("hidden");
-                }
-              }} className="text-teal hover:text-teal/80 text-sm font-medium transition-colors inline-flex items-center gap-1.5">
-                  See all benefits
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Expanded view (hidden by default) */}
-              <div id="benefits-expanded" className="hidden mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {benefits.map(benefit => {
-                const Icon = benefit.icon;
-                return <div key={benefit.title} className="text-center space-y-3">
-                      <div className="w-12 h-12 rounded-full bg-teal/15 flex items-center justify-center mx-auto">
-                        <Icon className="w-5 h-5 text-teal" />
-                      </div>
-                      <h3 className="text-base font-display font-semibold text-background">{benefit.title}</h3>
-                      <p className="text-background/65 text-sm leading-relaxed">{benefit.description}</p>
-                    </div>;
-              })}
-              </div>
             </div>
           </div>
         </section>
