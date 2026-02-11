@@ -167,15 +167,15 @@ const About = () => {
         </section>
 
         {/* Partnership Banner */}
-        <section className="py-20" style={{ background: 'linear-gradient(135deg, #C44058 0%, #D94F63 30%, #E85D6F 60%, #F26D7D 100%)' }}>
+        <section className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center space-y-6">
               <img src={conantLogo} alt="ConantLeadership" className="h-10 md:h-12 mx-auto" />
-              <h2 className="text-4xl font-display font-bold text-background">
+              <h2 className="text-4xl font-display font-bold" style={{ color: '#F26D7D' }}>
                 In Partnership With ConantLeadership
               </h2>
-              <div className="w-16 h-px bg-teal mx-auto" />
-              <p className="text-lg text-background/80 leading-relaxed max-w-2xl mx-auto">
+              <div className="w-16 h-px mx-auto" style={{ backgroundColor: '#F26D7D' }} />
+              <p className="text-lg leading-relaxed max-w-2xl mx-auto" style={{ color: '#D94F63' }}>
                 We're proud to partner with ConantLeadership. ConantLeadership
                 is a mission-driven community of leaders and learners who are
                 championing leadership that works in the 21st century.
