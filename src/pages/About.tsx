@@ -100,7 +100,7 @@ const About = () => {
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             {/* Microphone icon */}
             <svg
-              className="absolute right-[10%] top-1/2 w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96"
+              className="absolute right-[10%] top-1/2 w-32 h-32 md:w-72 md:h-72 lg:w-96 lg:h-96"
               viewBox="0 0 100 120"
               fill="none"
               stroke="currentColor"
@@ -134,7 +134,7 @@ const About = () => {
 
             {/* Mirrored microphone icon (left side) */}
             <svg
-              className="absolute left-[10%] top-1/2 w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96"
+              className="absolute left-[10%] top-1/2 hidden md:block md:w-72 md:h-72 lg:w-96 lg:h-96"
               viewBox="0 0 100 120"
               fill="none"
               stroke="currentColor"
@@ -163,7 +163,7 @@ const About = () => {
             {[1, 2, 3, 4, 5, 6, 7].map((i) => (
               <div
                 key={`r-${i}`}
-                className="absolute rounded-full border"
+                className={`absolute rounded-full border ${i > 4 ? 'hidden md:block' : ''}`}
                 style={{
                   right: '10%',
                   top: '50%',
@@ -178,11 +178,11 @@ const About = () => {
               />
             ))}
 
-            {/* Sound wave arcs from left mic */}
+            {/* Sound wave arcs from left mic (hidden on mobile) */}
             {[1, 2, 3, 4, 5, 6, 7].map((i) => (
               <div
                 key={`l-${i}`}
-                className="absolute rounded-full border"
+                className="absolute rounded-full border hidden md:block"
                 style={{
                   left: '10%',
                   top: '50%',
@@ -214,11 +214,11 @@ const About = () => {
               />
             ))}
 
-            {/* Gentle horizontal wave lines from left mic */}
+            {/* Gentle horizontal wave lines from left mic (hidden on mobile) */}
             {[0, 1, 2].map((i) => (
               <div
                 key={`wave-l-${i}`}
-                className="absolute h-px"
+                className="absolute h-px hidden md:block"
                 style={{
                   left: '5%',
                   top: `${40 + i * 10}%`,
