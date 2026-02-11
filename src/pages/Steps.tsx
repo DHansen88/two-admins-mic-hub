@@ -511,16 +511,29 @@ const BenefitsCarousel = () => {
     </div>;
 };
 const HoverVideo = ({ videoId, title }: { videoId: string; title: string }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || isPlaying) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setIsPlaying(true); observer.disconnect(); } },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isPlaying]);
 
   return (
     <div
+      ref={containerRef}
       className="relative w-full overflow-hidden rounded-xl shadow-2xl cursor-pointer"
       style={{ paddingTop: "56.25%" }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => !isPlaying && setIsPlaying(true)}
+      onMouseEnter={() => !isPlaying && setIsPlaying(true)}
     >
-      {isHovered ? (
+      {isPlaying ? (
         <iframe
           className="absolute inset-0 w-full h-full"
           src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`}
