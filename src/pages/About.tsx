@@ -157,6 +157,13 @@ const About = () => {
                 Empowering leaders through authentic conversations on
                 administration, leadership, and professional growth.
               </p>
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-background pt-6">
+                About the Hosts
+              </h2>
+              <p className="text-lg text-background/70 max-w-2xl mx-auto leading-relaxed">
+                Two Admins. Two perspectives. One mic—built to elevate the
+                profession through practical leadership conversations.
+              </p>
             </div>
           </div>
         </section>
@@ -165,15 +172,6 @@ const About = () => {
         <section className="py-20 bg-background">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-16 space-y-4">
-                <h2 className="text-4xl font-display font-bold text-foreground">
-                  About the Hosts
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                  Two Admins. Two perspectives. One mic—built to elevate the
-                  profession through practical leadership conversations.
-                </p>
-              </div>
 
               <div className="space-y-20">
                 {hosts.map((host, i) => (
