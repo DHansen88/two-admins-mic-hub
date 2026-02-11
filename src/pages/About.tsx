@@ -132,10 +132,37 @@ const About = () => {
               <ellipse cx="50" cy="100" rx="16" ry="4" />
             </svg>
 
-            {/* Sound wave arcs radiating from mic center */}
+            {/* Mirrored microphone icon (left side) */}
+            <svg
+              className="absolute left-[10%] top-1/2 -translate-y-1/2 w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96"
+              viewBox="0 0 100 120"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ color: 'hsl(var(--teal))', opacity: 0.11, transform: 'translateY(-50%) scaleX(-1)' }}
+            >
+              <path d="M35 45 L35 18 Q35 5 50 5 Q65 5 65 18 L65 45 Q65 52 50 52 Q35 52 35 45Z" />
+              <line x1="37" y1="14" x2="63" y2="14" />
+              <line x1="36" y1="19" x2="64" y2="19" />
+              <line x1="36" y1="24" x2="64" y2="24" />
+              <line x1="36" y1="29" x2="64" y2="29" />
+              <line x1="36" y1="34" x2="64" y2="34" />
+              <line x1="36" y1="39" x2="64" y2="39" />
+              <line x1="37" y1="44" x2="63" y2="44" />
+              <path d="M35 35 Q30 35 30 40 L30 48 Q30 53 35 53" />
+              <circle cx="30" cy="44" r="2" />
+              <path d="M44 52 L44 58 Q44 62 50 62 Q56 62 56 58 L56 52" />
+              <line x1="50" y1="62" x2="50" y2="98" />
+              <path d="M56 58 Q62 64 56 70 Q50 76 56 82 Q60 86 54 92" />
+              <ellipse cx="50" cy="100" rx="16" ry="4" />
+            </svg>
+
+            {/* Sound wave arcs from right mic */}
             {[1, 2, 3, 4, 5, 6, 7].map((i) => (
               <div
-                key={i}
+                key={`r-${i}`}
                 className="absolute rounded-full border"
                 style={{
                   right: '10%',
@@ -151,10 +178,29 @@ const About = () => {
               />
             ))}
 
-            {/* Gentle horizontal wave lines from mic area */}
+            {/* Sound wave arcs from left mic */}
+            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <div
+                key={`l-${i}`}
+                className="absolute rounded-full border"
+                style={{
+                  left: '10%',
+                  top: '50%',
+                  width: `${10 + i * 8}rem`,
+                  height: `${10 + i * 8}rem`,
+                  transform: 'translate(-50%, -50%)',
+                  borderColor: 'hsl(var(--teal))',
+                  opacity: 0.11 - i * 0.012,
+                  animation: `aboutMicPulse ${6 + i * 1.5}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.8 + 0.4}s`,
+                }}
+              />
+            ))}
+
+            {/* Gentle horizontal wave lines from right mic */}
             {[0, 1, 2].map((i) => (
               <div
-                key={`wave-${i}`}
+                key={`wave-r-${i}`}
                 className="absolute h-px"
                 style={{
                   right: '5%',
@@ -164,6 +210,23 @@ const About = () => {
                   opacity: 0.08,
                   animation: `aboutWaveSlide ${10 + i * 2}s ease-in-out infinite`,
                   animationDelay: `${i * 1.2}s`,
+                }}
+              />
+            ))}
+
+            {/* Gentle horizontal wave lines from left mic */}
+            {[0, 1, 2].map((i) => (
+              <div
+                key={`wave-l-${i}`}
+                className="absolute h-px"
+                style={{
+                  left: '5%',
+                  top: `${40 + i * 10}%`,
+                  width: '30%',
+                  background: `linear-gradient(to right, transparent, hsl(var(--teal)) 40%, transparent)`,
+                  opacity: 0.08,
+                  animation: `aboutWaveSlide ${10 + i * 2}s ease-in-out infinite`,
+                  animationDelay: `${i * 1.2 + 0.6}s`,
                 }}
               />
             ))}
