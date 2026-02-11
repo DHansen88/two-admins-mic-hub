@@ -202,10 +202,11 @@ const About = () => {
               </h2>
               <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
                 <p>
-                  Two Admins & a Mic was born from a simple idea: leadership
-                  conversations should be accessible, practical, and empowering.
-                  We believe that great leaders aren't born – they're developed
-                  through continuous learning, reflection, and community.
+                  Two Admins & a Mic is a podcast celebrating the power, creativity, and leadership of administrative professionals. Hosted by Melinda Vail-Goodnight and Diana Hansen, the show explores real stories, practical strategies, and the lighter side of life behind the desk.
+                </p>
+                <p className="font-semibold text-foreground">Mission Statement:</p>
+                <p>
+                  To amplify the voices, experiences, and expertise of administrative professionals around the world, highlighting their critical impact on modern organizations.
                 </p>
                 <p>
                   Our podcast brings together experienced administrators and
