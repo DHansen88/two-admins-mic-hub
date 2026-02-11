@@ -17,7 +17,7 @@ const Footer = () => {
                 leadership, and professional growth. Join us every week for new episodes.
               </p>
               <div className="flex space-x-4">
-                <a href="#" className="hover:text-teal transition-colors" aria-label="Instagram">
+                <a href="https://www.instagram.com/twoadminsamic/" target="_blank" rel="noopener noreferrer" className="hover:text-teal transition-colors" aria-label="Instagram">
                   <Instagram className="h-5 w-5" />
                 </a>
                 <a href="#" className="hover:text-sky-blue transition-colors" aria-label="Twitter">
