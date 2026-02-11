@@ -132,19 +132,19 @@ const About = () => {
               <ellipse cx="50" cy="100" rx="16" ry="4" />
             </svg>
 
-            {/* Sound wave arcs radiating from mic */}
-            {[1, 2, 3, 4, 5].map((i) => (
+            {/* Sound wave arcs radiating from mic center */}
+            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
               <div
                 key={i}
                 className="absolute rounded-full border"
                 style={{
-                  right: `calc(10% + ${i === 1 ? '6rem' : i === 2 ? '6rem' : i === 3 ? '6rem' : i === 4 ? '6rem' : '6rem'})`,
+                  right: '10%',
                   top: '50%',
-                  width: `${8 + i * 5}rem`,
-                  height: `${8 + i * 5}rem`,
+                  width: `${10 + i * 8}rem`,
+                  height: `${10 + i * 8}rem`,
                   transform: 'translate(50%, -50%)',
                   borderColor: 'hsl(var(--teal))',
-                  opacity: 0.11 - i * 0.015,
+                  opacity: 0.11 - i * 0.012,
                   animation: `aboutMicPulse ${6 + i * 1.5}s ease-in-out infinite`,
                   animationDelay: `${i * 0.8}s`,
                 }}
