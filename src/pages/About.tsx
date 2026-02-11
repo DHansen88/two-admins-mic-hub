@@ -7,7 +7,7 @@ import hostMelinda from "@/assets/host-melinda.jpg";
 import conantLogo from "@/assets/conant-leadership-logo.png";
 const hosts = [{
   name: "Diana Hansen",
-  title: "Co-Founder & Co-Host",
+  title: "Founder & Co-Host",
   image: hostDmh,
   bio: "With decades of experience in educational leadership and administration, Diana brings a grounded, people-first perspective to every conversation. She believes the best leaders are lifelong learners who lead with empathy and clarity.",
   tags: ["Leadership", "Career Growth", "Communication"],
@@ -15,7 +15,7 @@ const hosts = [{
   tilt: "-rotate-2"
 }, {
   name: "Melinda Vail Goodnight",
-  title: "Co-Founder & Co-Host",
+  title: "Founder & Co-Host",
   image: hostMelinda,
   bio: "Melinda is a seasoned administrator with a gift for building collaborative cultures. She's passionate about creating systems that support both people and performance, and she's never afraid to share a good laugh along the way.",
   tags: ["Admin Life", "Wellness", "Humor & Human Moments"],
