@@ -413,6 +413,44 @@ const BlueprintStepper = () => {
     </>
   );
 };
+
+const BlueprintSection = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); } },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="py-20 md:py-28 bg-background">
+      <div
+        className={`container mx-auto px-4 transition-all duration-700 ease-out ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
+              The Leadership Blueprint
+            </h2>
+            <p className="text-muted-foreground text-lg">The Six Core Steps</p>
+            <div className="w-16 h-1 bg-coral mx-auto rounded-full" />
+          </div>
+          <BlueprintStepper />
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const BenefitsCarousel = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
@@ -543,23 +581,7 @@ const Steps = () => {
         </section>
 
         {/* ─── 3. THE 6-STEP BLUEPRINT ─── */}
-        <section className="py-20 md:py-28 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center space-y-4 mb-16">
-                <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-                  The Leadership Blueprint
-                </h2>
-                <p className="text-muted-foreground text-lg">
-                  The Six Core Steps
-                </p>
-                <div className="w-16 h-1 bg-coral mx-auto rounded-full" />
-              </div>
-
-              <BlueprintStepper />
-            </div>
-          </div>
-        </section>
+        <BlueprintSection />
 
         {/* ─── 5. KEY BENEFITS ─── */}
         <section className="py-14 md:py-20 bg-gradient-to-br from-slate via-navy to-deep-blue">
