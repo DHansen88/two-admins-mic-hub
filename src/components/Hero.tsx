@@ -14,7 +14,7 @@ const Hero = () => {
       </div>
 
       {/* Sound wave graphic */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.15 }}>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.20 }}>
         <svg
           viewBox="0 0 1200 200"
           className="w-full max-w-[1400px] h-auto"
