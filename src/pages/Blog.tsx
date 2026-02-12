@@ -41,7 +41,7 @@ const Blog = () => {
       <main className="pt-20">
         {/* Hero Banner */}
         <section className="relative overflow-hidden" style={{
-        background: 'linear-gradient(to bottom, #3a9e9e 0%, #2a7a8a 40%, #1a5a6a 70%, hsl(199, 62%, 21%) 100%)'
+        background: 'linear-gradient(135deg, hsl(199, 62%, 21%) 0%, hsl(197, 100%, 27%) 100%)'
       }}>
            {/* Animated manuscript lines */}
            <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
