@@ -309,11 +309,11 @@ const About = () => {
               <a href="https://conantleadership.com/" target="_blank" rel="noopener noreferrer">
                 <img src={conantLogo} alt="ConantLeadership" className="h-10 md:h-12 mx-auto hover:opacity-80 transition-opacity" />
               </a>
-              <h2 className="text-4xl font-display font-bold" style={{ color: '#F26D7D' }}>
+              <h2 className="text-4xl font-display font-bold text-foreground">
                 In Partnership With ConantLeadership
               </h2>
-              <div className="w-16 h-px mx-auto" style={{ backgroundColor: '#F26D7D' }} />
-              <p className="text-lg leading-relaxed max-w-2xl mx-auto" style={{ color: '#D94F63' }}>
+              <div className="w-16 h-px mx-auto bg-foreground" />
+              <p className="text-lg leading-relaxed max-w-2xl mx-auto text-foreground">
                 We're proud to partner with ConantLeadership. ConantLeadership
                 is a mission-driven community of leaders and learners who are
                 championing leadership that works in the 21st century.
