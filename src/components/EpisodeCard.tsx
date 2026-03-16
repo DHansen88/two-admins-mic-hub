@@ -15,7 +15,7 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
     >
       <div className="grid grid-cols-1 sm:grid-cols-[40%_60%] items-stretch h-full">
         {/* Thumbnail */}
-        <div className="relative w-full h-full overflow-hidden bg-muted aspect-video md:aspect-auto">
+        <div className="relative w-full h-full overflow-hidden bg-muted aspect-video sm:aspect-auto">
           <img
             src={episode.thumbnailUrl || "/placeholder.svg"}
             alt={episode.title}
