@@ -26,7 +26,7 @@ const Blog = () => {
       return sortOrder === "newest" ? db - da : da - db;
     });
     return blogs;
-  }, [search, selectedTopics, sortOrder]);
+  }, [search, sortOrder]);
 
   // Reset pagination when filters change
   const resetKey = `${search}-${selectedTopics.join()}-${sortOrder}`;
