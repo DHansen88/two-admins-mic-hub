@@ -117,7 +117,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
           <img
             src={block.src}
             alt={block.alt || block.caption || ""}
-            className="w-full rounded-lg"
+            className="w-full h-auto rounded-lg max-w-full"
             loading="lazy"
           />
           {block.caption && (
