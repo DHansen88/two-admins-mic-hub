@@ -96,7 +96,8 @@ const PublishBlog = () => {
     const blog = allBlogsUnfiltered.find((b) => b.slug === editSlug);
     if (!blog) return;
     setTitle(blog.title);
-    setAuthor(blog.author?.key || "sarah");
+    const authorKey = AUTHOR_OPTIONS.find((a) => a.label === blog.author?.name)?.key || "sarah";
+    setAuthor(authorKey);
     setPublishDate(blog.date || formatDateISO(new Date()));
     setSelectedTopics(blog.topics || []);
     setFeaturedImage(blog.featuredImage || "");
