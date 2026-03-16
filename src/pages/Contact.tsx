@@ -26,6 +26,23 @@ const PaperAirplaneSVG = () => (
 );
 
 const Contact = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const { toast } = useToast();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !email || !message) {
+      toast({ title: "Please fill in all required fields.", variant: "destructive" });
+      return;
+    }
+    const mailto = `mailto:info@twoadminsandamic.com?subject=${encodeURIComponent(subject || "Contact Form Message")}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
+    window.location.href = mailto;
+    toast({ title: "Opening your email client..." });
+  };
+
   return (
     <div className="min-h-screen">
       <Header />
