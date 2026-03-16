@@ -21,6 +21,7 @@ const navItems = [
   { label: "Newsletter Drafts", path: "/admin/newsletters", icon: Mail },
   { label: "Content Library", path: "/admin/library", icon: Library },
   { label: "Merchandise", path: "/admin/merchandise", icon: ShoppingBag },
+  { label: "Popups", path: "/admin/popups", icon: Megaphone },
 ];
 
 const AdminLayout = () => {
