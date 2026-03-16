@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Mail, Send, ExternalLink } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const PaperAirplaneSVG = () => (
   <svg
@@ -24,6 +26,23 @@ const PaperAirplaneSVG = () => (
 );
 
 const Contact = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const { toast } = useToast();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !email || !message) {
+      toast({ title: "Please fill in all required fields.", variant: "destructive" });
+      return;
+    }
+    const mailto = `mailto:info@twoadminsandamic.com?subject=${encodeURIComponent(subject || "Contact Form Message")}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
+    window.location.href = mailto;
+    toast({ title: "Opening your email client..." });
+  };
+
   return (
     <div className="min-h-screen">
       <Header />
@@ -166,7 +185,7 @@ const Contact = () => {
 
                 {/* Contact Form */}
                 <Card className="p-8 border-border">
-                  <form className="space-y-6">
+                  <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
                       <label htmlFor="name" className="text-sm font-medium text-foreground">
                         Your Name
@@ -175,6 +194,9 @@ const Contact = () => {
                         id="name"
                         placeholder="John Smith"
                         className="border-2 focus:border-accent"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
                       />
                     </div>
 
@@ -187,6 +209,9 @@ const Contact = () => {
                         type="email"
                         placeholder="john@example.com"
                         className="border-2 focus:border-accent"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
                       />
                     </div>
 
@@ -198,6 +223,8 @@ const Contact = () => {
                         id="subject"
                         placeholder="Episode feedback, topic suggestion, etc."
                         className="border-2 focus:border-accent"
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
                       />
                     </div>
 
@@ -210,6 +237,9 @@ const Contact = () => {
                         placeholder="Tell us what's on your mind..."
                         rows={6}
                         className="border-2 focus:border-accent resize-none"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        required
                       />
                     </div>
 
