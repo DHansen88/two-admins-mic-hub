@@ -206,7 +206,11 @@ const ProductDetail = () => {
                   </button>
 
                   <p className="text-2xl font-bold text-foreground">${product.price}</p>
-                  <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+                  {product.descriptionBlocks && product.descriptionBlocks.length > 0 ? (
+                    <BlogBlockRenderer blocks={product.descriptionBlocks} />
+                  ) : (
+                    <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+                  )}
 
                   {/* Size Selector */}
                   {product.sizes && product.sizes.length > 0 && (

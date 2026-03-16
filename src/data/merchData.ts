@@ -23,6 +23,7 @@ export interface Product {
   slug: string;
   name: string;
   description: string;
+  descriptionBlocks?: import("@/lib/block-types").ContentBlock[];
   price: number;
   images: ProductImage[];
   badge?: "Popular" | "New" | "Featured" | "";
