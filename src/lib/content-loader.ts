@@ -145,7 +145,7 @@ function parseBlogMd(raw: string, filename: string): BlogPost {
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
     relatedEpisode: (data.related_episode as string) || undefined,
-    showEpisodeCallout: data.show_episode_callout !== false,
+    showEpisodeCallout: String(data.show_episode_callout) !== 'false',
   };
 }
 
