@@ -104,10 +104,17 @@ const ManageMerch = () => {
 
   const handleSave = () => {
     if (!form.name.trim()) return;
+    const productData = {
+      ...form,
+      description: useBlockEditor && descriptionBlocks.length > 0
+        ? descriptionBlocks.map(b => ('text' in b ? b.text : '')).filter(Boolean).join(' ')
+        : form.description,
+      descriptionBlocks: useBlockEditor && descriptionBlocks.length > 0 ? descriptionBlocks : undefined,
+    };
     if (editing === "new") {
-      addProduct(form);
+      addProduct(productData);
     } else if (editing) {
-      updateProduct(editing, form);
+      updateProduct(editing, productData);
     }
     setEditing(null);
   };
