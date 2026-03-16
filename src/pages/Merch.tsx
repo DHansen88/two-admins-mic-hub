@@ -6,8 +6,8 @@ import { getEnabledProducts, getAvgRating, subscribeProducts, subscribeReviews }
 
 const Merch = () => {
   const products = useSyncExternalStore(subscribeProducts, getEnabledProducts, getEnabledProducts);
-  // Subscribe to reviews so avg ratings update
-  useSyncExternalStore(subscribeReviews, () => Date.now(), () => Date.now());
+  // Subscribe to reviews so avg ratings update (use a stable snapshot)
+  const reviewsSnapshot = useSyncExternalStore(subscribeReviews, getReviews, getReviews);
 
   return (
     <div className="min-h-screen">
