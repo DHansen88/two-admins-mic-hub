@@ -168,9 +168,7 @@ function parseBlogJson(mod: Record<string, unknown>, filename: string): BlogPost
   const blocks = Array.isArray(data.blocks) ? data.blocks as import('@/lib/block-types').ContentBlock[] : undefined;
   
   let content = (data.content as string) || '';
-  // If blocks exist but no content, generate content from blocks for backward compat
   if (!content && blocks) {
-    const { blocksToMarkdown } = require('@/lib/block-types');
     content = blocksToMarkdown(blocks);
   }
 
