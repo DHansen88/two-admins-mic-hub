@@ -12,6 +12,9 @@ import Contact from "./pages/Contact";
 import EpisodeDetail from "./pages/EpisodeDetail";
 import TopicResults from "./pages/TopicResults";
 import Steps from "./pages/Steps";
+import Merch from "./pages/Merch";
+import ProductDetail from "./pages/ProductDetail";
+import MerchThankYou from "./pages/MerchThankYou";
 import NotFound from "./pages/NotFound";
 
 // Admin pages
