@@ -45,7 +45,7 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
                 <Clock className="h-3.5 w-3.5" />
                 {episode.duration}
               </span>
-              <span className="text-xs">{episode.date}</span>
+              <span>{episode.date}</span>
             </div>
 
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground leading-tight group-hover:text-accent transition-colors">
