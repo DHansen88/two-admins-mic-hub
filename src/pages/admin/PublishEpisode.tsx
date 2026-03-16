@@ -119,6 +119,9 @@ const PublishEpisode = () => {
     setSeoDescription(seo);
     setShowGenerated(true);
 
+    // Auto-suggest tags
+    setSuggestedTags(suggestTags(sourceText + " " + title));
+
     // Auto-generate blog from transcript
     if (transcript) {
       const blog = generateBlogFromTranscript(title, transcript);
