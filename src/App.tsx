@@ -25,6 +25,7 @@ import PublishEpisode from "./pages/admin/PublishEpisode";
 import PublishBlog from "./pages/admin/PublishBlog";
 import NewsletterDrafts from "./pages/admin/NewsletterDrafts";
 import ContentLibrary from "./pages/admin/ContentLibrary";
+import ManageMerch from "./pages/admin/ManageMerch";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="publish-blog" element={<PublishBlog />} />
             <Route path="newsletters" element={<NewsletterDrafts />} />
             <Route path="library" element={<ContentLibrary />} />
+            <Route path="merchandise" element={<ManageMerch />} />
           </Route>
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -8,6 +8,7 @@ import {
   FileText,
   Mail,
   Library,
+  ShoppingBag,
   LogOut,
   ChevronLeft,
 } from "lucide-react";
@@ -18,6 +19,7 @@ const navItems = [
   { label: "Publish Blog", path: "/admin/publish-blog", icon: FileText },
   { label: "Newsletter Drafts", path: "/admin/newsletters", icon: Mail },
   { label: "Content Library", path: "/admin/library", icon: Library },
+  { label: "Merchandise", path: "/admin/merchandise", icon: ShoppingBag },
 ];
 
 const AdminLayout = () => {
