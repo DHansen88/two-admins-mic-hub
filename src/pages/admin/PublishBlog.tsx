@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,9 +11,11 @@ import {
   Save,
   Sparkles,
   Mail,
+  Plus,
+  Lightbulb,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { SHARED_TOPICS } from "@/data/topics";
+import { getAllTags, addTag, generateTagSlug, suggestTags, type Tag } from "@/data/tags";
 import {
   generateSlug,
   generateExcerpt,
