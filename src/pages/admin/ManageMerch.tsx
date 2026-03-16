@@ -1,4 +1,6 @@
 import { useState, useEffect, useSyncExternalStore } from "react";
+import BlogBlockEditor from "@/components/BlogBlockEditor";
+import { type ContentBlock } from "@/lib/block-types";
 import {
   getProducts,
   getReviews,
@@ -68,9 +70,13 @@ const ManageMerch = () => {
   const [reviewPanel, setReviewPanel] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [descriptionBlocks, setDescriptionBlocks] = useState<ContentBlock[]>([]);
+  const [useBlockEditor, setUseBlockEditor] = useState(true);
 
   const startNew = () => {
     setForm(blankProduct());
+    setDescriptionBlocks([]);
+    setUseBlockEditor(true);
     setEditing("new");
     setReviewPanel(null);
   };
@@ -252,8 +258,30 @@ const ManageMerch = () => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Description</label>
-            <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">Description</label>
+              <div className="flex rounded-lg overflow-hidden border border-border">
+                <button
+                  type="button"
+                  onClick={() => setUseBlockEditor(true)}
+                  className={`px-3 py-1 text-xs font-medium transition-colors ${useBlockEditor ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                >
+                  Block Editor
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUseBlockEditor(false)}
+                  className={`px-3 py-1 text-xs font-medium transition-colors ${!useBlockEditor ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                >
+                  Plain Text
+                </button>
+              </div>
+            </div>
+            {useBlockEditor ? (
+              <BlogBlockEditor blocks={descriptionBlocks} onChange={setDescriptionBlocks} />
+            ) : (
+              <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
+            )}
           </div>
 
           {/* Sizes */}
