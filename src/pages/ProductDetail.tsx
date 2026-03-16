@@ -1,10 +1,10 @@
-import { useState, useRef, useSyncExternalStore } from "react";
+import { useState, useRef, useMemo, useSyncExternalStore } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
-  getProductBySlug,
-  getApprovedReviewsForProduct,
+  getProducts,
+  getReviews,
   getAvgRating,
   addReview,
   subscribeProducts,
@@ -59,16 +59,15 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const reviewsRef = useRef<HTMLDivElement>(null);
 
-  // Subscribe to store changes
-  const product = useSyncExternalStore(
-    subscribeProducts,
-    () => getProductBySlug(slug || ""),
-    () => getProductBySlug(slug || "")
-  );
-  const reviews = useSyncExternalStore(
-    subscribeReviews,
-    () => (product ? getApprovedReviewsForProduct(product.id) : []),
-    () => []
+  // Subscribe to raw stores (stable snapshots)
+  const allProducts = useSyncExternalStore(subscribeProducts, getProducts, getProducts);
+  const allReviews = useSyncExternalStore(subscribeReviews, getReviews, getReviews);
+
+  // Derive product & reviews from stable snapshots
+  const product = useMemo(() => allProducts.find((p) => p.slug === (slug || "")), [allProducts, slug]);
+  const reviews = useMemo(
+    () => (product ? allReviews.filter((r) => r.productId === product.id && r.approved) : []),
+    [allReviews, product]
   );
   const ratingInfo = product ? getAvgRating(product.id) : { avg: 0, count: 0 };
 
