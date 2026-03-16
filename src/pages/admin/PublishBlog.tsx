@@ -369,6 +369,42 @@ const PublishBlog = () => {
         </CardContent>
       </Card>
 
+      {/* Episode Callout Settings */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Mic className="h-4 w-4 text-primary" />
+            Episode Callout
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <label className="flex items-center gap-2 text-sm">
+            <Switch checked={showEpisodeCallout} onCheckedChange={setShowEpisodeCallout} />
+            Show "Listen to the Episode" callout in article
+          </label>
+          {showEpisodeCallout && (
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Related Episode</label>
+              <select
+                value={relatedEpisode}
+                onChange={(e) => setRelatedEpisode(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="">Auto-detect (by shared topics)</option>
+                {allEpisodesUnfiltered.map((ep) => (
+                  <option key={ep.slug} value={ep.slug}>
+                    Ep. {ep.number}: {ep.title}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Leave on "Auto-detect" to match by topic tags, or pick a specific episode.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Content Editor with Mode Toggle */}
       <Card className="bg-card border-border">
         <CardHeader className="flex flex-row items-center justify-between">
