@@ -120,12 +120,12 @@ const ManageMerch = () => {
     setImageUrl("");
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  const processFiles = (files: FileList | File[]) => {
+    const fileArr = Array.from(files).filter((f) => f.type.startsWith("image/"));
+    if (fileArr.length === 0) return;
     setUploading(true);
     const remaining = 6 - form.images.length;
-    const filesToProcess = Array.from(files).slice(0, remaining);
+    const filesToProcess = fileArr.slice(0, remaining);
     let processed = 0;
 
     filesToProcess.forEach((file) => {
@@ -144,7 +144,28 @@ const ManageMerch = () => {
       };
       reader.readAsDataURL(file);
     });
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) processFiles(e.target.files);
     e.target.value = "";
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (form.images.length >= 6) return;
+    processFiles(e.dataTransfer.files);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
   };
 
   const removeImage = (idx: number) => {
