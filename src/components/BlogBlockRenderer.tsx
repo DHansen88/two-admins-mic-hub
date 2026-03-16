@@ -87,7 +87,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
       return (
         <blockquote className="my-8 relative pl-6 border-l-4 border-accent/40 py-2">
           <Quote className="absolute -left-3 -top-2 h-6 w-6 text-accent/30" />
-          <p className="text-lg text-foreground/80 italic leading-[1.7]">
+          <p className="text-lg text-foreground/80 italic leading-[1.75]">
             {block.text}
           </p>
           {block.attribution && (
