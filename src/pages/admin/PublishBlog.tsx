@@ -31,6 +31,7 @@ import {
   saveDraft,
   saveToHistory,
 } from "@/lib/file-export";
+import { saveBlog } from "@/lib/content-manager";
 
 const AUTHOR_OPTIONS = [
   { key: "sarah", label: "Sarah Mitchell" },
