@@ -29,7 +29,7 @@ const Blog = () => {
   }, [search, sortOrder]);
 
   // Reset pagination when filters change
-  const resetKey = `${search}-${selectedTopics.join()}-${sortOrder}`;
+  const resetKey = `${search}-${sortOrder}`;
   useMemo(() => setVisibleCount(POSTS_PER_PAGE), [resetKey]);
   const visibleBlogs = filteredBlogs.slice(0, visibleCount);
   const hasMore = visibleCount < filteredBlogs.length;
