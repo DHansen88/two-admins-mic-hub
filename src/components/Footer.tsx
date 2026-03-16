@@ -43,7 +43,7 @@ const Footer = () => {
             {/* Quick Links */}
             <div className="space-y-4">
               <h3 className="font-bold text-lg">Quick Links</h3>
-              <nav className="flex flex-col space-y-2">
+              <nav className="grid grid-cols-2 gap-x-8 gap-y-2">
                 <NavLink to="/" className="text-background/70 hover:text-teal transition-colors">
                   Home
                 </NavLink>
