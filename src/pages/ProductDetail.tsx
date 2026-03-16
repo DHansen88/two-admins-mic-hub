@@ -161,27 +161,27 @@ const ProductDetail = () => {
                   )}
 
                   {/* Quantity Selector */}
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <label className="text-sm font-semibold text-foreground uppercase tracking-wide">
                       Quantity
                     </label>
-                    <div className="inline-flex items-center border border-border rounded-lg">
+                    <div className="inline-flex items-center border border-border rounded-md h-9">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-3 hover:bg-muted/60 transition-colors rounded-l-lg"
+                        className="px-2.5 h-full hover:bg-muted/60 transition-colors rounded-l-md"
                         aria-label="Decrease quantity"
                       >
-                        <Minus className="h-4 w-4" />
+                        <Minus className="h-3.5 w-3.5" />
                       </button>
-                      <span className="px-6 py-3 text-center font-medium min-w-[60px]">
+                      <span className="px-4 h-full flex items-center text-sm font-medium min-w-[40px] justify-center">
                         {quantity}
                       </span>
                       <button
                         onClick={() => setQuantity(quantity + 1)}
-                        className="p-3 hover:bg-muted/60 transition-colors rounded-r-lg"
+                        className="px-2.5 h-full hover:bg-muted/60 transition-colors rounded-r-md"
                         aria-label="Increase quantity"
                       >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
