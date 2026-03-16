@@ -56,26 +56,9 @@ const BlogTopicFilter = ({ selected, onChange }: BlogTopicFilterProps) => {
         {filterContent}
       </aside>
 
-      {/* Mobile collapsible */}
+      {/* Mobile */}
       <div className="lg:hidden">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="w-full justify-between"
-        >
-          <span>Filter by Topic</span>
-          {mobileOpen ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-        </Button>
-        {mobileOpen && (
-          <div className="mt-3 p-4 border border-border rounded-lg bg-card">
-            {filterContent}
-          </div>
-        )}
+        {filterContent}
       </div>
     </>
   );
