@@ -194,6 +194,8 @@ function parseBlogJson(mod: Record<string, unknown>, filename: string): BlogPost
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
     blocks,
+    relatedEpisode: (data.related_episode as string) || undefined,
+    showEpisodeCallout: data.show_episode_callout !== false,
   };
 }
 
