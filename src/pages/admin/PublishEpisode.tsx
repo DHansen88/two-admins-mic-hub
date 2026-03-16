@@ -49,6 +49,8 @@ const PublishEpisode = () => {
   const [episodeNumber, setEpisodeNumber] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [descriptionBlocks, setDescriptionBlocks] = useState<ContentBlock[]>([]);
+  const [useBlockEditor, setUseBlockEditor] = useState(true);
   const [guestName, setGuestName] = useState("");
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [duration, setDuration] = useState("");
