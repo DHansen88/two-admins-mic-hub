@@ -144,6 +144,8 @@ function parseBlogMd(raw: string, filename: string): BlogPost {
     author,
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
+    relatedEpisode: (data.related_episode as string) || undefined,
+    showEpisodeCallout: data.show_episode_callout !== false,
   };
 }
 
