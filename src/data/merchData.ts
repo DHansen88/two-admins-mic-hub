@@ -203,6 +203,7 @@ export function addProduct(product: Omit<Product, "id" | "slug" | "createdAt">) 
     createdAt: new Date().toISOString().split("T")[0],
   };
   _products = [..._products, newP];
+  invalidateEnabledCache();
   saveProducts(_products);
   notifyProducts();
   return newP;
