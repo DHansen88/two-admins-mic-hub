@@ -17,9 +17,6 @@ const Blog = () => {
   const filteredBlogs = useMemo(() => {
     const query = search.toLowerCase().trim();
     let blogs = [...allBlogs];
-    if (selectedTopics.length > 0) {
-      blogs = blogs.filter(b => selectedTopics.some(topic => b.topics.includes(topic)));
-    }
     if (query) {
       blogs = blogs.filter(b => b.title.toLowerCase().includes(query) || b.excerpt.toLowerCase().includes(query) || b.topics.some(t => t.toLowerCase().includes(query)));
     }
