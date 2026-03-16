@@ -15,6 +15,7 @@ import {
   type PlatformLinks,
   type ShareableClip,
 } from '@/lib/content-loader';
+import { isContentVisible } from '@/lib/content-manager';
 
 /** @deprecated Use SharedTopic from topics.ts */
 export const TOPICS = SHARED_TOPICS;
@@ -24,7 +25,15 @@ export type { PlatformLinks, ShareableClip };
 export type Episode = LoadedEpisode;
 
 /** All episodes, loaded from src/content/podcasts/ files */
-export const allEpisodes: Episode[] = loadAllEpisodes();
+const _allEpisodes: Episode[] = loadAllEpisodes();
+
+/** Published episodes (filtered by content manager) */
+export const allEpisodes: Episode[] = _allEpisodes.filter((ep) =>
+  isContentVisible("episode", String(ep.number))
+);
+
+/** All episodes including unpublished (for admin) */
+export const allEpisodesUnfiltered: Episode[] = _allEpisodes;
 
 export function getEpisodeBySlug(slug: string): Episode | undefined {
   return allEpisodes.find((ep) => ep.slug === slug);
