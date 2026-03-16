@@ -2,24 +2,21 @@ import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
-import BlogTopicFilter from "@/components/BlogTopicFilter";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowUpDown } from "lucide-react";
-import { allBlogs, type BlogTopic } from "@/data/blogData";
+import { allBlogs } from "@/data/blogData";
 import blogBanner from "@/assets/blog-banner.png";
 const POSTS_PER_PAGE = 9;
 const Blog = () => {
   const [search, setSearch] = useState("");
-  const [selectedTopics, setSelectedTopics] = useState<BlogTopic[]>([]);
+  
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
   const filteredBlogs = useMemo(() => {
     const query = search.toLowerCase().trim();
     let blogs = [...allBlogs];
-    if (selectedTopics.length > 0) {
-      blogs = blogs.filter(b => selectedTopics.some(topic => b.topics.includes(topic)));
-    }
     if (query) {
       blogs = blogs.filter(b => b.title.toLowerCase().includes(query) || b.excerpt.toLowerCase().includes(query) || b.topics.some(t => t.toLowerCase().includes(query)));
     }
@@ -29,10 +26,10 @@ const Blog = () => {
       return sortOrder === "newest" ? db - da : da - db;
     });
     return blogs;
-  }, [search, selectedTopics, sortOrder]);
+  }, [search, sortOrder]);
 
   // Reset pagination when filters change
-  const resetKey = `${search}-${selectedTopics.join()}-${sortOrder}`;
+  const resetKey = `${search}-${sortOrder}`;
   useMemo(() => setVisibleCount(POSTS_PER_PAGE), [resetKey]);
   const visibleBlogs = filteredBlogs.slice(0, visibleCount);
   const hasMore = visibleCount < filteredBlogs.length;
@@ -85,15 +82,8 @@ const Blog = () => {
                 </Button>
               </div>
 
-              {/* Mobile topic filter */}
-              <div className="lg:hidden mb-6">
-                <BlogTopicFilter selected={selectedTopics} onChange={setSelectedTopics} />
-              </div>
 
-              {/* Sidebar + Blog List */}
-              <div className="flex gap-10">
-                {/* Desktop sidebar */}
-                <BlogTopicFilter selected={selectedTopics} onChange={setSelectedTopics} />
+              <div>
 
                 {/* Blog grid */}
                 <div className="flex-1">
