@@ -180,21 +180,40 @@ const Episodes = () => {
                       {visibleEpisodes.map((episode) => (
                         <EpisodeCard key={episode.number} {...episode} />
                       ))}
-                      {hasMore && (
-                        <div className="text-center pt-6">
+                      {totalPages > 1 && (
+                        <div className="flex items-center justify-center gap-2 pt-8">
                           <Button
                             variant="outline"
-                            className="px-8"
-                            onClick={() =>
-                              setVisibleCount((c) => c + EPISODES_PER_PAGE)
-                            }
+                            size="icon"
+                            className="h-9 w-9"
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(p => p - 1)}
                           >
-                            Load More Episodes
+                            <ChevronLeft className="h-4 w-4" />
                           </Button>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            Showing {visibleEpisodes.length} of{" "}
-                            {filteredEpisodes.length} episodes
-                          </p>
+                          {Array.from({ length: totalPages }).map((_, i) => (
+                            <Button
+                              key={i + 1}
+                              variant={currentPage === i + 1 ? "default" : "outline"}
+                              size="icon"
+                              className="h-9 w-9"
+                              onClick={() => setCurrentPage(i + 1)}
+                            >
+                              {i + 1}
+                            </Button>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9"
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(p => p + 1)}
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                          <span className="text-xs text-muted-foreground ml-3">
+                            Page {currentPage} of {totalPages}
+                          </span>
                         </div>
                       )}
                     </>
