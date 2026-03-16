@@ -12,6 +12,9 @@ import Contact from "./pages/Contact";
 import EpisodeDetail from "./pages/EpisodeDetail";
 import TopicResults from "./pages/TopicResults";
 import Steps from "./pages/Steps";
+import Merch from "./pages/Merch";
+import ProductDetail from "./pages/ProductDetail";
+import MerchThankYou from "./pages/MerchThankYou";
 import NotFound from "./pages/NotFound";
 
 // Admin pages
@@ -40,6 +43,9 @@ const App = () => (
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/topics/:topic" element={<TopicResults />} />
           <Route path="/steps" element={<Steps />} />
+          <Route path="/merch" element={<Merch />} />
+          <Route path="/merch/thank-you" element={<MerchThankYou />} />
+          <Route path="/merch/:slug" element={<ProductDetail />} />
           <Route path="/contact" element={<Contact />} />
 
           {/* Admin Dashboard */}
