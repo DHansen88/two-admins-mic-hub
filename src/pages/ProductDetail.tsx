@@ -1,10 +1,10 @@
-import { useState, useRef, useSyncExternalStore } from "react";
+import { useState, useRef, useMemo, useSyncExternalStore } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
-  getProductBySlug,
-  getApprovedReviewsForProduct,
+  getProducts,
+  getReviews,
   getAvgRating,
   addReview,
   subscribeProducts,
