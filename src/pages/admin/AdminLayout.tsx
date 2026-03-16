@@ -9,6 +9,7 @@ import {
   Mail,
   Library,
   ShoppingBag,
+  Megaphone,
   LogOut,
   ChevronLeft,
 } from "lucide-react";
