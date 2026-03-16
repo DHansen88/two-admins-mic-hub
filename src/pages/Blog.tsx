@@ -6,7 +6,7 @@ import BlogCard from "@/components/BlogCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowUpDown } from "lucide-react";
-import { allBlogs, type BlogTopic } from "@/data/blogData";
+import { allBlogs } from "@/data/blogData";
 import blogBanner from "@/assets/blog-banner.png";
 const POSTS_PER_PAGE = 9;
 const Blog = () => {
