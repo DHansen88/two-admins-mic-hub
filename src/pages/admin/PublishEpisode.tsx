@@ -150,7 +150,10 @@ const PublishEpisode = () => {
     number: parseInt(episodeNumber) || 0,
     title,
     slug: `episode-${episodeNumber}-${generateSlug(title)}`,
-    description,
+    description: useBlockEditor
+      ? descriptionBlocks.map(b => ('text' in b ? b.text : '')).filter(Boolean).join(' ')
+      : description,
+    descriptionBlocks: useBlockEditor && descriptionBlocks.length > 0 ? descriptionBlocks : undefined,
     duration,
     date: publishDate,
     topics: selectedTopics,
