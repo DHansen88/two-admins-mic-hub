@@ -60,7 +60,7 @@ const Hero = () => {
 
           {/* Hero Logo */}
           <div className="flex justify-center">
-            <img src={heroLogo} alt="Two Admins & a Mic" className="w-72 md:w-96 lg:w-[480px] h-auto drop-shadow-2xl" />
+            <img src={heroLogo} alt="Two Admins & a Mic" className="w-56 sm:w-72 md:w-96 lg:w-[480px] h-auto drop-shadow-2xl" />
           </div>
 
           {/* Subtitle */}
