@@ -216,23 +216,70 @@ const ProductDetail = () => {
               </Link>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-                {/* Image Gallery */}
+                {/* Image Gallery Carousel */}
                 <div className="space-y-4">
-                  <div className="aspect-square bg-muted/20 rounded-2xl overflow-hidden border border-border">
+                  <div className="relative aspect-square bg-muted/20 rounded-2xl overflow-hidden border border-border group">
                     <img
                       src={product.images[selectedImage]?.src || "/placeholder.svg"}
                       alt={product.images[selectedImage]?.alt || product.name}
-                      className="w-full h-full object-contain p-8"
+                      className="w-full h-full object-contain p-8 transition-transform duration-300"
                     />
+
+                    {/* Zoom button */}
+                    <button
+                      onClick={openZoom}
+                      className="absolute top-3 right-3 h-9 w-9 rounded-full bg-card/80 backdrop-blur border border-border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card"
+                      aria-label="Zoom image"
+                    >
+                      <ZoomIn className="h-4 w-4 text-foreground" />
+                    </button>
+
+                    {/* Prev / Next arrows */}
+                    {imageCount > 1 && (
+                      <>
+                        <button
+                          onClick={prevImage}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-card/80 backdrop-blur border border-border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card"
+                          aria-label="Previous image"
+                        >
+                          <ChevronLeft className="h-5 w-5 text-foreground" />
+                        </button>
+                        <button
+                          onClick={nextImage}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-card/80 backdrop-blur border border-border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card"
+                          aria-label="Next image"
+                        >
+                          <ChevronRight className="h-5 w-5 text-foreground" />
+                        </button>
+                      </>
+                    )}
+
+                    {/* Dot indicators */}
+                    {imageCount > 1 && (
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                        {product.images.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setSelectedImage(i)}
+                            className={`h-2 rounded-full transition-all ${
+                              selectedImage === i ? "w-6 bg-accent" : "w-2 bg-foreground/30 hover:bg-foreground/50"
+                            }`}
+                            aria-label={`View image ${i + 1}`}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  {product.images.length > 1 && (
+
+                  {/* Thumbnails */}
+                  {imageCount > 1 && (
                     <div className="flex gap-3">
                       {product.images.map((img, i) => (
                         <button
                           key={i}
                           onClick={() => setSelectedImage(i)}
                           className={`w-20 h-20 rounded-lg border-2 overflow-hidden transition-all ${
-                            selectedImage === i ? "border-accent" : "border-border hover:border-accent/50"
+                            selectedImage === i ? "border-accent ring-2 ring-accent/20" : "border-border hover:border-accent/50"
                           }`}
                         >
                           <img src={img.src} alt={img.alt} className="w-full h-full object-contain p-2" />
@@ -241,6 +288,74 @@ const ProductDetail = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Zoom Modal */}
+                <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
+                  <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto h-auto p-0 border-none bg-black/95 overflow-hidden [&>button]:hidden">
+                    <div className="relative w-[90vw] h-[90vh] flex items-center justify-center">
+                      {/* Close */}
+                      <button
+                        onClick={() => setZoomOpen(false)}
+                        className="absolute top-4 right-4 z-10 h-10 w-10 rounded-full bg-card/80 backdrop-blur border border-border flex items-center justify-center hover:bg-card transition-colors"
+                        aria-label="Close zoom"
+                      >
+                        <X className="h-5 w-5 text-foreground" />
+                      </button>
+
+                      {/* Zoom controls */}
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-3 bg-card/80 backdrop-blur border border-border rounded-full px-4 py-2">
+                        <button onClick={() => setZoomScale((s) => Math.max(1, s - 0.5))} className="text-foreground hover:text-accent transition-colors" aria-label="Zoom out">
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <span className="text-xs text-muted-foreground min-w-[3ch] text-center">{Math.round(zoomScale * 100)}%</span>
+                        <button onClick={() => setZoomScale((s) => Math.min(4, s + 0.5))} className="text-foreground hover:text-accent transition-colors" aria-label="Zoom in">
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      {/* Prev / Next in zoom */}
+                      {imageCount > 1 && (
+                        <>
+                          <button
+                            onClick={() => { prevImage(); setZoomScale(1); setZoomPos({ x: 0, y: 0 }); }}
+                            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full bg-card/80 backdrop-blur border border-border flex items-center justify-center hover:bg-card transition-colors"
+                            aria-label="Previous image"
+                          >
+                            <ChevronLeft className="h-5 w-5 text-foreground" />
+                          </button>
+                          <button
+                            onClick={() => { nextImage(); setZoomScale(1); setZoomPos({ x: 0, y: 0 }); }}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full bg-card/80 backdrop-blur border border-border flex items-center justify-center hover:bg-card transition-colors"
+                            aria-label="Next image"
+                          >
+                            <ChevronRight className="h-5 w-5 text-foreground" />
+                          </button>
+                        </>
+                      )}
+
+                      {/* Zoomable image */}
+                      <div
+                        className="w-full h-full flex items-center justify-center select-none"
+                        onWheel={handleZoomWheel}
+                        onPointerDown={handleZoomPointerDown}
+                        onPointerMove={handleZoomPointerMove}
+                        onPointerUp={handleZoomPointerUp}
+                        style={{ cursor: zoomScale > 1 ? (isDragging ? "grabbing" : "grab") : "zoom-in" }}
+                        onDoubleClick={() => setZoomScale((s) => (s > 1 ? 1 : 2))}
+                      >
+                        <img
+                          src={product.images[selectedImage]?.src || "/placeholder.svg"}
+                          alt={product.images[selectedImage]?.alt || product.name}
+                          className="max-w-full max-h-full object-contain transition-transform duration-150 pointer-events-none"
+                          style={{
+                            transform: `scale(${zoomScale}) translate(${zoomPos.x / zoomScale}px, ${zoomPos.y / zoomScale}px)`,
+                          }}
+                          draggable={false}
+                        />
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
 
                 {/* Product Info */}
                 <div className="space-y-6">
