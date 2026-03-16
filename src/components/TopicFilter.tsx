@@ -1,13 +1,15 @@
-import { TOPICS, type Topic } from "@/data/episodeData";
+import { getTagNames } from "@/data/tags";
 import { Checkbox } from "./ui/checkbox";
 
 interface TopicFilterProps {
-  selected: Topic[];
-  onChange: (topics: Topic[]) => void;
+  selected: string[];
+  onChange: (topics: string[]) => void;
 }
 
 const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
-  const toggle = (topic: Topic) => {
+  const topics = getTagNames();
+
+  const toggle = (topic: string) => {
     onChange(
       selected.includes(topic)
         ? selected.filter((t) => t !== topic)
@@ -35,7 +37,7 @@ const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
           >
             All Topics
           </button>
-          {TOPICS.map((topic) => {
+          {topics.map((topic) => {
             const isActive = selected.includes(topic);
             return (
               <label
@@ -71,7 +73,7 @@ const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
           >
             All
           </button>
-          {TOPICS.map((topic) => {
+          {topics.map((topic) => {
             const isActive = selected.includes(topic);
             return (
               <button

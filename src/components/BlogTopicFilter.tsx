@@ -1,13 +1,15 @@
-import { BLOG_TOPICS, type BlogTopic } from "@/data/blogData";
+import { getTagNames } from "@/data/tags";
 import { Checkbox } from "./ui/checkbox";
 
 interface BlogTopicFilterProps {
-  selected: BlogTopic[];
-  onChange: (topics: BlogTopic[]) => void;
+  selected: string[];
+  onChange: (topics: string[]) => void;
 }
 
 const BlogTopicFilter = ({ selected, onChange }: BlogTopicFilterProps) => {
-  const toggle = (topic: BlogTopic) => {
+  const topics = getTagNames();
+
+  const toggle = (topic: string) => {
     onChange(
       selected.includes(topic)
         ? selected.filter((t) => t !== topic)
@@ -35,7 +37,7 @@ const BlogTopicFilter = ({ selected, onChange }: BlogTopicFilterProps) => {
           >
             All Topics
           </button>
-          {BLOG_TOPICS.map((topic) => {
+          {topics.map((topic) => {
             const isActive = selected.includes(topic);
             return (
               <label
@@ -71,7 +73,7 @@ const BlogTopicFilter = ({ selected, onChange }: BlogTopicFilterProps) => {
           >
             All
           </button>
-          {BLOG_TOPICS.map((topic) => {
+          {topics.map((topic) => {
             const isActive = selected.includes(topic);
             return (
               <button

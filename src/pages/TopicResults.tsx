@@ -4,14 +4,15 @@ import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
 import EpisodeCard from "@/components/EpisodeCard";
 import TopicTag from "@/components/TopicTag";
-import { SHARED_TOPICS, type SharedTopic } from "@/data/topics";
+import { getTagNames } from "@/data/tags";
 import { getContentByTopic } from "@/data/crossLinks";
 import { ArrowLeft } from "lucide-react";
 
 const TopicResults = () => {
   const { topic } = useParams<{ topic: string }>();
-  const decodedTopic = decodeURIComponent(topic || "") as SharedTopic;
-  const isValid = SHARED_TOPICS.includes(decodedTopic);
+  const decodedTopic = decodeURIComponent(topic || "");
+  const allTopics = getTagNames();
+  const isValid = allTopics.includes(decodedTopic);
 
   if (!isValid) {
     return (
@@ -35,7 +36,7 @@ const TopicResults = () => {
     );
   }
 
-  const { blogs, episodes } = getContentByTopic(decodedTopic);
+  const { blogs, episodes } = getContentByTopic(decodedTopic as any);
 
   return (
     <div className="min-h-screen">
@@ -76,7 +77,7 @@ const TopicResults = () => {
 
               {/* Other topic tags */}
               <div className="flex flex-wrap gap-2 mt-6">
-                {SHARED_TOPICS.filter((t) => t !== decodedTopic).map((t) => (
+                {allTopics.filter((t) => t !== decodedTopic).map((t) => (
                   <TopicTag key={t} topic={t} variant="light" />
                 ))}
               </div>

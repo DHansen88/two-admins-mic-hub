@@ -6,14 +6,14 @@ import BlogTopicFilter from "@/components/BlogTopicFilter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { allBlogs, type BlogTopic } from "@/data/blogData";
+import { allBlogs } from "@/data/blogData";
 import blogBanner from "@/assets/blog-banner.png";
 
 const POSTS_PER_PAGE = 6;
 
 const Blog = () => {
   const [search, setSearch] = useState("");
-  const [selectedTopics, setSelectedTopics] = useState<BlogTopic[]>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [currentPage, setCurrentPage] = useState(1);
 

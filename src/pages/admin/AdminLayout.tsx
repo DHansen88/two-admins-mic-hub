@@ -10,6 +10,7 @@ import {
   Library,
   ShoppingBag,
   Megaphone,
+  Tags,
   LogOut,
   ChevronLeft,
 } from "lucide-react";
@@ -18,6 +19,7 @@ const navItems = [
   { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
   { label: "Publish Episode", path: "/admin/publish-episode", icon: Mic },
   { label: "Publish Blog", path: "/admin/publish-blog", icon: FileText },
+  { label: "Tag Manager", path: "/admin/tags", icon: Tags },
   { label: "Newsletter Drafts", path: "/admin/newsletters", icon: Mail },
   { label: "Content Library", path: "/admin/library", icon: Library },
   { label: "Merchandise", path: "/admin/merchandise", icon: ShoppingBag },

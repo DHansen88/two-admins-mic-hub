@@ -6,14 +6,14 @@ import FeaturedEpisode from "@/components/FeaturedEpisode";
 import TopicFilter from "@/components/TopicFilter";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { allEpisodes, type Topic } from "@/data/episodeData";
+import { allEpisodes } from "@/data/episodeData";
 import { Button } from "@/components/ui/button";
 
 const EPISODES_PER_PAGE = 5;
 
 const Episodes = () => {
   const [search, setSearch] = useState("");
-  const [selectedTopics, setSelectedTopics] = useState<Topic[]>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const latestEpisode = allEpisodes[0];

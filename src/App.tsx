@@ -29,6 +29,7 @@ import NewsletterDrafts from "./pages/admin/NewsletterDrafts";
 import ContentLibrary from "./pages/admin/ContentLibrary";
 import ManageMerch from "./pages/admin/ManageMerch";
 import ManagePopups from "./pages/admin/ManagePopups";
+import ManageTags from "./pages/admin/ManageTags";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App = () => (
             <Route path="library" element={<ContentLibrary />} />
             <Route path="merchandise" element={<ManageMerch />} />
             <Route path="popups" element={<ManagePopups />} />
+            <Route path="tags" element={<ManageTags />} />
           </Route>
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
