@@ -16,6 +16,7 @@ import {
   Lightbulb,
   Blocks,
   Code,
+  List,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAllTags, addTag, generateTagSlug, suggestTags, type Tag } from "@/data/tags";
