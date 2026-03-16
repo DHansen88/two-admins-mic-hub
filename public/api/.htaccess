@@ -1,0 +1,14 @@
+<?php
+/**
+ * .htaccess for the /api directory
+ * Enables PHP processing and URL rewriting on Hostinger
+ */
+?>
+RewriteEngine On
+
+# Handle OPTIONS preflight requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# Ensure PHP files are processed
+AddHandler application/x-httpd-php .php
