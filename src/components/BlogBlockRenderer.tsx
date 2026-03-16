@@ -46,7 +46,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
     case "paragraph":
       return (
         <p
-          className="text-muted-foreground leading-[1.7] mb-5"
+          className="text-muted-foreground leading-[1.75] mb-6 text-justify hyphens-auto"
           dangerouslySetInnerHTML={{
             __html: block.text
               .replace(/\*\*(.+?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
@@ -60,9 +60,9 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
     case "list":
       if (block.style === "numbered") {
         return (
-          <ol className="my-5 space-y-2 pl-1 counter-reset-list">
+          <ol className="my-6 space-y-2.5 pl-1 counter-reset-list">
             {block.items.map((item, i) => (
-              <li key={i} className="flex items-start gap-3 text-muted-foreground leading-[1.7]">
+              <li key={i} className="flex items-start gap-3 text-muted-foreground leading-[1.75]">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0 mt-0.5">
                   {i + 1}
                 </span>
@@ -73,9 +73,9 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
         );
       }
       return (
-        <ul className="my-5 space-y-2 pl-1">
+        <ul className="my-6 space-y-2.5 pl-1">
           {block.items.map((item, i) => (
-            <li key={i} className="flex items-start gap-3 text-muted-foreground leading-[1.7]">
+            <li key={i} className="flex items-start gap-3 text-muted-foreground leading-[1.75]">
               <span className="mt-2.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
               <span>{item}</span>
             </li>
@@ -87,7 +87,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
       return (
         <blockquote className="my-8 relative pl-6 border-l-4 border-accent/40 py-2">
           <Quote className="absolute -left-3 -top-2 h-6 w-6 text-accent/30" />
-          <p className="text-lg text-foreground/80 italic leading-[1.7]">
+          <p className="text-lg text-foreground/80 italic leading-[1.75]">
             {block.text}
           </p>
           {block.attribution && (
@@ -107,7 +107,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
               {block.title}
             </p>
           )}
-          <p className="text-muted-foreground leading-[1.7]">{block.text}</p>
+          <p className="text-muted-foreground leading-[1.75]">{block.text}</p>
         </div>
       );
 
@@ -117,7 +117,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
           <img
             src={block.src}
             alt={block.alt || block.caption || ""}
-            className="w-full rounded-lg"
+            className="w-full h-auto rounded-lg max-w-full"
             loading="lazy"
           />
           {block.caption && (
@@ -155,7 +155,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
       const embedHtml = getEmbedHtml(block.url);
       if (embedHtml) {
         return (
-          <div className="my-8">
+          <div className="my-8 max-w-full overflow-hidden">
             <div dangerouslySetInnerHTML={{ __html: embedHtml }} />
             {block.caption && (
               <p className="mt-2 text-center text-sm text-muted-foreground italic">

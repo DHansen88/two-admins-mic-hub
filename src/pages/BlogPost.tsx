@@ -197,25 +197,24 @@ const BlogPost = () => {
         </section>
 
         {/* Article Content */}
-        <section className="py-16 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
+        <section className="py-12 md:py-16 bg-background">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="max-w-[1200px] mx-auto">
               {/* Episode Callout — full container width, above the grid */}
               {calloutEpisode && <EpisodeCallout episode={calloutEpisode} />}
 
-              <div className="grid lg:grid-cols-[200px_1fr_240px] gap-8">
-                {/* TOC Sidebar (left) */}
-                {tocItems.length > 0 && (
-                  <TableOfContents items={tocItems} />
-                )}
-                {/* Collapse left col when no TOC */}
-                {tocItems.length === 0 && <div className="hidden lg:block" />}
-
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-10 lg:gap-12">
                 {/* Main Content */}
-                <article>
+                <article className="min-w-0">
                   {/* Mobile TOC */}
                   {tocItems.length > 0 && (
-                    <div className="lg:hidden">
+                    <div className="lg:hidden mb-8">
+                      <TableOfContents items={tocItems} />
+                    </div>
+                  )}
+                  {/* Desktop TOC — inline above content on large screens */}
+                  {tocItems.length > 0 && (
+                    <div className="hidden lg:block mb-10">
                       <TableOfContents items={tocItems} />
                     </div>
                   )}
@@ -223,7 +222,7 @@ const BlogPost = () => {
                     <BlogBlockRenderer blocks={post.blocks} />
                   ) : (
                     <div
-                      className="prose prose-lg max-w-[760px] prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-p:leading-[1.7] prose-strong:text-foreground prose-li:text-muted-foreground prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-5 prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-ul:my-5 prose-li:my-1 animate-fade-in"
+                      className="prose prose-lg max-w-[760px] prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-p:leading-[1.75] prose-p:text-justify prose-p:mb-6 prose-strong:text-foreground prose-li:text-muted-foreground prose-li:leading-[1.75] prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-12 prose-h2:mb-5 prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-ul:my-5 prose-li:my-1 prose-img:rounded-lg prose-img:w-full animate-fade-in"
                       dangerouslySetInnerHTML={{
                         __html: marked.parse(post.content, { async: false }) as string,
                       }}
@@ -231,7 +230,7 @@ const BlogPost = () => {
                   )}
                 </article>
 
-                {/* Author Sidebar (right) */}
+                {/* Author Sidebar (right) — hidden below lg */}
                 <aside className="hidden lg:block">
                   <div className="sticky top-24 space-y-6">
                     <div className="p-6 bg-card rounded-xl border border-border">
@@ -254,6 +253,28 @@ const BlogPost = () => {
                     </div>
                   </div>
                 </aside>
+
+                {/* Mobile Author Card — shown below lg */}
+                <div className="lg:hidden">
+                  <div className="p-6 bg-card rounded-xl border border-border">
+                    <h3 className="font-display font-semibold text-foreground mb-4">
+                      About the Author
+                    </h3>
+                    <div className="flex items-center space-x-3 mb-4">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={post.author.avatar} alt={post.author.name} />
+                        <AvatarFallback className="bg-teal text-background">
+                          {post.author.name.split(" ").map((n) => n[0]).join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium text-foreground">{post.author.name}</p>
+                        <p className="text-sm text-muted-foreground">{post.author.role}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{post.author.bio}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
