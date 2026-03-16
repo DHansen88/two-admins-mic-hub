@@ -62,6 +62,8 @@ const PublishBlog = () => {
   const [newTagName, setNewTagName] = useState("");
   const [suggestedTags, setSuggestedTags] = useState<Tag[]>([]);
   const [editorMode, setEditorMode] = useState<"blocks" | "markdown">("blocks");
+  const [relatedEpisode, setRelatedEpisode] = useState("");
+  const [showEpisodeCallout, setShowEpisodeCallout] = useState(true);
 
   // Block editor state
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
