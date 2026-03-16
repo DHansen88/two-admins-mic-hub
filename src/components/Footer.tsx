@@ -53,6 +53,12 @@ const Footer = () => {
                 <NavLink to="/episodes" className="text-background/70 hover:text-teal transition-colors">
                   Podcast
                 </NavLink>
+                <NavLink to="/blog" className="text-background/70 hover:text-teal transition-colors">
+                  Blog
+                </NavLink>
+                <NavLink to="/steps" className="text-background/70 hover:text-teal transition-colors">
+                  STEPS
+                </NavLink>
                 <NavLink to="/contact" className="text-background/70 hover:text-teal transition-colors">
                   Contact
                 </NavLink>
