@@ -231,21 +231,21 @@ const ProductDetail = () => {
                   )}
 
                   {/* Quantity Selector — stock-aware */}
-                  <div className="space-y-3 pt-2">
-                    <label className="text-sm font-semibold text-foreground uppercase tracking-wide">Quantity</label>
-                    <div className="inline-flex items-center gap-3">
+                  <div className="pt-2">
+                    <label className="block text-sm font-semibold text-foreground uppercase tracking-wide mb-4">Quantity</label>
+                    <div className="flex items-center gap-5">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="h-10 w-10 flex items-center justify-center rounded-full border border-border bg-card text-foreground hover:bg-muted/60 hover:border-accent/50 active:scale-95 transition-all"
+                        className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full border border-border bg-card text-foreground hover:bg-muted/60 hover:border-accent/50 active:scale-95 transition-all"
                         aria-label="Decrease quantity"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
-                      <span className="w-10 text-center text-lg font-semibold text-foreground select-none">{quantity}</span>
+                      <span className="min-w-[24px] text-center text-lg font-semibold text-foreground select-none">{quantity}</span>
                       <button
                         onClick={() => setQuantity(Math.min(maxQty, quantity + 1))}
                         disabled={quantity >= maxQty}
-                        className="h-10 w-10 flex items-center justify-center rounded-full border border-border bg-card text-foreground hover:bg-muted/60 hover:border-accent/50 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full border border-border bg-card text-foreground hover:bg-muted/60 hover:border-accent/50 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                         aria-label="Increase quantity"
                       >
                         <Plus className="h-4 w-4" />
