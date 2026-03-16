@@ -1,6 +1,6 @@
-import { allBlogs, type BlogPost } from "./blogData";
-import { allEpisodes, type Episode } from "./episodeData";
-import type { SharedTopic } from "./topics";
+import { allBlogs, type BlogPost } from './blogData';
+import { allEpisodes, type Episode } from './episodeData';
+import type { SharedTopic } from './topics';
 
 /**
  * Find podcast episodes related to a blog post by shared topic tags.
