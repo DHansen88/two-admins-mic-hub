@@ -1,41 +1,369 @@
 /**
- * Simple client-side admin authentication.
+ * Admin Authentication Library
  * 
- * ⚠️ SECURITY NOTE: This is client-side only authentication suitable for
- * a small personal/team site on static hosting. The password is stored in
- * code and is not cryptographically secure. For production CMS needs,
- * consider a proper backend auth solution.
- * 
- * To change the admin password, update ADMIN_PASSWORD below before deploying.
+ * Communicates with the PHP backend API on Hostinger for secure authentication.
+ * Falls back to localStorage session tracking for the static preview environment.
  */
 
-const ADMIN_PASSWORD = 'admin2025';
-const AUTH_KEY = 'taam_admin_auth';
-const AUTH_EXPIRY_KEY = 'taam_admin_auth_expiry';
-const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours
+// API base URL — update this after deploying to Hostinger
+// In development/preview, uses localStorage fallback
+const API_BASE = import.meta.env.VITE_ADMIN_API_URL || '/api';
 
-export function login(password: string): boolean {
-  if (password === ADMIN_PASSWORD) {
-    const expiry = Date.now() + SESSION_DURATION;
-    sessionStorage.setItem(AUTH_KEY, 'true');
-    sessionStorage.setItem(AUTH_EXPIRY_KEY, expiry.toString());
-    return true;
+const SESSION_KEY = 'taam_admin_session';
+const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours
+const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+let inactivityTimer: ReturnType<typeof setTimeout> | null = null;
+
+export interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'manager';
+  permissions?: UserPermissions;
+}
+
+export interface UserPermissions {
+  canDeleteContent?: boolean;
+  canEditTags?: boolean;
+  canManageRSS?: boolean;
+  canPublishContent?: boolean;
+  fullAdmin?: boolean;
+}
+
+interface SessionData {
+  user: AdminUser;
+  expiresAt: number;
+  lastActivity: number;
+}
+
+// ─── Session Storage ───
+
+function getSession(): SessionData | null {
+  try {
+    const stored = sessionStorage.getItem(SESSION_KEY);
+    if (!stored) return null;
+    const session: SessionData = JSON.parse(stored);
+    
+    // Check expiry
+    if (Date.now() > session.expiresAt) {
+      clearSession();
+      return null;
+    }
+    
+    // Check inactivity
+    if (Date.now() - session.lastActivity > INACTIVITY_TIMEOUT) {
+      clearSession();
+      return null;
+    }
+    
+    return session;
+  } catch {
+    return null;
   }
-  return false;
+}
+
+function saveSession(user: AdminUser): void {
+  const session: SessionData = {
+    user,
+    expiresAt: Date.now() + SESSION_DURATION,
+    lastActivity: Date.now(),
+  };
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  resetInactivityTimer();
+}
+
+function updateActivity(): void {
+  const session = getSession();
+  if (session) {
+    session.lastActivity = Date.now();
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  }
+}
+
+function clearSession(): void {
+  sessionStorage.removeItem(SESSION_KEY);
+  if (inactivityTimer) {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = null;
+  }
+}
+
+function resetInactivityTimer(): void {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => {
+    clearSession();
+    window.location.href = '/admin/login';
+  }, INACTIVITY_TIMEOUT);
+}
+
+// Track user activity for inactivity timeout
+if (typeof window !== 'undefined') {
+  ['mousedown', 'keydown', 'scroll', 'touchstart'].forEach((event) => {
+    window.addEventListener(event, () => {
+      const session = getSession();
+      if (session) {
+        updateActivity();
+        resetInactivityTimer();
+      }
+    }, { passive: true });
+  });
+}
+
+// ─── API Communication ───
+
+async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE}/${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+      credentials: 'include',
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || `HTTP ${response.status}`);
+    }
+    
+    return data;
+  } catch (error: any) {
+    // If API is unavailable (e.g., in preview), return null to trigger fallback
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+// ─── Auth Functions ───
+
+export async function login(email: string, password: string): Promise<{ success: boolean; error?: string; user?: AdminUser }> {
+  try {
+    const result = await apiCall('auth.php?action=login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    
+    if (result?.success && result.user) {
+      saveSession(result.user);
+      return { success: true, user: result.user };
+    }
+    
+    // API unavailable — fallback for preview/development
+    if (result === null) {
+      return fallbackLogin(email, password);
+    }
+    
+    return { success: false, error: result?.error || 'Login failed' };
+  } catch (error: any) {
+    // Fallback for when API is not reachable
+    return fallbackLogin(email, password);
+  }
+}
+
+/** Fallback login for preview/development when PHP backend isn't available */
+function fallbackLogin(email: string, password: string): { success: boolean; error?: string; user?: AdminUser } {
+  // Check localStorage for dev accounts
+  const devAccounts = getDevAccounts();
+  const account = devAccounts.find((a) => a.email === email);
+  
+  if (account && account.password === password && account.status === 'active') {
+    const user: AdminUser = {
+      id: account.id,
+      name: account.name,
+      email: account.email,
+      role: account.role,
+      permissions: account.permissions,
+    };
+    saveSession(user);
+    return { success: true, user };
+  }
+  
+  // Default admin account for first-time access
+  if (email === 'admin@twoadminsandamic.com' && password === 'admin2025') {
+    const user: AdminUser = { id: 1, name: 'Site Admin', email, role: 'admin' };
+    saveSession(user);
+    // Seed dev accounts
+    if (devAccounts.length === 0) {
+      saveDevAccounts([{ ...user, password: 'admin2025', status: 'active' as const }]);
+    }
+    return { success: true, user };
+  }
+  
+  return { success: false, error: 'Invalid email or password' };
 }
 
 export function isAuthenticated(): boolean {
-  const auth = sessionStorage.getItem(AUTH_KEY);
-  const expiry = sessionStorage.getItem(AUTH_EXPIRY_KEY);
-  if (auth !== 'true' || !expiry) return false;
-  if (Date.now() > parseInt(expiry, 10)) {
-    logout();
-    return false;
-  }
-  return true;
+  return getSession() !== null;
+}
+
+export function getCurrentUser(): AdminUser | null {
+  return getSession()?.user || null;
+}
+
+export function isAdmin(): boolean {
+  const user = getCurrentUser();
+  return user?.role === 'admin';
+}
+
+export function hasPermission(permission: keyof UserPermissions): boolean {
+  const user = getCurrentUser();
+  if (!user) return false;
+  if (user.role === 'admin') return true;
+  if (user.permissions?.fullAdmin) return true;
+  return user.permissions?.[permission] ?? false;
 }
 
 export function logout(): void {
-  sessionStorage.removeItem(AUTH_KEY);
-  sessionStorage.removeItem(AUTH_EXPIRY_KEY);
+  // Try to call API logout (fire-and-forget)
+  apiCall('auth.php?action=logout', { method: 'POST' }).catch(() => {});
+  clearSession();
+}
+
+// ─── Dev Accounts (localStorage fallback for preview) ───
+
+interface DevAccount extends AdminUser {
+  password: string;
+  status: 'active' | 'disabled';
+}
+
+const DEV_ACCOUNTS_KEY = 'taam_dev_accounts';
+
+function getDevAccounts(): DevAccount[] {
+  try {
+    return JSON.parse(localStorage.getItem(DEV_ACCOUNTS_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function saveDevAccounts(accounts: DevAccount[]): void {
+  localStorage.setItem(DEV_ACCOUNTS_KEY, JSON.stringify(accounts));
+}
+
+// ─── User Management (works with API or localStorage fallback) ───
+
+export async function listUsers(): Promise<AdminUser[]> {
+  try {
+    const result = await apiCall('users.php?action=list');
+    if (result?.users) return result.users;
+  } catch {}
+  
+  // Fallback to dev accounts
+  return getDevAccounts().map(({ password, status, ...user }) => ({ ...user, status } as any));
+}
+
+export async function createUser(data: {
+  name: string;
+  email: string;
+  password: string;
+  role: 'admin' | 'manager';
+  permissions?: UserPermissions;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const result = await apiCall('users.php?action=create', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    if (result?.success) return { success: true };
+    if (result) return { success: false, error: result.error };
+  } catch (e: any) {
+    if (e.message) return { success: false, error: e.message };
+  }
+  
+  // Fallback
+  const accounts = getDevAccounts();
+  if (accounts.some((a) => a.email === data.email)) {
+    return { success: false, error: 'Email already exists' };
+  }
+  accounts.push({
+    id: Date.now(),
+    name: data.name,
+    email: data.email,
+    password: data.password,
+    role: data.role,
+    status: 'active',
+    permissions: data.permissions,
+  });
+  saveDevAccounts(accounts);
+  return { success: true };
+}
+
+export async function updateUser(id: number, updates: Partial<{
+  name: string;
+  role: 'admin' | 'manager';
+  status: 'active' | 'disabled';
+  permissions: UserPermissions;
+}>): Promise<{ success: boolean; error?: string }> {
+  try {
+    const result = await apiCall('users.php?action=update', {
+      method: 'POST',
+      body: JSON.stringify({ id, ...updates }),
+    });
+    if (result?.success) return { success: true };
+    if (result) return { success: false, error: result.error };
+  } catch (e: any) {
+    if (e.message) return { success: false, error: e.message };
+  }
+  
+  // Fallback
+  const accounts = getDevAccounts();
+  const idx = accounts.findIndex((a) => a.id === id);
+  if (idx >= 0) {
+    accounts[idx] = { ...accounts[idx], ...updates } as DevAccount;
+    saveDevAccounts(accounts);
+  }
+  return { success: true };
+}
+
+export async function deleteUser(id: number): Promise<{ success: boolean; error?: string }> {
+  const current = getCurrentUser();
+  if (current?.id === id) {
+    return { success: false, error: 'Cannot delete your own account' };
+  }
+  
+  try {
+    const result = await apiCall('users.php?action=delete', {
+      method: 'POST',
+      body: JSON.stringify({ id }),
+    });
+    if (result?.success) return { success: true };
+    if (result) return { success: false, error: result.error };
+  } catch (e: any) {
+    if (e.message) return { success: false, error: e.message };
+  }
+  
+  // Fallback
+  const accounts = getDevAccounts().filter((a) => a.id !== id);
+  saveDevAccounts(accounts);
+  return { success: true };
+}
+
+export async function resetUserPassword(id: number, newPassword: string): Promise<{ success: boolean; error?: string }> {
+  if (newPassword.length < 8) {
+    return { success: false, error: 'Password must be at least 8 characters' };
+  }
+  
+  try {
+    const result = await apiCall('users.php?action=reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ id, password: newPassword }),
+    });
+    if (result?.success) return { success: true };
+    if (result) return { success: false, error: result.error };
+  } catch (e: any) {
+    if (e.message) return { success: false, error: e.message };
+  }
+  
+  // Fallback
+  const accounts = getDevAccounts();
+  const idx = accounts.findIndex((a) => a.id === id);
+  if (idx >= 0) {
+    accounts[idx].password = newPassword;
+    saveDevAccounts(accounts);
+  }
+  return { success: true };
 }

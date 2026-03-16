@@ -4,23 +4,35 @@ import { login } from "@/lib/admin-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lock, AlertCircle } from "lucide-react";
+import { Lock, AlertCircle, Mail, KeyRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const AdminLogin = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(password)) {
-      toast({ title: "Welcome to the Admin Dashboard" });
-      navigate("/admin");
-    } else {
-      setError(true);
-      setPassword("");
+    setError("");
+    setLoading(true);
+
+    try {
+      const result = await login(email, password);
+      if (result.success && result.user) {
+        toast({ title: `Welcome back, ${result.user.name}!` });
+        navigate("/admin");
+      } else {
+        setError(result.error || "Invalid credentials");
+        setPassword("");
+      }
+    } catch {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,28 +53,57 @@ const AdminLogin = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Input
-                type="password"
-                placeholder="Enter admin password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError(false);
-                }}
-                className="h-12"
-                autoFocus
-              />
-              {error && (
-                <p className="text-sm text-destructive flex items-center gap-1">
-                  <AlertCircle className="h-3.5 w-3.5" />
-                  Incorrect password. Please try again.
-                </p>
-              )}
+              <label className="text-sm font-medium text-foreground">Email</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  placeholder="admin@twoadminsandamic.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError("");
+                  }}
+                  className="h-12 pl-10"
+                  autoFocus
+                  required
+                />
+              </div>
             </div>
-            <Button type="submit" className="w-full h-12" disabled={!password}>
-              Sign In
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Password</label>
+              <div className="relative">
+                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError("");
+                  }}
+                  className="h-12 pl-10"
+                  required
+                />
+              </div>
+            </div>
+            {error && (
+              <p className="text-sm text-destructive flex items-center gap-1.5 bg-destructive/10 px-3 py-2 rounded-md">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                {error}
+              </p>
+            )}
+            <Button
+              type="submit"
+              className="w-full h-12"
+              disabled={!email || !password || loading}
+            >
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
+          <p className="text-xs text-muted-foreground text-center mt-4">
+            Contact your administrator if you need access.
+          </p>
         </CardContent>
       </Card>
     </div>
