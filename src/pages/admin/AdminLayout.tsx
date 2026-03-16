@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
-import { isAuthenticated, logout } from "@/lib/admin-auth";
+import { isAuthenticated, logout, getCurrentUser, isAdmin } from "@/lib/admin-auth";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -11,24 +11,28 @@ import {
   ShoppingBag,
   Megaphone,
   Tags,
+  Users,
   LogOut,
   ChevronLeft,
+  Shield,
 } from "lucide-react";
 
-const navItems = [
-  { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
-  { label: "Publish Episode", path: "/admin/publish-episode", icon: Mic },
-  { label: "Publish Blog", path: "/admin/publish-blog", icon: FileText },
-  { label: "Tag Manager", path: "/admin/tags", icon: Tags },
-  { label: "Newsletter Drafts", path: "/admin/newsletters", icon: Mail },
-  { label: "Content Library", path: "/admin/library", icon: Library },
-  { label: "Merchandise", path: "/admin/merchandise", icon: ShoppingBag },
-  { label: "Popups", path: "/admin/popups", icon: Megaphone },
+const allNavItems = [
+  { label: "Dashboard", path: "/admin", icon: LayoutDashboard, adminOnly: false },
+  { label: "Publish Episode", path: "/admin/publish-episode", icon: Mic, adminOnly: false },
+  { label: "Publish Blog", path: "/admin/publish-blog", icon: FileText, adminOnly: false },
+  { label: "Tag Manager", path: "/admin/tags", icon: Tags, adminOnly: false },
+  { label: "Newsletter Drafts", path: "/admin/newsletters", icon: Mail, adminOnly: false },
+  { label: "Content Library", path: "/admin/library", icon: Library, adminOnly: false },
+  { label: "Merchandise", path: "/admin/merchandise", icon: ShoppingBag, adminOnly: false },
+  { label: "Popups", path: "/admin/popups", icon: Megaphone, adminOnly: false },
+  { label: "User Management", path: "/admin/users", icon: Users, adminOnly: true },
 ];
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = getCurrentUser();
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -36,12 +40,14 @@ const AdminLayout = () => {
     }
   }, [navigate]);
 
-  if (!isAuthenticated()) return null;
+  if (!isAuthenticated() || !user) return null;
 
   const handleLogout = () => {
     logout();
     navigate("/admin/login");
   };
+
+  const navItems = allNavItems.filter((item) => !item.adminOnly || isAdmin());
 
   return (
     <div className="min-h-screen flex bg-muted/30">
@@ -49,10 +55,19 @@ const AdminLayout = () => {
       <aside className="w-64 bg-slate text-primary-foreground flex flex-col shrink-0 sticky top-0 h-screen">
         <div className="p-5 border-b border-white/10">
           <h1 className="font-display font-bold text-lg">Admin Dashboard</h1>
-          <p className="text-xs text-white/60 mt-0.5">Two Admins & a Mic</p>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-xs text-white/60">{user.name}</p>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wider ${
+              user.role === 'admin'
+                ? 'bg-amber-500/20 text-amber-300'
+                : 'bg-sky-500/20 text-sky-300'
+            }`}>
+              {user.role}
+            </span>
+          </div>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const active = location.pathname === item.path;
             return (
