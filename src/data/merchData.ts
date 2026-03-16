@@ -168,14 +168,20 @@ export function subscribeReviews(fn: Listener) {
 
 /* ── Product CRUD ── */
 let _products = loadProducts();
+let _enabledProductsCache: Product[] | null = null;
 
 export function getProducts(): Product[] { return _products; }
 
 export function getEnabledProducts(): Product[] {
-  return _products
-    .filter((p) => p.enabled)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  if (!_enabledProductsCache) {
+    _enabledProductsCache = _products
+      .filter((p) => p.enabled)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+  return _enabledProductsCache;
 }
+
+function invalidateEnabledCache() { _enabledProductsCache = null; }
 
 export function getProductBySlug(slug: string): Product | undefined {
   return _products.find((p) => p.slug === slug);
