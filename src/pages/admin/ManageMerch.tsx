@@ -67,7 +67,6 @@ const ManageMerch = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [reviewPanel, setReviewPanel] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const fileInputRef = useState<HTMLInputElement | null>(null);
 
   const startNew = () => {
     setForm(blankProduct());
