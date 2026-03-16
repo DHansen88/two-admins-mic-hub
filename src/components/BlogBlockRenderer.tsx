@@ -35,8 +35,9 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
         3: "text-xl md:text-2xl mt-10 mb-4",
         4: "text-lg md:text-xl mt-8 mb-3",
       };
+      const slug = headingToSlug(block.text);
       return (
-        <Tag className={`font-display font-bold text-foreground ${sizes[block.level]}`}>
+        <Tag id={slug} className={`font-display font-bold text-foreground ${sizes[block.level]} scroll-mt-24`}>
           {block.text}
         </Tag>
       );
