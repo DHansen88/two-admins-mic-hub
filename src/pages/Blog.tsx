@@ -105,14 +105,40 @@ const Blog = () => {
                       <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6 animate-fade-in">
                         {visibleBlogs.map(blog => <BlogCard key={blog.slug} {...blog} />)}
                       </div>
-                      {hasMore && (
-                        <div className="text-center pt-8">
-                          <Button variant="outline" className="px-8" onClick={() => setVisibleCount(c => c + POSTS_PER_PAGE)}>
-                            Load More Posts
+                      {totalPages > 1 && (
+                        <div className="flex items-center justify-center gap-2 pt-8">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9"
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(p => p - 1)}
+                          >
+                            <ChevronLeft className="h-4 w-4" />
                           </Button>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            Showing {visibleBlogs.length} of {filteredBlogs.length} posts
-                          </p>
+                          {Array.from({ length: totalPages }).map((_, i) => (
+                            <Button
+                              key={i + 1}
+                              variant={currentPage === i + 1 ? "default" : "outline"}
+                              size="icon"
+                              className="h-9 w-9"
+                              onClick={() => setCurrentPage(i + 1)}
+                            >
+                              {i + 1}
+                            </Button>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9"
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(p => p + 1)}
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                          <span className="text-xs text-muted-foreground ml-3">
+                            Page {currentPage} of {totalPages}
+                          </span>
                         </div>
                       )}
                     </>
