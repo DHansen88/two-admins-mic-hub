@@ -15,7 +15,7 @@ import {
   type Review,
 } from "@/data/merchData";
 import { Button } from "@/components/ui/button";
-import { Star, Minus, Plus, ChevronLeft, ShoppingCart } from "lucide-react";
+import { Star, Minus, Plus, ChevronLeft, ShoppingCart, ChevronRight, ZoomIn, X } from "lucide-react";
 
 /* ── Star helpers ── */
 const Stars = ({ rating, size = "h-4 w-4" }: { rating: number; size?: string }) => (
