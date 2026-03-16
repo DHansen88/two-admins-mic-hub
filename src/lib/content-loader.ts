@@ -56,6 +56,8 @@ export interface BlogPost {
   featuredImage?: string;
   keyTakeaways?: string[];
   blocks?: import('@/lib/block-types').ContentBlock[];
+  relatedEpisode?: string;
+  showEpisodeCallout?: boolean;
 }
 
 /** Calculate reading time from word count */
