@@ -17,7 +17,7 @@ const LatestEpisodes = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 animate-slide-in">
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6 animate-slide-in">
             {episodes.map((episode) => (
               <EpisodeCard key={episode.number} {...episode} />
             ))}

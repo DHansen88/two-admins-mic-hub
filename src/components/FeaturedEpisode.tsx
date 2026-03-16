@@ -21,7 +21,7 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
           onClick={() => navigate(`/episodes/${episode.slug}`)}
         >
           {/* Thumbnail */}
-          <div className="relative w-full md:w-[420px] lg:w-[520px] shrink-0 aspect-video rounded-lg overflow-hidden bg-muted">
+          <div className="relative w-full md:w-[380px] lg:w-[520px] shrink-0 aspect-video rounded-lg overflow-hidden bg-muted">
             <img
               src={episode.thumbnailUrl || "/placeholder.svg"}
               alt={episode.title}

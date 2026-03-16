@@ -90,7 +90,7 @@ const Contact = () => {
         <section className="py-20 bg-background">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <div className="grid md:grid-cols-2 gap-12">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                 {/* Contact Info */}
                 <div className="space-y-8">
                   <div>
@@ -120,7 +120,7 @@ const Contact = () => {
                     <Card className="p-6 border-border hover:border-accent transition-colors">
                       <div className="space-y-4">
                         <h3 className="font-bold text-foreground">Connect With Us</h3>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center gap-3 flex-wrap">
                           <a
                             href="https://www.instagram.com/twoadminsamic"
                             target="_blank"

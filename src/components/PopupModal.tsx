@@ -46,7 +46,7 @@ const PopupModal = () => {
 
       {/* Modal */}
       <div
-        className="relative z-10 w-full max-w-[980px] rounded-2xl bg-card border border-border shadow-2xl overflow-hidden animate-fade-in"
+        className="relative z-10 w-full max-w-[980px] max-h-[90vh] overflow-y-auto rounded-2xl bg-card border border-border shadow-2xl animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}

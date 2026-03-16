@@ -13,9 +13,9 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
       className="group hover:shadow-xl transition-all duration-300 overflow-hidden border-border hover:border-accent cursor-pointer"
       onClick={() => { navigate(`/episodes/${episode.slug}`); window.scrollTo(0, 0); }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-[40%_60%] items-stretch h-full">
+      <div className="grid grid-cols-1 sm:grid-cols-[40%_60%] items-stretch h-full">
         {/* Thumbnail */}
-        <div className="relative w-full h-full overflow-hidden bg-muted aspect-video md:aspect-auto">
+        <div className="relative w-full h-full overflow-hidden bg-muted aspect-video sm:aspect-auto">
           <img
             src={episode.thumbnailUrl || "/placeholder.svg"}
             alt={episode.title}
