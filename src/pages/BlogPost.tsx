@@ -276,61 +276,60 @@ const BlogPost = () => {
           </div>
         </section>
 
-        {/* Key Takeaways */}
-        {post.keyTakeaways && post.keyTakeaways.length > 0 && (
-          <section className="py-12 bg-muted/40 border-t border-border">
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                  <Lightbulb className="h-6 w-6 text-accent" />
-                  Key Takeaways
-                </h2>
-                <ul className="space-y-3">
-                  {post.keyTakeaways.map((takeaway, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-3 text-foreground/80"
-                    >
-                      <span className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0" />
-                      <span className="text-sm leading-relaxed">{takeaway}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </section>
-        )}
+        {/* Unified Article Footer */}
+        <section className="py-12 bg-background">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="max-w-[1200px] mx-auto">
+              <div className="max-w-[720px] rounded-2xl bg-muted/40 border border-border p-6 md:p-8 space-y-8">
+                {/* Key Takeaways */}
+                {post.keyTakeaways && post.keyTakeaways.length > 0 && (
+                  <div>
+                    <h2 className="text-xl md:text-2xl font-display font-bold text-foreground mb-5 flex items-center gap-2">
+                      <Lightbulb className="h-5 w-5 text-accent" />
+                      Key Takeaways
+                    </h2>
+                    <ul className="space-y-3">
+                      {post.keyTakeaways.map((takeaway, i) => (
+                        <li key={i} className="flex items-start gap-3 text-foreground/80">
+                          <span className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0" />
+                          <span className="text-sm leading-relaxed">{takeaway}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-        {/* Topic Tags at bottom */}
-        <div className="bg-background py-8 border-t border-border">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <h3 className="text-sm font-display font-bold uppercase tracking-widest text-muted-foreground mb-3">
-                Topics
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {post.topics.map((topic) => (
-                  <TopicTag key={topic} topic={topic} />
-                ))}
+                {/* Divider if takeaways exist */}
+                {post.keyTakeaways && post.keyTakeaways.length > 0 && (
+                  <hr className="border-none h-px bg-border" />
+                )}
+
+                {/* Topics */}
+                <div>
+                  <h3 className="text-sm font-display font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                    Topics
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {post.topics.map((topic) => (
+                      <TopicTag key={topic} topic={topic} />
+                    ))}
+                  </div>
+                </div>
+
+                <hr className="border-none h-px bg-border" />
+
+                {/* Back to Blog */}
+                <Link
+                  to="/blog"
+                  className="inline-flex items-center space-x-2 text-accent hover:text-accent/80 transition-colors font-medium"
+                >
+                  <ArrowLeft size={18} />
+                  <span>Back to Blog</span>
+                </Link>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Back to Blog */}
-        <div className="bg-background pb-4">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <Link
-                to="/blog"
-                className="inline-flex items-center space-x-2 text-accent hover:text-accent/80 transition-colors font-medium"
-              >
-                <ArrowLeft size={18} />
-                <span>Back to Blog</span>
-              </Link>
-            </div>
-          </div>
-        </div>
+        </section>
 
         {/* Related Podcast Episodes */}
         {relatedEpisodes.length > 0 && (
