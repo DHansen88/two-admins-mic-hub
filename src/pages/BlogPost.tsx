@@ -25,18 +25,14 @@ const BlogPost = () => {
   const { toast } = useToast();
   const tocItems = useMemo(() => (post?.blocks ? extractTocItems(post.blocks) : []), [post]);
 
-  // Find related episode for callout
+  // Find related episode for callout — only when explicitly set
   const calloutEpisode = useMemo(() => {
     if (!post || post.showEpisodeCallout === false) return null;
-    if (post.relatedEpisode) {
-      return allEpisodes.find(
-        (ep) => ep.slug === post.relatedEpisode || `episode-${ep.number}` === post.relatedEpisode
-      ) || null;
-    }
-    // Auto-detect: use first related episode by shared topics
-    const related = slug ? getRelatedEpisodesForBlog(slug, 1) : [];
-    return related.length > 0 ? related[0] : null;
-  }, [post, slug]);
+    if (!post.relatedEpisode) return null;
+    return allEpisodes.find(
+      (ep) => ep.slug === post.relatedEpisode || `episode-${ep.number}` === post.relatedEpisode
+    ) || null;
+  }, [post]);
 
   // SEO meta tags
   useEffect(() => {
@@ -204,6 +200,9 @@ const BlogPost = () => {
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
+              {/* Episode Callout — full container width, above the grid */}
+              {calloutEpisode && <EpisodeCallout episode={calloutEpisode} />}
+
               <div className="grid lg:grid-cols-[200px_1fr_240px] gap-8">
                 {/* TOC Sidebar (left) */}
                 {tocItems.length > 0 && (
@@ -220,8 +219,6 @@ const BlogPost = () => {
                       <TableOfContents items={tocItems} />
                     </div>
                   )}
-                  {/* Episode Callout - after intro, before main content */}
-                  {calloutEpisode && <EpisodeCallout episode={calloutEpisode} />}
                   {post.blocks && post.blocks.length > 0 ? (
                     <BlogBlockRenderer blocks={post.blocks} />
                   ) : (
