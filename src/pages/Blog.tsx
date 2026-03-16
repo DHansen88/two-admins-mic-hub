@@ -2,21 +2,27 @@ import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
-
+import BlogTopicFilter from "@/components/BlogTopicFilter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowUpDown } from "lucide-react";
-import { allBlogs } from "@/data/blogData";
+import { allBlogs, type BlogTopic } from "@/data/blogData";
 import blogBanner from "@/assets/blog-banner.png";
+
 const POSTS_PER_PAGE = 9;
+
 const Blog = () => {
   const [search, setSearch] = useState("");
-  
+  const [selectedTopics, setSelectedTopics] = useState<BlogTopic[]>([]);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
+
   const filteredBlogs = useMemo(() => {
     const query = search.toLowerCase().trim();
     let blogs = [...allBlogs];
+    if (selectedTopics.length > 0) {
+      blogs = blogs.filter(b => selectedTopics.some(topic => b.topics.includes(topic)));
+    }
     if (query) {
       blogs = blogs.filter(b => b.title.toLowerCase().includes(query) || b.excerpt.toLowerCase().includes(query) || b.topics.some(t => t.toLowerCase().includes(query)));
     }
@@ -26,43 +32,37 @@ const Blog = () => {
       return sortOrder === "newest" ? db - da : da - db;
     });
     return blogs;
-  }, [search, sortOrder]);
+  }, [search, selectedTopics, sortOrder]);
 
-  // Reset pagination when filters change
-  const resetKey = `${search}-${sortOrder}`;
+  const resetKey = `${search}-${selectedTopics.join()}-${sortOrder}`;
   useMemo(() => setVisibleCount(POSTS_PER_PAGE), [resetKey]);
   const visibleBlogs = filteredBlogs.slice(0, visibleCount);
   const hasMore = visibleCount < filteredBlogs.length;
-  return <div className="min-h-screen">
+
+  return (
+    <div className="min-h-screen">
       <Header />
       <main className="pt-20">
         {/* Hero Banner */}
         <section className="relative overflow-hidden" style={{
-        background: 'linear-gradient(135deg, hsl(199, 62%, 21%) 0%, hsl(197, 100%, 27%) 100%)'
-      }}>
-           {/* Animated manuscript lines */}
-           <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
-             {Array.from({
-            length: 12
-          }).map((_, i) => <div key={i} className="absolute h-px bg-white/[0.07]" style={{
-            top: `${18 + i * 6.5}%`,
-            left: '-10%',
-            width: `${60 + i % 3 * 20}%`,
-            animation: `manuscriptSlide ${14 + i * 1.5}s linear infinite`,
-            animationDelay: `${i * 0.8}s`
-          }} />)}
-           </div>
-
-           {/* Blog banner image */}
+          background: 'linear-gradient(135deg, hsl(199, 62%, 21%) 0%, hsl(197, 100%, 27%) 100%)'
+        }}>
+          <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="absolute h-px bg-white/[0.07]" style={{
+                top: `${18 + i * 6.5}%`,
+                left: '-10%',
+                width: `${60 + i % 3 * 20}%`,
+                animation: `manuscriptSlide ${14 + i * 1.5}s linear infinite`,
+                animationDelay: `${i * 0.8}s`
+              }} />
+            ))}
+          </div>
           <div className="flex justify-center pt-10 pb-0 relative z-10">
             <img src={blogBanner} alt="Two Admins & a Blog" className="w-[22rem] md:w-[30rem] lg:w-[600px] h-auto drop-shadow-2xl" />
           </div>
-
-          {/* Text content overlapping bottom of image */}
           <div className="container mx-auto px-4 relative z-10 pb-16 -mt-4">
-            <div className="max-w-4xl mx-auto text-center space-y-4 animate-fade-in">
-              
-            </div>
+            <div className="max-w-4xl mx-auto text-center space-y-4 animate-fade-in" />
           </div>
         </section>
 
@@ -82,26 +82,39 @@ const Blog = () => {
                 </Button>
               </div>
 
+              {/* Mobile topic filter */}
+              <div className="lg:hidden mb-6">
+                <BlogTopicFilter selected={selectedTopics} onChange={setSelectedTopics} />
+              </div>
 
-              <div>
+              {/* Sidebar + Blog List */}
+              <div className="flex gap-10">
+                {/* Desktop sidebar */}
+                <BlogTopicFilter selected={selectedTopics} onChange={setSelectedTopics} />
 
                 {/* Blog grid */}
                 <div className="flex-1">
-                  {filteredBlogs.length === 0 ? <p className="text-center py-16 text-muted-foreground">
+                  {filteredBlogs.length === 0 ? (
+                    <p className="text-center py-16 text-muted-foreground">
                       No posts match your filters. Try adjusting your search or topics.
-                    </p> : <>
+                    </p>
+                  ) : (
+                    <>
                       <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6 animate-fade-in">
                         {visibleBlogs.map(blog => <BlogCard key={blog.slug} {...blog} />)}
                       </div>
-                      {hasMore && <div className="text-center pt-8">
+                      {hasMore && (
+                        <div className="text-center pt-8">
                           <Button variant="outline" className="px-8" onClick={() => setVisibleCount(c => c + POSTS_PER_PAGE)}>
                             Load More Posts
                           </Button>
                           <p className="text-xs text-muted-foreground mt-2">
                             Showing {visibleBlogs.length} of {filteredBlogs.length} posts
                           </p>
-                        </div>}
-                    </>}
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -109,6 +122,8 @@ const Blog = () => {
         </section>
       </main>
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Blog;
