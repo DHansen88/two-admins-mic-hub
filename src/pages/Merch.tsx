@@ -1,16 +1,20 @@
+import { useSyncExternalStore } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MerchCard from "@/components/MerchCard";
-import { allProducts } from "@/data/merchData";
+import { getEnabledProducts, getAvgRating, subscribeProducts, subscribeReviews } from "@/data/merchData";
 
 const Merch = () => {
+  const products = useSyncExternalStore(subscribeProducts, getEnabledProducts, getEnabledProducts);
+  // Subscribe to reviews so avg ratings update
+  useSyncExternalStore(subscribeReviews, () => Date.now(), () => Date.now());
+
   return (
     <div className="min-h-screen">
       <Header />
       <main className="pt-20">
-        {/* Banner — matches Episodes page */}
+        {/* Banner */}
         <section className="relative py-20 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
-          {/* Sound wave graphic */}
           <div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ opacity: 0.2 }}
@@ -31,10 +35,7 @@ const Merch = () => {
               {Array.from({ length: 80 }).map((_, i) => {
                 const center = 40;
                 const dist = Math.abs(i - center) / center;
-                const height = Math.max(
-                  8,
-                  (1 - dist * dist) * 180 * (0.5 + 0.5 * Math.sin(i * 0.7))
-                );
+                const height = Math.max(8, (1 - dist * dist) * 180 * (0.5 + 0.5 * Math.sin(i * 0.7)));
                 const x = (i / 80) * 1200 + 7.5;
                 const delay = (Math.sin(i * 0.5) * 1.5 + 1.5).toFixed(2);
                 const duration = (2 + Math.sin(i * 0.3) * 1).toFixed(2);
@@ -56,7 +57,6 @@ const Merch = () => {
               })}
             </svg>
           </div>
-
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center space-y-5 animate-fade-in">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-background">
@@ -72,15 +72,21 @@ const Merch = () => {
           </div>
         </section>
 
-        {/* Merch Grid */}
+        {/* Grid */}
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
             <div className="max-w-7xl mx-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
-                {allProducts.map((product) => (
-                  <MerchCard key={product.id} product={product} />
-                ))}
-              </div>
+              {products.length === 0 ? (
+                <p className="text-center py-16 text-muted-foreground">
+                  No merchandise available right now. Check back soon!
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
+                  {products.map((product) => (
+                    <MerchCard key={product.id} product={product} avgRating={getAvgRating(product.id)} />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </section>
