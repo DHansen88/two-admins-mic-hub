@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import BlogBlockEditor from "@/components/BlogBlockEditor";
 import { type ContentBlock } from "@/lib/block-types";
+import { extractTocItems } from "@/components/TableOfContents";
 import {
   Mic,
   Wand2,
