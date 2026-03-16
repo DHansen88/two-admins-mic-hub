@@ -9,13 +9,13 @@ import { Search, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { allBlogs, type BlogTopic } from "@/data/blogData";
 import blogBanner from "@/assets/blog-banner.png";
 
-const POSTS_PER_PAGE = 9;
+const POSTS_PER_PAGE = 6;
 
 const Blog = () => {
   const [search, setSearch] = useState("");
   const [selectedTopics, setSelectedTopics] = useState<BlogTopic[]>([]);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
-  const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredBlogs = useMemo(() => {
     const query = search.toLowerCase().trim();
@@ -34,10 +34,12 @@ const Blog = () => {
     return blogs;
   }, [search, selectedTopics, sortOrder]);
 
+  // Reset to page 1 when filters change
   const resetKey = `${search}-${selectedTopics.join()}-${sortOrder}`;
-  useMemo(() => setVisibleCount(POSTS_PER_PAGE), [resetKey]);
-  const visibleBlogs = filteredBlogs.slice(0, visibleCount);
-  const hasMore = visibleCount < filteredBlogs.length;
+  useMemo(() => setCurrentPage(1), [resetKey]);
+
+  const totalPages = Math.ceil(filteredBlogs.length / POSTS_PER_PAGE);
+  const visibleBlogs = filteredBlogs.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
 
   return (
     <div className="min-h-screen">
