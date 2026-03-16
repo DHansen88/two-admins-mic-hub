@@ -11,7 +11,7 @@ import blogBanner from "@/assets/blog-banner.png";
 const POSTS_PER_PAGE = 9;
 const Blog = () => {
   const [search, setSearch] = useState("");
-  const [selectedTopics, setSelectedTopics] = useState<BlogTopic[]>([]);
+  
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
   const filteredBlogs = useMemo(() => {
