@@ -46,7 +46,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
     case "paragraph":
       return (
         <p
-          className="text-muted-foreground leading-[1.75] mb-6 text-justify hyphens-auto"
+          className="text-muted-foreground text-lg md:text-[18px] leading-[1.75] mb-[1.4em] text-left"
           dangerouslySetInnerHTML={{
             __html: block.text
               .replace(/\*\*(.+?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
@@ -186,7 +186,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
 
 const BlogBlockRenderer = ({ blocks }: BlockRendererProps) => {
   return (
-    <div className="max-w-[760px] animate-fade-in">
+    <div className="max-w-[720px] mx-auto px-0 md:px-0 animate-fade-in [&_p]:text-base [&_p]:md:text-[18px] [&_p]:leading-[1.75] [&_p]:mb-[1.4em]">
       {blocks.map((block) => (
         <RenderBlock key={block.id} block={block} />
       ))}
