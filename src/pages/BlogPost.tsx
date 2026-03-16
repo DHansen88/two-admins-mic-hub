@@ -7,6 +7,7 @@ import BlogCard from "@/components/BlogCard";
 import EpisodeCard from "@/components/EpisodeCard";
 import TopicTag from "@/components/TopicTag";
 import BlogBlockRenderer from "@/components/BlogBlockRenderer";
+import TableOfContents, { extractTocItems } from "@/components/TableOfContents";
 import { getBlogBySlug, getRelatedPosts } from "@/data/blogData";
 import { getRelatedEpisodesForBlog } from "@/data/crossLinks";
 import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Link as LinkIcon, Mail, Lightbulb } from "lucide-react";
