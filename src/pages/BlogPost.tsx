@@ -200,6 +200,9 @@ const BlogPost = () => {
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
+              {/* Episode Callout — full container width, above the grid */}
+              {calloutEpisode && <EpisodeCallout episode={calloutEpisode} />}
+
               <div className="grid lg:grid-cols-[200px_1fr_240px] gap-8">
                 {/* TOC Sidebar (left) */}
                 {tocItems.length > 0 && (
@@ -216,8 +219,6 @@ const BlogPost = () => {
                       <TableOfContents items={tocItems} />
                     </div>
                   )}
-                  {/* Episode Callout - after intro, before main content */}
-                  {calloutEpisode && <EpisodeCallout episode={calloutEpisode} />}
                   {post.blocks && post.blocks.length > 0 ? (
                     <BlogBlockRenderer blocks={post.blocks} />
                   ) : (
