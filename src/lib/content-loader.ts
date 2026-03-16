@@ -54,6 +54,7 @@ export interface BlogPost {
   author: Author;
   featuredImage?: string;
   keyTakeaways?: string[];
+  blocks?: import('@/lib/block-types').ContentBlock[];
 }
 
 /** Calculate reading time from word count */
