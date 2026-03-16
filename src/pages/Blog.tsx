@@ -83,10 +83,7 @@ const Blog = () => {
               </div>
 
 
-              {/* Sidebar + Blog List */}
-              <div className="flex gap-10">
-                {/* Desktop sidebar */}
-                <BlogTopicFilter selected={selectedTopics} onChange={setSelectedTopics} />
+              <div>
 
                 {/* Blog grid */}
                 <div className="flex-1">
