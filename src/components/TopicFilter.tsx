@@ -20,29 +20,40 @@ const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
     );
   };
 
+  const isAllSelected = selected.length === 0;
+
   const filterItems = (
     <div className="space-y-1">
-      {TOPICS.map((topic) => (
-        <label
-          key={topic}
-          className="flex items-center gap-2.5 cursor-pointer py-2 px-2 rounded-md hover:bg-muted/60 transition-colors text-sm min-h-[44px]"
-        >
-          <Checkbox
-            checked={selected.includes(topic)}
-            onCheckedChange={() => toggle(topic)}
-            className="border-border data-[state=checked]:bg-accent data-[state=checked]:border-accent h-5 w-5"
-          />
-          <span className="text-foreground select-none">{topic}</span>
-        </label>
-      ))}
-      {selected.length > 0 && (
-        <button
-          onClick={() => onChange([])}
-          className="text-xs text-accent hover:underline mt-2 block px-2 min-h-[44px] flex items-center"
-        >
-          Clear all filters
-        </button>
-      )}
+      <button
+        onClick={() => onChange([])}
+        className={`flex items-center gap-2.5 w-full cursor-pointer py-2 px-2 rounded-md transition-colors text-sm min-h-[44px] font-medium ${
+          isAllSelected
+            ? "bg-accent/15 text-accent border border-accent/30"
+            : "hover:bg-muted/60 text-foreground"
+        }`}
+      >
+        All Topics
+      </button>
+      {TOPICS.map((topic) => {
+        const isActive = selected.includes(topic);
+        return (
+          <label
+            key={topic}
+            className={`flex items-center gap-2.5 cursor-pointer py-2 px-2 rounded-md transition-colors text-sm min-h-[44px] ${
+              isActive
+                ? "bg-accent/15 text-accent font-medium border border-accent/30"
+                : "hover:bg-muted/60 text-foreground"
+            }`}
+          >
+            <Checkbox
+              checked={isActive}
+              onCheckedChange={() => toggle(topic)}
+              className="border-border data-[state=checked]:bg-accent data-[state=checked]:border-accent h-5 w-5"
+            />
+            <span className="select-none">{topic}</span>
+          </label>
+        );
+      })}
     </div>
   );
 
