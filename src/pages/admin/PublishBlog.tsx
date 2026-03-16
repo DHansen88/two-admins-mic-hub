@@ -273,10 +273,10 @@ const PublishBlog = () => {
         <div>
           <h1 className="text-3xl font-display font-bold text-foreground flex items-center gap-2">
             <FileText className="h-7 w-7 text-primary" />
-            Publish Blog Post
+            {searchParams.get("edit") ? "Edit Blog Post" : "Publish Blog Post"}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Build your blog post with structured blocks or raw Markdown.
+            {searchParams.get("edit") ? "Update your existing blog post." : "Build your blog post with structured blocks or raw Markdown."}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={handleSaveDraft}>
