@@ -152,22 +152,12 @@ const Episodes = () => {
                 </Button>
               </div>
 
-              {/* Mobile topic filter */}
-              <div className="lg:hidden mb-6">
+              {/* Sidebar + Episode List — wraps on mobile, flex row on desktop */}
+              <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
                 <TopicFilter
                   selected={selectedTopics}
                   onChange={setSelectedTopics}
                 />
-              </div>
-
-              {/* Sidebar + Episode List */}
-              <div className="flex gap-10">
-                {/* Desktop sidebar */}
-                <TopicFilter
-                  selected={selectedTopics}
-                  onChange={setSelectedTopics}
-                />
-
                 {/* Episode list */}
                 <div className="flex-1 space-y-5">
                   {filteredEpisodes.length === 0 ? (
