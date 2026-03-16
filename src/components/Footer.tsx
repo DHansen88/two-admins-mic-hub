@@ -16,7 +16,7 @@ const Footer = () => {
                 Empowering leaders through insightful conversations on administration, 
                 leadership, and professional growth. Join us every week for new episodes.
               </p>
-              <div className="flex space-x-4">
+              <div className="flex flex-wrap gap-4">
                 <a href="https://www.instagram.com/twoadminsamic/" target="_blank" rel="noopener noreferrer" className="hover:text-teal transition-colors" aria-label="Instagram">
                   <Instagram className="h-5 w-5" />
                 </a>
