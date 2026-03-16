@@ -72,7 +72,6 @@ const ManageMerch = () => {
   const [dragging, setDragging] = useState(false);
   const [descriptionBlocks, setDescriptionBlocks] = useState<ContentBlock[]>([]);
   const [useBlockEditor, setUseBlockEditor] = useState(true);
-  const [dragging, setDragging] = useState(false);
 
   const startNew = () => {
     setForm(blankProduct());
