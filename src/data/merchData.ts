@@ -211,6 +211,7 @@ export function addProduct(product: Omit<Product, "id" | "slug" | "createdAt">) 
 
 export function updateProduct(id: string, updates: Partial<Product>) {
   _products = _products.map((p) => (p.id === id ? { ...p, ...updates, slug: updates.name ? slugify(updates.name) : p.slug } : p));
+  invalidateEnabledCache();
   saveProducts(_products);
   notifyProducts();
 }
