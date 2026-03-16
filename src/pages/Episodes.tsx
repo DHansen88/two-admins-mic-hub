@@ -5,17 +5,17 @@ import EpisodeCard from "@/components/EpisodeCard";
 import FeaturedEpisode from "@/components/FeaturedEpisode";
 import TopicFilter from "@/components/TopicFilter";
 import { Input } from "@/components/ui/input";
-import { Search, ArrowUpDown } from "lucide-react";
+import { Search, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { allEpisodes, type Topic } from "@/data/episodeData";
 import { Button } from "@/components/ui/button";
 
-const EPISODES_PER_PAGE = 6;
+const EPISODES_PER_PAGE = 5;
 
 const Episodes = () => {
   const [search, setSearch] = useState("");
   const [selectedTopics, setSelectedTopics] = useState<Topic[]>([]);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
-  const [visibleCount, setVisibleCount] = useState(EPISODES_PER_PAGE);
+  const [currentPage, setCurrentPage] = useState(1);
   const latestEpisode = allEpisodes[0];
 
   const filteredEpisodes = useMemo(() => {
@@ -47,12 +47,12 @@ const Episodes = () => {
     return episodes;
   }, [search, selectedTopics, sortOrder]);
 
-  // Reset pagination when filters change
+  // Reset to page 1 when filters change
   const resetKey = `${search}-${selectedTopics.join()}-${sortOrder}`;
-  useMemo(() => setVisibleCount(EPISODES_PER_PAGE), [resetKey]);
+  useMemo(() => setCurrentPage(1), [resetKey]);
 
-  const visibleEpisodes = filteredEpisodes.slice(0, visibleCount);
-  const hasMore = visibleCount < filteredEpisodes.length;
+  const totalPages = Math.ceil(filteredEpisodes.length / EPISODES_PER_PAGE);
+  const visibleEpisodes = filteredEpisodes.slice((currentPage - 1) * EPISODES_PER_PAGE, currentPage * EPISODES_PER_PAGE);
 
   return (
     <div className="min-h-screen">
@@ -180,21 +180,40 @@ const Episodes = () => {
                       {visibleEpisodes.map((episode) => (
                         <EpisodeCard key={episode.number} {...episode} />
                       ))}
-                      {hasMore && (
-                        <div className="text-center pt-6">
+                      {totalPages > 1 && (
+                        <div className="flex items-center justify-center gap-2 pt-8">
                           <Button
                             variant="outline"
-                            className="px-8"
-                            onClick={() =>
-                              setVisibleCount((c) => c + EPISODES_PER_PAGE)
-                            }
+                            size="icon"
+                            className="h-9 w-9"
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(p => p - 1)}
                           >
-                            Load More Episodes
+                            <ChevronLeft className="h-4 w-4" />
                           </Button>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            Showing {visibleEpisodes.length} of{" "}
-                            {filteredEpisodes.length} episodes
-                          </p>
+                          {Array.from({ length: totalPages }).map((_, i) => (
+                            <Button
+                              key={i + 1}
+                              variant={currentPage === i + 1 ? "default" : "outline"}
+                              size="icon"
+                              className="h-9 w-9"
+                              onClick={() => setCurrentPage(i + 1)}
+                            >
+                              {i + 1}
+                            </Button>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9"
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(p => p + 1)}
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                          <span className="text-xs text-muted-foreground ml-3">
+                            Page {currentPage} of {totalPages}
+                          </span>
                         </div>
                       )}
                     </>
