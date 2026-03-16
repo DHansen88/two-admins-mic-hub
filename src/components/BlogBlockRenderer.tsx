@@ -107,7 +107,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
               {block.title}
             </p>
           )}
-          <p className="text-muted-foreground leading-[1.7]">{block.text}</p>
+          <p className="text-muted-foreground leading-[1.75]">{block.text}</p>
         </div>
       );
 
