@@ -220,6 +220,8 @@ const BlogPost = () => {
                       <TableOfContents items={tocItems} />
                     </div>
                   )}
+                  {/* Episode Callout - after intro, before main content */}
+                  {calloutEpisode && <EpisodeCallout episode={calloutEpisode} />}
                   {post.blocks && post.blocks.length > 0 ? (
                     <BlogBlockRenderer blocks={post.blocks} />
                   ) : (
