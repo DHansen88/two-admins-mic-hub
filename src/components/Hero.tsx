@@ -83,7 +83,7 @@ const Hero = () => {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="bg-transparent border-2 border-background text-background hover:bg-background hover:text-navy text-lg px-8 py-6">
-              <Link to="/episodes">View All Episodes</Link>
+              <Link to="/episodes" onClick={() => window.scrollTo(0, 0)}>View All Episodes</Link>
             </Button>
           </div>
 
