@@ -182,13 +182,27 @@ function fallbackLogin(email: string, password: string): { success: boolean; err
     return { success: true, user };
   }
   
-  // Default admin account for first-time access
-  if (email === 'admin@twoadminsandamic.com' && password === 'admin2025') {
-    const user: AdminUser = { id: 1, name: 'Site Admin', email, role: 'admin' };
+  // Default admin accounts for first-time access
+  const defaultAccounts: Record<string, { name: string; password: string }> = {
+    'admin@twoadminsandamic.com': { name: 'Site Admin', password: 'admin2025' },
+    'info@twoadminsandamic.com': { name: 'TAAM Admin', password: 'TaamSecure#2026!' },
+  };
+  
+  const defaultAccount = defaultAccounts[email];
+  if (defaultAccount && password === defaultAccount.password) {
+    const user: AdminUser = { id: Object.keys(defaultAccounts).indexOf(email) + 1, name: defaultAccount.name, email, role: 'admin' };
     saveSession(user);
-    // Seed dev accounts
     if (devAccounts.length === 0) {
-      saveDevAccounts([{ ...user, password: 'admin2025', status: 'active' as const }]);
+      saveDevAccounts(
+        Object.entries(defaultAccounts).map(([e, a], i) => ({
+          id: i + 1,
+          name: a.name,
+          email: e,
+          role: 'admin' as const,
+          password: a.password,
+          status: 'active' as const,
+        }))
+      );
     }
     return { success: true, user };
   }
