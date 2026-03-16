@@ -56,6 +56,7 @@ const AUTHOR_OPTIONS = [
 
 const PublishBlog = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
