@@ -155,7 +155,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
       const embedHtml = getEmbedHtml(block.url);
       if (embedHtml) {
         return (
-          <div className="my-8">
+          <div className="my-8 max-w-full overflow-hidden">
             <div dangerouslySetInnerHTML={{ __html: embedHtml }} />
             {block.caption && (
               <p className="mt-2 text-center text-sm text-muted-foreground italic">
