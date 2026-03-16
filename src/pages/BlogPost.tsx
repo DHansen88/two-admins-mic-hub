@@ -8,8 +8,10 @@ import EpisodeCard from "@/components/EpisodeCard";
 import TopicTag from "@/components/TopicTag";
 import BlogBlockRenderer from "@/components/BlogBlockRenderer";
 import TableOfContents, { extractTocItems } from "@/components/TableOfContents";
+import EpisodeCallout from "@/components/EpisodeCallout";
 import { getBlogBySlug, getRelatedPosts } from "@/data/blogData";
 import { getRelatedEpisodesForBlog } from "@/data/crossLinks";
+import { allEpisodes } from "@/data/episodeData";
 import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Link as LinkIcon, Mail, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,6 +24,19 @@ const BlogPost = () => {
   const relatedEpisodes = slug ? getRelatedEpisodesForBlog(slug, 3) : [];
   const { toast } = useToast();
   const tocItems = useMemo(() => (post?.blocks ? extractTocItems(post.blocks) : []), [post]);
+
+  // Find related episode for callout
+  const calloutEpisode = useMemo(() => {
+    if (!post || post.showEpisodeCallout === false) return null;
+    if (post.relatedEpisode) {
+      return allEpisodes.find(
+        (ep) => ep.slug === post.relatedEpisode || `episode-${ep.number}` === post.relatedEpisode
+      ) || null;
+    }
+    // Auto-detect: use first related episode by shared topics
+    const related = slug ? getRelatedEpisodesForBlog(slug, 1) : [];
+    return related.length > 0 ? related[0] : null;
+  }, [post, slug]);
 
   // SEO meta tags
   useEffect(() => {
@@ -205,6 +220,8 @@ const BlogPost = () => {
                       <TableOfContents items={tocItems} />
                     </div>
                   )}
+                  {/* Episode Callout - after intro, before main content */}
+                  {calloutEpisode && <EpisodeCallout episode={calloutEpisode} />}
                   {post.blocks && post.blocks.length > 0 ? (
                     <BlogBlockRenderer blocks={post.blocks} />
                   ) : (

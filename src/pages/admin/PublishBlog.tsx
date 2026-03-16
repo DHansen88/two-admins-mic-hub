@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   FileText,
@@ -17,6 +18,7 @@ import {
   Blocks,
   Code,
   List,
+  Mic,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAllTags, addTag, generateTagSlug, suggestTags, type Tag } from "@/data/tags";
@@ -39,6 +41,7 @@ import {
 import { saveBlog } from "@/lib/content-manager";
 import BlockEditor from "@/components/BlogBlockEditor";
 import { extractTocItems } from "@/components/TableOfContents";
+import { allEpisodesUnfiltered } from "@/data/episodeData";
 import {
   type ContentBlock,
   blocksToMarkdown,
@@ -62,6 +65,8 @@ const PublishBlog = () => {
   const [newTagName, setNewTagName] = useState("");
   const [suggestedTags, setSuggestedTags] = useState<Tag[]>([]);
   const [editorMode, setEditorMode] = useState<"blocks" | "markdown">("blocks");
+  const [relatedEpisode, setRelatedEpisode] = useState("");
+  const [showEpisodeCallout, setShowEpisodeCallout] = useState(true);
 
   // Block editor state
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
@@ -161,6 +166,8 @@ const PublishBlog = () => {
         excerpt: excerpt || generateExcerpt(currentContent),
         featured_image: featuredImage || undefined,
         key_takeaways: keyTakeaways,
+        related_episode: relatedEpisode || undefined,
+        show_episode_callout: showEpisodeCallout,
         blocks,
       };
       downloadFile(JSON.stringify(data, null, 2), `${slug}.json`, "application/json");
@@ -197,6 +204,8 @@ const PublishBlog = () => {
       excerpt: excerpt || generateExcerpt(currentContent),
       featured_image: featuredImage || undefined,
       key_takeaways: keyTakeaways,
+      related_episode: relatedEpisode || undefined,
+      show_episode_callout: showEpisodeCallout,
       content: currentContent,
       blocks: editorMode === "blocks" ? blocks : undefined,
       format: editorMode === "blocks" ? "json" : "md",
@@ -356,6 +365,42 @@ const PublishBlog = () => {
               </div>
             )}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Episode Callout Settings */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Mic className="h-4 w-4 text-primary" />
+            Episode Callout
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <label className="flex items-center gap-2 text-sm">
+            <Switch checked={showEpisodeCallout} onCheckedChange={setShowEpisodeCallout} />
+            Show "Listen to the Episode" callout in article
+          </label>
+          {showEpisodeCallout && (
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Related Episode</label>
+              <select
+                value={relatedEpisode}
+                onChange={(e) => setRelatedEpisode(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="">Auto-detect (by shared topics)</option>
+                {allEpisodesUnfiltered.map((ep) => (
+                  <option key={ep.slug} value={ep.slug}>
+                    Ep. {ep.number}: {ep.title}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Leave on "Auto-detect" to match by topic tags, or pick a specific episode.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

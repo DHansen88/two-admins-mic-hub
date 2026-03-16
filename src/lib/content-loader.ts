@@ -56,6 +56,8 @@ export interface BlogPost {
   featuredImage?: string;
   keyTakeaways?: string[];
   blocks?: import('@/lib/block-types').ContentBlock[];
+  relatedEpisode?: string;
+  showEpisodeCallout?: boolean;
 }
 
 /** Calculate reading time from word count */
@@ -142,6 +144,8 @@ function parseBlogMd(raw: string, filename: string): BlogPost {
     author,
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
+    relatedEpisode: (data.related_episode as string) || undefined,
+    showEpisodeCallout: String(data.show_episode_callout) !== 'false',
   };
 }
 
@@ -190,6 +194,8 @@ function parseBlogJson(mod: Record<string, unknown>, filename: string): BlogPost
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
     blocks,
+    relatedEpisode: (data.related_episode as string) || undefined,
+    showEpisodeCallout: data.show_episode_callout !== false,
   };
 }
 
