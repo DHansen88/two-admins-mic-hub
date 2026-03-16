@@ -63,6 +63,7 @@ const Footer = () => {
                   Contact
                 </NavLink>
               </nav>
+            </div>
 
             {/* Subscribe */}
             <div className="space-y-4">
