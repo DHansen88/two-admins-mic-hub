@@ -16,6 +16,7 @@
  */
 
 import { parseFrontMatter } from './frontmatter';
+import { blocksToMarkdown } from './block-types';
 import authorsData from '@/content/authors.json';
 import type { SharedTopic } from '@/data/topics';
 
