@@ -5,7 +5,7 @@ import EpisodeCard from "@/components/EpisodeCard";
 import FeaturedEpisode from "@/components/FeaturedEpisode";
 import TopicFilter from "@/components/TopicFilter";
 import { Input } from "@/components/ui/input";
-import { Search, ArrowUpDown } from "lucide-react";
+import { Search, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { allEpisodes, type Topic } from "@/data/episodeData";
 import { Button } from "@/components/ui/button";
 
