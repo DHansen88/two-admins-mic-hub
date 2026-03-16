@@ -77,7 +77,7 @@ const Hero = () => {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8 py-[28px]">
             <Button asChild size="lg" className="bg-coral-accent hover:bg-coral-accent/90 text-lg px-8 py-6 group">
-              <Link to={`/episodes/${allEpisodes[0]?.slug || ''}`}>
+              <Link to={`/episodes/${allEpisodes[0]?.slug || ''}`} onClick={() => window.scrollTo(0, 0)}>
                 <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                 Latest Episode
               </Link>
