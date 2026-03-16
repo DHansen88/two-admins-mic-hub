@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
-import BlogTopicFilter from "@/components/BlogTopicFilter";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowUpDown } from "lucide-react";
