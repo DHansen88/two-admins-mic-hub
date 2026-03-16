@@ -82,10 +82,6 @@ const Blog = () => {
                 </Button>
               </div>
 
-              {/* Mobile topic filter */}
-              <div className="lg:hidden mb-6">
-                <BlogTopicFilter selected={selectedTopics} onChange={setSelectedTopics} />
-              </div>
 
               {/* Sidebar + Blog List */}
               <div className="flex gap-10">
