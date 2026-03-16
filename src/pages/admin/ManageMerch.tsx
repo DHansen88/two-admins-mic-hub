@@ -291,8 +291,27 @@ const ManageMerch = () => {
               <Button type="button" variant="outline" size="sm" onClick={addImage}>
                 Add
               </Button>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                id="product-image-upload"
+                onChange={handleFileUpload}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById("product-image-upload")?.click()}
+                disabled={uploading || form.images.length >= 6}
+                className="gap-1.5"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                {uploading ? "Uploading…" : "Upload"}
+              </Button>
             </div>
-            <p className="text-xs text-muted-foreground">First image is the primary. Up to 6 images supported.</p>
+            <p className="text-xs text-muted-foreground">First image is the primary. Up to 6 images supported. Paste a URL or upload from your device.</p>
           </div>
 
           {/* Toggles */}
