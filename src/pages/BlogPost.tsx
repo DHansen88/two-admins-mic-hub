@@ -1,4 +1,6 @@
 import { useParams, Link, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { marked } from "marked";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
@@ -17,6 +19,41 @@ const BlogPost = () => {
   const relatedPosts = slug ? getRelatedPosts(slug, 3) : [];
   const relatedEpisodes = slug ? getRelatedEpisodesForBlog(slug, 3) : [];
   const { toast } = useToast();
+
+  // SEO meta tags
+  useEffect(() => {
+    if (post) {
+      document.title = `${post.title} | Two Admins and a Mic`;
+      const setMeta = (name: string, content: string) => {
+        let el = document.querySelector(`meta[name="${name}"]`) || document.querySelector(`meta[property="${name}"]`);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute(name.startsWith('og:') ? 'property' : 'name', name);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      };
+      setMeta('description', post.excerpt);
+      setMeta('og:title', post.title);
+      setMeta('og:description', post.excerpt);
+      setMeta('og:type', 'article');
+
+      // JSON-LD structured data
+      const jsonLd = document.createElement('script');
+      jsonLd.type = 'application/ld+json';
+      jsonLd.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt,
+        datePublished: post.date,
+        author: { '@type': 'Person', name: post.author.name },
+        publisher: { '@type': 'Organization', name: 'Two Admins and a Mic' },
+      });
+      document.head.appendChild(jsonLd);
+      return () => { jsonLd.remove(); };
+    }
+  }, [post]);
 
   if (!post) {
     return <Navigate to="/blog" replace />;
@@ -155,15 +192,7 @@ const BlogPost = () => {
                   <div
                     className="animate-fade-in"
                     dangerouslySetInnerHTML={{
-                      __html: post.content
-                        .replace(/## (.*)/g, "<h2>$1</h2>")
-                        .replace(/### (.*)/g, "<h3>$1</h3>")
-                        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                        .replace(/- (.*)/g, "<li>$1</li>")
-                        .replace(/(<li>.*<\/li>)+/g, "<ul>$&</ul>")
-                        .split("\n\n")
-                        .map((p) => (p.startsWith("<") ? p : `<p>${p}</p>`))
-                        .join(""),
+                      __html: marked.parse(post.content, { async: false }) as string,
                     }}
                   />
                 </article>

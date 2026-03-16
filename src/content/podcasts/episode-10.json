@@ -1,0 +1,11 @@
+{
+  "number": 10,
+  "title": "Communication Excellence in Leadership",
+  "slug": "episode-10-communication-excellence",
+  "description": "Master the art of clear, effective communication that inspires action and builds trust with your team.",
+  "duration": "45 min",
+  "date": "2025-11-14",
+  "topics": ["Communication", "Leadership"],
+  "thumbnailUrl": "/placeholder.svg",
+  "platformLinks": { "apple": "#", "spotify": "#" }
+}
