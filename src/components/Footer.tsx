@@ -1,11 +1,86 @@
-import { Mail, Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
+import { useState } from "react";
+import { Mail, Instagram, Twitter, Linkedin, Youtube, Send, CheckCircle } from "lucide-react";
 import { NavLink } from "./NavLink";
 import footerLogo from "@/assets/footer-logo.png";
+import { Button } from "@/components/ui/button";
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  return <footer className="bg-slate text-background py-16">
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+
+    const trimmed = email.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setErrorMsg("Please enter a valid email address.");
+      return;
+    }
+
+    setStatus("submitting");
+    // Simulate submission — replace with real endpoint when ready
+    setTimeout(() => {
+      setStatus("success");
+      setEmail("");
+      setTimeout(() => setStatus("idle"), 4000);
+    }, 800);
+  };
+
+  return (
+    <footer className="bg-slate text-background py-16">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
+          {/* Newsletter Signup */}
+          <div className="mb-12 rounded-2xl bg-navy/40 border border-background/10 p-6 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div className="flex-1 space-y-2">
+                <h3 className="font-display font-bold text-xl text-background">
+                  Stay in the Loop
+                </h3>
+                <p className="text-background/70 text-sm leading-relaxed">
+                  Get episode drops, blog highlights, and admin-life tips delivered to your inbox. No spam — just the good stuff.
+                </p>
+              </div>
+              <form onSubmit={handleNewsletterSubmit} className="flex-1 max-w-md w-full">
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    maxLength={255}
+                    disabled={status === "submitting" || status === "success"}
+                    className="flex-1 h-11 px-4 rounded-lg border border-background/20 bg-background/10 text-background placeholder:text-background/40 focus:outline-none focus:ring-2 focus:ring-teal/50 focus:border-teal transition-all disabled:opacity-50"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={status === "submitting" || status === "success"}
+                    className="h-11 px-5 rounded-lg bg-coral hover:bg-coral/90 text-background font-semibold transition-all disabled:opacity-70"
+                  >
+                    {status === "submitting" ? (
+                      <span className="h-4 w-4 border-2 border-background/30 border-t-background rounded-full animate-spin" />
+                    ) : status === "success" ? (
+                      <CheckCircle className="h-4 w-4" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                {status === "success" && (
+                  <p className="text-teal text-xs mt-2 flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" /> You're subscribed! Welcome aboard.
+                  </p>
+                )}
+                {errorMsg && (
+                  <p className="text-coral text-xs mt-2">{errorMsg}</p>
+                )}
+              </form>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
             {/* Brand */}
             <div className="sm:col-span-2 space-y-4">
@@ -106,6 +181,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>;
+    </footer>
+  );
 };
 export default Footer;
