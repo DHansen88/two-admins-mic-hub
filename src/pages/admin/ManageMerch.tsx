@@ -27,6 +27,7 @@ import {
   ChevronUp,
   Image as ImageIcon,
   X,
+  Upload,
 } from "lucide-react";
 
 /* ── Hook to subscribe to store changes ── */
@@ -65,6 +66,7 @@ const ManageMerch = () => {
   const [form, setForm] = useState(blankProduct());
   const [imageUrl, setImageUrl] = useState("");
   const [reviewPanel, setReviewPanel] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const startNew = () => {
     setForm(blankProduct());
@@ -115,6 +117,33 @@ const ManageMerch = () => {
       images: [...f.images, { src: imageUrl.trim(), alt: f.name || "Product image" }],
     }));
     setImageUrl("");
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    const remaining = 6 - form.images.length;
+    const filesToProcess = Array.from(files).slice(0, remaining);
+    let processed = 0;
+
+    filesToProcess.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setForm((f) => ({
+          ...f,
+          images: [...f.images, { src: reader.result as string, alt: f.name || file.name }],
+        }));
+        processed++;
+        if (processed === filesToProcess.length) setUploading(false);
+      };
+      reader.onerror = () => {
+        processed++;
+        if (processed === filesToProcess.length) setUploading(false);
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = "";
   };
 
   const removeImage = (idx: number) => {
@@ -261,8 +290,27 @@ const ManageMerch = () => {
               <Button type="button" variant="outline" size="sm" onClick={addImage}>
                 Add
               </Button>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                id="product-image-upload"
+                onChange={handleFileUpload}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById("product-image-upload")?.click()}
+                disabled={uploading || form.images.length >= 6}
+                className="gap-1.5"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                {uploading ? "Uploading…" : "Upload"}
+              </Button>
             </div>
-            <p className="text-xs text-muted-foreground">First image is the primary. Up to 6 images supported.</p>
+            <p className="text-xs text-muted-foreground">First image is the primary. Up to 6 images supported. Paste a URL or upload from your device.</p>
           </div>
 
           {/* Toggles */}
