@@ -21,6 +21,7 @@ const BlogPost = () => {
   const relatedPosts = slug ? getRelatedPosts(slug, 3) : [];
   const relatedEpisodes = slug ? getRelatedEpisodesForBlog(slug, 3) : [];
   const { toast } = useToast();
+  const tocItems = useMemo(() => (post?.blocks ? extractTocItems(post.blocks) : []), [post]);
 
   // SEO meta tags
   useEffect(() => {
