@@ -404,6 +404,27 @@ const PublishEpisode = () => {
           <Wand2 className="h-4 w-4" />
           Auto-Generate Content
         </Button>
+        <Button
+          onClick={async () => {
+            if (!title || !episodeNumber) {
+              toast({ title: "Episode number and title are required", variant: "destructive" });
+              return;
+            }
+            const data = buildEpisodeData();
+            const result = await saveEpisode(data);
+            if (result.success) {
+              saveToHistory("episode", data);
+              toast({ title: "Episode published to server!" });
+            } else {
+              toast({ title: result.error || "Publish failed", variant: "destructive" });
+            }
+          }}
+          className="gap-2"
+          variant="secondary"
+        >
+          <Save className="h-4 w-4" />
+          Publish to Server
+        </Button>
         <Button onClick={handleExportEpisode} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
           Export Episode JSON
