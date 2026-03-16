@@ -35,6 +35,13 @@ import {
 
 const PublishEpisode = () => {
   const { toast } = useToast();
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [newTagName, setNewTagName] = useState("");
+  const [suggestedTags, setSuggestedTags] = useState<Tag[]>([]);
+
+  useEffect(() => {
+    setTags(getAllTags());
+  }, []);
 
   const [episodeNumber, setEpisodeNumber] = useState("");
   const [title, setTitle] = useState("");
