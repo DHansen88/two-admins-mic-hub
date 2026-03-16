@@ -40,12 +40,15 @@ const AUTHOR_OPTIONS = [
 const PublishBlog = () => {
   const { toast } = useToast();
 
+  const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("sarah");
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [content, setContent] = useState("");
   const [featuredImage, setFeaturedImage] = useState("");
+  const [newTagName, setNewTagName] = useState("");
+  const [suggestedTags, setSuggestedTags] = useState<Tag[]>([]);
 
   // Auto-generated
   const [excerpt, setExcerpt] = useState("");
@@ -53,6 +56,10 @@ const PublishBlog = () => {
   const [seoDescription, setSeoDescription] = useState("");
   const [keyTakeaways, setKeyTakeaways] = useState<string[]>([]);
   const [showGenerated, setShowGenerated] = useState(false);
+
+  useEffect(() => {
+    setTags(getAllTags());
+  }, []);
 
   // Newsletter
   const [generatedNewsletter, setGeneratedNewsletter] = useState<{
