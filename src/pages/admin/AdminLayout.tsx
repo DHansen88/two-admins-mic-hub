@@ -8,6 +8,7 @@ import {
   FileText,
   Mail,
   Library,
+  ShoppingBag,
   LogOut,
   ChevronLeft,
 } from "lucide-react";
