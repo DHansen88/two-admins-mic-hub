@@ -100,9 +100,22 @@ const Header = () => {
               )}
             </div>
 
-            <Button variant="default" className="bg-coral-accent hover:bg-coral-accent/90">
-              Subscribe
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="default" className="bg-coral-accent hover:bg-coral-accent/90">
+                  Subscribe
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] p-0 border-none bg-transparent shadow-none [&>button]:text-white [&>button]:hover:text-accent">
+                <iframe
+                  src="https://subscribe-forms.beehiiv.com/74c343d2-d107-444d-a076-41871db3af66"
+                  className="w-full border-none rounded-lg"
+                  style={{ height: 532, maxWidth: '100%' }}
+                  scrolling="no"
+                  title="Subscribe"
+                />
+              </DialogContent>
+            </Dialog>
           </nav>
 
           {/* Mobile Menu Button */}
