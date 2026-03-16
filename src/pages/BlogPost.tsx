@@ -192,15 +192,7 @@ const BlogPost = () => {
                   <div
                     className="animate-fade-in"
                     dangerouslySetInnerHTML={{
-                      __html: post.content
-                        .replace(/## (.*)/g, "<h2>$1</h2>")
-                        .replace(/### (.*)/g, "<h3>$1</h3>")
-                        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                        .replace(/- (.*)/g, "<li>$1</li>")
-                        .replace(/(<li>.*<\/li>)+/g, "<ul>$&</ul>")
-                        .split("\n\n")
-                        .map((p) => (p.startsWith("<") ? p : `<p>${p}</p>`))
-                        .join(""),
+                      __html: marked.parse(post.content, { async: false }) as string,
                     }}
                   />
                 </article>
