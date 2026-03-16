@@ -16,6 +16,7 @@
  */
 
 import { parseFrontMatter } from './frontmatter';
+import { blocksToMarkdown } from './block-types';
 import authorsData from '@/content/authors.json';
 import type { SharedTopic } from '@/data/topics';
 
@@ -54,6 +55,7 @@ export interface BlogPost {
   author: Author;
   featuredImage?: string;
   keyTakeaways?: string[];
+  blocks?: import('@/lib/block-types').ContentBlock[];
 }
 
 /** Calculate reading time from word count */
@@ -162,7 +164,14 @@ function parseBlogJson(mod: Record<string, unknown>, filename: string): BlogPost
     ? (data.key_takeaways as string[])
     : undefined;
 
-  const content = (data.content as string) || '';
+  // Support blocks-based content
+  const blocks = Array.isArray(data.blocks) ? data.blocks as import('@/lib/block-types').ContentBlock[] : undefined;
+  
+  let content = (data.content as string) || '';
+  if (!content && blocks) {
+    content = blocksToMarkdown(blocks);
+  }
+
   const authorKey = (data.author as string) || '';
   const author = getAuthor(authorKey);
   if (data.author_role) {
@@ -180,6 +189,7 @@ function parseBlogJson(mod: Record<string, unknown>, filename: string): BlogPost
     author,
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
+    blocks,
   };
 }
 

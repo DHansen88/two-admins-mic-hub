@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   FileText,
   Wand2,
@@ -13,7 +14,8 @@ import {
   Mail,
   Plus,
   Lightbulb,
-  Upload,
+  Blocks,
+  Code,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAllTags, addTag, generateTagSlug, suggestTags, type Tag } from "@/data/tags";
@@ -31,8 +33,15 @@ import {
   exportNewsletterDraft,
   saveDraft,
   saveToHistory,
+  downloadFile,
 } from "@/lib/file-export";
 import { saveBlog } from "@/lib/content-manager";
+import BlockEditor from "@/components/BlogBlockEditor";
+import {
+  type ContentBlock,
+  blocksToMarkdown,
+  markdownToBlocks,
+} from "@/lib/block-types";
 
 const AUTHOR_OPTIONS = [
   { key: "sarah", label: "Sarah Mitchell" },
@@ -47,10 +56,16 @@ const PublishBlog = () => {
   const [author, setAuthor] = useState("sarah");
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [content, setContent] = useState("");
   const [featuredImage, setFeaturedImage] = useState("");
   const [newTagName, setNewTagName] = useState("");
   const [suggestedTags, setSuggestedTags] = useState<Tag[]>([]);
+  const [editorMode, setEditorMode] = useState<"blocks" | "markdown">("blocks");
+
+  // Block editor state
+  const [blocks, setBlocks] = useState<ContentBlock[]>([]);
+
+  // Markdown editor state (legacy)
+  const [markdownContent, setMarkdownContent] = useState("");
 
   // Auto-generated
   const [excerpt, setExcerpt] = useState("");
@@ -58,16 +73,21 @@ const PublishBlog = () => {
   const [seoDescription, setSeoDescription] = useState("");
   const [keyTakeaways, setKeyTakeaways] = useState<string[]>([]);
   const [showGenerated, setShowGenerated] = useState(false);
+  const [generatedNewsletter, setGeneratedNewsletter] = useState<{ subject: string; body: string } | null>(null);
 
   useEffect(() => {
     setTags(getAllTags());
   }, []);
 
-  // Newsletter
-  const [generatedNewsletter, setGeneratedNewsletter] = useState<{
-    subject: string;
-    body: string;
-  } | null>(null);
+  // Derive content from current editor mode
+  const currentContent = useMemo(() => {
+    if (editorMode === "blocks") return blocksToMarkdown(blocks);
+    return markdownContent;
+  }, [editorMode, blocks, markdownContent]);
+
+  const wordCount = useMemo(() => {
+    return currentContent.split(/\s+/).filter(Boolean).length;
+  }, [currentContent]);
 
   const toggleTopic = (topic: string) => {
     setSelectedTopics((prev) =>
@@ -83,27 +103,33 @@ const PublishBlog = () => {
     }
   };
 
+  const handleSwitchMode = (mode: "blocks" | "markdown") => {
+    if (mode === "markdown" && editorMode === "blocks") {
+      setMarkdownContent(blocksToMarkdown(blocks));
+    } else if (mode === "blocks" && editorMode === "markdown") {
+      setBlocks(markdownToBlocks(markdownContent));
+    }
+    setEditorMode(mode);
+  };
+
   const handleAutoGenerate = () => {
-    if (!content) {
-      toast({ title: "Write or paste content first", variant: "destructive" });
+    if (!currentContent) {
+      toast({ title: "Write content first", variant: "destructive" });
       return;
     }
 
-    const autoExcerpt = generateExcerpt(content);
-    const autoTime = calculateReadingTime(content);
+    const autoExcerpt = generateExcerpt(currentContent);
+    const autoTime = calculateReadingTime(currentContent);
     const autoSeo = generateSEODescription(title, autoExcerpt);
-    const autoTakeaways = generateKeyTakeaways(content);
+    const autoTakeaways = generateKeyTakeaways(currentContent);
 
     setExcerpt(autoExcerpt);
     setReadingTime(autoTime);
     setSeoDescription(autoSeo);
     setKeyTakeaways(autoTakeaways);
     setShowGenerated(true);
+    setSuggestedTags(suggestTags(currentContent + " " + title));
 
-    // Auto-suggest tags based on content
-    setSuggestedTags(suggestTags(content + " " + title));
-
-    // Auto-generate newsletter
     const newsletter = generateNewsletterDraft({
       type: "blog",
       title,
@@ -112,30 +138,73 @@ const PublishBlog = () => {
       url: `/blog/${generateSlug(title)}`,
     });
     setGeneratedNewsletter(newsletter);
-
     toast({ title: "Content auto-generated!" });
   };
 
   const handleExport = () => {
-    if (!title || !content) {
+    if (!title || !currentContent) {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
-
     const slug = generateSlug(title);
-    exportBlogMarkdown({
+
+    if (editorMode === "blocks") {
+      // Export as JSON with blocks
+      const data = {
+        title,
+        slug,
+        author,
+        publish_date: publishDate,
+        tags: selectedTopics,
+        excerpt: excerpt || generateExcerpt(currentContent),
+        featured_image: featuredImage || undefined,
+        key_takeaways: keyTakeaways,
+        blocks,
+      };
+      downloadFile(JSON.stringify(data, null, 2), `${slug}.json`, "application/json");
+      toast({ title: "Blog JSON exported with blocks! Place it in content/blog/" });
+    } else {
+      exportBlogMarkdown({
+        title,
+        slug,
+        author,
+        publish_date: publishDate,
+        tags: selectedTopics,
+        excerpt: excerpt || generateExcerpt(currentContent),
+        featured_image: featuredImage || undefined,
+        key_takeaways: keyTakeaways,
+        content: markdownContent,
+      });
+      toast({ title: "Blog Markdown exported!" });
+    }
+    saveToHistory("blog", { title, slug, date: publishDate, author });
+  };
+
+  const handlePublishToServer = async () => {
+    if (!title || !currentContent) {
+      toast({ title: "Title and content are required", variant: "destructive" });
+      return;
+    }
+    const slug = generateSlug(title);
+    const result = await saveBlog({
       title,
       slug,
       author,
       publish_date: publishDate,
       tags: selectedTopics,
-      excerpt: excerpt || generateExcerpt(content),
+      excerpt: excerpt || generateExcerpt(currentContent),
       featured_image: featuredImage || undefined,
       key_takeaways: keyTakeaways,
-      content,
+      content: currentContent,
+      blocks: editorMode === "blocks" ? blocks : undefined,
+      format: editorMode === "blocks" ? "json" : "md",
     });
-    saveToHistory("blog", { title, slug, date: publishDate, author });
-    toast({ title: "Blog Markdown exported! Place it in src/content/blog/" });
+    if (result.success) {
+      saveToHistory("blog", { title, slug, date: publishDate, author });
+      toast({ title: "Blog published to server!" });
+    } else {
+      toast({ title: result.error || "Publish failed", variant: "destructive" });
+    }
   };
 
   const handleExportNewsletter = () => {
@@ -148,7 +217,8 @@ const PublishBlog = () => {
 
   const handleSaveDraft = () => {
     saveDraft(`blog-${generateSlug(title) || "new"}`, {
-      title, author, publishDate, selectedTopics, content,
+      title, author, publishDate, selectedTopics, editorMode,
+      blocks, markdownContent: editorMode === "markdown" ? markdownContent : blocksToMarkdown(blocks),
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
     });
@@ -164,7 +234,7 @@ const PublishBlog = () => {
             Publish Blog Post
           </h1>
           <p className="text-muted-foreground mt-1">
-            Write or paste your blog content and auto-generate supporting fields.
+            Build your blog post with structured blocks or raw Markdown.
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={handleSaveDraft}>
@@ -225,7 +295,6 @@ const PublishBlog = () => {
                 </label>
               ))}
             </div>
-            {/* Add new tag inline */}
             <div className="flex gap-2 mt-2">
               <Input
                 value={newTagName}
@@ -268,7 +337,6 @@ const PublishBlog = () => {
                 <Plus className="h-3.5 w-3.5" /> Add
               </Button>
             </div>
-            {/* Suggested tags */}
             {suggestedTags.length > 0 && (
               <div className="flex items-center gap-2 mt-2 flex-wrap">
                 <Lightbulb className="h-4 w-4 text-accent shrink-0" />
@@ -289,21 +357,53 @@ const PublishBlog = () => {
         </CardContent>
       </Card>
 
-      {/* Content Editor */}
+      {/* Content Editor with Mode Toggle */}
       <Card className="bg-card border-border">
-        <CardHeader>
-          <CardTitle className="text-lg">Content (Markdown)</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-lg">Content</CardTitle>
+          <div className="flex gap-1 bg-muted rounded-lg p-0.5">
+            <Button
+              type="button"
+              size="sm"
+              variant={editorMode === "blocks" ? "default" : "ghost"}
+              className="h-7 text-xs gap-1.5"
+              onClick={() => handleSwitchMode("blocks")}
+            >
+              <Blocks className="h-3.5 w-3.5" />
+              Block Editor
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={editorMode === "markdown" ? "default" : "ghost"}
+              className="h-7 text-xs gap-1.5"
+              onClick={() => handleSwitchMode("markdown")}
+            >
+              <Code className="h-3.5 w-3.5" />
+              Markdown
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
-          <Textarea
-            rows={20}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder={"Write your blog post here using Markdown...\n\n## Introduction\n\nYour introduction here...\n\n## Main Section\n\nYour content...\n\n## Conclusion\n\nWrap it up..."}
-            className="font-mono text-sm"
-          />
+          {editorMode === "blocks" ? (
+            <BlockEditor blocks={blocks} onChange={setBlocks} />
+          ) : (
+            <div>
+              <Textarea
+                rows={20}
+                value={markdownContent}
+                onChange={(e) => setMarkdownContent(e.target.value)}
+                placeholder={"Write your blog post here using Markdown...\n\n## Introduction\n\nYour introduction here...\n\n## Main Section\n\nYour content...\n\n## Conclusion\n\nWrap it up..."}
+                className="font-mono text-sm"
+              />
+            </div>
+          )}
           <p className="text-xs text-muted-foreground mt-2">
-            {content ? `${content.split(/\s+/).filter(Boolean).length} words • ${calculateReadingTime(content)}` : "0 words"}
+            {wordCount > 0
+              ? `${wordCount} words • ${calculateReadingTime(currentContent)}`
+              : "0 words"
+            }
+            {editorMode === "blocks" && ` • ${blocks.length} blocks`}
           </p>
         </CardContent>
       </Card>
@@ -314,51 +414,23 @@ const PublishBlog = () => {
           <Wand2 className="h-4 w-4" />
           Auto-Generate Fields
         </Button>
-        <Button
-          onClick={async () => {
-            if (!title || !content) {
-              toast({ title: "Title and content are required", variant: "destructive" });
-              return;
-            }
-            const slug = generateSlug(title);
-            const result = await saveBlog({
-              title,
-              slug,
-              author,
-              publish_date: publishDate,
-              tags: selectedTopics,
-              excerpt: excerpt || generateExcerpt(content),
-              featured_image: featuredImage || undefined,
-              key_takeaways: keyTakeaways,
-              content,
-              format: 'md',
-            });
-            if (result.success) {
-              saveToHistory("blog", { title, slug, date: publishDate, author });
-              toast({ title: "Blog published to server!" });
-            } else {
-              toast({ title: result.error || "Publish failed", variant: "destructive" });
-            }
-          }}
-          className="gap-2"
-          variant="secondary"
-        >
+        <Button onClick={handlePublishToServer} className="gap-2" variant="secondary">
           <Save className="h-4 w-4" />
           Publish to Server
         </Button>
         <Button onClick={handleExport} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
-          Export Blog .md
+          Export {editorMode === "blocks" ? "JSON" : "Markdown"}
         </Button>
       </div>
 
       {/* Generated Fields */}
       {showGenerated && (
         <div className="space-y-4">
-          <Card className="bg-card border-teal/30">
+          <Card className="bg-card border-accent/20">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-teal" />
+                <Sparkles className="h-5 w-5 text-accent" />
                 Auto-Generated Fields
               </CardTitle>
             </CardHeader>
@@ -401,7 +473,6 @@ const PublishBlog = () => {
             </CardContent>
           </Card>
 
-          {/* Newsletter */}
           {generatedNewsletter && (
             <Card className="bg-card border-border">
               <CardHeader className="flex flex-row items-center justify-between">
