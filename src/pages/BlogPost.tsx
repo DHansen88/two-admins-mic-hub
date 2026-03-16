@@ -110,12 +110,8 @@ const BlogPost = () => {
                 <span>Back to Blog</span>
               </Link>
 
-              {/* Topic Tags */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {post.topics.map((topic) => (
-                  <TopicTag key={topic} topic={topic} variant="light" />
-                ))}
-              </div>
+
+
 
               {/* Title */}
               <h1 className="text-4xl md:text-5xl font-display font-bold text-background mb-4">
