@@ -62,11 +62,12 @@ const ManageMerch = () => {
   const products = useProducts();
   const allReviews = useReviews();
 
-  const [editing, setEditing] = useState<string | null>(null); // product id or "new"
+  const [editing, setEditing] = useState<string | null>(null);
   const [form, setForm] = useState(blankProduct());
   const [imageUrl, setImageUrl] = useState("");
   const [reviewPanel, setReviewPanel] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
   const startNew = () => {
     setForm(blankProduct());
