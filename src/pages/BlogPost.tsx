@@ -189,13 +189,17 @@ const BlogPost = () => {
             <div className="max-w-4xl mx-auto">
               <div className="grid lg:grid-cols-[1fr_auto] gap-12">
                 {/* Main Content */}
-                <article className="prose prose-lg max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-ul:my-4 prose-li:my-1">
-                  <div
-                    className="animate-fade-in"
-                    dangerouslySetInnerHTML={{
-                      __html: marked.parse(post.content, { async: false }) as string,
-                    }}
-                  />
+                <article>
+                  {post.blocks && post.blocks.length > 0 ? (
+                    <BlogBlockRenderer blocks={post.blocks} />
+                  ) : (
+                    <div
+                      className="prose prose-lg max-w-[760px] prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-p:leading-[1.7] prose-strong:text-foreground prose-li:text-muted-foreground prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-5 prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-ul:my-5 prose-li:my-1 animate-fade-in"
+                      dangerouslySetInnerHTML={{
+                        __html: marked.parse(post.content, { async: false }) as string,
+                      }}
+                    />
+                  )}
                 </article>
 
                 {/* Sidebar */}
