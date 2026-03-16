@@ -65,6 +65,7 @@ const App = () => (
             <Route path="library" element={<ContentLibrary />} />
             <Route path="merchandise" element={<ManageMerch />} />
             <Route path="popups" element={<ManagePopups />} />
+            <Route path="tags" element={<ManageTags />} />
           </Route>
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
