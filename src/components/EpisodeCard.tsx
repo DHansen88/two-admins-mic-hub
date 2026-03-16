@@ -13,13 +13,13 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
       className="group hover:shadow-xl transition-all duration-300 overflow-hidden border-border hover:border-accent cursor-pointer"
       onClick={() => { navigate(`/episodes/${episode.slug}`); window.scrollTo(0, 0); }}
     >
-      <div className="flex flex-col md:flex-row">
+      <div className="grid grid-cols-1 md:grid-cols-[40%_60%] items-stretch h-full">
         {/* Thumbnail */}
-        <div className="relative w-full md:w-64 lg:w-72 shrink-0 aspect-video md:aspect-auto bg-muted overflow-hidden">
+        <div className="relative w-full h-full overflow-hidden bg-muted aspect-video md:aspect-auto">
           <img
             src={episode.thumbnailUrl || "/placeholder.svg"}
             alt={episode.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover block"
             loading="lazy"
           />
           <div className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors">
