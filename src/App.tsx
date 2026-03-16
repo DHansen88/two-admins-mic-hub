@@ -25,6 +25,7 @@ import PublishEpisode from "./pages/admin/PublishEpisode";
 import PublishBlog from "./pages/admin/PublishBlog";
 import NewsletterDrafts from "./pages/admin/NewsletterDrafts";
 import ContentLibrary from "./pages/admin/ContentLibrary";
+import ManageMerch from "./pages/admin/ManageMerch";
 
 const queryClient = new QueryClient();
 
