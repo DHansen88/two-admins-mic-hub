@@ -120,6 +120,33 @@ const ManageMerch = () => {
     setImageUrl("");
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    const remaining = 6 - form.images.length;
+    const filesToProcess = Array.from(files).slice(0, remaining);
+    let processed = 0;
+
+    filesToProcess.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setForm((f) => ({
+          ...f,
+          images: [...f.images, { src: reader.result as string, alt: f.name || file.name }],
+        }));
+        processed++;
+        if (processed === filesToProcess.length) setUploading(false);
+      };
+      reader.onerror = () => {
+        processed++;
+        if (processed === filesToProcess.length) setUploading(false);
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = "";
+  };
+
   const removeImage = (idx: number) => {
     setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== idx) }));
   };
