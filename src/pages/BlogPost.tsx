@@ -100,8 +100,8 @@ const BlogPost = () => {
               }}
             />
           ))}
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto animate-fade-in">
+          <div className="container mx-auto px-4 sm:px-6 relative z-10">
+            <div className="max-w-[1200px] mx-auto animate-fade-in">
               <Link
                 to="/blog"
                 className="inline-flex items-center space-x-2 text-background/70 hover:text-background transition-colors mb-8"
