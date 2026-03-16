@@ -77,7 +77,7 @@ const TopicResults = () => {
 
               {/* Other topic tags */}
               <div className="flex flex-wrap gap-2 mt-6">
-                {SHARED_TOPICS.filter((t) => t !== decodedTopic).map((t) => (
+                {allTopics.filter((t) => t !== decodedTopic).map((t) => (
                   <TopicTag key={t} topic={t} variant="light" />
                 ))}
               </div>
