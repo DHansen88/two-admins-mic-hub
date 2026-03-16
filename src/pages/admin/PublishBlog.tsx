@@ -205,13 +205,81 @@ const PublishBlog = () => {
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Tags</label>
             <div className="flex flex-wrap gap-2">
-              {SHARED_TOPICS.map((topic) => (
-                <label key={topic} className="flex items-center gap-1.5 cursor-pointer text-sm">
-                  <Checkbox checked={selectedTopics.includes(topic)} onCheckedChange={() => toggleTopic(topic)} />
-                  <span>{topic}</span>
+              {tags.map((tag) => (
+                <label key={tag.slug} className="flex items-center gap-1.5 cursor-pointer text-sm">
+                  <Checkbox checked={selectedTopics.includes(tag.name)} onCheckedChange={() => toggleTopic(tag.name)} />
+                  <span
+                    className="px-2 py-0.5 rounded-full text-xs font-medium"
+                    style={{
+                      backgroundColor: `hsl(${tag.color} / 0.15)`,
+                      color: `hsl(${tag.color})`,
+                    }}
+                  >
+                    {tag.name}
+                  </span>
                 </label>
               ))}
             </div>
+            {/* Add new tag inline */}
+            <div className="flex gap-2 mt-2">
+              <Input
+                value={newTagName}
+                onChange={(e) => setNewTagName(e.target.value)}
+                placeholder="Add new tag..."
+                className="max-w-[200px] h-8 text-sm"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newTagName.trim()) {
+                    const slug = generateTagSlug(newTagName.trim());
+                    if (!tags.some((t) => t.slug === slug)) {
+                      const newTag: Tag = { name: newTagName.trim(), slug, color: "199 62% 28%" };
+                      const updated = addTag(newTag);
+                      setTags(updated);
+                      setSelectedTopics((prev) => [...prev, newTag.name]);
+                      toast({ title: `Tag "${newTag.name}" created and selected` });
+                    }
+                    setNewTagName("");
+                  }
+                }}
+              />
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-8 gap-1"
+                onClick={() => {
+                  if (newTagName.trim()) {
+                    const slug = generateTagSlug(newTagName.trim());
+                    if (!tags.some((t) => t.slug === slug)) {
+                      const newTag: Tag = { name: newTagName.trim(), slug, color: "199 62% 28%" };
+                      const updated = addTag(newTag);
+                      setTags(updated);
+                      setSelectedTopics((prev) => [...prev, newTag.name]);
+                      toast({ title: `Tag "${newTag.name}" created and selected` });
+                    }
+                    setNewTagName("");
+                  }
+                }}
+              >
+                <Plus className="h-3.5 w-3.5" /> Add
+              </Button>
+            </div>
+            {/* Suggested tags */}
+            {suggestedTags.length > 0 && (
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                <Lightbulb className="h-4 w-4 text-accent shrink-0" />
+                <span className="text-xs text-muted-foreground">Suggested:</span>
+                {suggestedTags.filter((s) => !selectedTopics.includes(s.name)).map((tag) => (
+                  <button
+                    key={tag.slug}
+                    type="button"
+                    onClick={() => toggleTopic(tag.name)}
+                    className="text-xs px-2 py-0.5 rounded-full border border-accent/30 text-accent hover:bg-accent/10 transition-colors"
+                  >
+                    + {tag.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
