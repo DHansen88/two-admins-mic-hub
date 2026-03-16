@@ -1,16 +1,13 @@
 /**
  * Unified Topic/Tag system shared across Blog posts and Podcast episodes.
- * Tags are defined once here and reused everywhere.
+ * Now powered by the centralized tag management system.
  */
-export const SHARED_TOPICS = [
-  "Leadership",
-  "Career Growth",
-  "Communication",
-  "Technology",
-  "Admin Life",
-  "Wellness",
-  "Team Building",
-  "Humor & Human Moments",
-] as const;
+import { getTagNames, type Tag } from './tags';
 
-export type SharedTopic = (typeof SHARED_TOPICS)[number];
+// Dynamic: always reflects current tags from the tag manager
+export const SHARED_TOPICS = getTagNames();
+
+export type SharedTopic = string;
+
+export type { Tag };
+export { getTagNames, getAllTags, getTagByName, getTagBySlug } from './tags';
