@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
 import EpisodeCard from "@/components/EpisodeCard";
 import TopicTag from "@/components/TopicTag";
-import { SHARED_TOPICS, type SharedTopic } from "@/data/topics";
+import { getTagNames } from "@/data/tags";
 import { getContentByTopic } from "@/data/crossLinks";
 import { ArrowLeft } from "lucide-react";
 
