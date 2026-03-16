@@ -25,6 +25,19 @@ const BlogPost = () => {
   const { toast } = useToast();
   const tocItems = useMemo(() => (post?.blocks ? extractTocItems(post.blocks) : []), [post]);
 
+  // Find related episode for callout
+  const calloutEpisode = useMemo(() => {
+    if (!post || post.showEpisodeCallout === false) return null;
+    if (post.relatedEpisode) {
+      return allEpisodes.find(
+        (ep) => ep.slug === post.relatedEpisode || `episode-${ep.number}` === post.relatedEpisode
+      ) || null;
+    }
+    // Auto-detect: use first related episode by shared topics
+    const related = slug ? getRelatedEpisodesForBlog(slug, 1) : [];
+    return related.length > 0 ? related[0] : null;
+  }, [post, slug]);
+
   // SEO meta tags
   useEffect(() => {
     if (post) {
