@@ -202,6 +202,8 @@ const PublishBlog = () => {
       excerpt: excerpt || generateExcerpt(currentContent),
       featured_image: featuredImage || undefined,
       key_takeaways: keyTakeaways,
+      related_episode: relatedEpisode || undefined,
+      show_episode_callout: showEpisodeCallout,
       content: currentContent,
       blocks: editorMode === "blocks" ? blocks : undefined,
       format: editorMode === "blocks" ? "json" : "md",
