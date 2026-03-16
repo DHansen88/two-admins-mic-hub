@@ -89,6 +89,33 @@ const PublishBlog = () => {
     setTags(getAllTags());
   }, []);
 
+  // Load existing blog for editing
+  useEffect(() => {
+    const editSlug = searchParams.get("edit");
+    if (!editSlug) return;
+    const blog = allBlogsUnfiltered.find((b) => b.slug === editSlug);
+    if (!blog) return;
+    setTitle(blog.title);
+    setAuthor(blog.author?.key || "sarah");
+    setPublishDate(blog.date || formatDateISO(new Date()));
+    setSelectedTopics(blog.topics || []);
+    setFeaturedImage(blog.featuredImage || "");
+    setExcerpt(blog.excerpt || "");
+    setKeyTakeaways(blog.keyTakeaways || []);
+    if (blog.relatedEpisode) {
+      setRelatedEpisode(blog.relatedEpisode);
+      setShowEpisodeCallout(true);
+    }
+    if (blog.blocks && blog.blocks.length > 0) {
+      setBlocks(blog.blocks);
+      setEditorMode("blocks");
+    } else if (blog.content) {
+      setMarkdownContent(blog.content);
+      setEditorMode("markdown");
+    }
+    toast({ title: `Editing: ${blog.title}` });
+  }, [searchParams]);
+
   // Derive content from current editor mode
   const currentContent = useMemo(() => {
     if (editorMode === "blocks") return blocksToMarkdown(blocks);
