@@ -1,5 +1,6 @@
 import { useState, useRef, useMemo, useSyncExternalStore } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import BlogBlockRenderer from "@/components/BlogBlockRenderer";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
@@ -205,7 +206,11 @@ const ProductDetail = () => {
                   </button>
 
                   <p className="text-2xl font-bold text-foreground">${product.price}</p>
-                  <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+                  {product.descriptionBlocks && product.descriptionBlocks.length > 0 ? (
+                    <BlogBlockRenderer blocks={product.descriptionBlocks} />
+                  ) : (
+                    <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+                  )}
 
                   {/* Size Selector */}
                   {product.sizes && product.sizes.length > 0 && (
