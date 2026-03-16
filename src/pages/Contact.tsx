@@ -120,7 +120,7 @@ const Contact = () => {
                     <Card className="p-6 border-border hover:border-accent transition-colors">
                       <div className="space-y-4">
                         <h3 className="font-bold text-foreground">Connect With Us</h3>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center gap-3 flex-wrap">
                           <a
                             href="https://www.instagram.com/twoadminsamic"
                             target="_blank"
