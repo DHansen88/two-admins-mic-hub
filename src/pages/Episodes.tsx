@@ -6,7 +6,7 @@ import FeaturedEpisode from "@/components/FeaturedEpisode";
 import TopicFilter from "@/components/TopicFilter";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { allEpisodes, type Topic } from "@/data/episodeData";
+import { allEpisodes } from "@/data/episodeData";
 import { Button } from "@/components/ui/button";
 
 const EPISODES_PER_PAGE = 5;
