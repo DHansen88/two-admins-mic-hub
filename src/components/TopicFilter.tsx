@@ -3,7 +3,6 @@ import { TOPICS, type Topic } from "@/data/episodeData";
 import { Checkbox } from "./ui/checkbox";
 import { Button } from "./ui/button";
 import { Filter, ChevronDown, ChevronUp } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TopicFilterProps {
   selected: Topic[];
@@ -12,7 +11,6 @@ interface TopicFilterProps {
 
 const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
 
   const toggle = (topic: Topic) => {
     onChange(
@@ -22,12 +20,12 @@ const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
     );
   };
 
-  const filterContent = (
+  const filterItems = (
     <div className="space-y-1">
       {TOPICS.map((topic) => (
         <label
           key={topic}
-          className="flex items-center gap-2.5 cursor-pointer py-2 px-2 rounded-md hover:bg-muted/60 transition-colors text-sm min-h-[40px]"
+          className="flex items-center gap-2.5 cursor-pointer py-2 px-2 rounded-md hover:bg-muted/60 transition-colors text-sm min-h-[44px]"
         >
           <Checkbox
             checked={selected.includes(topic)}
@@ -40,9 +38,9 @@ const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
       {selected.length > 0 && (
         <button
           onClick={() => onChange([])}
-          className="text-xs text-accent hover:underline mt-2 block px-2"
+          className="text-xs text-accent hover:underline mt-2 block px-2 min-h-[44px] flex items-center"
         >
-          Clear all
+          Clear all filters
         </button>
       )}
     </div>
@@ -50,26 +48,26 @@ const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
 
   return (
     <>
-      {/* Desktop: sidebar */}
+      {/* Desktop: static sidebar */}
       <aside className="hidden lg:block w-56 shrink-0">
         <h3 className="font-display font-bold text-sm uppercase tracking-widest text-muted-foreground mb-4">
           Topics
         </h3>
-        {filterContent}
+        {filterItems}
       </aside>
 
-      {/* Tablet/Mobile: collapsible button + dropdown */}
-      <div className="lg:hidden">
+      {/* Mobile/Tablet: collapsible dropdown — rendered ONLY below lg */}
+      <div className="lg:hidden w-full mb-6">
         <Button
           variant="outline"
-          className="w-full justify-between h-12"
+          className="w-full justify-between h-12 text-sm"
           onClick={() => setMobileOpen((prev) => !prev)}
         >
           <span className="flex items-center gap-2">
             <Filter className="h-4 w-4" />
             Filter Topics
             {selected.length > 0 && (
-              <span className="bg-accent text-accent-foreground text-xs font-bold rounded-full px-2 py-0.5">
+              <span className="bg-accent text-accent-foreground text-xs font-bold rounded-full px-2 py-0.5 leading-none">
                 {selected.length}
               </span>
             )}
@@ -80,10 +78,9 @@ const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
             <ChevronDown className="h-4 w-4" />
           )}
         </Button>
-
         {mobileOpen && (
           <div className="mt-2 p-3 bg-card border border-border rounded-lg animate-fade-in">
-            {filterContent}
+            {filterItems}
           </div>
         )}
       </div>
