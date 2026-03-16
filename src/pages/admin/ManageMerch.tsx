@@ -27,6 +27,7 @@ import {
   ChevronUp,
   Image as ImageIcon,
   X,
+  Upload,
 } from "lucide-react";
 
 /* ── Hook to subscribe to store changes ── */
