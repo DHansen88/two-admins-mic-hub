@@ -13,7 +13,7 @@ const POSTS_PER_PAGE = 6;
 
 const Blog = () => {
   const [search, setSearch] = useState("");
-  const [selectedTopics, setSelectedTopics] = useState<BlogTopic[]>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [currentPage, setCurrentPage] = useState(1);
 
