@@ -98,6 +98,9 @@ const PublishBlog = () => {
     setKeyTakeaways(autoTakeaways);
     setShowGenerated(true);
 
+    // Auto-suggest tags based on content
+    setSuggestedTags(suggestTags(content + " " + title));
+
     // Auto-generate newsletter
     const newsletter = generateNewsletterDraft({
       type: "blog",
