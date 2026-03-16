@@ -41,6 +41,7 @@ import { saveEpisode, saveBlog } from "@/lib/content-manager";
 
 const PublishEpisode = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [tags, setTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState("");
   const [suggestedTags, setSuggestedTags] = useState<Tag[]>([]);
@@ -48,6 +49,27 @@ const PublishEpisode = () => {
   useEffect(() => {
     setTags(getAllTags());
   }, []);
+
+  // Load existing episode for editing
+  useEffect(() => {
+    const editId = searchParams.get("edit");
+    if (!editId) return;
+    const ep = allEpisodesUnfiltered.find((e) => String(e.number) === editId);
+    if (!ep) return;
+    setEpisodeNumber(String(ep.number));
+    setTitle(ep.title);
+    setDescription(ep.description || "");
+    setPublishDate(ep.date || formatDateISO(new Date()));
+    setDuration(ep.duration || "");
+    setSelectedTopics(ep.topics || []);
+    setRiversideUrl(ep.riversideEmbedUrl || "");
+    setSpotifyUrl(ep.platformLinks?.spotify || "");
+    setAppleUrl(ep.platformLinks?.apple || "");
+    setYoutubeUrl(ep.platformLinks?.youtube || "");
+    setGuestName(ep.guest?.name || "");
+    setThumbnailName(ep.thumbnailUrl || "");
+    toast({ title: `Editing: Ep. ${ep.number} — ${ep.title}` });
+  }, [searchParams]);
 
   const [episodeNumber, setEpisodeNumber] = useState("");
   const [title, setTitle] = useState("");
