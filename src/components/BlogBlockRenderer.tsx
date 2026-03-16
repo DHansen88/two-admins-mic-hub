@@ -6,6 +6,7 @@
 
 import { Lightbulb, Quote } from "lucide-react";
 import type { ContentBlock } from "@/lib/block-types";
+import { headingToSlug } from "@/components/TableOfContents";
 
 interface BlockRendererProps {
   blocks: ContentBlock[];
