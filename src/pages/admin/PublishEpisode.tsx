@@ -67,7 +67,7 @@ const PublishEpisode = () => {
     setSpotifyUrl(ep.platformLinks?.spotify || "");
     setAppleUrl(ep.platformLinks?.apple || "");
     setYoutubeUrl(ep.platformLinks?.youtube || "");
-    setGuestName(ep.guest?.name || "");
+    setGuestName((ep as any).guest?.name || ep.guestName || "");
     setThumbnailName(ep.thumbnailUrl || "");
     toast({ title: `Editing: Ep. ${ep.number} — ${ep.title}` });
   }, [searchParams]);
