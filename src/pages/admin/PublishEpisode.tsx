@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,9 +38,11 @@ import {
   saveToHistory,
 } from "@/lib/file-export";
 import { saveEpisode, saveBlog } from "@/lib/content-manager";
+import { allEpisodesUnfiltered } from "@/data/episodeData";
 
 const PublishEpisode = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [tags, setTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState("");
   const [suggestedTags, setSuggestedTags] = useState<Tag[]>([]);
@@ -47,6 +50,27 @@ const PublishEpisode = () => {
   useEffect(() => {
     setTags(getAllTags());
   }, []);
+
+  // Load existing episode for editing
+  useEffect(() => {
+    const editId = searchParams.get("edit");
+    if (!editId) return;
+    const ep = allEpisodesUnfiltered.find((e) => String(e.number) === editId);
+    if (!ep) return;
+    setEpisodeNumber(String(ep.number));
+    setTitle(ep.title);
+    setDescription(ep.description || "");
+    setPublishDate(ep.date || formatDateISO(new Date()));
+    setDuration(ep.duration || "");
+    setSelectedTopics(ep.topics || []);
+    setRiversideUrl(ep.riversideEmbedUrl || "");
+    setSpotifyUrl(ep.platformLinks?.spotify || "");
+    setAppleUrl(ep.platformLinks?.apple || "");
+    setYoutubeUrl(ep.platformLinks?.youtube || "");
+    setGuestName("");
+    setThumbnailName(ep.thumbnailUrl || "");
+    toast({ title: `Editing: Ep. ${ep.number} — ${ep.title}` });
+  }, [searchParams]);
 
   const [episodeNumber, setEpisodeNumber] = useState("");
   const [title, setTitle] = useState("");
@@ -224,10 +248,10 @@ const PublishEpisode = () => {
         <div>
           <h1 className="text-3xl font-display font-bold text-foreground flex items-center gap-2">
             <Mic className="h-7 w-7 text-primary" />
-            Publish Podcast Episode
+            {searchParams.get("edit") ? "Edit Podcast Episode" : "Publish Podcast Episode"}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Fill in the details and auto-generate supporting content.
+            {searchParams.get("edit") ? "Update your existing podcast episode." : "Fill in the details and auto-generate supporting content."}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={handleSaveDraft}>

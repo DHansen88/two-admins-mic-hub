@@ -18,6 +18,7 @@ import {
   Activity,
   RefreshCw,
   Rss,
+  Pencil,
 } from "lucide-react";
 import { allBlogsUnfiltered } from "@/data/blogData";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
@@ -424,6 +425,12 @@ const ContentLibrary = () => {
                         <Link to={item.viewUrl} target="_blank">
                           <Button variant="ghost" size="icon" className="h-8 w-8" title="View on site">
                             <ExternalLink className="h-3.5 w-3.5" />
+                          </Button>
+                        </Link>
+
+                        <Link to={item.type === "episode" ? `/admin/publish-episode?edit=${item.id}` : `/admin/publish-blog?edit=${item.id}`}>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" title="Edit">
+                            <Pencil className="h-3.5 w-3.5" />
                           </Button>
                         </Link>
 

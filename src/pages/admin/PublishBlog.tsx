@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,7 @@ import { saveBlog } from "@/lib/content-manager";
 import BlockEditor from "@/components/BlogBlockEditor";
 import { extractTocItems } from "@/components/TableOfContents";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
+import { allBlogsUnfiltered } from "@/data/blogData";
 import {
   type ContentBlock,
   blocksToMarkdown,
@@ -55,6 +57,7 @@ const AUTHOR_OPTIONS = [
 
 const PublishBlog = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
@@ -85,6 +88,34 @@ const PublishBlog = () => {
   useEffect(() => {
     setTags(getAllTags());
   }, []);
+
+  // Load existing blog for editing
+  useEffect(() => {
+    const editSlug = searchParams.get("edit");
+    if (!editSlug) return;
+    const blog = allBlogsUnfiltered.find((b) => b.slug === editSlug);
+    if (!blog) return;
+    setTitle(blog.title);
+    const authorKey = AUTHOR_OPTIONS.find((a) => a.label === blog.author?.name)?.key || "sarah";
+    setAuthor(authorKey);
+    setPublishDate(blog.date || formatDateISO(new Date()));
+    setSelectedTopics(blog.topics || []);
+    setFeaturedImage(blog.featuredImage || "");
+    setExcerpt(blog.excerpt || "");
+    setKeyTakeaways(blog.keyTakeaways || []);
+    if (blog.relatedEpisode) {
+      setRelatedEpisode(blog.relatedEpisode);
+      setShowEpisodeCallout(true);
+    }
+    if (blog.blocks && blog.blocks.length > 0) {
+      setBlocks(blog.blocks);
+      setEditorMode("blocks");
+    } else if (blog.content) {
+      setMarkdownContent(blog.content);
+      setEditorMode("markdown");
+    }
+    toast({ title: `Editing: ${blog.title}` });
+  }, [searchParams]);
 
   // Derive content from current editor mode
   const currentContent = useMemo(() => {
@@ -242,10 +273,10 @@ const PublishBlog = () => {
         <div>
           <h1 className="text-3xl font-display font-bold text-foreground flex items-center gap-2">
             <FileText className="h-7 w-7 text-primary" />
-            Publish Blog Post
+            {searchParams.get("edit") ? "Edit Blog Post" : "Publish Blog Post"}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Build your blog post with structured blocks or raw Markdown.
+            {searchParams.get("edit") ? "Update your existing blog post." : "Build your blog post with structured blocks or raw Markdown."}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={handleSaveDraft}>
