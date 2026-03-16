@@ -218,7 +218,7 @@ const BlogPost = () => {
                     <BlogBlockRenderer blocks={post.blocks} />
                   ) : (
                     <div
-                      className="prose prose-lg max-w-[720px] mx-auto prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-p:text-[18px] prose-p:leading-[1.75] prose-p:text-left prose-p:mb-[1.4em] prose-strong:text-foreground prose-li:text-muted-foreground prose-li:leading-[1.75] prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-12 prose-h2:mb-5 prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-ul:my-5 prose-li:my-1 prose-img:rounded-lg prose-img:w-full md:max-w-[720px] max-md:max-w-[680px] max-md:text-base animate-fade-in"
+                      className="prose prose-lg max-w-[720px] prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-p:text-[18px] prose-p:leading-[1.75] prose-p:text-left prose-p:mb-[1.4em] prose-strong:text-foreground prose-li:text-muted-foreground prose-li:leading-[1.75] prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-12 prose-h2:mb-5 prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-ul:my-5 prose-li:my-1 prose-img:rounded-lg prose-img:w-full max-md:max-w-[680px] max-md:text-base animate-fade-in"
                       dangerouslySetInnerHTML={{
                         __html: marked.parse(post.content, { async: false }) as string,
                       }}
