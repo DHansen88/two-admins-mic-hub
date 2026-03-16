@@ -16,6 +16,7 @@ import {
   Lightbulb,
   Blocks,
   Code,
+  List,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAllTags, addTag, generateTagSlug, suggestTags, type Tag } from "@/data/tags";
@@ -37,6 +38,7 @@ import {
 } from "@/lib/file-export";
 import { saveBlog } from "@/lib/content-manager";
 import BlockEditor from "@/components/BlogBlockEditor";
+import { extractTocItems } from "@/components/TableOfContents";
 import {
   type ContentBlock,
   blocksToMarkdown,
@@ -407,6 +409,31 @@ const PublishBlog = () => {
           </p>
         </CardContent>
       </Card>
+
+      {/* Auto-generated TOC Preview */}
+      {editorMode === "blocks" && blocks.filter(b => b.type === "heading" && (b as any).level <= 3).length > 0 && (
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2 text-muted-foreground">
+              <List className="h-4 w-4" />
+              Auto-Generated Table of Contents
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground mb-3">This TOC will appear automatically on the published article. No manual setup needed.</p>
+            <ul className="space-y-1">
+              {extractTocItems(blocks).map((item) => (
+                <li
+                  key={item.id}
+                  className={`text-sm text-foreground/70 border-l-2 border-border ${item.level === 3 ? "pl-5" : "pl-3"} py-1`}
+                >
+                  {item.text}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Actions */}
       <div className="flex flex-wrap gap-3">

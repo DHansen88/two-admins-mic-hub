@@ -1,5 +1,5 @@
 import { useParams, Link, Navigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { marked } from "marked";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -7,6 +7,7 @@ import BlogCard from "@/components/BlogCard";
 import EpisodeCard from "@/components/EpisodeCard";
 import TopicTag from "@/components/TopicTag";
 import BlogBlockRenderer from "@/components/BlogBlockRenderer";
+import TableOfContents, { extractTocItems } from "@/components/TableOfContents";
 import { getBlogBySlug, getRelatedPosts } from "@/data/blogData";
 import { getRelatedEpisodesForBlog } from "@/data/crossLinks";
 import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Link as LinkIcon, Mail, Lightbulb } from "lucide-react";
@@ -20,6 +21,7 @@ const BlogPost = () => {
   const relatedPosts = slug ? getRelatedPosts(slug, 3) : [];
   const relatedEpisodes = slug ? getRelatedEpisodesForBlog(slug, 3) : [];
   const { toast } = useToast();
+  const tocItems = useMemo(() => (post?.blocks ? extractTocItems(post.blocks) : []), [post]);
 
   // SEO meta tags
   useEffect(() => {
@@ -186,10 +188,23 @@ const BlogPost = () => {
         {/* Article Content */}
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="grid lg:grid-cols-[1fr_auto] gap-12">
+            <div className="max-w-6xl mx-auto">
+              <div className="grid lg:grid-cols-[200px_1fr_240px] gap-8">
+                {/* TOC Sidebar (left) */}
+                {tocItems.length > 0 && (
+                  <TableOfContents items={tocItems} />
+                )}
+                {/* Collapse left col when no TOC */}
+                {tocItems.length === 0 && <div className="hidden lg:block" />}
+
                 {/* Main Content */}
                 <article>
+                  {/* Mobile TOC */}
+                  {tocItems.length > 0 && (
+                    <div className="lg:hidden">
+                      <TableOfContents items={tocItems} />
+                    </div>
+                  )}
                   {post.blocks && post.blocks.length > 0 ? (
                     <BlogBlockRenderer blocks={post.blocks} />
                   ) : (
@@ -202,10 +217,9 @@ const BlogPost = () => {
                   )}
                 </article>
 
-                {/* Sidebar */}
-                <aside className="lg:w-64 space-y-8">
+                {/* Author Sidebar (right) */}
+                <aside className="hidden lg:block">
                   <div className="sticky top-24 space-y-6">
-                    {/* Author Card */}
                     <div className="p-6 bg-card rounded-xl border border-border">
                       <h3 className="font-display font-semibold text-foreground mb-4">
                         About the Author
