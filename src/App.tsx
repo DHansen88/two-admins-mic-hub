@@ -30,6 +30,7 @@ import ContentLibrary from "./pages/admin/ContentLibrary";
 import ManageMerch from "./pages/admin/ManageMerch";
 import ManagePopups from "./pages/admin/ManagePopups";
 import ManageTags from "./pages/admin/ManageTags";
+import ManageUsers from "./pages/admin/ManageUsers";
 
 const queryClient = new QueryClient();
 
