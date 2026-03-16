@@ -100,7 +100,7 @@ const Header = () => {
             </div>
 
             <Button variant="default" className="bg-coral-accent hover:bg-coral-accent/90">
-              Newsletter
+              Subscribe
             </Button>
           </nav>
 
@@ -161,7 +161,7 @@ const Header = () => {
               )}
 
               <Button variant="default" className="bg-coral-accent hover:bg-coral-accent/90 w-full">
-                Newsletter
+                Subscribe
               </Button>
             </div>
           </nav>
