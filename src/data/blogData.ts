@@ -14,6 +14,7 @@ import {
   type BlogPost,
   type Author,
 } from '@/lib/content-loader';
+import { isContentVisible } from '@/lib/content-manager';
 
 // Re-export types for backward compatibility
 export { SHARED_TOPICS as BLOG_TOPICS };
@@ -21,7 +22,15 @@ export type BlogTopic = SharedTopic;
 export type { Author, BlogPost };
 
 /** All blog posts, loaded from src/content/blog/ files */
-export const allBlogs: BlogPost[] = loadAllBlogs();
+const _allBlogs: BlogPost[] = loadAllBlogs();
+
+/** Published blog posts (filtered by content manager) */
+export const allBlogs: BlogPost[] = _allBlogs.filter((b) =>
+  isContentVisible("blog", b.slug)
+);
+
+/** All blogs including unpublished (for admin) */
+export const allBlogsUnfiltered: BlogPost[] = _allBlogs;
 
 export const getBlogBySlug = (slug: string): BlogPost | undefined => {
   return allBlogs.find((blog) => blog.slug === slug);
