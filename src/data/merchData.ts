@@ -168,14 +168,20 @@ export function subscribeReviews(fn: Listener) {
 
 /* ── Product CRUD ── */
 let _products = loadProducts();
+let _enabledProductsCache: Product[] | null = null;
 
 export function getProducts(): Product[] { return _products; }
 
 export function getEnabledProducts(): Product[] {
-  return _products
-    .filter((p) => p.enabled)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  if (!_enabledProductsCache) {
+    _enabledProductsCache = _products
+      .filter((p) => p.enabled)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+  return _enabledProductsCache;
 }
+
+function invalidateEnabledCache() { _enabledProductsCache = null; }
 
 export function getProductBySlug(slug: string): Product | undefined {
   return _products.find((p) => p.slug === slug);
@@ -197,6 +203,7 @@ export function addProduct(product: Omit<Product, "id" | "slug" | "createdAt">) 
     createdAt: new Date().toISOString().split("T")[0],
   };
   _products = [..._products, newP];
+  invalidateEnabledCache();
   saveProducts(_products);
   notifyProducts();
   return newP;
@@ -204,12 +211,14 @@ export function addProduct(product: Omit<Product, "id" | "slug" | "createdAt">) 
 
 export function updateProduct(id: string, updates: Partial<Product>) {
   _products = _products.map((p) => (p.id === id ? { ...p, ...updates, slug: updates.name ? slugify(updates.name) : p.slug } : p));
+  invalidateEnabledCache();
   saveProducts(_products);
   notifyProducts();
 }
 
 export function deleteProduct(id: string) {
   _products = _products.filter((p) => p.id !== id);
+  invalidateEnabledCache();
   saveProducts(_products);
   notifyProducts();
   // Also remove associated reviews

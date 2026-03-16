@@ -2,12 +2,12 @@ import { useSyncExternalStore } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MerchCard from "@/components/MerchCard";
-import { getEnabledProducts, getAvgRating, subscribeProducts, subscribeReviews } from "@/data/merchData";
+import { getEnabledProducts, getAvgRating, getReviews, subscribeProducts, subscribeReviews } from "@/data/merchData";
 
 const Merch = () => {
   const products = useSyncExternalStore(subscribeProducts, getEnabledProducts, getEnabledProducts);
-  // Subscribe to reviews so avg ratings update
-  useSyncExternalStore(subscribeReviews, () => Date.now(), () => Date.now());
+  // Subscribe to reviews so avg ratings update (stable snapshot via getReviews)
+  useSyncExternalStore(subscribeReviews, getReviews, getReviews);
 
   return (
     <div className="min-h-screen">
