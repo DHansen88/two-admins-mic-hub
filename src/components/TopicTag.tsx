@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import type { SharedTopic } from "@/data/topics";
+import { getTagByName } from "@/data/tags";
 
 interface TopicTagProps {
-  topic: SharedTopic;
+  topic: string;
   /** Visual variant: light (for dark backgrounds) or default (for light backgrounds) */
   variant?: "default" | "light";
   className?: string;
@@ -10,24 +10,30 @@ interface TopicTagProps {
 
 /**
  * Clickable topic tag chip that links to /topics/:topic filtered view.
- * Used consistently across blog posts and podcast episodes.
+ * Uses tag colors from the centralized tag system.
  */
 const TopicTag = ({ topic, variant = "default", className = "" }: TopicTagProps) => {
+  const tag = getTagByName(topic);
+  const color = tag?.color || "199 62% 28%";
+
   const base =
     "inline-block text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full transition-colors";
-
-  const variants = {
-    default:
-      "text-teal bg-teal/10 hover:bg-teal/20",
-    light:
-      "text-teal bg-teal/10 hover:bg-teal/20",
-  };
 
   return (
     <Link
       to={`/topics/${encodeURIComponent(topic)}`}
-      className={`${base} ${variants[variant]} ${className}`}
+      className={`${base} ${className}`}
+      style={{
+        backgroundColor: `hsl(${color} / 0.15)`,
+        color: `hsl(${color})`,
+      }}
       onClick={(e) => e.stopPropagation()}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = `hsl(${color} / 0.25)`;
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = `hsl(${color} / 0.15)`;
+      }}
     >
       {topic}
     </Link>
