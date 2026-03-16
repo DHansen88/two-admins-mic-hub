@@ -164,6 +164,8 @@ const PublishBlog = () => {
         excerpt: excerpt || generateExcerpt(currentContent),
         featured_image: featuredImage || undefined,
         key_takeaways: keyTakeaways,
+        related_episode: relatedEpisode || undefined,
+        show_episode_callout: showEpisodeCallout,
         blocks,
       };
       downloadFile(JSON.stringify(data, null, 2), `${slug}.json`, "application/json");
