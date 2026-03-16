@@ -47,12 +47,12 @@ const Episodes = () => {
     return episodes;
   }, [search, selectedTopics, sortOrder]);
 
-  // Reset pagination when filters change
+  // Reset to page 1 when filters change
   const resetKey = `${search}-${selectedTopics.join()}-${sortOrder}`;
-  useMemo(() => setVisibleCount(EPISODES_PER_PAGE), [resetKey]);
+  useMemo(() => setCurrentPage(1), [resetKey]);
 
-  const visibleEpisodes = filteredEpisodes.slice(0, visibleCount);
-  const hasMore = visibleCount < filteredEpisodes.length;
+  const totalPages = Math.ceil(filteredEpisodes.length / EPISODES_PER_PAGE);
+  const visibleEpisodes = filteredEpisodes.slice((currentPage - 1) * EPISODES_PER_PAGE, currentPage * EPISODES_PER_PAGE);
 
   return (
     <div className="min-h-screen">
