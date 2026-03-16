@@ -13,8 +13,8 @@ const Footer = () => {
                 <img src={footerLogo} alt="Two Admins & a Mic" className="h-12 w-auto" />
               </div>
               <p className="text-background/70 leading-relaxed">
-                Empowering leaders through insightful conversations on administration, 
-                leadership, and professional growth. Join us every week for new episodes.
+                Celebrating the power, wit, and wisdom of administrative professionals. 
+                New episodes every other week — made by admins, for admins.
               </p>
               <div className="flex flex-wrap gap-4">
                 <a href="https://www.instagram.com/twoadminsamic/" target="_blank" rel="noopener noreferrer" className="hover:text-teal transition-colors p-2 -m-2" aria-label="Instagram">
