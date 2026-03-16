@@ -283,35 +283,73 @@ const ManageMerch = () => {
               <ImageIcon className="inline h-4 w-4 mr-1" />
               Product Images
             </label>
-            <div className="flex flex-wrap gap-3">
-              {form.images.map((img, i) => (
-                <div key={i} className="relative w-20 h-20 rounded-lg border overflow-hidden group">
-                  <img src={img.src} alt={img.alt} className="w-full h-full object-contain p-1" />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(i)}
-                    className="absolute top-0.5 right-0.5 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                  {i === 0 && (
-                    <span className="absolute bottom-0 inset-x-0 bg-accent/80 text-[9px] text-accent-foreground text-center">
-                      Primary
-                    </span>
-                  )}
+
+            {/* Drop zone */}
+            <div
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              className={`relative rounded-xl border-2 border-dashed p-4 transition-all ${
+                dragging
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-muted/10"
+              } ${form.images.length >= 6 ? "opacity-50 pointer-events-none" : ""}`}
+            >
+              {/* Thumbnails */}
+              {form.images.length > 0 && (
+                <div className="flex flex-wrap gap-3 mb-4">
+                  {form.images.map((img, i) => (
+                    <div key={i} className="relative w-20 h-20 rounded-lg border border-border overflow-hidden group">
+                      <img src={img.src} alt={img.alt} className="w-full h-full object-contain p-1" />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(i)}
+                        className="absolute top-0.5 right-0.5 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                      {i === 0 && (
+                        <span className="absolute bottom-0 inset-x-0 bg-accent/80 text-[9px] text-accent-foreground text-center">
+                          Primary
+                        </span>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="Paste image URL"
-                className="flex-1"
-              />
-              <Button type="button" variant="outline" size="sm" onClick={addImage}>
-                Add
-              </Button>
+              )}
+
+              {/* Drop prompt */}
+              <div className="flex flex-col items-center gap-2 py-3 text-center">
+                <Upload className="h-6 w-6 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  {uploading ? "Processing…" : "Drag & drop images here"}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("product-image-upload")?.click()}
+                    disabled={uploading || form.images.length >= 6}
+                    className="gap-1.5"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    Browse Files
+                  </Button>
+                  <span className="text-xs text-muted-foreground">or</span>
+                  <div className="flex gap-1.5">
+                    <Input
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="Paste URL"
+                      className="h-8 w-44 text-xs"
+                    />
+                    <Button type="button" variant="outline" size="sm" className="h-8" onClick={addImage}>
+                      Add
+                    </Button>
+                  </div>
+                </div>
+              </div>
               <input
                 type="file"
                 accept="image/*"
@@ -320,19 +358,8 @@ const ManageMerch = () => {
                 id="product-image-upload"
                 onChange={handleFileUpload}
               />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => document.getElementById("product-image-upload")?.click()}
-                disabled={uploading || form.images.length >= 6}
-                className="gap-1.5"
-              >
-                <Upload className="h-3.5 w-3.5" />
-                {uploading ? "Uploading…" : "Upload"}
-              </Button>
             </div>
-            <p className="text-xs text-muted-foreground">First image is the primary. Up to 6 images supported. Paste a URL or upload from your device.</p>
+            <p className="text-xs text-muted-foreground">First image is the primary. Up to 6 images. Drag & drop, browse, or paste a URL.</p>
           </div>
 
           {/* Toggles */}
