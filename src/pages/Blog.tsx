@@ -5,7 +5,7 @@ import BlogCard from "@/components/BlogCard";
 import BlogTopicFilter from "@/components/BlogTopicFilter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, ArrowUpDown } from "lucide-react";
+import { Search, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { allBlogs, type BlogTopic } from "@/data/blogData";
 import blogBanner from "@/assets/blog-banner.png";
 
