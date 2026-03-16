@@ -152,13 +152,7 @@ const Episodes = () => {
                 </Button>
               </div>
 
-              {/* Topic Filter — renders as sidebar on desktop, collapsible button on mobile */}
-              <TopicFilter
-                selected={selectedTopics}
-                onChange={setSelectedTopics}
-              />
-
-              {/* Episode List */}
+              {/* Sidebar + Episode List */}
               <div className="flex gap-10">
 
                 {/* Episode list */}
