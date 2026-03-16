@@ -218,6 +218,7 @@ export function updateProduct(id: string, updates: Partial<Product>) {
 
 export function deleteProduct(id: string) {
   _products = _products.filter((p) => p.id !== id);
+  invalidateEnabledCache();
   saveProducts(_products);
   notifyProducts();
   // Also remove associated reviews
