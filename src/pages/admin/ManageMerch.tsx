@@ -1,4 +1,6 @@
 import { useState, useEffect, useSyncExternalStore } from "react";
+import BlogBlockEditor from "@/components/BlogBlockEditor";
+import { type ContentBlock } from "@/lib/block-types";
 import {
   getProducts,
   getReviews,
