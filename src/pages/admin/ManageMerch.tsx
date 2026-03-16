@@ -96,6 +96,8 @@ const ManageMerch = () => {
       paypalLink: p.paypalLink,
       reviewsEnabled: p.reviewsEnabled,
     });
+    setDescriptionBlocks(p.descriptionBlocks || []);
+    setUseBlockEditor(!!(p.descriptionBlocks && p.descriptionBlocks.length > 0));
     setEditing(p.id);
     setReviewPanel(null);
   };
