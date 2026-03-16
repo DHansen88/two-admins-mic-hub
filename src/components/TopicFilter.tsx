@@ -59,8 +59,8 @@ const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
       </aside>
 
       {/* Mobile/Tablet: horizontal scrollable pills */}
-      <div className="lg:hidden w-full mb-4">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4">
+      <div className="lg:hidden w-full mb-4 relative">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 pr-10">
           <button
             onClick={() => onChange([])}
             className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-[40px] border ${
@@ -88,6 +88,7 @@ const TopicFilter = ({ selected, onChange }: TopicFilterProps) => {
             );
           })}
         </div>
+        <div className="absolute right-0 top-0 bottom-2 w-10 pointer-events-none bg-gradient-to-l from-background to-transparent" />
       </div>
     </>
   );
