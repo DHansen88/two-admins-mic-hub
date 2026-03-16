@@ -152,23 +152,14 @@ const Episodes = () => {
                 </Button>
               </div>
 
-              {/* Mobile topic filter (collapsible button) */}
-              <div className="lg:hidden mb-6">
-                <TopicFilter
-                  selected={selectedTopics}
-                  onChange={setSelectedTopics}
-                />
-              </div>
+              {/* Topic Filter — renders as sidebar on desktop, collapsible button on mobile */}
+              <TopicFilter
+                selected={selectedTopics}
+                onChange={setSelectedTopics}
+              />
 
-              {/* Sidebar + Episode List */}
+              {/* Episode List */}
               <div className="flex gap-10">
-                {/* Desktop sidebar — only rendered on lg+ */}
-                <div className="hidden lg:block">
-                  <TopicFilter
-                    selected={selectedTopics}
-                    onChange={setSelectedTopics}
-                  />
-                </div>
 
                 {/* Episode list */}
                 <div className="flex-1 space-y-5">
