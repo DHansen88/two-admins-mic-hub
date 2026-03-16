@@ -77,6 +77,64 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [purchasing, setPurchasing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [zoomScale, setZoomScale] = useState(1);
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0, posX: 0, posY: 0 });
+
+  const imageCount = product?.images?.length ?? 0;
+
+  const nextImage = useCallback(() => {
+    if (imageCount > 1) setSelectedImage((i) => (i + 1) % imageCount);
+  }, [imageCount]);
+
+  const prevImage = useCallback(() => {
+    if (imageCount > 1) setSelectedImage((i) => (i - 1 + imageCount) % imageCount);
+  }, [imageCount]);
+
+  const openZoom = useCallback(() => {
+    setZoomScale(1);
+    setZoomPos({ x: 0, y: 0 });
+    setZoomOpen(true);
+  }, []);
+
+  const handleZoomWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    setZoomScale((s) => Math.min(4, Math.max(1, s - e.deltaY * 0.002)));
+  }, []);
+
+  const handleZoomPointerDown = useCallback((e: React.PointerEvent) => {
+    if (zoomScale <= 1) return;
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX, y: e.clientY, posX: zoomPos.x, posY: zoomPos.y };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, [zoomScale, zoomPos]);
+
+  const handleZoomPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isDragging) return;
+    setZoomPos({
+      x: dragStart.current.posX + (e.clientX - dragStart.current.x),
+      y: dragStart.current.posY + (e.clientY - dragStart.current.y),
+    });
+  }, [isDragging]);
+
+  const handleZoomPointerUp = useCallback(() => setIsDragging(false), []);
+
+  // Reset zoom pos when scale resets
+  useEffect(() => {
+    if (zoomScale <= 1) setZoomPos({ x: 0, y: 0 });
+  }, [zoomScale]);
+
+  // Keyboard nav
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") nextImage();
+      else if (e.key === "ArrowLeft") prevImage();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [nextImage, prevImage]);
 
   // Review form state
   const [reviewName, setReviewName] = useState("");
