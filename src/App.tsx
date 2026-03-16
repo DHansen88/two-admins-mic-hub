@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ScrollToTop from "@/components/ScrollToTop";
+import PopupModal from "@/components/PopupModal";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Episodes from "./pages/Episodes";
@@ -26,6 +28,7 @@ import PublishBlog from "./pages/admin/PublishBlog";
 import NewsletterDrafts from "./pages/admin/NewsletterDrafts";
 import ContentLibrary from "./pages/admin/ContentLibrary";
 import ManageMerch from "./pages/admin/ManageMerch";
+import ManagePopups from "./pages/admin/ManagePopups";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +38,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
+        <PopupModal />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
@@ -58,6 +63,7 @@ const App = () => (
             <Route path="newsletters" element={<NewsletterDrafts />} />
             <Route path="library" element={<ContentLibrary />} />
             <Route path="merchandise" element={<ManageMerch />} />
+            <Route path="popups" element={<ManagePopups />} />
           </Route>
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
