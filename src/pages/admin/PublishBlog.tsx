@@ -517,7 +517,7 @@ const PublishBlog = () => {
         </Button>
         <Button onClick={handlePublishToServer} className="gap-2" variant="secondary">
           <Save className="h-4 w-4" />
-          Publish to Server
+          {searchParams.get("edit") ? "Update Post" : "Publish to Server"}
         </Button>
         <Button onClick={handleExport} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
