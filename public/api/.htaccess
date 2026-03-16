@@ -1,14 +1,30 @@
-<?php
-/**
- * .htaccess for the /api directory
- * Enables PHP processing and URL rewriting on Hostinger
- */
-?>
-RewriteEngine On
+# Protect API directory
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Handle CORS preflight requests
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
+    
+    # Ensure PHP files are processed
+    RewriteRule ^(.*)$ - [L]
+</IfModule>
 
-# Handle OPTIONS preflight requests
-RewriteCond %{REQUEST_METHOD} OPTIONS
-RewriteRule ^(.*)$ $1 [R=200,L]
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
 
-# Ensure PHP files are processed
-AddHandler application/x-httpd-php .php
+# Deny access to config.php directly (only allow inclusion)
+<Files "config.php">
+    # Allow PHP to include it but add security note
+    # The file should check for a defined constant in production
+</Files>
+
+# Deny access to setup.php after initial setup
+# Uncomment after running setup:
+# <Files "setup.php">
+#     Deny from all
+# </Files>

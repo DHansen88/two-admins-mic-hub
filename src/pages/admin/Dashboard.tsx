@@ -1,13 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Mic, FileText, Mail, Library, Plus } from "lucide-react";
+import { Mic, FileText, Mail, Library, Plus, Server, Rss, Users } from "lucide-react";
 import { allBlogs } from "@/data/blogData";
 import { allEpisodes } from "@/data/episodeData";
 import { getHistory } from "@/lib/file-export";
+import { getCurrentUser, isAdmin } from "@/lib/admin-auth";
 
 const Dashboard = () => {
   const newsletterHistory = getHistory("newsletter");
+  const user = getCurrentUser();
 
   const stats = [
     {
@@ -47,7 +49,7 @@ const Dashboard = () => {
           Dashboard
         </h1>
         <p className="text-muted-foreground mt-1">
-          Manage your podcast episodes, blog posts, and newsletters.
+          Welcome back, {user?.name || "Admin"}. Manage your podcast episodes, blog posts, and newsletters.
         </p>
       </div>
 
@@ -97,19 +99,28 @@ const Dashboard = () => {
               Publish Blog Post
             </Button>
           </Link>
-          <Link to="/admin/newsletters">
+          <Link to="/admin/library">
             <Button variant="outline" className="gap-2">
-              <Mail className="h-4 w-4" />
-              View Newsletter Drafts
+              <Library className="h-4 w-4" />
+              Content Library
             </Button>
           </Link>
+          {isAdmin() && (
+            <Link to="/admin/users">
+              <Button variant="outline" className="gap-2">
+                <Users className="h-4 w-4" />
+                Manage Users
+              </Button>
+            </Link>
+          )}
         </CardContent>
       </Card>
 
-      {/* Workflow Guide */}
+      {/* Publishing Workflow */}
       <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-lg font-display">
+          <CardTitle className="text-lg font-display flex items-center gap-2">
+            <Server className="h-5 w-5 text-primary" />
             Publishing Workflow
           </CardTitle>
         </CardHeader>
@@ -119,8 +130,8 @@ const Dashboard = () => {
               1
             </span>
             <p>
-              Fill out the episode or blog form with all required fields and
-              auto-generate content (excerpt, takeaways, SEO).
+              Fill in the episode or blog form with all required fields.
+              Use <strong>Auto-Generate</strong> to create excerpts, takeaways, SEO descriptions, and newsletter drafts.
             </p>
           </div>
           <div className="flex gap-3 items-start">
@@ -128,8 +139,10 @@ const Dashboard = () => {
               2
             </span>
             <p>
-              Click <strong>Export File</strong> to download the JSON or Markdown
-              content file.
+              Click <strong>Publish to Server</strong> to save the content file directly to your Hostinger server.
+              The content is written to{" "}
+              <code className="bg-muted px-1 rounded text-xs">/content/blog/</code> or{" "}
+              <code className="bg-muted px-1 rounded text-xs">/content/podcasts/</code>.
             </p>
           </div>
           <div className="flex gap-3 items-start">
@@ -137,15 +150,8 @@ const Dashboard = () => {
               3
             </span>
             <p>
-              Upload the file to{" "}
-              <code className="bg-muted px-1 rounded text-xs">
-                src/content/blog/
-              </code>{" "}
-              or{" "}
-              <code className="bg-muted px-1 rounded text-xs">
-                src/content/podcasts/
-              </code>{" "}
-              in your project.
+              The RSS feed at <code className="bg-muted px-1 rounded text-xs">/podcast/rss.xml</code> updates
+              dynamically via the PHP backend. You can also regenerate it from the Content Library.
             </p>
           </div>
           <div className="flex gap-3 items-start">
@@ -153,9 +159,38 @@ const Dashboard = () => {
               4
             </span>
             <p>
-              Rebuild and deploy the site. The new content will appear
-              automatically.
+              Alternatively, use <strong>Export</strong> to download files manually and upload them via FTP.
             </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Hostinger Deployment Info */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-lg font-display flex items-center gap-2">
+            <Rss className="h-5 w-5 text-primary" />
+            Backend Status
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm text-muted-foreground">
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>Authentication: PHP + MySQL</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>Content API: <code className="bg-muted px-1 rounded text-xs">/api/content.php</code></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>RSS Feed: <code className="bg-muted px-1 rounded text-xs">/api/rss.php</code></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>Content Generation: <code className="bg-muted px-1 rounded text-xs">/api/generate.php</code></span>
+            </div>
           </div>
         </CardContent>
       </Card>

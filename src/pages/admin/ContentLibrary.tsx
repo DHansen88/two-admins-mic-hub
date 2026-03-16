@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,19 +16,24 @@ import {
   Clock,
   Archive,
   Activity,
+  RefreshCw,
+  Rss,
 } from "lucide-react";
-import { allBlogs } from "@/data/blogData";
-import { allEpisodes } from "@/data/episodeData";
+import { allBlogsUnfiltered } from "@/data/blogData";
+import { allEpisodesUnfiltered } from "@/data/episodeData";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import {
   getContentStatus,
-  setContentStatus,
-  restoreContent,
-  permanentlyDelete,
   isPermanentlyDeleted,
   logActivity,
   getRecentActivity,
+  softDeleteContent,
+  restoreContentApi,
+  permanentlyDeleteApi,
+  unpublishContentApi,
+  publishContentApi,
+  regenerateRSS,
   type ContentType,
   type ContentStatus,
   type ActivityLogEntry,
@@ -74,8 +79,8 @@ const ContentLibrary = () => {
   const [tab, setTab] = useState<ViewTab>("all");
   const [search, setSearch] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [rssLoading, setRssLoading] = useState(false);
 
-  // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     title: string;
@@ -92,16 +97,13 @@ const ContentLibrary = () => {
     actionLabel: "",
   });
 
-  const refresh = () => setRefreshKey((k) => k + 1);
+  const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
 
-  // Build content items with current statuses
   const allContent = useMemo(() => {
-    // Force re-read from localStorage
     void refreshKey;
-
     const items: ContentItem[] = [];
 
-    allEpisodes.forEach((ep) => {
+    allEpisodesUnfiltered.forEach((ep) => {
       const id = String(ep.number);
       if (isPermanentlyDeleted("episode", id)) return;
       items.push({
@@ -114,7 +116,7 @@ const ContentLibrary = () => {
       });
     });
 
-    allBlogs.forEach((blog) => {
+    allBlogsUnfiltered.forEach((blog) => {
       if (isPermanentlyDeleted("blog", blog.slug)) return;
       items.push({
         id: blog.slug,
@@ -134,13 +136,11 @@ const ContentLibrary = () => {
   const filteredContent = useMemo(() => {
     let items = allContent;
 
-    // Filter by tab
     if (tab === "episodes") items = items.filter((i) => i.type === "episode" && i.status !== "trashed");
     else if (tab === "blogs") items = items.filter((i) => i.type === "blog" && i.status !== "trashed");
     else if (tab === "trash") items = items.filter((i) => i.status === "trashed");
     else if (tab === "all") items = items.filter((i) => i.status !== "trashed");
 
-    // Filter by search
     if (query) {
       items = items.filter(
         (i) =>
@@ -172,17 +172,17 @@ const ContentLibrary = () => {
     { key: "activity", label: "Activity", icon: Activity },
   ];
 
-  // ── Actions ──
+  // ── Actions (now API-backed) ──
 
-  const handleUnpublish = (item: ContentItem) => {
-    setContentStatus(item.type, item.id, "unpublished");
+  const handleUnpublish = async (item: ContentItem) => {
+    await unpublishContentApi(item.type, item.id);
     logActivity("unpublished", item.type, item.id, item.title);
     refresh();
     toast({ title: `"${item.title}" unpublished` });
   };
 
-  const handlePublish = (item: ContentItem) => {
-    setContentStatus(item.type, item.id, "published");
+  const handlePublish = async (item: ContentItem) => {
+    await publishContentApi(item.type, item.id);
     logActivity("published", item.type, item.id, item.title);
     refresh();
     toast({ title: `"${item.title}" published` });
@@ -195,8 +195,8 @@ const ContentLibrary = () => {
       description: `Are you sure you want to move "${item.title}" to trash? You can restore it later.`,
       variant: "destructive",
       actionLabel: "Move to Trash",
-      action: () => {
-        setContentStatus(item.type, item.id, "trashed");
+      action: async () => {
+        await softDeleteContent(item.type, item.id);
         logActivity("deleted", item.type, item.id, item.title);
         refresh();
         toast({ title: `"${item.title}" moved to trash` });
@@ -205,8 +205,8 @@ const ContentLibrary = () => {
     });
   };
 
-  const handleRestore = (item: ContentItem) => {
-    restoreContent(item.type, item.id);
+  const handleRestore = async (item: ContentItem) => {
+    await restoreContentApi(item.type, item.id);
     logActivity("restored", item.type, item.id, item.title);
     refresh();
     toast({ title: `"${item.title}" restored` });
@@ -219,13 +219,24 @@ const ContentLibrary = () => {
       description: `Are you sure you want to permanently delete "${item.title}"? This action cannot be undone.`,
       variant: "destructive",
       actionLabel: "Delete Permanently",
-      action: () => {
-        permanentlyDelete(item.type, item.id);
+      action: async () => {
+        await permanentlyDeleteApi(item.type, item.id);
         logActivity("permanently_deleted", item.type, item.id, item.title);
         refresh();
         toast({ title: `"${item.title}" permanently deleted`, variant: "destructive" });
         setConfirmDialog((d) => ({ ...d, open: false }));
       },
+    });
+  };
+
+  const handleRegenerateRSS = async () => {
+    setRssLoading(true);
+    const result = await regenerateRSS();
+    setRssLoading(false);
+    toast({
+      title: result.success
+        ? "RSS feed regenerated successfully"
+        : "RSS regeneration failed — will update at next build",
     });
   };
 
@@ -244,14 +255,26 @@ const ContentLibrary = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-3xl font-display font-bold text-foreground flex items-center gap-2">
-          <Library className="h-7 w-7 text-primary" />
-          Content Library
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Manage all published content — edit, unpublish, or delete posts and episodes.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-display font-bold text-foreground flex items-center gap-2">
+            <Library className="h-7 w-7 text-primary" />
+            Content Library
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Manage all published content — edit, unpublish, or delete posts and episodes.
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={handleRegenerateRSS}
+          disabled={rssLoading}
+        >
+          <Rss className="h-3.5 w-3.5" />
+          {rssLoading ? "Regenerating..." : "Regenerate RSS"}
+        </Button>
       </div>
 
       {/* Search + Tabs */}
@@ -354,7 +377,6 @@ const ContentLibrary = () => {
             filteredContent.map((item) => (
               <Card key={`${item.type}-${item.id}`} className="bg-card border-border hover:border-accent/30 transition-colors">
                 <CardContent className="flex items-center gap-3 py-3 px-4">
-                  {/* Type icon */}
                   <div className="p-1.5 rounded bg-muted shrink-0">
                     {item.type === "episode" ? (
                       <Mic className="h-4 w-4 text-muted-foreground" />
@@ -363,7 +385,6 @@ const ContentLibrary = () => {
                     )}
                   </div>
 
-                  {/* Content info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-medium text-foreground truncate">
@@ -376,7 +397,6 @@ const ContentLibrary = () => {
                     </p>
                   </div>
 
-                  {/* Actions */}
                   <div className="flex items-center gap-1 shrink-0">
                     {item.status === "trashed" ? (
                       <>
@@ -401,14 +421,12 @@ const ContentLibrary = () => {
                       </>
                     ) : (
                       <>
-                        {/* View on site */}
                         <Link to={item.viewUrl} target="_blank">
                           <Button variant="ghost" size="icon" className="h-8 w-8" title="View on site">
                             <ExternalLink className="h-3.5 w-3.5" />
                           </Button>
                         </Link>
 
-                        {/* Toggle publish/unpublish */}
                         {item.status === "published" ? (
                           <Button
                             variant="ghost"
@@ -431,7 +449,6 @@ const ContentLibrary = () => {
                           </Button>
                         )}
 
-                        {/* Delete (soft) */}
                         <Button
                           variant="ghost"
                           size="icon"
