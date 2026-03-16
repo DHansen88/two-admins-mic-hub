@@ -57,6 +57,7 @@ const App = () => (
             <Route path="publish-blog" element={<PublishBlog />} />
             <Route path="newsletters" element={<NewsletterDrafts />} />
             <Route path="library" element={<ContentLibrary />} />
+            <Route path="merchandise" element={<ManageMerch />} />
           </Route>
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
