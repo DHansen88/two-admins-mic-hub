@@ -46,7 +46,7 @@ const RenderBlock = ({ block }: { block: ContentBlock }) => {
     case "paragraph":
       return (
         <p
-          className="text-muted-foreground leading-[1.7] mb-5"
+          className="text-muted-foreground leading-[1.75] mb-6 text-justify hyphens-auto"
           dangerouslySetInnerHTML={{
             __html: block.text
               .replace(/\*\*(.+?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
