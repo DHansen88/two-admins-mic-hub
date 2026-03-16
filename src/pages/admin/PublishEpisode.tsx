@@ -281,6 +281,27 @@ const PublishEpisode = () => {
               <Textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Episode description..." />
             )}
           </div>
+
+          {/* Auto-generated TOC Preview */}
+          {useBlockEditor && descriptionBlocks.filter(b => b.type === "heading" && (b as any).level <= 3).length > 0 && (
+            <div className="rounded-lg border border-border bg-muted/30 p-4">
+              <p className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
+                <List className="h-3.5 w-3.5" />
+                Auto-Generated Table of Contents
+              </p>
+              <ul className="space-y-1">
+                {extractTocItems(descriptionBlocks).map((item) => (
+                  <li
+                    key={item.id}
+                    className={`text-sm text-foreground/70 border-l-2 border-border ${item.level === 3 ? "pl-5" : "pl-3"} py-1`}
+                  >
+                    {item.text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Guest Name</label>
