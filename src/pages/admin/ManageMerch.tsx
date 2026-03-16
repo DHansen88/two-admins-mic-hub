@@ -75,6 +75,8 @@ const ManageMerch = () => {
 
   const startNew = () => {
     setForm(blankProduct());
+    setDescriptionBlocks([]);
+    setUseBlockEditor(true);
     setEditing("new");
     setReviewPanel(null);
   };
