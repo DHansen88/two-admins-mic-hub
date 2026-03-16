@@ -20,6 +20,41 @@ const BlogPost = () => {
   const relatedEpisodes = slug ? getRelatedEpisodesForBlog(slug, 3) : [];
   const { toast } = useToast();
 
+  // SEO meta tags
+  useEffect(() => {
+    if (post) {
+      document.title = `${post.title} | Two Admins and a Mic`;
+      const setMeta = (name: string, content: string) => {
+        let el = document.querySelector(`meta[name="${name}"]`) || document.querySelector(`meta[property="${name}"]`);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute(name.startsWith('og:') ? 'property' : 'name', name);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      };
+      setMeta('description', post.excerpt);
+      setMeta('og:title', post.title);
+      setMeta('og:description', post.excerpt);
+      setMeta('og:type', 'article');
+
+      // JSON-LD structured data
+      const jsonLd = document.createElement('script');
+      jsonLd.type = 'application/ld+json';
+      jsonLd.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt,
+        datePublished: post.date,
+        author: { '@type': 'Person', name: post.author.name },
+        publisher: { '@type': 'Organization', name: 'Two Admins and a Mic' },
+      });
+      document.head.appendChild(jsonLd);
+      return () => { jsonLd.remove(); };
+    }
+  }, [post]);
+
   if (!post) {
     return <Navigate to="/blog" replace />;
   }
