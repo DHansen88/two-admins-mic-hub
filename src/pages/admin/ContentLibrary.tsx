@@ -428,6 +428,12 @@ const ContentLibrary = () => {
                           </Button>
                         </Link>
 
+                        <Link to={item.type === "episode" ? `/admin/publish-episode?edit=${item.id}` : `/admin/publish-blog?edit=${item.id}`}>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" title="Edit">
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                        </Link>
+
                         {item.status === "published" ? (
                           <Button
                             variant="ghost"
