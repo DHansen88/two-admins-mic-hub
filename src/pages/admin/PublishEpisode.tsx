@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import BlogBlockEditor from "@/components/BlogBlockEditor";
+import { type ContentBlock } from "@/lib/block-types";
 import {
   Mic,
   Wand2,
@@ -47,6 +49,8 @@ const PublishEpisode = () => {
   const [episodeNumber, setEpisodeNumber] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [descriptionBlocks, setDescriptionBlocks] = useState<ContentBlock[]>([]);
+  const [useBlockEditor, setUseBlockEditor] = useState(true);
   const [guestName, setGuestName] = useState("");
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [duration, setDuration] = useState("");
@@ -146,7 +150,10 @@ const PublishEpisode = () => {
     number: parseInt(episodeNumber) || 0,
     title,
     slug: `episode-${episodeNumber}-${generateSlug(title)}`,
-    description,
+    description: useBlockEditor
+      ? descriptionBlocks.map(b => ('text' in b ? b.text : '')).filter(Boolean).join(' ')
+      : description,
+    descriptionBlocks: useBlockEditor && descriptionBlocks.length > 0 ? descriptionBlocks : undefined,
     duration,
     date: publishDate,
     topics: selectedTopics,
@@ -247,8 +254,30 @@ const PublishEpisode = () => {
             <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Leading Through Change: Strategies for Modern Administrators" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground">Episode Description *</label>
-            <Textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Episode description..." />
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-foreground">Episode Description *</label>
+              <div className="flex rounded-lg overflow-hidden border border-border">
+                <button
+                  type="button"
+                  onClick={() => setUseBlockEditor(true)}
+                  className={`px-3 py-1 text-xs font-medium transition-colors ${useBlockEditor ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                >
+                  Block Editor
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUseBlockEditor(false)}
+                  className={`px-3 py-1 text-xs font-medium transition-colors ${!useBlockEditor ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                >
+                  Plain Text
+                </button>
+              </div>
+            </div>
+            {useBlockEditor ? (
+              <BlogBlockEditor blocks={descriptionBlocks} onChange={setDescriptionBlocks} />
+            ) : (
+              <Textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Episode description..." />
+            )}
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
