@@ -67,6 +67,7 @@ const App = () => (
             <Route path="merchandise" element={<ManageMerch />} />
             <Route path="popups" element={<ManagePopups />} />
             <Route path="tags" element={<ManageTags />} />
+            <Route path="users" element={<ManageUsers />} />
           </Route>
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
