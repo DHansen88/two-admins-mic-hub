@@ -258,8 +258,30 @@ const ManageMerch = () => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Description</label>
-            <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">Description</label>
+              <div className="flex rounded-lg overflow-hidden border border-border">
+                <button
+                  type="button"
+                  onClick={() => setUseBlockEditor(true)}
+                  className={`px-3 py-1 text-xs font-medium transition-colors ${useBlockEditor ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                >
+                  Block Editor
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUseBlockEditor(false)}
+                  className={`px-3 py-1 text-xs font-medium transition-colors ${!useBlockEditor ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                >
+                  Plain Text
+                </button>
+              </div>
+            </div>
+            {useBlockEditor ? (
+              <BlogBlockEditor blocks={descriptionBlocks} onChange={setDescriptionBlocks} />
+            ) : (
+              <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
+            )}
           </div>
 
           {/* Sizes */}
