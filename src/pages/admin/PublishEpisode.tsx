@@ -248,10 +248,10 @@ const PublishEpisode = () => {
         <div>
           <h1 className="text-3xl font-display font-bold text-foreground flex items-center gap-2">
             <Mic className="h-7 w-7 text-primary" />
-            Publish Podcast Episode
+            {searchParams.get("edit") ? "Edit Podcast Episode" : "Publish Podcast Episode"}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Fill in the details and auto-generate supporting content.
+            {searchParams.get("edit") ? "Update your existing podcast episode." : "Fill in the details and auto-generate supporting content."}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={handleSaveDraft}>
