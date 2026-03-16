@@ -39,14 +39,15 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
               <Clock className="h-3.5 w-3.5" />
               {episode.duration}
             </span>
-            <span className="text-xs text-muted-foreground ml-auto">
-              {episode.date}
-            </span>
           </div>
 
           <h3 className="text-lg font-bold text-foreground group-hover:text-accent transition-colors leading-snug">
             {episode.title}
           </h3>
+
+          <span className="text-xs text-muted-foreground block">
+            {episode.date}
+          </span>
 
           <p className="text-sm text-muted-foreground line-clamp-2">
             {episode.description}
