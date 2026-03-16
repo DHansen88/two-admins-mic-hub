@@ -10,8 +10,9 @@ import { ArrowLeft } from "lucide-react";
 
 const TopicResults = () => {
   const { topic } = useParams<{ topic: string }>();
-  const decodedTopic = decodeURIComponent(topic || "") as SharedTopic;
-  const isValid = SHARED_TOPICS.includes(decodedTopic);
+  const decodedTopic = decodeURIComponent(topic || "");
+  const allTopics = getTagNames();
+  const isValid = allTopics.includes(decodedTopic);
 
   if (!isValid) {
     return (
