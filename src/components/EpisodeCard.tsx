@@ -55,7 +55,7 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
 
           {episode.topics && episode.topics.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
-              {episode.topics.map((topic) => (
+              {episode.topics.slice(0, 2).map((topic) => (
                 <span
                   key={topic}
                   className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full"
