@@ -11,17 +11,14 @@
 import { SHARED_TOPICS, type SharedTopic } from './topics';
 import {
   loadAllBlogs,
-  type BlogPost as LoadedBlogPost,
+  type BlogPost,
   type Author,
 } from '@/lib/content-loader';
 
 // Re-export types for backward compatibility
 export { SHARED_TOPICS as BLOG_TOPICS };
 export type BlogTopic = SharedTopic;
-export type { Author, LoadedBlogPost as BlogPost };
-
-// Use the re-exported type locally
-export type BlogPost = LoadedBlogPost;
+export type { Author, BlogPost };
 
 /** All blog posts, loaded from src/content/blog/ files */
 export const allBlogs: BlogPost[] = loadAllBlogs();
