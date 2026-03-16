@@ -200,21 +200,21 @@ const EpisodeDetail = () => {
                   </span>
                   <button
                     onClick={copyLink}
-                    className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
+                    className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
                     title="Copy link"
                   >
                     <LinkIcon className="h-4 w-4" />
                   </button>
                   <button
                     onClick={shareLinkedIn}
-                    className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
+                    className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
                     title="Share on LinkedIn"
                   >
                     <Linkedin className="h-4 w-4" />
                   </button>
                   <button
                     onClick={shareEmail}
-                    className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background"
+                    className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
                     title="Share via email"
                   >
                     <Mail className="h-4 w-4" />
