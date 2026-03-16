@@ -313,6 +313,38 @@ const PublishBlog = () => {
           <Wand2 className="h-4 w-4" />
           Auto-Generate Fields
         </Button>
+        <Button
+          onClick={async () => {
+            if (!title || !content) {
+              toast({ title: "Title and content are required", variant: "destructive" });
+              return;
+            }
+            const slug = generateSlug(title);
+            const result = await saveBlog({
+              title,
+              slug,
+              author,
+              publish_date: publishDate,
+              tags: selectedTopics,
+              excerpt: excerpt || generateExcerpt(content),
+              featured_image: featuredImage || undefined,
+              key_takeaways: keyTakeaways,
+              content,
+              format: 'md',
+            });
+            if (result.success) {
+              saveToHistory("blog", { title, slug, date: publishDate, author });
+              toast({ title: "Blog published to server!" });
+            } else {
+              toast({ title: result.error || "Publish failed", variant: "destructive" });
+            }
+          }}
+          className="gap-2"
+          variant="secondary"
+        >
+          <Save className="h-4 w-4" />
+          Publish to Server
+        </Button>
         <Button onClick={handleExport} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
           Export Blog .md
