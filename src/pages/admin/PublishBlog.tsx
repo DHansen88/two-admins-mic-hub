@@ -37,6 +37,7 @@ import {
 } from "@/lib/file-export";
 import { saveBlog } from "@/lib/content-manager";
 import BlockEditor from "@/components/BlogBlockEditor";
+import { extractTocItems } from "@/components/TableOfContents";
 import {
   type ContentBlock,
   blocksToMarkdown,
