@@ -14,6 +14,15 @@ import TopicResults from "./pages/TopicResults";
 import Steps from "./pages/Steps";
 import NotFound from "./pages/NotFound";
 
+// Admin pages
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import PublishEpisode from "./pages/admin/PublishEpisode";
+import PublishBlog from "./pages/admin/PublishBlog";
+import NewsletterDrafts from "./pages/admin/NewsletterDrafts";
+import ContentLibrary from "./pages/admin/ContentLibrary";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -32,6 +41,17 @@ const App = () => (
           <Route path="/topics/:topic" element={<TopicResults />} />
           <Route path="/steps" element={<Steps />} />
           <Route path="/contact" element={<Contact />} />
+
+          {/* Admin Dashboard */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="publish-episode" element={<PublishEpisode />} />
+            <Route path="publish-blog" element={<PublishBlog />} />
+            <Route path="newsletters" element={<NewsletterDrafts />} />
+            <Route path="library" element={<ContentLibrary />} />
+          </Route>
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
