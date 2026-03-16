@@ -29,6 +29,7 @@ import NewsletterDrafts from "./pages/admin/NewsletterDrafts";
 import ContentLibrary from "./pages/admin/ContentLibrary";
 import ManageMerch from "./pages/admin/ManageMerch";
 import ManagePopups from "./pages/admin/ManagePopups";
+import ManageTags from "./pages/admin/ManageTags";
 
 const queryClient = new QueryClient();
 
