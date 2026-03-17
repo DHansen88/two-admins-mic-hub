@@ -295,7 +295,7 @@ const PublishBlog = () => {
 
   const handleSaveDraft = () => {
     saveDraft(`blog-${generateSlug(title) || "new"}`, {
-      title, author, publishDate, selectedTopics, editorMode,
+      title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
       blocks, markdownContent: editorMode === "markdown" ? markdownContent : blocksToMarkdown(blocks),
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
