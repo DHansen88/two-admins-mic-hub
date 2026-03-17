@@ -124,15 +124,21 @@ const BlogPost = () => {
               {/* Meta info */}
               <div className="flex flex-wrap items-center gap-6 text-background/70">
                 <div className="flex items-center space-x-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={post.author.avatar} alt={post.author.name} />
-                    <AvatarFallback className="bg-teal text-background">
-                      {post.author.name.split(" ").map((n) => n[0]).join("")}
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="flex -space-x-2">
+                    {post.authors.map((a, i) => (
+                      <Avatar key={i} className="h-10 w-10 border-2 border-background">
+                        <AvatarImage src={a.avatar} alt={a.name} />
+                        <AvatarFallback className="bg-teal text-background">
+                          {a.name.split(" ").map((n) => n[0]).join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                    ))}
+                  </div>
                   <div>
-                    <p className="text-background font-medium">{post.author.name}</p>
-                    <p className="text-sm">{post.author.role}</p>
+                    <p className="text-background font-medium">
+                      {post.authors.map((a) => a.name).join(" & ")}
+                    </p>
+                    <p className="text-sm">{post.authors[0]?.role}</p>
                   </div>
                 </div>
                 <span className="flex items-center space-x-2">
