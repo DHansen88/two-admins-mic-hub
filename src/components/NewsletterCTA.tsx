@@ -23,7 +23,7 @@ const NewsletterCTA = () => {
       const res = await fetch("https://api.beehiiv.com/v2/publications/pub_c5ba8b8c-515d-45fc-87c1-fb21106b1e0a/subscriptions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed }),
+        body: JSON.stringify({ email: trimmed })
       });
 
       if (res.ok) {
@@ -61,8 +61,8 @@ const NewsletterCTA = () => {
                     Stay in the Loop
                   </h2>
                 </div>
-                <p className="text-muted-foreground leading-relaxed text-sm md:text-base max-w-lg mx-auto lg:mx-0">
-                  Get episode drops, blog highlights, and admin-life tips delivered straight to your inbox. No spam — just the good stuff.
+                <p className="text-muted-foreground leading-relaxed text-sm md:text-base max-w-lg mx-auto lg:mx-0">Get episode drops, blog highlights, and admin-life tips delivered straight to your inbox. 
+No spam — just the good stuff.
                 </p>
               </div>
 
@@ -76,47 +76,47 @@ const NewsletterCTA = () => {
                     placeholder="you@example.com"
                     maxLength={255}
                     disabled={status === "submitting" || status === "success"}
-                    className="h-12 px-4 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-coral/40 focus:border-coral transition-all disabled:opacity-50 text-base w-full sm:w-[320px] lg:w-[400px] max-w-full"
-                  />
+                    className="h-12 px-4 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-coral/40 focus:border-coral transition-all disabled:opacity-50 text-base w-full sm:w-[320px] lg:w-[400px] max-w-full" />
+                  
                   <Button
                     type="submit"
                     disabled={status === "submitting" || status === "success"}
-                    className="h-12 px-6 rounded-xl bg-coral hover:bg-coral/90 text-white font-semibold text-base transition-all disabled:opacity-70 shadow-md shadow-coral/20 hover:shadow-lg hover:shadow-coral/30 shrink-0"
-                  >
-                    {status === "submitting" ? (
-                      <span className="flex items-center gap-2">
+                    className="h-12 px-6 rounded-xl bg-coral hover:bg-coral/90 text-white font-semibold text-base transition-all disabled:opacity-70 shadow-md shadow-coral/20 hover:shadow-lg hover:shadow-coral/30 shrink-0">
+                    
+                    {status === "submitting" ?
+                    <span className="flex items-center gap-2">
                         <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         Subscribing…
-                      </span>
-                    ) : status === "success" ? (
-                      <span className="flex items-center gap-2">
+                      </span> :
+                    status === "success" ?
+                    <span className="flex items-center gap-2">
                         <CheckCircle className="h-4 w-4" />
                         Subscribed!
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-2">
+                      </span> :
+
+                    <span className="flex items-center gap-2">
                         <Send className="h-4 w-4" />
                         Subscribe
                       </span>
-                    )}
+                    }
                   </Button>
                 </div>
 
-                {status === "success" && (
-                  <p className="text-teal text-sm mt-2 flex items-center justify-center sm:justify-start gap-1.5 animate-fade-in">
+                {status === "success" &&
+                <p className="text-teal text-sm mt-2 flex items-center justify-center sm:justify-start gap-1.5 animate-fade-in">
                     <CheckCircle className="h-3.5 w-3.5" /> You're in! Welcome aboard.
                   </p>
-                )}
-                {errorMsg && (
-                  <p className="text-destructive text-sm mt-2 text-center sm:text-left">{errorMsg}</p>
-                )}
+                }
+                {errorMsg &&
+                <p className="text-destructive text-sm mt-2 text-center sm:text-left">{errorMsg}</p>
+                }
               </form>
             </div>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
 
 export default NewsletterCTA;
