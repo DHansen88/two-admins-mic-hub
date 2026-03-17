@@ -257,7 +257,11 @@ const PublishBlog = () => {
     const result = await saveBlog({
       title,
       slug,
-      author,
+      author: selectedAuthors[0] || "sarah",
+      authors: selectedAuthors,
+      author_avatars: selectedAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
+        ? selectedAuthors.map((k) => authorAvatars[k] || "")
+        : undefined,
       publish_date: publishDate,
       tags: selectedTopics,
       excerpt: excerpt || generateExcerpt(currentContent),
@@ -270,7 +274,7 @@ const PublishBlog = () => {
       format: editorMode === "blocks" ? "json" : "md",
     });
     if (result.success) {
-      saveToHistory("blog", { title, slug, date: publishDate, author });
+      saveToHistory("blog", { title, slug, date: publishDate, author: selectedAuthors.join(",") });
       toast({ title: "Blog published to server!" });
     } else {
       toast({ title: result.error || "Publish failed", variant: "destructive" });
