@@ -53,6 +53,8 @@ export interface BlogPost {
   topics: SharedTopic[];
   slug: string;
   author: Author;
+  /** Multiple authors support — first entry is always === author */
+  authors: Author[];
   featuredImage?: string;
   keyTakeaways?: string[];
   blocks?: import('@/lib/block-types').ContentBlock[];
