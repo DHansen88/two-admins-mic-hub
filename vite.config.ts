@@ -6,9 +6,15 @@ import { rssFeedPlugin } from "./plugins/rss-sitemap";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Use relative paths so the site works inside any directory (e.g. /public_html/)
+  base: "./",
   server: {
     host: "::",
     port: 8080,
+  },
+  build: {
+    outDir: "dist",
+    assetsDir: "assets",
   },
   plugins: [
     react(),
