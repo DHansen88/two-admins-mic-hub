@@ -339,11 +339,11 @@ const PublishBlog = () => {
           <div className="space-y-3">
             <label className="text-sm font-medium text-foreground">Authors</label>
             <div className="grid sm:grid-cols-2 gap-3">
-              {AUTHOR_OPTIONS.map((a) => {
-                const isSelected = selectedAuthors.includes(a.key);
+              {authorOptions.map((a) => {
+                const isSelected = selectedAuthors.includes(a.id);
                 return (
                   <div
-                    key={a.key}
+                    key={a.id}
                     className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                       isSelected
                         ? "border-primary bg-primary/5"
@@ -351,20 +351,23 @@ const PublishBlog = () => {
                     }`}
                     onClick={() => {
                       setSelectedAuthors((prev) =>
-                        prev.includes(a.key)
-                          ? prev.filter((k) => k !== a.key)
-                          : [...prev, a.key]
+                        prev.includes(a.id)
+                          ? prev.filter((k) => k !== a.id)
+                          : [...prev, a.id]
                       );
                     }}
                   >
                     <Checkbox checked={isSelected} />
                     <Avatar className="h-9 w-9">
-                      <AvatarImage src={authorAvatars[a.key] || a.avatar} alt={a.label} />
+                      <AvatarImage src={authorAvatars[a.id] || a.avatar} alt={a.name} />
                       <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                        {a.label.split(" ").map((n) => n[0]).join("")}
+                        {a.name.split(" ").map((n) => n[0]).join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium text-foreground">{a.label}</span>
+                    <div className="min-w-0">
+                      <span className="text-sm font-medium text-foreground block truncate">{a.name}</span>
+                      {a.role && <span className="text-xs text-muted-foreground truncate block">{a.role}</span>}
+                    </div>
                   </div>
                 );
               })}
