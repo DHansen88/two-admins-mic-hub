@@ -20,23 +20,28 @@ const NewsletterCTA = () => {
     setStatus("submitting");
 
     try {
-      const res = await fetch("https://api.beehiiv.com/v2/publications/pub_c5ba8b8c-515d-45fc-87c1-fb21106b1e0a/subscriptions", {
+      // Call our PHP backend proxy — keeps API key server-side
+      const res = await fetch("/api/subscribe.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: trimmed })
       });
 
-      if (res.ok) {
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data?.success) {
         setStatus("success");
         setEmail("");
         setTimeout(() => setStatus("idle"), 5000);
       } else {
+        // Fallback: open Beehiiv form directly
         window.open("https://subscribe-forms.beehiiv.com/74c343d2-d107-444d-a076-41871db3af66", "_blank");
         setStatus("success");
         setEmail("");
         setTimeout(() => setStatus("idle"), 5000);
       }
     } catch {
+      // Network error fallback
       window.open("https://subscribe-forms.beehiiv.com/74c343d2-d107-444d-a076-41871db3af66", "_blank");
       setStatus("success");
       setEmail("");
