@@ -97,6 +97,7 @@ const PublishBlog = () => {
 
   useEffect(() => {
     setTags(getAllTags());
+    fetchAuthors().then(setAuthorOptions);
   }, []);
 
   // Load existing blog for editing
