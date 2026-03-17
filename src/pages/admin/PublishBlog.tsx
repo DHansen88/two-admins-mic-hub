@@ -109,8 +109,8 @@ const PublishBlog = () => {
     setTitle(blog.title);
     // Load authors
     const keys = blog.authors.map((a) => {
-      const found = AUTHOR_OPTIONS.find((opt) => opt.label === a.name);
-      return found?.key || a.name.toLowerCase().replace(/\s+/g, '-');
+      const found = authorOptions.find((opt) => opt.name === a.name);
+      return found?.id || a.name.toLowerCase().replace(/\s+/g, '-');
     });
     setSelectedAuthors(keys.length > 0 ? keys : ["sarah"]);
     // Load custom avatars
