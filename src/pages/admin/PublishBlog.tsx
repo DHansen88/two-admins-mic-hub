@@ -60,11 +60,14 @@ import {
   blocksToMarkdown,
   markdownToBlocks,
 } from "@/lib/block-types";
+import authorsData from "@/content/authors.json";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const AUTHOR_OPTIONS = [
-  { key: "sarah", label: "Sarah Mitchell" },
-  { key: "marcus", label: "Marcus Chen" },
-];
+const AUTHOR_OPTIONS = Object.entries(authorsData).map(([key, val]) => ({
+  key,
+  label: (val as { name: string }).name,
+  avatar: (val as { avatar: string }).avatar,
+}));
 
 const PublishBlog = () => {
   const { toast } = useToast();
@@ -72,7 +75,11 @@ const PublishBlog = () => {
 
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("sarah");
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>(["sarah"]);
+  const [authorAvatars, setAuthorAvatars] = useState<Record<string, string>>({});
+  const [newAuthorName, setNewAuthorName] = useState("");
+  const [newAuthorRole, setNewAuthorRole] = useState("");
+  const [newAuthorAvatar, setNewAuthorAvatar] = useState("");
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [featuredImage, setFeaturedImage] = useState("");
@@ -107,8 +114,18 @@ const PublishBlog = () => {
     const blog = allBlogsUnfiltered.find((b) => b.slug === editSlug);
     if (!blog) return;
     setTitle(blog.title);
-    const authorKey = AUTHOR_OPTIONS.find((a) => a.label === blog.author?.name)?.key || "sarah";
-    setAuthor(authorKey);
+    // Load authors
+    const keys = blog.authors.map((a) => {
+      const found = AUTHOR_OPTIONS.find((opt) => opt.label === a.name);
+      return found?.key || a.name.toLowerCase().replace(/\s+/g, '-');
+    });
+    setSelectedAuthors(keys.length > 0 ? keys : ["sarah"]);
+    // Load custom avatars
+    const avatarMap: Record<string, string> = {};
+    blog.authors.forEach((a, i) => {
+      if (a.avatar && keys[i]) avatarMap[keys[i]] = a.avatar;
+    });
+    setAuthorAvatars(avatarMap);
     setPublishDate(blog.date || formatDateISO(new Date()));
     setSelectedTopics(blog.topics || []);
     setFeaturedImage(blog.featuredImage || "");
@@ -202,7 +219,11 @@ const PublishBlog = () => {
       const data = {
         title,
         slug,
-        author,
+        author: selectedAuthors[0] || "sarah",
+        authors: selectedAuthors,
+        author_avatars: selectedAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
+          ? selectedAuthors.map((k) => authorAvatars[k] || "")
+          : undefined,
         publish_date: publishDate,
         tags: selectedTopics,
         excerpt: excerpt || generateExcerpt(currentContent),
@@ -218,7 +239,7 @@ const PublishBlog = () => {
       exportBlogMarkdown({
         title,
         slug,
-        author,
+        author: selectedAuthors.join(", "),
         publish_date: publishDate,
         tags: selectedTopics,
         excerpt: excerpt || generateExcerpt(currentContent),
@@ -228,7 +249,7 @@ const PublishBlog = () => {
       });
       toast({ title: "Blog Markdown exported!" });
     }
-    saveToHistory("blog", { title, slug, date: publishDate, author });
+    saveToHistory("blog", { title, slug, date: publishDate, author: selectedAuthors.join(",") });
   };
 
   const handlePublishToServer = async () => {
@@ -240,7 +261,11 @@ const PublishBlog = () => {
     const result = await saveBlog({
       title,
       slug,
-      author,
+      author: selectedAuthors[0] || "sarah",
+      authors: selectedAuthors,
+      author_avatars: selectedAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
+        ? selectedAuthors.map((k) => authorAvatars[k] || "")
+        : undefined,
       publish_date: publishDate,
       tags: selectedTopics,
       excerpt: excerpt || generateExcerpt(currentContent),
@@ -253,7 +278,7 @@ const PublishBlog = () => {
       format: editorMode === "blocks" ? "json" : "md",
     });
     if (result.success) {
-      saveToHistory("blog", { title, slug, date: publishDate, author });
+      saveToHistory("blog", { title, slug, date: publishDate, author: selectedAuthors.join(",") });
       toast({ title: "Blog published to server!" });
     } else {
       toast({ title: result.error || "Publish failed", variant: "destructive" });
@@ -270,7 +295,7 @@ const PublishBlog = () => {
 
   const handleSaveDraft = () => {
     saveDraft(`blog-${generateSlug(title) || "new"}`, {
-      title, author, publishDate, selectedTopics, editorMode,
+      title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
       blocks, markdownContent: editorMode === "markdown" ? markdownContent : blocksToMarkdown(blocks),
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
@@ -305,19 +330,7 @@ const PublishBlog = () => {
             <label className="text-sm font-medium text-foreground">Title *</label>
             <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="5 Essential Leadership Skills Every Administrator Needs" />
           </div>
-          <div className="grid sm:grid-cols-3 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Author</label>
-              <select
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                {AUTHOR_OPTIONS.map((a) => (
-                  <option key={a.key} value={a.key}>{a.label}</option>
-                ))}
-              </select>
-            </div>
+          <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Publish Date</label>
               <Input type="date" value={publishDate} onChange={(e) => setPublishDate(e.target.value)} />
@@ -327,6 +340,72 @@ const PublishBlog = () => {
               <Input type="file" accept="image/*" onChange={handleImageUpload} />
               {featuredImage && <p className="text-xs text-muted-foreground">{featuredImage}</p>}
             </div>
+          </div>
+
+          {/* Authors Selection */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-foreground">Authors</label>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {AUTHOR_OPTIONS.map((a) => {
+                const isSelected = selectedAuthors.includes(a.key);
+                return (
+                  <div
+                    key={a.key}
+                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                      isSelected
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-muted-foreground/30"
+                    }`}
+                    onClick={() => {
+                      setSelectedAuthors((prev) =>
+                        prev.includes(a.key)
+                          ? prev.filter((k) => k !== a.key)
+                          : [...prev, a.key]
+                      );
+                    }}
+                  >
+                    <Checkbox checked={isSelected} />
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={authorAvatars[a.key] || a.avatar} alt={a.label} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        {a.label.split(" ").map((n) => n[0]).join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium text-foreground">{a.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Custom avatar URL per selected author */}
+            {selectedAuthors.length > 0 && (
+              <div className="space-y-2 pt-2">
+                <p className="text-xs text-muted-foreground">Override profile pictures (optional — paste image URL):</p>
+                {selectedAuthors.map((key) => {
+                  const opt = AUTHOR_OPTIONS.find((a) => a.key === key);
+                  return (
+                    <div key={key} className="flex items-center gap-2">
+                      <Avatar className="h-7 w-7 shrink-0">
+                        <AvatarImage src={authorAvatars[key] || opt?.avatar} />
+                        <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
+                          {opt?.label?.split(" ").map((n) => n[0]).join("") || "?"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Input
+                        value={authorAvatars[key] || ""}
+                        onChange={(e) => setAuthorAvatars((prev) => ({ ...prev, [key]: e.target.value }))}
+                        placeholder={`Profile picture URL for ${opt?.label || key}`}
+                        className="h-8 text-sm"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {selectedAuthors.length === 0 && (
+              <p className="text-xs text-destructive">Please select at least one author.</p>
+            )}
           </div>
 
           {/* Tags */}

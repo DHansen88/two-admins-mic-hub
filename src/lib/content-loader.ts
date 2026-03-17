@@ -53,6 +53,8 @@ export interface BlogPost {
   topics: SharedTopic[];
   slug: string;
   author: Author;
+  /** Multiple authors support — first entry is always === author */
+  authors: Author[];
   featuredImage?: string;
   keyTakeaways?: string[];
   blocks?: import('@/lib/block-types').ContentBlock[];
@@ -123,11 +125,28 @@ function parseBlogMd(raw: string, filename: string): BlogPost {
     ? data.key_takeaways
     : undefined;
 
-  const authorKey = (data.author as string) || '';
-  const author = getAuthor(authorKey);
+  // Support multiple authors: author can be a string or comma-separated, or authors can be an array
+  const authorKeys = Array.isArray(data.authors)
+    ? (data.authors as string[])
+    : typeof data.author === 'string'
+      ? data.author.split(',').map((k) => k.trim()).filter(Boolean)
+      : [''];
+  const allAuthors = authorKeys.map((k) => {
+    const a = getAuthor(k);
+    return { ...a };
+  });
+  const author = allAuthors[0] || getAuthor('');
   // Override role if specified in frontmatter
   if (data.author_role) {
     author.role = data.author_role as string;
+    allAuthors[0] = author;
+  }
+
+  // Apply custom avatars if provided
+  if (Array.isArray(data.author_avatars)) {
+    (data.author_avatars as string[]).forEach((avatar, i) => {
+      if (avatar && allAuthors[i]) allAuthors[i].avatar = avatar;
+    });
   }
 
   const excerpt =
@@ -142,6 +161,7 @@ function parseBlogMd(raw: string, filename: string): BlogPost {
     readTime: calculateReadingTime(content),
     topics: tags,
     author,
+    authors: allAuthors,
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
     relatedEpisode: (data.related_episode as string) || undefined,
@@ -176,10 +196,22 @@ function parseBlogJson(mod: Record<string, unknown>, filename: string): BlogPost
     content = blocksToMarkdown(blocks);
   }
 
-  const authorKey = (data.author as string) || '';
-  const author = getAuthor(authorKey);
+  // Support multiple authors
+  const authorKeys = Array.isArray(data.authors)
+    ? (data.authors as string[])
+    : typeof data.author === 'string'
+      ? (data.author as string).split(',').map((k) => k.trim()).filter(Boolean)
+      : [''];
+  const allAuthors = authorKeys.map((k) => ({ ...getAuthor(k) }));
+  const author = allAuthors[0] || getAuthor('');
   if (data.author_role) {
     author.role = data.author_role as string;
+    allAuthors[0] = author;
+  }
+  if (Array.isArray(data.author_avatars)) {
+    (data.author_avatars as string[]).forEach((avatar, i) => {
+      if (avatar && allAuthors[i]) allAuthors[i].avatar = avatar;
+    });
   }
 
   return {
@@ -191,6 +223,7 @@ function parseBlogJson(mod: Record<string, unknown>, filename: string): BlogPost
     readTime: calculateReadingTime(content),
     topics: tags,
     author,
+    authors: allAuthors,
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
     blocks,
