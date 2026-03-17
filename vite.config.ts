@@ -15,14 +15,8 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist",
     assetsDir: "assets",
-    // Production optimizations
-    minify: "terser",
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    // Use esbuild (Vite's built-in minifier) — no extra dependency needed
+    minify: "esbuild",
     rollupOptions: {
       output: {
         // Split vendor chunks for better caching
