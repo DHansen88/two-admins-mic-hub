@@ -75,7 +75,11 @@ const PublishBlog = () => {
 
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("sarah");
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>(["sarah"]);
+  const [authorAvatars, setAuthorAvatars] = useState<Record<string, string>>({});
+  const [newAuthorName, setNewAuthorName] = useState("");
+  const [newAuthorRole, setNewAuthorRole] = useState("");
+  const [newAuthorAvatar, setNewAuthorAvatar] = useState("");
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [featuredImage, setFeaturedImage] = useState("");
