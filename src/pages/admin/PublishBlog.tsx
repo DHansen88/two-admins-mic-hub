@@ -330,19 +330,7 @@ const PublishBlog = () => {
             <label className="text-sm font-medium text-foreground">Title *</label>
             <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="5 Essential Leadership Skills Every Administrator Needs" />
           </div>
-          <div className="grid sm:grid-cols-3 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Author</label>
-              <select
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                {AUTHOR_OPTIONS.map((a) => (
-                  <option key={a.key} value={a.key}>{a.label}</option>
-                ))}
-              </select>
-            </div>
+          <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Publish Date</label>
               <Input type="date" value={publishDate} onChange={(e) => setPublishDate(e.target.value)} />
@@ -352,6 +340,72 @@ const PublishBlog = () => {
               <Input type="file" accept="image/*" onChange={handleImageUpload} />
               {featuredImage && <p className="text-xs text-muted-foreground">{featuredImage}</p>}
             </div>
+          </div>
+
+          {/* Authors Selection */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-foreground">Authors</label>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {AUTHOR_OPTIONS.map((a) => {
+                const isSelected = selectedAuthors.includes(a.key);
+                return (
+                  <div
+                    key={a.key}
+                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                      isSelected
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-muted-foreground/30"
+                    }`}
+                    onClick={() => {
+                      setSelectedAuthors((prev) =>
+                        prev.includes(a.key)
+                          ? prev.filter((k) => k !== a.key)
+                          : [...prev, a.key]
+                      );
+                    }}
+                  >
+                    <Checkbox checked={isSelected} />
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={authorAvatars[a.key] || a.avatar} alt={a.label} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        {a.label.split(" ").map((n) => n[0]).join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium text-foreground">{a.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Custom avatar URL per selected author */}
+            {selectedAuthors.length > 0 && (
+              <div className="space-y-2 pt-2">
+                <p className="text-xs text-muted-foreground">Override profile pictures (optional — paste image URL):</p>
+                {selectedAuthors.map((key) => {
+                  const opt = AUTHOR_OPTIONS.find((a) => a.key === key);
+                  return (
+                    <div key={key} className="flex items-center gap-2">
+                      <Avatar className="h-7 w-7 shrink-0">
+                        <AvatarImage src={authorAvatars[key] || opt?.avatar} />
+                        <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
+                          {opt?.label?.split(" ").map((n) => n[0]).join("") || "?"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Input
+                        value={authorAvatars[key] || ""}
+                        onChange={(e) => setAuthorAvatars((prev) => ({ ...prev, [key]: e.target.value }))}
+                        placeholder={`Profile picture URL for ${opt?.label || key}`}
+                        className="h-8 text-sm"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {selectedAuthors.length === 0 && (
+              <p className="text-xs text-destructive">Please select at least one author.</p>
+            )}
           </div>
 
           {/* Tags */}
