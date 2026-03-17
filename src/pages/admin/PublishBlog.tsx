@@ -60,26 +60,18 @@ import {
   blocksToMarkdown,
   markdownToBlocks,
 } from "@/lib/block-types";
-import authorsData from "@/content/authors.json";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-const AUTHOR_OPTIONS = Object.entries(authorsData).map(([key, val]) => ({
-  key,
-  label: (val as { name: string }).name,
-  avatar: (val as { avatar: string }).avatar,
-}));
+import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
 
 const PublishBlog = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
 
+  const [authorOptions, setAuthorOptions] = useState<AuthorProfile[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
   const [selectedAuthors, setSelectedAuthors] = useState<string[]>(["sarah"]);
   const [authorAvatars, setAuthorAvatars] = useState<Record<string, string>>({});
-  const [newAuthorName, setNewAuthorName] = useState("");
-  const [newAuthorRole, setNewAuthorRole] = useState("");
-  const [newAuthorAvatar, setNewAuthorAvatar] = useState("");
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [featuredImage, setFeaturedImage] = useState("");
