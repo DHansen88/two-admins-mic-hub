@@ -267,21 +267,28 @@ const BlogPost = () => {
                 <div className="lg:hidden">
                   <div className="p-6 bg-card rounded-xl border border-border">
                     <h3 className="font-display font-semibold text-foreground mb-4">
-                      About the Author
+                      {post.authors.length > 1 ? "About the Authors" : "About the Author"}
                     </h3>
-                    <div className="flex items-center space-x-3 mb-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={post.author.avatar} alt={post.author.name} />
-                        <AvatarFallback className="bg-teal text-background">
-                          {post.author.name.split(" ").map((n) => n[0]).join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium text-foreground">{post.author.name}</p>
-                        <p className="text-sm text-muted-foreground">{post.author.role}</p>
-                      </div>
+                    <div className="space-y-4">
+                      {post.authors.map((a, i) => (
+                        <div key={i}>
+                          <div className="flex items-center space-x-3 mb-2">
+                            <Avatar className="h-12 w-12">
+                              <AvatarImage src={a.avatar} alt={a.name} />
+                              <AvatarFallback className="bg-teal text-background">
+                                {a.name.split(" ").map((n) => n[0]).join("")}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium text-foreground">{a.name}</p>
+                              <p className="text-sm text-muted-foreground">{a.role}</p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{a.bio}</p>
+                          {i < post.authors.length - 1 && <hr className="my-4 border-border" />}
+                        </div>
+                      ))}
                     </div>
-                    <p className="text-sm text-muted-foreground">{post.author.bio}</p>
                   </div>
                 </div>
               </div>
