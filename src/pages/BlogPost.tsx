@@ -12,7 +12,7 @@ import EpisodeCallout from "@/components/EpisodeCallout";
 import { getBlogBySlug, getRelatedPosts } from "@/data/blogData";
 import { getRelatedEpisodesForBlog } from "@/data/crossLinks";
 import { allEpisodes } from "@/data/episodeData";
-import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Link as LinkIcon, Mail, Lightbulb } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Link as LinkIcon, Mail, Lightbulb, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
@@ -255,6 +255,20 @@ const BlogPost = () => {
                               </div>
                             </div>
                             <p className="text-sm text-muted-foreground">{a.bio}</p>
+                            {(a.linkedin || a.website) && (
+                              <div className="flex items-center gap-2 mt-2">
+                                {a.linkedin && (
+                                  <a href={a.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                    <Linkedin className="h-4 w-4" />
+                                  </a>
+                                )}
+                                {a.website && (
+                                  <a href={a.website} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                    <Globe className="h-4 w-4" />
+                                  </a>
+                                )}
+                              </div>
+                            )}
                             {i < post.authors.length - 1 && <hr className="my-4 border-border" />}
                           </div>
                         ))}
@@ -285,6 +299,20 @@ const BlogPost = () => {
                             </div>
                           </div>
                           <p className="text-sm text-muted-foreground">{a.bio}</p>
+                          {(a.linkedin || a.website) && (
+                            <div className="flex items-center gap-2 mt-2">
+                              {a.linkedin && (
+                                <a href={a.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                  <Linkedin className="h-4 w-4" />
+                                </a>
+                              )}
+                              {a.website && (
+                                <a href={a.website} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                  <Globe className="h-4 w-4" />
+                                </a>
+                              )}
+                            </div>
+                          )}
                           {i < post.authors.length - 1 && <hr className="my-4 border-border" />}
                         </div>
                       ))}

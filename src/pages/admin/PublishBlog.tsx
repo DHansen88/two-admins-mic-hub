@@ -60,26 +60,18 @@ import {
   blocksToMarkdown,
   markdownToBlocks,
 } from "@/lib/block-types";
-import authorsData from "@/content/authors.json";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-const AUTHOR_OPTIONS = Object.entries(authorsData).map(([key, val]) => ({
-  key,
-  label: (val as { name: string }).name,
-  avatar: (val as { avatar: string }).avatar,
-}));
+import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
 
 const PublishBlog = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
 
+  const [authorOptions, setAuthorOptions] = useState<AuthorProfile[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
   const [selectedAuthors, setSelectedAuthors] = useState<string[]>(["sarah"]);
   const [authorAvatars, setAuthorAvatars] = useState<Record<string, string>>({});
-  const [newAuthorName, setNewAuthorName] = useState("");
-  const [newAuthorRole, setNewAuthorRole] = useState("");
-  const [newAuthorAvatar, setNewAuthorAvatar] = useState("");
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [featuredImage, setFeaturedImage] = useState("");
@@ -105,6 +97,7 @@ const PublishBlog = () => {
 
   useEffect(() => {
     setTags(getAllTags());
+    fetchAuthors().then(setAuthorOptions);
   }, []);
 
   // Load existing blog for editing
@@ -116,8 +109,8 @@ const PublishBlog = () => {
     setTitle(blog.title);
     // Load authors
     const keys = blog.authors.map((a) => {
-      const found = AUTHOR_OPTIONS.find((opt) => opt.label === a.name);
-      return found?.key || a.name.toLowerCase().replace(/\s+/g, '-');
+      const found = authorOptions.find((opt) => opt.name === a.name);
+      return found?.id || a.name.toLowerCase().replace(/\s+/g, '-');
     });
     setSelectedAuthors(keys.length > 0 ? keys : ["sarah"]);
     // Load custom avatars
@@ -346,11 +339,11 @@ const PublishBlog = () => {
           <div className="space-y-3">
             <label className="text-sm font-medium text-foreground">Authors</label>
             <div className="grid sm:grid-cols-2 gap-3">
-              {AUTHOR_OPTIONS.map((a) => {
-                const isSelected = selectedAuthors.includes(a.key);
+              {authorOptions.map((a) => {
+                const isSelected = selectedAuthors.includes(a.id);
                 return (
                   <div
-                    key={a.key}
+                    key={a.id}
                     className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                       isSelected
                         ? "border-primary bg-primary/5"
@@ -358,20 +351,23 @@ const PublishBlog = () => {
                     }`}
                     onClick={() => {
                       setSelectedAuthors((prev) =>
-                        prev.includes(a.key)
-                          ? prev.filter((k) => k !== a.key)
-                          : [...prev, a.key]
+                        prev.includes(a.id)
+                          ? prev.filter((k) => k !== a.id)
+                          : [...prev, a.id]
                       );
                     }}
                   >
                     <Checkbox checked={isSelected} />
                     <Avatar className="h-9 w-9">
-                      <AvatarImage src={authorAvatars[a.key] || a.avatar} alt={a.label} />
+                      <AvatarImage src={authorAvatars[a.id] || a.avatar} alt={a.name} />
                       <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                        {a.label.split(" ").map((n) => n[0]).join("")}
+                        {a.name.split(" ").map((n) => n[0]).join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium text-foreground">{a.label}</span>
+                    <div className="min-w-0">
+                      <span className="text-sm font-medium text-foreground block truncate">{a.name}</span>
+                      {a.role && <span className="text-xs text-muted-foreground truncate block">{a.role}</span>}
+                    </div>
                   </div>
                 );
               })}
@@ -382,19 +378,19 @@ const PublishBlog = () => {
               <div className="space-y-2 pt-2">
                 <p className="text-xs text-muted-foreground">Override profile pictures (optional — paste image URL):</p>
                 {selectedAuthors.map((key) => {
-                  const opt = AUTHOR_OPTIONS.find((a) => a.key === key);
+                  const opt = authorOptions.find((a) => a.id === key);
                   return (
                     <div key={key} className="flex items-center gap-2">
                       <Avatar className="h-7 w-7 shrink-0">
                         <AvatarImage src={authorAvatars[key] || opt?.avatar} />
                         <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
-                          {opt?.label?.split(" ").map((n) => n[0]).join("") || "?"}
+                          {opt?.name?.split(" ").map((n) => n[0]).join("") || "?"}
                         </AvatarFallback>
                       </Avatar>
                       <Input
                         value={authorAvatars[key] || ""}
                         onChange={(e) => setAuthorAvatars((prev) => ({ ...prev, [key]: e.target.value }))}
-                        placeholder={`Profile picture URL for ${opt?.label || key}`}
+                        placeholder={`Profile picture URL for ${opt?.name || key}`}
                         className="h-8 text-sm"
                       />
                     </div>

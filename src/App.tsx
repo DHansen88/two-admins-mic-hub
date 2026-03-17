@@ -31,6 +31,7 @@ import ManageMerch from "./pages/admin/ManageMerch";
 import ManagePopups from "./pages/admin/ManagePopups";
 import ManageTags from "./pages/admin/ManageTags";
 import ManageUsers from "./pages/admin/ManageUsers";
+import ManageAuthors from "./pages/admin/ManageAuthors";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="popups" element={<ManagePopups />} />
             <Route path="tags" element={<ManageTags />} />
             <Route path="users" element={<ManageUsers />} />
+            <Route path="authors" element={<ManageAuthors />} />
           </Route>
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

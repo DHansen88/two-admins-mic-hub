@@ -27,6 +27,8 @@ export interface Author {
   role: string;
   bio: string;
   avatar: string;
+  linkedin?: string;
+  website?: string;
 }
 
 const authors: Record<string, Author> = authorsData;

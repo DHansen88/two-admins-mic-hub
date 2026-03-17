@@ -197,7 +197,27 @@ function handleSaveBlog(): void {
         $frontmatter = "---\n";
         $frontmatter .= 'title: "' . ($body['title'] ?? '') . "\"\n";
         $frontmatter .= 'slug: ' . $slug . "\n";
-        $frontmatter .= 'author: ' . ($body['author'] ?? 'sarah') . "\n";
+        
+        // Support multiple authors
+        if (!empty($body['authors']) && is_array($body['authors'])) {
+            $frontmatter .= "authors:\n";
+            foreach ($body['authors'] as $authorKey) {
+                $frontmatter .= "  - " . $authorKey . "\n";
+            }
+        } else {
+            $frontmatter .= 'author: ' . ($body['author'] ?? 'sarah') . "\n";
+        }
+        
+        if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
+            $hasCustomAvatars = array_filter($body['author_avatars'], fn($v) => !empty($v));
+            if (!empty($hasCustomAvatars)) {
+                $frontmatter .= "author_avatars:\n";
+                foreach ($body['author_avatars'] as $avatar) {
+                    $frontmatter .= "  - " . ($avatar ?: '') . "\n";
+                }
+            }
+        }
+        
         $frontmatter .= 'publish_date: ' . ($body['publish_date'] ?? date('Y-m-d')) . "\n";
         
         if (!empty($body['tags'])) {
@@ -231,6 +251,18 @@ function handleSaveBlog(): void {
             'key_takeaways' => $body['key_takeaways'] ?? [],
             'content' => $body['content'] ?? '',
         ];
+        
+        // Add multiple authors support
+        if (!empty($body['authors']) && is_array($body['authors'])) {
+            $data['authors'] = $body['authors'];
+        }
+        if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
+            $hasCustomAvatars = array_filter($body['author_avatars'], fn($v) => !empty($v));
+            if (!empty($hasCustomAvatars)) {
+                $data['author_avatars'] = $body['author_avatars'];
+            }
+        }
+        
         file_put_contents(BLOG_DIR . "/{$slug}.json", json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
     
