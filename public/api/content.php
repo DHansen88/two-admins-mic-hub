@@ -251,6 +251,18 @@ function handleSaveBlog(): void {
             'key_takeaways' => $body['key_takeaways'] ?? [],
             'content' => $body['content'] ?? '',
         ];
+        
+        // Add multiple authors support
+        if (!empty($body['authors']) && is_array($body['authors'])) {
+            $data['authors'] = $body['authors'];
+        }
+        if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
+            $hasCustomAvatars = array_filter($body['author_avatars'], fn($v) => !empty($v));
+            if (!empty($hasCustomAvatars)) {
+                $data['author_avatars'] = $body['author_avatars'];
+            }
+        }
+        
         file_put_contents(BLOG_DIR . "/{$slug}.json", json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
     
