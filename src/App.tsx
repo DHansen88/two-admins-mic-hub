@@ -31,6 +31,7 @@ import ManageMerch from "./pages/admin/ManageMerch";
 import ManagePopups from "./pages/admin/ManagePopups";
 import ManageTags from "./pages/admin/ManageTags";
 import ManageUsers from "./pages/admin/ManageUsers";
+import ManageAuthors from "./pages/admin/ManageAuthors";
 
 const queryClient = new QueryClient();
 
