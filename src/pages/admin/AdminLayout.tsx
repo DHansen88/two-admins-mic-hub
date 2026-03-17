@@ -22,6 +22,7 @@ const allNavItems = [
   { label: "Dashboard", path: "/admin", icon: LayoutDashboard, adminOnly: false },
   { label: "Publish Episode", path: "/admin/publish-episode", icon: Mic, adminOnly: false },
   { label: "Publish Blog", path: "/admin/publish-blog", icon: FileText, adminOnly: false },
+  { label: "Author Library", path: "/admin/authors", icon: UserCircle, adminOnly: false },
   { label: "Tag Manager", path: "/admin/tags", icon: Tags, adminOnly: false },
   { label: "Newsletter Drafts", path: "/admin/newsletters", icon: Mail, adminOnly: false },
   { label: "Content Library", path: "/admin/library", icon: Library, adminOnly: false },
