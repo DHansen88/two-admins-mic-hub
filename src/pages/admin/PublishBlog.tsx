@@ -60,11 +60,14 @@ import {
   blocksToMarkdown,
   markdownToBlocks,
 } from "@/lib/block-types";
+import authorsData from "@/content/authors.json";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const AUTHOR_OPTIONS = [
-  { key: "sarah", label: "Sarah Mitchell" },
-  { key: "marcus", label: "Marcus Chen" },
-];
+const AUTHOR_OPTIONS = Object.entries(authorsData).map(([key, val]) => ({
+  key,
+  label: (val as { name: string }).name,
+  avatar: (val as { avatar: string }).avatar,
+}));
 
 const PublishBlog = () => {
   const { toast } = useToast();
