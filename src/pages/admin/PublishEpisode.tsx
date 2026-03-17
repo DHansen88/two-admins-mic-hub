@@ -499,7 +499,7 @@ const PublishEpisode = () => {
           variant="secondary"
         >
           <Save className="h-4 w-4" />
-          Publish to Server
+          {searchParams.get("edit") ? "Update Episode" : "Publish to Server"}
         </Button>
         <Button onClick={handleExportEpisode} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
