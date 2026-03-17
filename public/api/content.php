@@ -197,7 +197,27 @@ function handleSaveBlog(): void {
         $frontmatter = "---\n";
         $frontmatter .= 'title: "' . ($body['title'] ?? '') . "\"\n";
         $frontmatter .= 'slug: ' . $slug . "\n";
-        $frontmatter .= 'author: ' . ($body['author'] ?? 'sarah') . "\n";
+        
+        // Support multiple authors
+        if (!empty($body['authors']) && is_array($body['authors'])) {
+            $frontmatter .= "authors:\n";
+            foreach ($body['authors'] as $authorKey) {
+                $frontmatter .= "  - " . $authorKey . "\n";
+            }
+        } else {
+            $frontmatter .= 'author: ' . ($body['author'] ?? 'sarah') . "\n";
+        }
+        
+        if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
+            $hasCustomAvatars = array_filter($body['author_avatars'], fn($v) => !empty($v));
+            if (!empty($hasCustomAvatars)) {
+                $frontmatter .= "author_avatars:\n";
+                foreach ($body['author_avatars'] as $avatar) {
+                    $frontmatter .= "  - " . ($avatar ?: '') . "\n";
+                }
+            }
+        }
+        
         $frontmatter .= 'publish_date: ' . ($body['publish_date'] ?? date('Y-m-d')) . "\n";
         
         if (!empty($body['tags'])) {
