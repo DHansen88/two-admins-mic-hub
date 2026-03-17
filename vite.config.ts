@@ -15,6 +15,41 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist",
     assetsDir: "assets",
+    // Production optimizations
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    rollupOptions: {
+      output: {
+        // Split vendor chunks for better caching
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+          ui: ["@radix-ui/react-dialog", "@radix-ui/react-tooltip", "@radix-ui/react-dropdown-menu"],
+        },
+        // Organize output files
+        assetFileNames: (assetInfo) => {
+          const name = assetInfo.name || "";
+          if (/\.(png|jpe?g|gif|svg|webp|ico)$/i.test(name)) {
+            return "assets/images/[name]-[hash][extname]";
+          }
+          if (/\.css$/i.test(name)) {
+            return "assets/css/[name]-[hash][extname]";
+          }
+          if (/\.(woff2?|eot|ttf|otf)$/i.test(name)) {
+            return "assets/fonts/[name]-[hash][extname]";
+          }
+          return "assets/[name]-[hash][extname]";
+        },
+        chunkFileNames: "assets/js/[name]-[hash].js",
+        entryFileNames: "assets/js/[name]-[hash].js",
+      },
+    },
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 600,
   },
   plugins: [
     react(),

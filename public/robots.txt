@@ -12,3 +12,10 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://twoadminsandamic.com/sitemap.xml
+
+# Disallow admin area
+Disallow: /admin
+Disallow: /api/
