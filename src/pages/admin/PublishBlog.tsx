@@ -1,4 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -515,10 +526,32 @@ const PublishBlog = () => {
           <Wand2 className="h-4 w-4" />
           Auto-Generate Fields
         </Button>
-        <Button onClick={handlePublishToServer} className="gap-2" variant="secondary">
-          <Save className="h-4 w-4" />
-          {searchParams.get("edit") ? "Update Post" : "Publish to Server"}
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button className="gap-2" variant="secondary">
+              <Save className="h-4 w-4" />
+              {searchParams.get("edit") ? "Update Post" : "Publish to Server"}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {searchParams.get("edit") ? "Update this post?" : "Publish this post?"}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {searchParams.get("edit")
+                  ? "This will overwrite the existing blog post with your changes."
+                  : "This will publish the blog post and make it publicly visible."}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handlePublishToServer}>
+                {searchParams.get("edit") ? "Update" : "Publish"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <Button onClick={handleExport} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
           Export {editorMode === "blocks" ? "JSON" : "Markdown"}
