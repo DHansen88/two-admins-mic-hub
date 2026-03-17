@@ -61,7 +61,7 @@ const BlogPost = () => {
         headline: post.title,
         description: post.excerpt,
         datePublished: post.date,
-        author: { '@type': 'Person', name: post.author.name },
+        author: post.authors.map((a) => ({ '@type': 'Person', name: a.name })),
         publisher: { '@type': 'Organization', name: 'Two Admins and a Mic' },
       });
       document.head.appendChild(jsonLd);
