@@ -114,8 +114,18 @@ const PublishBlog = () => {
     const blog = allBlogsUnfiltered.find((b) => b.slug === editSlug);
     if (!blog) return;
     setTitle(blog.title);
-    const authorKey = AUTHOR_OPTIONS.find((a) => a.label === blog.author?.name)?.key || "sarah";
-    setAuthor(authorKey);
+    // Load authors
+    const keys = blog.authors.map((a) => {
+      const found = AUTHOR_OPTIONS.find((opt) => opt.label === a.name);
+      return found?.key || a.name.toLowerCase().replace(/\s+/g, '-');
+    });
+    setSelectedAuthors(keys.length > 0 ? keys : ["sarah"]);
+    // Load custom avatars
+    const avatarMap: Record<string, string> = {};
+    blog.authors.forEach((a, i) => {
+      if (a.avatar && keys[i]) avatarMap[keys[i]] = a.avatar;
+    });
+    setAuthorAvatars(avatarMap);
     setPublishDate(blog.date || formatDateISO(new Date()));
     setSelectedTopics(blog.topics || []);
     setFeaturedImage(blog.featuredImage || "");
