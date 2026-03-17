@@ -67,8 +67,8 @@ No spam — just the good stuff.
               </div>
 
               {/* Right — form */}
-              <form onSubmit={handleSubmit} className="w-full lg:w-auto">
-                <div className="flex flex-col sm:flex-row gap-3">
+              <form onSubmit={handleSubmit} className="w-full lg:w-auto flex flex-col items-center lg:items-end">
+                <div className="flex flex-col sm:flex-row gap-3 justify-center w-full sm:w-auto">
                   <input
                     type="email"
                     value={email}
@@ -81,7 +81,7 @@ No spam — just the good stuff.
                   <Button
                     type="submit"
                     disabled={status === "submitting" || status === "success"}
-                    className="h-12 px-6 rounded-xl bg-coral hover:bg-coral/90 text-white font-semibold text-base transition-all disabled:opacity-70 shadow-md shadow-coral/20 hover:shadow-lg hover:shadow-coral/30 shrink-0">
+                    className="h-12 px-6 rounded-xl bg-coral hover:bg-coral/90 text-white font-semibold text-base transition-all disabled:opacity-70 shadow-md shadow-coral/20 hover:shadow-lg hover:shadow-coral/30 shrink-0 w-full sm:w-auto">
                     
                     {status === "submitting" ?
                     <span className="flex items-center gap-2">
@@ -103,12 +103,12 @@ No spam — just the good stuff.
                 </div>
 
                 {status === "success" &&
-                <p className="text-teal text-sm mt-2 flex items-center justify-center sm:justify-start gap-1.5 animate-fade-in">
+                <p className="text-teal text-sm mt-2 flex items-center justify-center gap-1.5 animate-fade-in">
                     <CheckCircle className="h-3.5 w-3.5" /> You're in! Welcome aboard.
                   </p>
                 }
                 {errorMsg &&
-                <p className="text-destructive text-sm mt-2 text-center sm:text-left">{errorMsg}</p>
+                <p className="text-destructive text-sm mt-2 text-center">{errorMsg}</p>
                 }
               </form>
             </div>
