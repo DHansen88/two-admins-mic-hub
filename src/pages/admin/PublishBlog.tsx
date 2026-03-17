@@ -219,7 +219,11 @@ const PublishBlog = () => {
       const data = {
         title,
         slug,
-        author,
+        author: selectedAuthors[0] || "sarah",
+        authors: selectedAuthors,
+        author_avatars: selectedAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
+          ? selectedAuthors.map((k) => authorAvatars[k] || "")
+          : undefined,
         publish_date: publishDate,
         tags: selectedTopics,
         excerpt: excerpt || generateExcerpt(currentContent),
@@ -235,7 +239,7 @@ const PublishBlog = () => {
       exportBlogMarkdown({
         title,
         slug,
-        author,
+        author: selectedAuthors.join(", "),
         publish_date: publishDate,
         tags: selectedTopics,
         excerpt: excerpt || generateExcerpt(currentContent),
@@ -245,7 +249,7 @@ const PublishBlog = () => {
       });
       toast({ title: "Blog Markdown exported!" });
     }
-    saveToHistory("blog", { title, slug, date: publishDate, author });
+    saveToHistory("blog", { title, slug, date: publishDate, author: selectedAuthors.join(",") });
   };
 
   const handlePublishToServer = async () => {
