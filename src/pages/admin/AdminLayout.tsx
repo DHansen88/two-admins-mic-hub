@@ -12,6 +12,7 @@ import {
   Megaphone,
   Tags,
   Users,
+  UserCircle,
   LogOut,
   ChevronLeft,
   Shield,
