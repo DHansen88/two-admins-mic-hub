@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Two Admins & a Mic
 
 ## Project info
 
