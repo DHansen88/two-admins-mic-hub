@@ -158,7 +158,7 @@ const ManageAuthors = () => {
                   </AvatarFallback>
                 </Avatar>
                 <label className="cursor-pointer">
-                  <Button variant="outline" size="sm" className="gap-1.5 pointer-events-none" disabled={uploading}>
+                  <Button variant="outline" size="sm" className="gap-1.5 pointer-events-none" tabIndex={-1} aria-hidden>
                     <Upload className="h-3.5 w-3.5" />
                     {uploading ? "Uploading…" : "Upload Headshot"}
                   </Button>
