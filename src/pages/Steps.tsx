@@ -294,16 +294,6 @@ const BlueprintStepper = () => {
                   
                   Next <ChevronRight className="w-4 h-4" />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`ml-auto ${accent.text} hover:${accent.bgLight} gap-1 text-xs`}
-                  asChild>
-                  
-                  <a href="/contact">
-                    Apply This Step <ExternalLink className="w-3 h-3" />
-                  </a>
-                </Button>
               </div>
             </div>
           </div>
