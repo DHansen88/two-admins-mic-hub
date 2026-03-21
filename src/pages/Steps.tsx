@@ -600,7 +600,7 @@ const Steps = () => {
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-background leading-tight">
                 You're not "just an admin."
               </h1>
-              <h2 className="text-xl lg:text-3xl font-display font-semibold text-light-green leading-tight md:text-3xl">
+              <h2 className="text-xl lg:text-3xl font-display font-semibold text-teal leading-tight md:text-3xl">
                 You're a leader who hasn't been developed like one.
               </h2>
               <p className="text-lg md:text-xl text-background/75 max-w-2xl mx-auto leading-relaxed">
