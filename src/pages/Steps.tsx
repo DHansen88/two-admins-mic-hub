@@ -398,7 +398,7 @@ const BlueprintStepper = () => {
       {/* CTA */}
       <div className="text-center mt-12">
         <Button asChild size="lg" className="bg-teal hover:bg-teal/90 text-background font-semibold px-8 py-6 text-base">
-          <a href="/contact">Start Your Leadership Blueprint</a>
+          <a href="https://conantleadership.mykajabi.com/offers/JCoEFqw7/checkout" target="_blank" rel="noopener noreferrer">Start Your Leadership Blueprint</a>
         </Button>
       </div>
     </>);
