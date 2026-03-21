@@ -84,13 +84,13 @@ const testimonials = [{
   role: "Technology Sector"
 }];
 const stepAccents = [
-  { bg: "bg-light-green", text: "text-light-green", border: "border-light-green", bgLight: "bg-light-green/10", ring: "ring-light-green/30" },
-  { bg: "bg-teal", text: "text-teal", border: "border-teal", bgLight: "bg-teal/10", ring: "ring-teal/30" },
-  { bg: "bg-sky-blue", text: "text-sky-blue", border: "border-sky-blue", bgLight: "bg-sky-blue/10", ring: "ring-sky-blue/30" },
-  { bg: "bg-deep-blue", text: "text-deep-blue", border: "border-deep-blue", bgLight: "bg-deep-blue/10", ring: "ring-deep-blue/30" },
-  { bg: "bg-navy", text: "text-navy", border: "border-navy", bgLight: "bg-navy/10", ring: "ring-navy/30" },
-  { bg: "bg-coral", text: "text-coral", border: "border-coral", bgLight: "bg-coral/10", ring: "ring-coral/30" },
-];
+{ bg: "bg-light-green", text: "text-light-green", border: "border-light-green", bgLight: "bg-light-green/10", ring: "ring-light-green/30" },
+{ bg: "bg-teal", text: "text-teal", border: "border-teal", bgLight: "bg-teal/10", ring: "ring-teal/30" },
+{ bg: "bg-sky-blue", text: "text-sky-blue", border: "border-sky-blue", bgLight: "bg-sky-blue/10", ring: "ring-sky-blue/30" },
+{ bg: "bg-deep-blue", text: "text-deep-blue", border: "border-deep-blue", bgLight: "bg-deep-blue/10", ring: "ring-deep-blue/30" },
+{ bg: "bg-navy", text: "text-navy", border: "border-navy", bgLight: "bg-navy/10", ring: "ring-navy/30" },
+{ bg: "bg-coral", text: "text-coral", border: "border-coral", bgLight: "bg-coral/10", ring: "ring-coral/30" }];
+
 
 const BlueprintStepper = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -98,7 +98,7 @@ const BlueprintStepper = () => {
 
   const handleStepChange = (i: number) => {
     setActiveStep(i);
-    setVisited(prev => new Set(prev).add(i));
+    setVisited((prev) => new Set(prev).add(i));
   };
 
   const active = blueprintSteps[activeStep];
@@ -122,10 +122,10 @@ const BlueprintStepper = () => {
           <div
             className="absolute left-[18px] top-6 w-[3px] rounded-full transition-all duration-500 ease-out"
             style={{
-              height: `${(activeStep / (blueprintSteps.length - 1)) * 100}%`,
+              height: `${activeStep / (blueprintSteps.length - 1) * 100}%`,
               background: `linear-gradient(to bottom, ${meterColors.slice(0, activeStep + 1).join(", ")})`
-            }}
-          />
+            }} />
+          
 
           <ul className="relative space-y-0">
             {blueprintSteps.map((step, i) => {
@@ -140,25 +140,25 @@ const BlueprintStepper = () => {
                     className={`
                       w-full flex items-center gap-4 pl-2 pr-3 py-4 rounded-xl text-left
                       transition-all duration-300 ease-out group
-                      ${isActive
-                        ? `${color.bgLight} ring-1 ${color.ring} shadow-sm scale-[1.03]`
-                        : "hover:bg-muted/50 scale-100"
-                      }
-                    `}
-                  >
+                      ${isActive ?
+                    `${color.bgLight} ring-1 ${color.ring} shadow-sm scale-[1.03]` :
+                    "hover:bg-muted/50 scale-100"}
+                    `
+                    }>
+                    
                     {/* Step marker */}
                     <span
                       className={`
                         relative z-10 w-[14px] h-[14px] rounded-full flex-shrink-0
                         transition-all duration-300 ease-out
-                        ${isActive
-                          ? `${color.bg} scale-[1.6] shadow-lg ring-4 ${color.ring}`
-                          : isPast
-                            ? `${color.bg} opacity-70`
-                            : "bg-border"
-                        }
-                      `}
-                    />
+                        ${isActive ?
+                      `${color.bg} scale-[1.6] shadow-lg ring-4 ${color.ring}` :
+                      isPast ?
+                      `${color.bg} opacity-70` :
+                      "bg-border"}
+                      `
+                      } />
+                    
 
                     <div className="flex flex-col gap-0.5 min-w-0">
                       <span className={`text-[10px] font-mono font-bold uppercase tracking-wider transition-colors duration-300 ${isActive ? color.text : "text-muted-foreground/40"}`}>
@@ -170,12 +170,12 @@ const BlueprintStepper = () => {
                     </div>
 
                     {/* Active step icon */}
-                    {isActive && (
-                      <StepIcon className={`w-4 h-4 ml-auto flex-shrink-0 ${color.text} opacity-60`} />
-                    )}
+                    {isActive &&
+                    <StepIcon className={`w-4 h-4 ml-auto flex-shrink-0 ${color.text} opacity-60`} />
+                    }
                   </button>
-                </li>
-              );
+                </li>);
+
             })}
           </ul>
         </nav>
@@ -189,39 +189,39 @@ const BlueprintStepper = () => {
               <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground/60">
                 Leadership Journey Progress
               </span>
-              {isComplete && (
-                <span className="text-xs font-semibold text-teal flex items-center gap-1 animate-fade-in">
+              {isComplete &&
+              <span className="text-xs font-semibold text-teal flex items-center gap-1 animate-fade-in">
                   <Award className="w-3.5 h-3.5" />
                   Blueprint Complete
                 </span>
-              )}
+              }
             </div>
             <div className="relative h-[6px] bg-border/40 rounded-full overflow-hidden">
               {/* Fill */}
               <div
                 className={`absolute inset-y-0 left-0 rounded-full transition-all duration-500 ease-out ${isComplete ? "animate-[pulse_2s_ease-in-out_2]" : ""}`}
                 style={{
-                  width: `${((activeStep + 1) / blueprintSteps.length) * 100}%`,
+                  width: `${(activeStep + 1) / blueprintSteps.length * 100}%`,
                   background: `linear-gradient(90deg, ${meterColors.slice(0, activeStep + 1).join(", ")})`
-                }}
-              />
+                }} />
+              
               {/* Markers */}
-              {blueprintSteps.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleStepChange(i)}
-                  className={`
+              {blueprintSteps.map((_, i) =>
+              <button
+                key={i}
+                onClick={() => handleStepChange(i)}
+                className={`
                     absolute top-1/2 -translate-y-1/2 w-[10px] h-[10px] rounded-full border-2 border-background
                     transition-all duration-300
                     ${visited.has(i) ? "" : "bg-border/60"}
                   `}
-                  style={{
-                    left: `calc(${((i + 0.5) / blueprintSteps.length) * 100}% - 5px)`,
-                    backgroundColor: visited.has(i) ? meterColors[i] : undefined
-                  }}
-                  aria-label={`Go to step ${i + 1}`}
-                />
-              ))}
+                style={{
+                  left: `calc(${(i + 0.5) / blueprintSteps.length * 100}% - 5px)`,
+                  backgroundColor: visited.has(i) ? meterColors[i] : undefined
+                }}
+                aria-label={`Go to step ${i + 1}`} />
+
+              )}
             </div>
           </div>
 
@@ -229,12 +229,12 @@ const BlueprintStepper = () => {
           <div
             key={activeStep}
             className="relative rounded-2xl border border-border bg-muted/30 p-8 md:p-10 min-h-[340px] flex flex-col justify-center overflow-hidden
-              animate-fade-in shadow-sm hover:shadow-md transition-shadow duration-300"
-          >
+              animate-fade-in shadow-sm hover:shadow-md transition-shadow duration-300">
+            
             {/* Watermark step number */}
             <span
-              className={`absolute -right-4 -top-6 text-[10rem] font-display font-black leading-none pointer-events-none select-none ${accent.text} opacity-[0.04]`}
-            >
+              className={`absolute -right-4 -top-6 text-[10rem] font-display font-black leading-none pointer-events-none select-none ${accent.text} opacity-[0.04]`}>
+              
               {active.number}
             </span>
 
@@ -281,8 +281,8 @@ const BlueprintStepper = () => {
                   size="sm"
                   disabled={activeStep === 0}
                   onClick={() => handleStepChange(activeStep - 1)}
-                  className="gap-1"
-                >
+                  className="gap-1">
+                  
                   <ChevronLeft className="w-4 h-4" /> Previous
                 </Button>
                 <Button
@@ -290,16 +290,16 @@ const BlueprintStepper = () => {
                   size="sm"
                   disabled={activeStep === blueprintSteps.length - 1}
                   onClick={() => handleStepChange(activeStep + 1)}
-                  className="gap-1"
-                >
+                  className="gap-1">
+                  
                   Next <ChevronRight className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   className={`ml-auto ${accent.text} hover:${accent.bgLight} gap-1 text-xs`}
-                  asChild
-                >
+                  asChild>
+                  
                   <a href="/contact">
                     Apply This Step <ExternalLink className="w-3 h-3" />
                   </a>
@@ -319,32 +319,32 @@ const BlueprintStepper = () => {
             Leadership Journey Progress
           </span>
           <div className="flex items-center gap-1 px-2">
-            {blueprintSteps.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => handleStepChange(i)}
-                className="flex-1 h-[6px] rounded-full transition-all duration-400"
-                style={{
-                  backgroundColor: i <= activeStep ? meterColors[i] : undefined
-                }}
-                aria-label={`Go to step ${i + 1}`}
-              >
+            {blueprintSteps.map((_, i) =>
+            <button
+              key={i}
+              onClick={() => handleStepChange(i)}
+              className="flex-1 h-[6px] rounded-full transition-all duration-400"
+              style={{
+                backgroundColor: i <= activeStep ? meterColors[i] : undefined
+              }}
+              aria-label={`Go to step ${i + 1}`}>
+              
                 {i > activeStep && <div className="w-full h-full rounded-full bg-border/50" />}
               </button>
-            ))}
+            )}
           </div>
-          {isComplete && (
-            <p className="text-center text-xs font-semibold text-teal flex items-center justify-center gap-1 animate-fade-in">
+          {isComplete &&
+          <p className="text-center text-xs font-semibold text-teal flex items-center justify-center gap-1 animate-fade-in">
               <Award className="w-3.5 h-3.5" /> Blueprint Complete
             </p>
-          )}
+          }
         </div>
 
         {/* Mobile: Spotlight card */}
         <div
           key={`mobile-${activeStep}`}
-          className={`rounded-xl border ${accent.border} ${accent.bgLight} p-5 animate-fade-in relative overflow-hidden`}
-        >
+          className={`rounded-xl border ${accent.border} ${accent.bgLight} p-5 animate-fade-in relative overflow-hidden`}>
+          
           {/* Watermark */}
           <span className={`absolute -right-2 -top-4 text-[7rem] font-display font-black leading-none pointer-events-none select-none ${accent.text} opacity-[0.05]`}>
             {active.number}
@@ -387,8 +387,8 @@ const BlueprintStepper = () => {
                 size="sm"
                 disabled={activeStep === 0}
                 onClick={() => handleStepChange(activeStep - 1)}
-                className="gap-1 text-xs flex-1"
-              >
+                className="gap-1 text-xs flex-1">
+                
                 <ChevronLeft className="w-3 h-3" /> Prev
               </Button>
               <Button
@@ -396,8 +396,8 @@ const BlueprintStepper = () => {
                 size="sm"
                 disabled={activeStep === blueprintSteps.length - 1}
                 onClick={() => handleStepChange(activeStep + 1)}
-                className="gap-1 text-xs flex-1"
-              >
+                className="gap-1 text-xs flex-1">
+                
                 Next <ChevronRight className="w-3 h-3" />
               </Button>
             </div>
@@ -411,11 +411,11 @@ const BlueprintStepper = () => {
           <a href="/contact">Start Your Leadership Blueprint</a>
         </Button>
       </div>
-    </>
-  );
+    </>);
+
 };
 
-const BlueprintSection = ({ externalRef }: { externalRef?: React.RefObject<HTMLDivElement> }) => {
+const BlueprintSection = ({ externalRef }: {externalRef?: React.RefObject<HTMLDivElement>;}) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -423,7 +423,7 @@ const BlueprintSection = ({ externalRef }: { externalRef?: React.RefObject<HTMLD
     const el = sectionRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); } },
+      ([entry]) => {if (entry.isIntersecting) {setIsVisible(true);observer.disconnect();}},
       { threshold: 0.15 }
     );
     observer.observe(el);
@@ -437,9 +437,9 @@ const BlueprintSection = ({ externalRef }: { externalRef?: React.RefObject<HTMLD
     }} className="py-10 md:py-14 bg-background">
       <div
         className={`container mx-auto px-4 transition-all duration-700 ease-out ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`
+        }>
+        
         <div className="max-w-5xl mx-auto">
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
@@ -451,8 +451,8 @@ const BlueprintSection = ({ externalRef }: { externalRef?: React.RefObject<HTMLD
           <BlueprintStepper />
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
 
 const BenefitsCarousel = () => {
@@ -479,7 +479,7 @@ const BenefitsCarousel = () => {
   return <div className="relative group/carousel">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex -ml-4">
-          {benefits.map(benefit => {
+          {benefits.map((benefit) => {
           const Icon = benefit.icon;
           return <div key={benefit.title} className="flex-[0_0_100%] sm:flex-[0_0_45%] lg:flex-[0_0_33.333%] min-w-0 pl-4">
                 <div className="text-center space-y-3 p-6 rounded-xl bg-background/5 backdrop-blur-sm border border-background/10 hover:bg-background/10 transition-all duration-300 group cursor-default h-full flex flex-col items-center justify-start">
@@ -507,7 +507,7 @@ const BenefitsCarousel = () => {
       </button>
     </div>;
 };
-const HoverVideo = ({ videoId, title }: { videoId: string; title: string }) => {
+const HoverVideo = ({ videoId, title }: {videoId: string;title: string;}) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -515,7 +515,7 @@ const HoverVideo = ({ videoId, title }: { videoId: string; title: string }) => {
     const el = containerRef.current;
     if (!el || isPlaying) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setIsPlaying(true); observer.disconnect(); } },
+      ([entry]) => {if (entry.isIntersecting) {setIsPlaying(true);observer.disconnect();}},
       { threshold: 0.5 }
     );
     observer.observe(el);
@@ -528,23 +528,23 @@ const HoverVideo = ({ videoId, title }: { videoId: string; title: string }) => {
       className="relative w-full overflow-hidden rounded-xl shadow-2xl cursor-pointer"
       style={{ paddingTop: "56.25%" }}
       onClick={() => !isPlaying && setIsPlaying(true)}
-      onMouseEnter={() => !isPlaying && setIsPlaying(true)}
-    >
-      {isPlaying ? (
-        <iframe
-          className="absolute inset-0 w-full h-full"
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`}
-          title={title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      ) : (
-        <>
+      onMouseEnter={() => !isPlaying && setIsPlaying(true)}>
+      
+      {isPlaying ?
+      <iframe
+        className="absolute inset-0 w-full h-full"
+        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`}
+        title={title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen /> :
+
+
+      <>
           <img
-            className="absolute inset-0 w-full h-full object-cover"
-            src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
-            alt={title}
-          />
+          className="absolute inset-0 w-full h-full object-cover"
+          src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
+          alt={title} />
+        
           <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity">
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-red-600 flex items-center justify-center shadow-lg">
               <svg className="w-7 h-7 md:w-9 md:h-9 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
@@ -553,9 +553,9 @@ const HoverVideo = ({ videoId, title }: { videoId: string; title: string }) => {
             </div>
           </div>
         </>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 };
 
 const Steps = () => {
@@ -578,14 +578,14 @@ const Steps = () => {
         <section className="relative py-16 md:py-24 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
           {/* Subtle background motif — ascending steps */}
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-            {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="absolute bg-teal/[0.04] rounded-sm" style={{
+            {[1, 2, 3, 4, 5, 6].map((i) => <div key={i} className="absolute bg-teal/[0.04] rounded-sm" style={{
             bottom: `${i * 12}%`,
             left: `${5 + i * 10}%`,
             width: `${60 - i * 6}%`,
             height: "2px"
           }} />)}
             {/* Subtle rising diagonal lines */}
-            {[1, 2, 3].map(i => <div key={`diag-${i}`} className="absolute bg-background/[0.03]" style={{
+            {[1, 2, 3].map((i) => <div key={`diag-${i}`} className="absolute bg-background/[0.03]" style={{
             width: "1px",
             height: "120%",
             top: "-10%",
@@ -600,7 +600,7 @@ const Steps = () => {
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-background leading-tight">
                 You're not "just an admin."
               </h1>
-              <h2 className="text-xl md:text-2xl lg:text-3xl font-display font-semibold text-light-green leading-tight">
+              <h2 className="text-xl lg:text-3xl font-display font-semibold text-light-green leading-tight md:text-3xl">
                 You're a leader who hasn't been developed like one.
               </h2>
               <p className="text-lg md:text-xl text-background/75 max-w-2xl mx-auto leading-relaxed">
