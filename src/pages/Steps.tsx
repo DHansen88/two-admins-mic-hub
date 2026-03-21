@@ -598,9 +598,7 @@ const Steps = () => {
             <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
               <img src={stepsLogo} alt="STEPS – Success Through Empowering Professional Support" className="h-[4.375rem] md:h-[6.25rem] mx-auto" />
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-background leading-tight">
-                Step Into Your
-                <br />
-                <span className="text-teal">Leadership</span>
+                You're not "just an admin."
               </h1>
               <p className="text-lg md:text-xl text-background/75 max-w-2xl mx-auto leading-relaxed">
                 A leadership journey inspired by EA experience and taught
