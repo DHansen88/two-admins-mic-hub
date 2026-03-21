@@ -604,9 +604,9 @@ const Steps = () => {
                 You're a leader who hasn't been developed like one.
               </h2>
               <p className="text-lg md:text-xl text-background/75 max-w-2xl mx-auto leading-relaxed">
-                A leadership journey inspired by EA experience and taught
-                through the Blueprint process used by senior executives.
-              </p>
+                STEP into your leadership journey inspired by EA experience and taught through the Blueprint process used by senior executives. This program is inspired by EA.       
+              
+            </p>
               <Button onClick={scrollToBlueprint} size="lg" className="bg-teal hover:bg-teal/90 text-background font-semibold px-8 py-6 text-base">
                 Explore the Blueprint
                 <ChevronDown className="ml-2 h-5 w-5" />
