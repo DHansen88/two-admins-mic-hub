@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Award, Briefcase } from "lucide-react";
 import dianaHeadshot from "@/assets/images/authors/diana-headshot.jpeg";
+import melHeadshot from "@/assets/images/authors/mel-headshot.jpeg";
 
 const hosts = [
   {
@@ -25,6 +26,7 @@ const hosts = [
   },
   {
     initial: "M",
+    headshot: melHeadshot,
     name: "Mel",
     badge: "20+ Years Executive Support",
     badgeIcon: Briefcase,
