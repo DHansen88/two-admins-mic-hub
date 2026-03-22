@@ -108,6 +108,7 @@ const PublishEpisode = () => {
   const [summary, setSummary] = useState("");
   const [seoDescription, setSeoDescription] = useState("");
   const [showGenerated, setShowGenerated] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
 
   // Blog generation
   const [generatedBlog, setGeneratedBlog] = useState<{
