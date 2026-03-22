@@ -3,7 +3,7 @@
  * Communicates with the PHP backend for CRUD, falls back to localStorage.
  */
 
-import { handleAuthFailure, isAdminAuthError } from "./admin-auth";
+import { canUseAdminFallback, handleAuthFailure, isAdminAuthError } from "./admin-auth";
 
 export interface AuthorProfile {
   id: string;
@@ -107,7 +107,7 @@ export async function fetchAuthors(): Promise<AuthorProfile[]> {
   } catch (error) {
     if (isAdminAuthError(error)) return [];
   }
-  return Object.values(getLocal());
+  return canUseAdminFallback() ? Object.values(getLocal()) : [];
 }
 
 /** Save (create or update) an author */
@@ -127,6 +127,10 @@ export async function saveAuthor(author: Partial<AuthorProfile> & { name: string
   } catch (error: any) {
     if (isAdminAuthError(error)) {
       return { success: false, error: error.message };
+    }
+
+    if (!canUseAdminFallback()) {
+      return { success: false, error: error?.message || 'Save failed' };
     }
 
     const id = author.id || author.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -154,6 +158,10 @@ export async function deleteAuthor(id: string): Promise<{ success: boolean; erro
   } catch (error: any) {
     if (isAdminAuthError(error)) {
       return { success: false, error: error.message };
+    }
+
+    if (!canUseAdminFallback()) {
+      return { success: false, error: error?.message || 'Delete failed' };
     }
 
     const local = getLocal();
@@ -196,6 +204,10 @@ export async function uploadHeadshot(file: File, authorId: string): Promise<{ su
   } catch (error: any) {
     if (isAdminAuthError(error)) {
       return { success: false, error: error.message };
+    }
+
+    if (!canUseAdminFallback()) {
+      return { success: false, error: error?.message || 'Upload failed' };
     }
 
     const url = URL.createObjectURL(file);
