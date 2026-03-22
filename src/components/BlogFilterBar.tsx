@@ -156,16 +156,13 @@ const BlogFilterBar = ({
                 className="w-full h-auto object-contain"
               />
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 flex items-center gap-3">
               <p className="text-lg font-display font-bold text-foreground">
                 Now Viewing
               </p>
-              <p className="text-sm text-muted-foreground line-clamp-1">
-                {hostDescriptions[selectedHost] || ""}
-              </p>
               {filteredCount !== undefined && (
                 <span
-                  className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
                     selectedHost === "diana"
                       ? "text-[hsl(var(--teal))] border-[hsl(var(--teal))]/30"
                       : "text-[hsl(var(--coral))] border-[hsl(var(--coral))]/30"
