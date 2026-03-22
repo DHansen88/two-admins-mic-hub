@@ -25,10 +25,10 @@ const hosts = [{
 const HostCard = ({
   host,
   reversed
-}: {
-  host: (typeof hosts)[0];
-  reversed: boolean;
-}) => {
+
+
+
+}: {host: (typeof hosts)[0];reversed: boolean;}) => {
   const [expanded, setExpanded] = useState(false);
   return <div className={`flex flex-col ${reversed ? "md:flex-row-reverse" : "md:flex-row"} items-center gap-10 md:gap-16`}>
       {/* Polaroid headshot */}
@@ -83,7 +83,7 @@ const HostCard = ({
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-          {host.tags.map(tag => <span key={tag} className="text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full text-teal bg-teal/10">
+          {host.tags.map((tag) => <span key={tag} className="text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full text-teal bg-teal/10">
               {tag}
             </span>)}
         </div>
@@ -100,15 +100,15 @@ const About = () => {
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             {/* Microphone icon */}
             <svg
-              className="absolute right-[10%] top-1/2 w-32 h-32 md:w-72 md:h-72 lg:w-96 lg:h-96"
-              viewBox="0 0 100 120"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ color: 'hsl(var(--teal))', opacity: 0.11, transform: 'translateX(50%) translateY(-50%)' }}
-            >
+            className="absolute right-[10%] top-1/2 w-32 h-32 md:w-72 md:h-72 lg:w-96 lg:h-96"
+            viewBox="0 0 100 120"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ color: 'hsl(var(--teal))', opacity: 0.11, transform: 'translateX(50%) translateY(-50%)' }}>
+            
               {/* Pill-shaped mic head */}
               <path d="M35 45 L35 18 Q35 5 50 5 Q65 5 65 18 L65 45 Q65 52 50 52 Q35 52 35 45Z" />
               {/* Horizontal grill lines across head */}
@@ -134,15 +134,15 @@ const About = () => {
 
             {/* Mirrored microphone icon (left side) */}
             <svg
-              className="absolute left-[10%] top-1/2 hidden md:block md:w-72 md:h-72 lg:w-96 lg:h-96"
-              viewBox="0 0 100 120"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ color: 'hsl(var(--teal))', opacity: 0.11, transform: 'translateX(-50%) translateY(-50%) scaleX(-1)' }}
-            >
+            className="absolute left-[10%] top-1/2 hidden md:block md:w-72 md:h-72 lg:w-96 lg:h-96"
+            viewBox="0 0 100 120"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ color: 'hsl(var(--teal))', opacity: 0.11, transform: 'translateX(-50%) translateY(-50%) scaleX(-1)' }}>
+            
               <path d="M35 45 L35 18 Q35 5 50 5 Q65 5 65 18 L65 45 Q65 52 50 52 Q35 52 35 45Z" />
               <line x1="37" y1="14" x2="63" y2="14" />
               <line x1="36" y1="19" x2="64" y2="19" />
@@ -160,76 +160,76 @@ const About = () => {
             </svg>
 
             {/* Sound wave arcs from right mic */}
-            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-              <div
-                key={`r-${i}`}
-                className={`absolute rounded-full border ${i > 4 ? 'hidden md:block' : ''}`}
-                style={{
-                  right: '10%',
-                  top: '50%',
-                  width: `${10 + i * 8}rem`,
-                  height: `${10 + i * 8}rem`,
-                  transform: 'translate(50%, -50%)',
-                  borderColor: 'hsl(var(--teal))',
-                  opacity: 0.11 - i * 0.012,
-                  animation: `aboutMicPulse ${6 + i * 1.5}s ease-in-out infinite`,
-                  animationDelay: `${i * 0.8}s`,
-                }}
-              />
-            ))}
+            {[1, 2, 3, 4, 5, 6, 7].map((i) =>
+          <div
+            key={`r-${i}`}
+            className={`absolute rounded-full border ${i > 4 ? 'hidden md:block' : ''}`}
+            style={{
+              right: '10%',
+              top: '50%',
+              width: `${10 + i * 8}rem`,
+              height: `${10 + i * 8}rem`,
+              transform: 'translate(50%, -50%)',
+              borderColor: 'hsl(var(--teal))',
+              opacity: 0.11 - i * 0.012,
+              animation: `aboutMicPulse ${6 + i * 1.5}s ease-in-out infinite`,
+              animationDelay: `${i * 0.8}s`
+            }} />
+
+          )}
 
             {/* Sound wave arcs from left mic (hidden on mobile) */}
-            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-              <div
-                key={`l-${i}`}
-                className="absolute rounded-full border hidden md:block"
-                style={{
-                  left: '10%',
-                  top: '50%',
-                  width: `${10 + i * 8}rem`,
-                  height: `${10 + i * 8}rem`,
-                  transform: 'translate(-50%, -50%)',
-                  borderColor: 'hsl(var(--teal))',
-                  opacity: 0.11 - i * 0.012,
-                  animation: `aboutMicPulse ${6 + i * 1.5}s ease-in-out infinite`,
-                  animationDelay: `${i * 0.8 + 0.4}s`,
-                }}
-              />
-            ))}
+            {[1, 2, 3, 4, 5, 6, 7].map((i) =>
+          <div
+            key={`l-${i}`}
+            className="absolute rounded-full border hidden md:block"
+            style={{
+              left: '10%',
+              top: '50%',
+              width: `${10 + i * 8}rem`,
+              height: `${10 + i * 8}rem`,
+              transform: 'translate(-50%, -50%)',
+              borderColor: 'hsl(var(--teal))',
+              opacity: 0.11 - i * 0.012,
+              animation: `aboutMicPulse ${6 + i * 1.5}s ease-in-out infinite`,
+              animationDelay: `${i * 0.8 + 0.4}s`
+            }} />
+
+          )}
 
             {/* Gentle horizontal wave lines from right mic */}
-            {[0, 1, 2].map((i) => (
-              <div
-                key={`wave-r-${i}`}
-                className="absolute h-px"
-                style={{
-                  right: '5%',
-                  top: `${40 + i * 10}%`,
-                  width: '30%',
-                  background: `linear-gradient(to left, transparent, hsl(var(--teal)) 40%, transparent)`,
-                  opacity: 0.08,
-                  animation: `aboutWaveSlide ${10 + i * 2}s ease-in-out infinite`,
-                  animationDelay: `${i * 1.2}s`,
-                }}
-              />
-            ))}
+            {[0, 1, 2].map((i) =>
+          <div
+            key={`wave-r-${i}`}
+            className="absolute h-px"
+            style={{
+              right: '5%',
+              top: `${40 + i * 10}%`,
+              width: '30%',
+              background: `linear-gradient(to left, transparent, hsl(var(--teal)) 40%, transparent)`,
+              opacity: 0.08,
+              animation: `aboutWaveSlide ${10 + i * 2}s ease-in-out infinite`,
+              animationDelay: `${i * 1.2}s`
+            }} />
+
+          )}
 
             {/* Gentle horizontal wave lines from left mic (hidden on mobile) */}
-            {[0, 1, 2].map((i) => (
-              <div
-                key={`wave-l-${i}`}
-                className="absolute h-px hidden md:block"
-                style={{
-                  left: '5%',
-                  top: `${40 + i * 10}%`,
-                  width: '30%',
-                  background: `linear-gradient(to right, transparent, hsl(var(--teal)) 40%, transparent)`,
-                  opacity: 0.08,
-                  animation: `aboutWaveSlide ${10 + i * 2}s ease-in-out infinite`,
-                  animationDelay: `${i * 1.2 + 0.6}s`,
-                }}
-              />
-            ))}
+            {[0, 1, 2].map((i) =>
+          <div
+            key={`wave-l-${i}`}
+            className="absolute h-px hidden md:block"
+            style={{
+              left: '5%',
+              top: `${40 + i * 10}%`,
+              width: '30%',
+              background: `linear-gradient(to right, transparent, hsl(var(--teal)) 40%, transparent)`,
+              opacity: 0.08,
+              animation: `aboutWaveSlide ${10 + i * 2}s ease-in-out infinite`,
+              animationDelay: `${i * 1.2 + 0.6}s`
+            }} />
+
+          )}
           </div>
 
           <div className="container mx-auto px-4 relative z-10">
@@ -310,7 +310,7 @@ const About = () => {
                 <img src={conantLogo} alt="ConantLeadership" className="h-10 md:h-12 mx-auto hover:opacity-80 transition-opacity" />
               </a>
               <h2 className="text-4xl font-display font-bold text-foreground">
-                In Partnership With ConantLeadership
+                This podcast is made possible by ConantLeadership 
               </h2>
               <div className="w-16 h-px mx-auto bg-foreground" />
               <p className="text-lg leading-relaxed max-w-2xl mx-auto text-foreground">
