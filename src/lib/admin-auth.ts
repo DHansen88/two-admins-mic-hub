@@ -41,6 +41,11 @@ class AdminAuthError extends Error {
   }
 }
 
+function isPhpSourceResponse(text: string): boolean {
+  const trimmed = text.trim();
+  return trimmed.startsWith('<?php') || trimmed.includes("require_once __DIR__ . '/config.php'");
+}
+
 function redirectToLogin(): void {
   if (typeof window === 'undefined') return;
   if (window.location.pathname !== '/admin/login') {
@@ -148,6 +153,9 @@ async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any
       try {
         data = JSON.parse(text);
       } catch {
+        if (isPhpSourceResponse(text)) {
+          return null;
+        }
         data = null;
       }
     }
