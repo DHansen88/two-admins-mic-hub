@@ -97,8 +97,7 @@ const ManageBlogPosts = () => {
       author: blog.author,
     };
     localStorage.setItem(`draft_blog-${newSlug}`, JSON.stringify(draftData));
-    const { setContentStatus } = require("@/lib/content-status");
-    setContentStatus("blog", newSlug, "draft");
+    setContentStatusFn("blog", newSlug, "draft");
     toast({ title: "Blog post duplicated as draft" });
     navigate(`/admin/publish-blog?edit=${newSlug}`);
   };
