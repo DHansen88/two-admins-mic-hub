@@ -85,17 +85,6 @@ const MeetTheHosts = () => {
                   {/* Bio */}
                   <p className="text-sm text-muted-foreground leading-relaxed">{host.bio}</p>
 
-                  {/* Skill pills */}
-                  <div className="flex flex-wrap gap-2">
-                    {host.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className={`text-xs px-2.5 py-1 rounded-full border ${host.pillClass}`}
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
 
                   {/* Buttons */}
                   <div className="flex gap-3 pt-2">
