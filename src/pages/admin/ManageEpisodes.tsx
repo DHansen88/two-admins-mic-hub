@@ -103,8 +103,7 @@ const ManageEpisodes = () => {
     };
     localStorage.setItem(`draft_episode-${newNum}`, JSON.stringify(draftData));
     // Mark as draft
-    const { setContentStatus } = require("@/lib/content-status");
-    setContentStatus("episode", newNum, "draft");
+    setContentStatusFn("episode", newNum, "draft");
     toast({ title: `Episode duplicated as draft #${newNum}` });
     navigate(`/admin/publish-episode?edit=${newNum}`);
   };
