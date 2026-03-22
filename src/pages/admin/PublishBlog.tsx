@@ -97,6 +97,7 @@ const PublishBlog = () => {
   const [seoDescription, setSeoDescription] = useState("");
   const [keyTakeaways, setKeyTakeaways] = useState<string[]>([]);
   const [showGenerated, setShowGenerated] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
   const [generatedNewsletter, setGeneratedNewsletter] = useState<{ subject: string; body: string } | null>(null);
 
   useEffect(() => {
