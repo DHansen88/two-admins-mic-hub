@@ -18,6 +18,7 @@ define('DB_PASS', 'your_database_password');
 // Session settings
 define('SESSION_LIFETIME', 14400); // 4 hours in seconds
 define('SESSION_NAME', 'taam_admin_session');
+define('SESSION_STORAGE_DIR', dirname(__DIR__, 2) . '/storage/sessions');
 
 // CORS — explicit origins are required when cookies/sessions are used
 define('ALLOWED_ORIGINS', [
@@ -103,6 +104,32 @@ function getSessionCookieDomain(): ?string {
     return null;
 }
 
+function ensureSessionStorageDirectory(): ?string {
+    $path = SESSION_STORAGE_DIR;
+
+    if (!is_dir($path)) {
+        @mkdir($path, 0755, true);
+    }
+
+    if (is_dir($path) && is_writable($path)) {
+        return $path;
+    }
+
+    return null;
+}
+
+function getSessionDebugInfo(): array {
+    return [
+        'host' => getHostWithoutPort(),
+        'origin' => getRequestOrigin(),
+        'session_name' => SESSION_NAME,
+        'session_id' => session_id(),
+        'has_session_cookie' => isset($_COOKIE[SESSION_NAME]),
+        'session_save_path' => session_save_path(),
+        'session_storage_ready' => ensureSessionStorageDirectory() !== null,
+    ];
+}
+
 /**
  * Set CORS headers
  */
@@ -137,6 +164,14 @@ function getRequestBody(): array {
  */
 function startSecureSession(): void {
     if (session_status() === PHP_SESSION_NONE) {
+        $sessionStorageDir = ensureSessionStorageDirectory();
+        if ($sessionStorageDir !== null) {
+            session_save_path($sessionStorageDir);
+        }
+
+        ini_set('session.gc_maxlifetime', (string) SESSION_LIFETIME);
+        ini_set('session.use_strict_mode', '1');
+
         $cookieParams = [
             'lifetime' => SESSION_LIFETIME,
             'path' => '/',
@@ -153,6 +188,13 @@ function startSecureSession(): void {
         session_name(SESSION_NAME);
         session_set_cookie_params($cookieParams);
         session_start();
+
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            jsonResponse([
+                'error' => 'Failed to start session',
+                'debug' => getSessionDebugInfo(),
+            ], 500);
+        }
     }
 }
 
@@ -163,12 +205,22 @@ function requireAuth(): array {
     startSecureSession();
     
     if (empty($_SESSION['user_id']) || empty($_SESSION['expires_at'])) {
-        jsonResponse(['error' => 'Not authenticated'], 401);
+        $error = isset($_COOKIE[SESSION_NAME])
+            ? 'Not authenticated: session cookie exists but the server session is empty'
+            : 'Not authenticated: session cookie is missing from the request';
+
+        jsonResponse([
+            'error' => $error,
+            'debug' => getSessionDebugInfo(),
+        ], 401);
     }
     
     if (time() > $_SESSION['expires_at']) {
         session_destroy();
-        jsonResponse(['error' => 'Session expired'], 401);
+        jsonResponse([
+            'error' => 'Session expired',
+            'debug' => getSessionDebugInfo(),
+        ], 401);
     }
     
     // Refresh expiry on activity

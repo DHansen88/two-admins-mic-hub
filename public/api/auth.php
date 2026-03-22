@@ -72,6 +72,7 @@ function handleLogin(): void {
     $_SESSION['user_role'] = $user['role'];
     $_SESSION['user_name'] = $user['name'];
     $_SESSION['expires_at'] = time() + SESSION_LIFETIME;
+    session_write_close();
     
     // Log successful login
     $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_id, user_email, action, ip_address) VALUES (?, ?, ?, ?)');
@@ -113,6 +114,7 @@ function handleSession(): void {
     
     // Refresh session
     $_SESSION['expires_at'] = time() + SESSION_LIFETIME;
+    session_write_close();
     
     // Get fresh permissions from DB
     $db = getDB();
