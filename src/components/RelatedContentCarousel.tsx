@@ -94,7 +94,7 @@ const RelatedContentCarousel = ({ items }: Props) => {
             <h2 className="text-2xl font-display font-bold text-foreground">
               Related Content
             </h2>
-            <div className="hidden md:flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="icon"
