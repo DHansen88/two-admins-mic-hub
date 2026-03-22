@@ -5,13 +5,27 @@ import type { Episode } from "@/data/episodeData";
 
 interface EpisodeCardProps extends Episode {}
 
+const hostNames: Record<string, string> = {
+  diana: "Diana",
+  mel: "Mel",
+};
+
 const EpisodeCard = (episode: EpisodeCardProps) => {
   const navigate = useNavigate();
+  const hostKey = episode.host || "";
+  const hostName = hostNames[hostKey] || "";
+  const isDiana = hostKey === "diana";
+  const isMel = hostKey === "mel";
 
   return (
     <Card
       className="group hover:shadow-xl transition-all duration-300 overflow-hidden border-border hover:border-accent cursor-pointer"
-      onClick={() => { navigate(`/episodes/${episode.slug}`); window.scrollTo(0, 0); }}
+      onClick={() => {
+        navigate(`/episodes/${episode.slug}`);
+        window.scrollTo(0, 0);
+      }}
+      data-host={hostKey}
+      data-topic={episode.topics.map((t) => t.toLowerCase().replace(/\s+/g, "-")).join(" ")}
     >
       <div className="grid grid-cols-1 sm:grid-cols-[40%_60%] items-stretch h-full">
         {/* Thumbnail */}
@@ -45,9 +59,26 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
             {episode.title}
           </h3>
 
-          <span className="text-xs text-muted-foreground block">
-            {episode.date}
-          </span>
+          <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            {hostName && (
+              <span className="inline-flex items-center gap-1.5">
+                <span
+                  className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold text-white ${
+                    isDiana
+                      ? "bg-[hsl(var(--teal))]"
+                      : isMel
+                      ? "bg-[hsl(var(--coral))]"
+                      : "bg-muted-foreground"
+                  }`}
+                >
+                  {hostName.charAt(0)}
+                </span>
+                <span className="font-medium">{hostName}</span>
+              </span>
+            )}
+            {hostName && <span>•</span>}
+            <span>{episode.date}</span>
+          </div>
 
           <p className="text-sm text-muted-foreground line-clamp-2">
             {episode.description}
