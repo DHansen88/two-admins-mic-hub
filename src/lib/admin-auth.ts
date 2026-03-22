@@ -6,6 +6,7 @@
  */
 
 const API_BASE = import.meta.env.VITE_ADMIN_API_URL || '/api';
+const FALLBACK_HOST_PATTERNS = ['localhost', '127.0.0.1', '.lovable.app', '.lovableproject.com'];
 
 const SESSION_KEY = 'taam_admin_session';
 const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours
@@ -44,6 +45,14 @@ class AdminAuthError extends Error {
 function isPhpSourceResponse(text: string): boolean {
   const trimmed = text.trim();
   return trimmed.startsWith('<?php') || trimmed.includes("require_once __DIR__ . '/config.php'");
+}
+
+export function canUseAdminFallback(): boolean {
+  if (typeof window === 'undefined') return false;
+  const { hostname } = window.location;
+  return FALLBACK_HOST_PATTERNS.some((pattern) =>
+    pattern.startsWith('.') ? hostname.endsWith(pattern) : hostname === pattern,
+  );
 }
 
 function redirectToLogin(): void {
@@ -192,7 +201,14 @@ export async function login(email: string, password: string): Promise<{ success:
     }
     
     if (result === null) {
-      return fallbackLogin(email, password);
+      if (canUseAdminFallback()) {
+        return fallbackLogin(email, password);
+      }
+
+      return {
+        success: false,
+        error: 'Live admin login is not reaching the PHP backend. Please verify /api/auth.php is executing on the server.',
+      };
     }
     
     return { success: false, error: result?.error || 'Login failed' };
@@ -211,7 +227,7 @@ export async function validateSession(): Promise<boolean> {
     const result = await apiCall('auth.php?action=session');
 
     if (result === null) {
-      return isAuthenticated();
+      return canUseAdminFallback() ? isAuthenticated() : false;
     }
 
     if (result?.authenticated && result.user) {
