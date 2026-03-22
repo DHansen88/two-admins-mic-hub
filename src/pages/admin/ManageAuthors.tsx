@@ -157,19 +157,27 @@ const ManageAuthors = () => {
                     {editing.name ? editing.name.split(" ").map((n) => n[0]).join("") : "?"}
                   </AvatarFallback>
                 </Avatar>
-                <label className="cursor-pointer">
-                  <Button variant="outline" size="sm" className="gap-1.5 pointer-events-none" tabIndex={-1} aria-hidden>
+                <div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    disabled={uploading}
+                    onClick={() => document.getElementById('headshot-upload')?.click()}
+                    type="button"
+                  >
                     <Upload className="h-3.5 w-3.5" />
                     {uploading ? "Uploading…" : "Upload Headshot"}
                   </Button>
                   <input
+                    id="headshot-upload"
                     type="file"
                     accept="image/*"
                     className="hidden"
                     onChange={handleHeadshotUpload}
                     disabled={uploading}
                   />
-                </label>
+                </div>
                 <p className="text-[11px] text-muted-foreground text-center max-w-[140px]">
                   JPG, PNG or WebP. Max 5 MB.
                 </p>
