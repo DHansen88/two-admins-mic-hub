@@ -41,7 +41,7 @@ const BrowseTopics = () => {
                 }`}
                 style={
                   selected === tag.name
-                    ? { backgroundColor: `hsl(${tag.color})` }
+                    ? { backgroundColor: tag.bgColor, color: tag.textColor }
                     : undefined
                 }
               >
