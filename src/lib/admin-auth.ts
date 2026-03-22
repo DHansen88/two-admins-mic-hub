@@ -63,6 +63,7 @@ function redirectToLogin(): void {
 }
 
 export function handleAuthFailure(message = 'Not authenticated'): Error {
+  console.error('[admin-auth] auth failure', message);
   clearSession();
   redirectToLogin();
   return new AdminAuthError(message);
@@ -170,10 +171,12 @@ async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any
     }
 
     if (response.status === 401) {
+      console.error('[admin-auth] 401 response', { endpoint, data, raw: text });
       throw handleAuthFailure(data?.error || 'Not authenticated');
     }
 
     if (!response.ok) {
+      console.error('[admin-auth] non-OK response', { endpoint, status: response.status, data, raw: text });
       throw new Error(data?.error || `HTTP ${response.status}`);
     }
 
