@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,6 +52,8 @@ import {
   downloadFile,
 } from "@/lib/file-export";
 import { saveBlog } from "@/lib/content-manager";
+import { setContentStatus } from "@/lib/content-status";
+import PublishModal from "@/components/PublishModal";
 import BlockEditor from "@/components/BlogBlockEditor";
 import { extractTocItems } from "@/components/TableOfContents";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
@@ -65,6 +68,7 @@ import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
 
 const PublishBlog = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const [authorOptions, setAuthorOptions] = useState<AuthorProfile[]>([]);
@@ -93,6 +97,7 @@ const PublishBlog = () => {
   const [seoDescription, setSeoDescription] = useState("");
   const [keyTakeaways, setKeyTakeaways] = useState<string[]>([]);
   const [showGenerated, setShowGenerated] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
   const [generatedNewsletter, setGeneratedNewsletter] = useState<{ subject: string; body: string } | null>(null);
 
   useEffect(() => {
@@ -287,13 +292,49 @@ const PublishBlog = () => {
   };
 
   const handleSaveDraft = () => {
-    saveDraft(`blog-${generateSlug(title) || "new"}`, {
+    const slug = generateSlug(title) || "new";
+    saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
       blocks, markdownContent: editorMode === "markdown" ? markdownContent : blocksToMarkdown(blocks),
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
     });
-    toast({ title: "Draft saved locally" });
+    setContentStatus("blog", slug, "draft");
+    toast({ title: "Draft saved" });
+    navigate("/admin/blog-posts");
+  };
+
+  const handlePublishNow = async () => {
+    if (!title || !currentContent) {
+      toast({ title: "Title and content are required", variant: "destructive" });
+      return;
+    }
+    await handlePublishToServer();
+    const slug = generateSlug(title);
+    setContentStatus("blog", slug, "published");
+    navigate("/admin/blog-posts");
+  };
+
+  const handleSchedulePublish = (date: string, time: string) => {
+    if (!title || !currentContent) {
+      toast({ title: "Title and content are required", variant: "destructive" });
+      return;
+    }
+    const slug = generateSlug(title);
+    handleSaveDraftSilent();
+    setContentStatus("blog", slug, "scheduled", date, time);
+    toast({ title: `Blog scheduled for ${date} at ${time}` });
+    navigate("/admin/blog-posts");
+  };
+
+  const handleSaveDraftSilent = () => {
+    const slug = generateSlug(title) || "new";
+    saveDraft(`blog-${slug}`, {
+      title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
+      blocks, markdownContent: editorMode === "markdown" ? markdownContent : blocksToMarkdown(blocks),
+      featuredImage, excerpt, readingTime, seoDescription,
+      keyTakeaways, generatedNewsletter,
+    });
   };
 
   return (
@@ -603,32 +644,10 @@ const PublishBlog = () => {
           <Wand2 className="h-4 w-4" />
           Auto-Generate Fields
         </Button>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button className="gap-2" variant="secondary">
-              <Save className="h-4 w-4" />
-              {searchParams.get("edit") ? "Update Post" : "Publish to Server"}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {searchParams.get("edit") ? "Update this post?" : "Publish this post?"}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {searchParams.get("edit")
-                  ? "This will overwrite the existing blog post with your changes."
-                  : "This will publish the blog post and make it publicly visible."}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handlePublishToServer}>
-                {searchParams.get("edit") ? "Update" : "Publish"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Button className="gap-2" variant="secondary" onClick={() => setShowPublishModal(true)}>
+          <Save className="h-4 w-4" />
+          {searchParams.get("edit") ? "Update Post" : "Publish"}
+        </Button>
         <Button onClick={handleExport} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
           Export {editorMode === "blocks" ? "JSON" : "Markdown"}
@@ -703,8 +722,16 @@ const PublishBlog = () => {
                 </pre>
               </CardContent>
             </Card>
-          )}
-        </div>
+      )}
+
+      <PublishModal
+        open={showPublishModal}
+        onOpenChange={setShowPublishModal}
+        onPublishNow={handlePublishNow}
+        onSchedule={handleSchedulePublish}
+        title={title}
+      />
+    </div>
       )}
     </div>
   );

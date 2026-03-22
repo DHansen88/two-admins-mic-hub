@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,10 +50,13 @@ import {
   saveToHistory,
 } from "@/lib/file-export";
 import { saveEpisode, saveBlog } from "@/lib/content-manager";
+import { setContentStatus } from "@/lib/content-status";
+import PublishModal from "@/components/PublishModal";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
 
 const PublishEpisode = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [tags, setTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState("");
@@ -104,6 +108,7 @@ const PublishEpisode = () => {
   const [summary, setSummary] = useState("");
   const [seoDescription, setSeoDescription] = useState("");
   const [showGenerated, setShowGenerated] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
 
   // Blog generation
   const [generatedBlog, setGeneratedBlog] = useState<{
@@ -250,7 +255,42 @@ const PublishEpisode = () => {
       youtubeUrl, transcript, thumbnailName, keyTakeaways, summary,
       seoDescription, generatedBlog, generatedNewsletter,
     });
-    toast({ title: "Draft saved locally" });
+    setContentStatus("episode", episodeNumber || "new", "draft");
+    toast({ title: "Draft saved" });
+    navigate("/admin/episodes");
+  };
+
+  const handlePublishNow = async () => {
+    if (!title || !episodeNumber) {
+      toast({ title: "Episode number and title are required", variant: "destructive" });
+      return;
+    }
+    const data = buildEpisodeData();
+    const result = await saveEpisode(data);
+    if (result.success) {
+      setContentStatus("episode", episodeNumber, "published");
+      saveToHistory("episode", data);
+      toast({ title: "Episode published!" });
+      navigate("/admin/episodes");
+    } else {
+      toast({ title: result.error || "Publish failed", variant: "destructive" });
+    }
+  };
+
+  const handleSchedulePublish = (date: string, time: string) => {
+    if (!title || !episodeNumber) {
+      toast({ title: "Episode number and title are required", variant: "destructive" });
+      return;
+    }
+    saveDraft(`episode-${episodeNumber}`, {
+      episodeNumber, title, description, guestName, publishDate,
+      duration, selectedTopics, riversideUrl, spotifyUrl, appleUrl,
+      youtubeUrl, transcript, thumbnailName, keyTakeaways, summary,
+      seoDescription, generatedBlog, generatedNewsletter,
+    });
+    setContentStatus("episode", episodeNumber, "scheduled", date, time);
+    toast({ title: `Episode scheduled for ${date} at ${time}` });
+    navigate("/admin/episodes");
   };
 
   return (
@@ -493,45 +533,10 @@ const PublishEpisode = () => {
           <Wand2 className="h-4 w-4" />
           Auto-Generate Content
         </Button>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button className="gap-2" variant="secondary">
-              <Save className="h-4 w-4" />
-              {searchParams.get("edit") ? "Update Episode" : "Publish to Server"}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {searchParams.get("edit") ? "Update this episode?" : "Publish this episode?"}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {searchParams.get("edit")
-                  ? "This will overwrite the existing episode with your changes."
-                  : "This will publish the episode and make it publicly visible."}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={async () => {
-                if (!title || !episodeNumber) {
-                  toast({ title: "Episode number and title are required", variant: "destructive" });
-                  return;
-                }
-                const data = buildEpisodeData();
-                const result = await saveEpisode(data);
-                if (result.success) {
-                  saveToHistory("episode", data);
-                  toast({ title: "Episode published to server!" });
-                } else {
-                  toast({ title: result.error || "Publish failed", variant: "destructive" });
-                }
-              }}>
-                {searchParams.get("edit") ? "Update" : "Publish"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Button className="gap-2" variant="secondary" onClick={() => setShowPublishModal(true)}>
+          <Save className="h-4 w-4" />
+          {searchParams.get("edit") ? "Update Episode" : "Publish"}
+        </Button>
         <Button onClick={handleExportEpisode} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
           Export Episode JSON
@@ -617,6 +622,14 @@ const PublishEpisode = () => {
           )}
         </div>
       )}
+
+      <PublishModal
+        open={showPublishModal}
+        onOpenChange={setShowPublishModal}
+        onPublishNow={handlePublishNow}
+        onSchedule={handleSchedulePublish}
+        title={title}
+      />
     </div>
   );
 };
