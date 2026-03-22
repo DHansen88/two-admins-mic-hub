@@ -733,7 +733,7 @@ const Steps = () => {
                 built for the people who make everything happen.
               </p>
               <Button asChild size="lg" className="bg-coral hover:bg-coral/90 text-background font-semibold px-10 py-6 text-base">
-                <a href="/contact">
+                <a href="https://conantleadership.mykajabi.com/offers/JCoEFqw7/checkout" target="_blank" rel="noopener noreferrer">
                   Start Your Leadership Journey
                 </a>
               </Button>
