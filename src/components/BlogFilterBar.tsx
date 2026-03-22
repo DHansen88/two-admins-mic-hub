@@ -151,7 +151,7 @@ const BlogFilterBar = ({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-lg font-display font-bold text-foreground">
-              {activeHostData.name}'s posts
+              Now Viewing
             </p>
             <p className="text-sm text-muted-foreground line-clamp-1">
               {hostDescriptions[selectedHost] || ""}
