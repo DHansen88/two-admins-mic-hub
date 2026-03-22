@@ -27,7 +27,7 @@ const hosts = [
   {
     initial: "M",
     headshot: melHeadshot,
-    name: "Mel",
+    name: "Melinda Vail Goodnight",
     badge: "20+ Years Executive Support",
     badgeIcon: Briefcase,
     bio: "Mel has spent two decades in administrative roles across Fortune 500 companies and loves sharing practical strategies that work. Her no-nonsense approach makes complex topics accessible and actionable.",
