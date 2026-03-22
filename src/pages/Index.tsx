@@ -14,7 +14,7 @@ const Index = () => {
         <Hero />
         <MeetTheHosts />
         <LatestFromTheShow />
-        <BrowseTopics />
+        
         <HomeCTA />
       </main>
       <Footer />
