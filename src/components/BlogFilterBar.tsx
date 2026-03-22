@@ -139,44 +139,52 @@ const BlogFilterBar = ({
         <div className="absolute right-0 top-0 bottom-1 w-8 pointer-events-none bg-gradient-to-l from-background to-transparent" />
       </div>
 
-      {/* NOW VIEWING host card */}
-      {activeHostData && selectedHost !== "all" ? (
-        <div className="flex items-center gap-5 p-4 rounded-xl border border-border bg-card animate-fade-in">
-          <div className="shrink-0 w-[8.75rem] sm:w-[10.5rem] md:w-[12.25rem]">
-            <img
-              src={selectedHost === "diana" ? dianaBlogIcon : selectedHost === "mel" ? melBlogIcon : activeHostData.avatar}
-              alt={activeHostData.name}
-              className="w-full h-auto object-contain"
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-lg font-display font-bold text-foreground">
-              Now Viewing
-            </p>
-            <p className="text-sm text-muted-foreground line-clamp-1">
-              {hostDescriptions[selectedHost] || ""}
-            </p>
-            {filteredCount !== undefined && (
-              <span
-                className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
-                  selectedHost === "diana"
-                    ? "text-[hsl(var(--teal))] border-[hsl(var(--teal))]/30"
-                    : "text-[hsl(var(--coral))] border-[hsl(var(--coral))]/30"
-                }`}
-              >
-                {filteredCount} posts
-              </span>
-            )}
-          </div>
-          <button
-            onClick={() => onHostChange("all")}
-            className="shrink-0 w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
-            aria-label="Clear host filter"
-          >
-            <X className="h-4 w-4 text-muted-foreground" />
-          </button>
-        </div>
-      ) : null}
+      {/* NOW VIEWING host card — always mounted to avoid DOM conflicts */}
+      <div
+        className={`flex items-center gap-5 p-4 rounded-xl border border-border bg-card animate-fade-in transition-all duration-300 ${
+          activeHostData && selectedHost !== "all"
+            ? "opacity-100 max-h-40"
+            : "opacity-0 max-h-0 overflow-hidden p-0 border-0 m-0"
+        }`}
+      >
+        {activeHostData && (
+          <>
+            <div className="shrink-0 w-[8.75rem] sm:w-[10.5rem] md:w-[12.25rem]">
+              <img
+                src={selectedHost === "diana" ? dianaBlogIcon : selectedHost === "mel" ? melBlogIcon : activeHostData.avatar}
+                alt={activeHostData.name}
+                className="w-full h-auto object-contain"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-lg font-display font-bold text-foreground">
+                Now Viewing
+              </p>
+              <p className="text-sm text-muted-foreground line-clamp-1">
+                {hostDescriptions[selectedHost] || ""}
+              </p>
+              {filteredCount !== undefined && (
+                <span
+                  className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                    selectedHost === "diana"
+                      ? "text-[hsl(var(--teal))] border-[hsl(var(--teal))]/30"
+                      : "text-[hsl(var(--coral))] border-[hsl(var(--coral))]/30"
+                  }`}
+                >
+                  {filteredCount} posts
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => onHostChange("all")}
+              className="shrink-0 w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
+              aria-label="Clear host filter"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 };
