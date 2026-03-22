@@ -167,36 +167,32 @@ function RelatedCard({ item }: { item: RelatedItem }) {
         </h3>
 
         {/* Tags */}
-        <div className="flex items-center gap-2 mt-auto">
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 justify-end">
-            {item.topics.map((topic) => {
-              const tag = getTagByName(topic);
-              const bg = tag?.bgColor || "#5A7DFF";
-              const text = tag?.textColor || "#ffffff";
-              return (
+        <div className="flex items-center gap-1.5 mt-auto overflow-hidden">
+          {item.topics.map((topic) => {
+            const tag = getTagByName(topic);
+            const bg = tag?.bgColor || "#5A7DFF";
+            const text = tag?.textColor || "#ffffff";
+            return (
+              <span
+                key={topic}
+                className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider whitespace-nowrap overflow-hidden text-ellipsis shrink min-w-0 max-w-[50%]"
+                style={{
+                  backgroundColor: bg,
+                  color: text,
+                  padding: "3px 8px",
+                  borderRadius: "999px",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.12)",
+                  fontWeight: 600,
+                }}
+              >
                 <span
-                  key={topic}
-                  className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider"
-                  style={{
-                    backgroundColor: bg,
-                    color: text,
-                    padding: "3px 8px",
-                    borderRadius: "999px",
-                    boxShadow: "0 1px 2px rgba(0,0,0,0.12)",
-                    fontWeight: 600,
-                  }}
-                >
-                  <span
-                    className="inline-block w-1.5 h-1.5 rounded-full"
-                    style={{ backgroundColor: text, opacity: 0.6 }}
-                  />
-                  {topic}
-                </span>
-              );
-            })}
-          </div>
+                  className="inline-block w-1.5 h-1.5 rounded-full shrink-0"
+                  style={{ backgroundColor: text, opacity: 0.6 }}
+                />
+                <span className="overflow-hidden text-ellipsis">{topic}</span>
+              </span>
+            );
+          })}
         </div>
       </Card>
     </Link>
