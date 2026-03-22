@@ -42,7 +42,7 @@ const hosts = [
 
 const MeetTheHosts = () => {
   return (
-    <section className="py-16 bg-background">
+    <section className="pt-8 pb-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-2">
