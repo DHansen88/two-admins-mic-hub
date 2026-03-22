@@ -13,6 +13,7 @@ const Header = () => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navItems = [
+    { to: "/about", label: "About" },
     { to: "/episodes", label: "Podcast" },
     { to: "/blog", label: "Blog" },
     { to: "/steps", label: "STEPS" },
