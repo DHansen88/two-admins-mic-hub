@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Link } from "react-router-dom";
-import { getTagByName } from "@/data/tags";
+
 
 interface BlogCardProps {
   title: string;
@@ -27,30 +27,6 @@ const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug, author }:
     >
       <Card className="h-full bg-card hover:bg-card/80 border-border hover:border-teal transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
         <CardHeader className="pb-2">
-          <div className="flex flex-wrap gap-2 mb-2">
-            {topics.slice(0, 2).map((topic) => {
-              const tag = getTagByName(topic);
-              const bg = tag?.bgColor || "#5A7DFF";
-              const text = tag?.textColor || "#ffffff";
-              return (
-                <span
-                  key={topic}
-                  className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider rounded-full"
-                  style={{
-                    backgroundColor: bg,
-                    color: text,
-                    padding: "4px 10px",
-                    borderRadius: "999px",
-                    boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
-                    fontWeight: 600,
-                  }}
-                >
-                  <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: text, opacity: 0.7 }} />
-                  {topic}
-                </span>
-              );
-            })}
-          </div>
           <h3 className="text-xl font-display font-bold text-foreground group-hover:text-teal transition-colors line-clamp-2">
             {title}
           </h3>
