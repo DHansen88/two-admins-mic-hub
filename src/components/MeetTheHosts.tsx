@@ -89,7 +89,7 @@ const MeetTheHosts = () => {
                   {/* Buttons */}
                   <div className="flex gap-3 pt-2">
                     <Button asChild size="sm" className={host.btnClass}>
-                      <Link to={host.meetLink} onClick={() => window.scrollTo(0, 0)}>
+                      <Link to={host.meetLink}>
                         Meet {host.name.split(" ")[0]}
                       </Link>
                     </Button>
