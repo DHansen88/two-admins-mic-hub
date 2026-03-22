@@ -1,7 +1,7 @@
 ---
 title: The Power of Active Listening in Leadership
 slug: power-active-listening
-author: sarah
+author: diana
 publish_date: 2025-11-20
 tags: Leadership, Communication
 excerpt: Why listening is your most powerful leadership tool and how to develop this essential skill.

@@ -1,7 +1,7 @@
 ---
 title: The Administrator's Guide to Effective Communication
 slug: guide-effective-communication
-author: sarah
+author: diana
 publish_date: 2025-11-30
 tags: Communication
 excerpt: Master the art of clear, impactful communication that drives results and builds stronger relationships.

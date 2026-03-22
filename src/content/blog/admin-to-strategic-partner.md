@@ -1,7 +1,7 @@
 ---
 title: "From Admin to Strategic Partner: Elevating Your Role"
 slug: admin-to-strategic-partner
-author: sarah
+author: diana
 publish_date: 2025-10-28
 tags: Career Growth, Leadership
 excerpt: Practical steps to transition from task executor to trusted strategic advisor in your organization.

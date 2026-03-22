@@ -1,7 +1,7 @@
 ---
 title: Setting Boundaries Without Burning Bridges
 slug: setting-boundaries-without-burning-bridges
-author: marcus
+author: mel
 publish_date: 2025-11-05
 tags: Wellness, Communication
 excerpt: How to protect your time and energy while maintaining strong professional relationships.

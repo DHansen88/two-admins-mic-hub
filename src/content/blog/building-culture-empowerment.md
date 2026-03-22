@@ -1,7 +1,7 @@
 ---
 title: Building a Culture of Empowerment in Your Organization
 slug: building-culture-empowerment
-author: marcus
+author: mel
 publish_date: 2025-12-05
 tags: Team Building, Leadership
 excerpt: Learn how to create an environment where team members feel valued, trusted, and motivated to take initiative.

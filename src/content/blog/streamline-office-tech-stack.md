@@ -1,7 +1,7 @@
 ---
 title: How to Streamline Your Office with the Right Tech Stack
 slug: streamline-office-tech-stack
-author: sarah
+author: diana
 publish_date: 2025-11-10
 tags: Technology, Admin Life
 excerpt: A practical breakdown of tools and platforms that can save administrators hours each week.

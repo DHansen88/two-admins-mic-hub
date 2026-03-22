@@ -1,7 +1,7 @@
 ---
 title: "Mastering the Art of Meeting Management"
 slug: mastering-meeting-management
-author: sarah
+author: diana
 publish_date: 2025-10-15
 tags: Admin Life, Communication
 excerpt: Turn unproductive meetings into focused, outcome-driven sessions that respect everyone's time.
