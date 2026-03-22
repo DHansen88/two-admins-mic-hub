@@ -55,7 +55,7 @@ const Hero = () => {
         </svg>
       </div>
 
-      <div className="container mx-auto px-4 py-32 relative z-10">
+      <div className="container mx-auto px-4 pt-24 pb-12 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-8 animate-fade-in">
 
           {/* Hero Logo */}
