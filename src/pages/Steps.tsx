@@ -704,7 +704,7 @@ const Steps = () => {
                     <CardContent className="p-8 space-y-6">
                       <Quote className="w-8 h-8 text-teal/30" />
                       <p className="text-foreground leading-relaxed italic text-sm">
-                        "{t.quote}"
+                        {t.quote}
                       </p>
                       <div>
                         <p className="font-display font-semibold text-foreground text-sm">
