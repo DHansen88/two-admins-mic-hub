@@ -5,7 +5,14 @@
   "description": "Discover strategies for fostering a culture of innovation and creative problem-solving in your team.",
   "duration": "37 min",
   "date": "2025-10-17",
-  "topics": ["Technology", "Career Growth"],
+  "topics": [
+    "Technology",
+    "Career Growth"
+  ],
   "thumbnailUrl": "/placeholder.svg",
-  "platformLinks": { "apple": "#", "spotify": "#" }
+  "platformLinks": {
+    "apple": "#",
+    "spotify": "#"
+  },
+  "host": "mel"
 }

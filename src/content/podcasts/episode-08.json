@@ -5,7 +5,14 @@
   "description": "Develop the mental and emotional resilience needed to thrive in challenging leadership positions.",
   "duration": "40 min",
   "date": "2025-10-31",
-  "topics": ["Wellness", "Leadership"],
+  "topics": [
+    "Wellness",
+    "Leadership"
+  ],
   "thumbnailUrl": "/placeholder.svg",
-  "platformLinks": { "apple": "#", "spotify": "#" }
+  "platformLinks": {
+    "apple": "#",
+    "spotify": "#"
+  },
+  "host": "mel"
 }
