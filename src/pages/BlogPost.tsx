@@ -363,16 +363,6 @@ const BlogPost = () => {
                   </div>
                 </div>
 
-                <hr className="border-none h-px bg-border" />
-
-                {/* Back to Blog */}
-                <Link
-                  to="/blog"
-                  className="inline-flex items-center space-x-2 text-accent hover:text-accent/80 transition-colors font-medium"
-                >
-                  <ArrowLeft size={18} />
-                  <span>Back to Blog</span>
-                </Link>
               </div>
             </div>
           </div>
