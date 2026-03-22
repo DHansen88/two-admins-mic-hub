@@ -598,8 +598,7 @@ const Steps = () => {
               
             </p>
               <Button onClick={scrollToBlueprint} size="lg" className="bg-teal hover:bg-teal/90 text-background font-semibold px-8 py-6 text-base">
-                Explore the Blueprint
-                <ChevronDown className="ml-2 h-5 w-5" />
+                Explore the Journey
               </Button>
             </div>
           </div>
