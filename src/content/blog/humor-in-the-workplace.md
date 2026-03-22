@@ -1,7 +1,7 @@
 ---
 title: "Humor in the Workplace: Why Laughter Is Serious Business"
 slug: humor-in-the-workplace
-author: marcus
+author: mel
 publish_date: 2025-10-10
 tags: Humor & Human Moments, Team Building
 excerpt: How a healthy sense of humor can boost morale, build connections, and make work more enjoyable for everyone.

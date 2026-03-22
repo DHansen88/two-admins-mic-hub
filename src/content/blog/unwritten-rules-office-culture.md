@@ -1,7 +1,7 @@
 ---
 title: The Unwritten Rules of Office Culture
 slug: unwritten-rules-office-culture
-author: marcus
+author: mel
 publish_date: 2025-10-20
 tags: Admin Life, Team Building
 excerpt: Decoding the informal norms that shape every workplace—and how to navigate them gracefully.

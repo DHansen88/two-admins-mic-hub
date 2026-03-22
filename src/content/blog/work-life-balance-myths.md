@@ -1,7 +1,7 @@
 ---
 title: "Work-Life Balance: Myths and Realities for Administrators"
 slug: work-life-balance-myths
-author: marcus
+author: mel
 publish_date: 2025-11-15
 tags: Wellness, Career Growth
 excerpt: Redefining what balance means for busy professionals and practical tips for achieving it.

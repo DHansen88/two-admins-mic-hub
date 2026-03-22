@@ -1,7 +1,7 @@
 ---
 title: 5 Essential Leadership Skills Every Administrator Needs in 2025
 slug: essential-leadership-skills-2025
-author: sarah
+author: diana
 publish_date: 2025-12-10
 tags: Leadership, Career Growth
 featured_image: /images/blog/leadership-skills.jpg

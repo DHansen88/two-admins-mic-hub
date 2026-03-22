@@ -1,7 +1,7 @@
 ---
 title: Navigating Difficult Conversations with Confidence
 slug: navigating-difficult-conversations
-author: marcus
+author: mel
 publish_date: 2025-11-25
 tags: Communication, Leadership
 excerpt: Practical strategies for handling challenging discussions while maintaining professionalism and empathy.
