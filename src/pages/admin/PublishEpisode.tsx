@@ -56,6 +56,7 @@ import { allEpisodesUnfiltered } from "@/data/episodeData";
 
 const PublishEpisode = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [tags, setTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState("");
