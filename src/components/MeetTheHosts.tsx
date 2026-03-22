@@ -14,7 +14,7 @@ const hosts = [
     badgeIcon: Award,
     bio: "Diana brings 15 years of administrative leadership experience and is passionate about empowering others to reach their full potential. She's a certified leadership coach dedicated to elevating the admin profession.",
     skills: ["Leadership Coaching", "Strategic Planning", "Team Empowerment", "Culture Building"],
-    meetLink: "/about",
+    meetLink: "/about#diana",
     articlesLink: "/blog",
     colorClass: "teal",
     bgClass: "bg-teal/5",
