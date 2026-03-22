@@ -358,8 +358,8 @@ const PublishEpisode = () => {
                   <span
                     className="px-2 py-0.5 rounded-full text-xs font-medium"
                     style={{
-                      backgroundColor: `hsl(${tag.color} / 0.15)`,
-                      color: `hsl(${tag.color})`,
+                      backgroundColor: tag.bgColor,
+                      color: tag.textColor,
                     }}
                   >
                     {tag.name}
