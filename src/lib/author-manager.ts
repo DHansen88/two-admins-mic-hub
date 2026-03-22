@@ -3,6 +3,8 @@
  * Communicates with the PHP backend for CRUD, falls back to localStorage.
  */
 
+import { handleAuthFailure, isAdminAuthError } from "./admin-auth";
+
 export interface AuthorProfile {
   id: string;
   name: string;
@@ -58,8 +60,23 @@ async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any
       headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
       credentials: 'include',
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+    const text = await res.text();
+    let data: any = null;
+
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = null;
+      }
+    }
+
+    if (res.status === 401) {
+      throw handleAuthFailure(data?.error || 'Not authenticated');
+    }
+
+    if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
     return data;
   } catch (error: any) {
     if (error.name === 'TypeError' && error.message.includes('fetch')) return null;
@@ -76,8 +93,8 @@ export async function fetchAuthors(): Promise<AuthorProfile[]> {
       setLocal(authors);
       return Object.values(authors);
     }
-  } catch {
-    // Fall back to local
+  } catch (error) {
+    if (isAdminAuthError(error)) return [];
   }
   return Object.values(getLocal());
 }
@@ -90,15 +107,17 @@ export async function saveAuthor(author: Partial<AuthorProfile> & { name: string
       body: JSON.stringify(author),
     });
     if (data?.success) {
-      // Update local cache
       const local = getLocal();
       local[data.id] = data.author || { ...author, id: data.id };
       setLocal(local);
       return { success: true, id: data.id };
     }
     return { success: false, error: data?.error || 'Save failed' };
-  } catch {
-    // Fallback: save locally
+  } catch (error: any) {
+    if (isAdminAuthError(error)) {
+      return { success: false, error: error.message };
+    }
+
     const id = author.id || author.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const local = getLocal();
     local[id] = { id, name: author.name, role: author.role || '', bio: author.bio || '', avatar: author.avatar || '', linkedin: author.linkedin || '', website: author.website || '' };
@@ -121,7 +140,11 @@ export async function deleteAuthor(id: string): Promise<{ success: boolean; erro
       return { success: true };
     }
     return { success: false, error: data?.error };
-  } catch {
+  } catch (error: any) {
+    if (isAdminAuthError(error)) {
+      return { success: false, error: error.message };
+    }
+
     const local = getLocal();
     delete local[id];
     setLocal(local);
@@ -135,17 +158,35 @@ export async function uploadHeadshot(file: File, authorId: string): Promise<{ su
     const formData = new FormData();
     formData.append('headshot', file);
     formData.append('author_id', authorId);
-    
+
     const res = await fetch(`${API_BASE}/authors.php?action=upload-headshot`, {
       method: 'POST',
       credentials: 'include',
       body: formData,
     });
-    const data = await res.json();
+
+    const text = await res.text();
+    let data: any = null;
+
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = null;
+      }
+    }
+
+    if (res.status === 401) {
+      throw handleAuthFailure(data?.error || 'Not authenticated');
+    }
+
     if (data?.success) return { success: true, url: data.url };
-    return { success: false, error: data?.error };
-  } catch {
-    // Fallback: create object URL (won't persist)
+    return { success: false, error: data?.error || 'Upload failed' };
+  } catch (error: any) {
+    if (isAdminAuthError(error)) {
+      return { success: false, error: error.message };
+    }
+
     const url = URL.createObjectURL(file);
     return { success: true, url };
   }

@@ -5,8 +5,6 @@
  * Falls back to localStorage session tracking for the static preview environment.
  */
 
-// API base URL — update this after deploying to Hostinger
-// In development/preview, uses localStorage fallback
 const API_BASE = import.meta.env.VITE_ADMIN_API_URL || '/api';
 
 const SESSION_KEY = 'taam_admin_session';
@@ -36,6 +34,30 @@ interface SessionData {
   lastActivity: number;
 }
 
+class AdminAuthError extends Error {
+  constructor(message = 'Not authenticated') {
+    super(message);
+    this.name = 'AdminAuthError';
+  }
+}
+
+function redirectToLogin(): void {
+  if (typeof window === 'undefined') return;
+  if (window.location.pathname !== '/admin/login') {
+    window.location.href = '/admin/login';
+  }
+}
+
+export function handleAuthFailure(message = 'Not authenticated'): Error {
+  clearSession();
+  redirectToLogin();
+  return new AdminAuthError(message);
+}
+
+export function isAdminAuthError(error: unknown): error is Error {
+  return error instanceof Error && error.name === 'AdminAuthError';
+}
+
 // ─── Session Storage ───
 
 function getSession(): SessionData | null {
@@ -44,13 +66,11 @@ function getSession(): SessionData | null {
     if (!stored) return null;
     const session: SessionData = JSON.parse(stored);
     
-    // Check expiry
     if (Date.now() > session.expiresAt) {
       clearSession();
       return null;
     }
     
-    // Check inactivity
     if (Date.now() - session.lastActivity > INACTIVITY_TIMEOUT) {
       clearSession();
       return null;
@@ -92,11 +112,10 @@ function resetInactivityTimer(): void {
   if (inactivityTimer) clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(() => {
     clearSession();
-    window.location.href = '/admin/login';
+    redirectToLogin();
   }, INACTIVITY_TIMEOUT);
 }
 
-// Track user activity for inactivity timeout
 if (typeof window !== 'undefined') {
   ['mousedown', 'keydown', 'scroll', 'touchstart'].forEach((event) => {
     window.addEventListener(event, () => {
@@ -121,16 +140,28 @@ async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any
       },
       credentials: 'include',
     });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.error || `HTTP ${response.status}`);
+
+    const text = await response.text();
+    let data: any = null;
+
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = null;
+      }
     }
-    
+
+    if (response.status === 401) {
+      throw handleAuthFailure(data?.error || 'Not authenticated');
+    }
+
+    if (!response.ok) {
+      throw new Error(data?.error || `HTTP ${response.status}`);
+    }
+
     return data;
   } catch (error: any) {
-    // If API is unavailable (e.g., in preview), return null to trigger fallback
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
       return null;
     }
@@ -152,21 +183,45 @@ export async function login(email: string, password: string): Promise<{ success:
       return { success: true, user: result.user };
     }
     
-    // API unavailable — fallback for preview/development
     if (result === null) {
       return fallbackLogin(email, password);
     }
     
     return { success: false, error: result?.error || 'Login failed' };
   } catch (error: any) {
-    // Fallback for when API is not reachable
-    return fallbackLogin(email, password);
+    if (isAdminAuthError(error)) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: error?.message || 'Login failed' };
   }
+}
+
+export async function validateSession(): Promise<boolean> {
+  if (!getSession()) return false;
+
+  try {
+    const result = await apiCall('auth.php?action=session');
+
+    if (result === null) {
+      return isAuthenticated();
+    }
+
+    if (result?.authenticated && result.user) {
+      saveSession(result.user);
+      return true;
+    }
+  } catch (error) {
+    if (isAdminAuthError(error)) {
+      return false;
+    }
+  }
+
+  clearSession();
+  return false;
 }
 
 /** Fallback login for preview/development when PHP backend isn't available */
 function fallbackLogin(email: string, password: string): { success: boolean; error?: string; user?: AdminUser } {
-  // Check localStorage for dev accounts
   const devAccounts = getDevAccounts();
   const account = devAccounts.find((a) => a.email === email);
   
@@ -182,7 +237,6 @@ function fallbackLogin(email: string, password: string): { success: boolean; err
     return { success: true, user };
   }
   
-  // Default admin accounts for first-time access
   const defaultAccounts: Record<string, { name: string; password: string }> = {
     'admin@twoadminsandamic.com': { name: 'Site Admin', password: 'admin2025' },
     'info@twoadminsandamic.com': { name: 'TAAM Admin', password: 'TaamSecure#2026!' },
@@ -232,7 +286,6 @@ export function hasPermission(permission: keyof UserPermissions): boolean {
 }
 
 export function logout(): void {
-  // Try to call API logout (fire-and-forget)
   apiCall('auth.php?action=logout', { method: 'POST' }).catch(() => {});
   clearSession();
 }
@@ -266,7 +319,6 @@ export async function listUsers(): Promise<AdminUser[]> {
     if (result?.users) return result.users;
   } catch {}
   
-  // Fallback to dev accounts
   return getDevAccounts().map(({ password, status, ...user }) => ({ ...user, status } as any));
 }
 
@@ -288,7 +340,6 @@ export async function createUser(data: {
     if (e.message) return { success: false, error: e.message };
   }
   
-  // Fallback
   const accounts = getDevAccounts();
   if (accounts.some((a) => a.email === data.email)) {
     return { success: false, error: 'Email already exists' };
@@ -323,7 +374,6 @@ export async function updateUser(id: number, updates: Partial<{
     if (e.message) return { success: false, error: e.message };
   }
   
-  // Fallback
   const accounts = getDevAccounts();
   const idx = accounts.findIndex((a) => a.id === id);
   if (idx >= 0) {
@@ -350,7 +400,6 @@ export async function deleteUser(id: number): Promise<{ success: boolean; error?
     if (e.message) return { success: false, error: e.message };
   }
   
-  // Fallback
   const accounts = getDevAccounts().filter((a) => a.id !== id);
   saveDevAccounts(accounts);
   return { success: true };
@@ -372,7 +421,6 @@ export async function resetUserPassword(id: number, newPassword: string): Promis
     if (e.message) return { success: false, error: e.message };
   }
   
-  // Fallback
   const accounts = getDevAccounts();
   const idx = accounts.findIndex((a) => a.id === id);
   if (idx >= 0) {
