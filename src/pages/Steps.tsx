@@ -703,7 +703,7 @@ const Steps = () => {
                 {testimonials.map((t, i) => <Card key={i} className="border-border hover:border-teal/30 transition-colors">
                     <CardContent className="p-8 space-y-6">
                       <Quote className="w-8 h-8 text-teal/30" />
-                      <p className="text-foreground leading-relaxed italic">
+                      <p className="text-foreground leading-relaxed italic text-sm">
                         "{t.quote}"
                       </p>
                       <div>
