@@ -2,10 +2,12 @@ import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Award, Briefcase } from "lucide-react";
+import dianaHeadshot from "@/assets/images/authors/diana-headshot.jpeg";
 
 const hosts = [
   {
     initial: "D",
+    headshot: dianaHeadshot,
     name: "Diana Hansen",
     badge: "Admin Awards Loyalty Winner",
     badgeIcon: Award,
@@ -68,9 +70,13 @@ const MeetTheHosts = () => {
 
                   {/* Avatar + Name */}
                   <div className="flex items-center gap-3">
-                    <div className={`${host.avatarBg} text-white w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shrink-0`}>
-                      {host.initial}
-                    </div>
+                    {host.headshot ? (
+                      <img src={host.headshot} alt={host.name} className="w-12 h-12 rounded-full object-cover shrink-0" />
+                    ) : (
+                      <div className={`${host.avatarBg} text-white w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shrink-0`}>
+                        {host.initial}
+                      </div>
+                    )}
                     <h3 className="text-xl font-bold text-foreground">{host.name}</h3>
                   </div>
 
