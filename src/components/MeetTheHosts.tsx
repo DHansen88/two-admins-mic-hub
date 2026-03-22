@@ -14,7 +14,7 @@ const hosts = [
     badgeIcon: Award,
     bio: "Diana brings 15 years of administrative leadership experience and is passionate about empowering others to reach their full potential. She's a certified leadership coach dedicated to elevating the admin profession.",
     skills: ["Leadership Coaching", "Strategic Planning", "Team Empowerment", "Culture Building"],
-    meetLink: "/about",
+    meetLink: "/about#diana",
     articlesLink: "/blog",
     colorClass: "teal",
     bgClass: "bg-teal/5",
@@ -32,7 +32,7 @@ const hosts = [
     badgeIcon: Briefcase,
     bio: "Mel has spent two decades in administrative roles across Fortune 500 companies and loves sharing practical strategies that work. Her no-nonsense approach makes complex topics accessible and actionable.",
     skills: ["Operations", "Executive Support", "Process Optimization", "Communication"],
-    meetLink: "/about",
+    meetLink: "/about#melinda",
     articlesLink: "/blog",
     colorClass: "coral-accent",
     bgClass: "bg-coral-accent/5",
@@ -89,7 +89,7 @@ const MeetTheHosts = () => {
                   {/* Buttons */}
                   <div className="flex gap-3 pt-2">
                     <Button asChild size="sm" className={host.btnClass}>
-                      <Link to={host.meetLink} onClick={() => window.scrollTo(0, 0)}>
+                      <Link to={host.meetLink}>
                         Meet {host.name.split(" ")[0]}
                       </Link>
                     </Button>
