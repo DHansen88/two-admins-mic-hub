@@ -9,6 +9,7 @@ const API_BASE = import.meta.env.VITE_ADMIN_API_URL || '/api';
 const FALLBACK_HOST_PATTERNS = ['localhost', '127.0.0.1', '.lovable.app', '.lovableproject.com'];
 
 const SESSION_KEY = 'taam_admin_session';
+const ADMIN_TOKEN_KEY = 'taam_admin_token';
 const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 let inactivityTimer: ReturnType<typeof setTimeout> | null = null;
@@ -53,6 +54,33 @@ export function canUseAdminFallback(): boolean {
   return FALLBACK_HOST_PATTERNS.some((pattern) =>
     pattern.startsWith('.') ? hostname.endsWith(pattern) : hostname === pattern,
   );
+}
+
+function getAdminToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem(ADMIN_TOKEN_KEY);
+}
+
+function saveAdminToken(token?: string | null): void {
+  if (typeof window === 'undefined') return;
+
+  if (token) {
+    sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
+  } else {
+    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+  }
+}
+
+export function getAdminAuthHeaders(headers: HeadersInit = {}): HeadersInit {
+  const token = getAdminToken();
+  const normalizedHeaders = new Headers(headers);
+
+  if (token) {
+    normalizedHeaders.set('Authorization', `Bearer ${token}`);
+    normalizedHeaders.set('X-Admin-Token', token);
+  }
+
+  return Object.fromEntries(normalizedHeaders.entries());
 }
 
 function redirectToLogin(): void {
@@ -117,6 +145,7 @@ function updateActivity(): void {
 
 function clearSession(): void {
   sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(ADMIN_TOKEN_KEY);
   if (inactivityTimer) {
     clearTimeout(inactivityTimer);
     inactivityTimer = null;
@@ -151,7 +180,7 @@ async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...(options.headers || {}),
+        ...getAdminAuthHeaders(options.headers || {}),
       },
       credentials: 'include',
     });
@@ -199,6 +228,7 @@ export async function login(email: string, password: string): Promise<{ success:
     });
     
     if (result?.success && result.user) {
+      saveAdminToken(result.token);
       saveSession(result.user);
       return { success: true, user: result.user };
     }

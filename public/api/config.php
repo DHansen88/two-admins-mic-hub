@@ -19,6 +19,7 @@ define('DB_PASS', 'your_database_password');
 define('SESSION_LIFETIME', 14400); // 4 hours in seconds
 define('SESSION_NAME', 'taam_admin_session');
 define('SESSION_STORAGE_DIR', dirname(__DIR__, 2) . '/storage/sessions');
+define('ADMIN_TOKEN_STORAGE_FILE', dirname(__DIR__, 2) . '/storage/admin-tokens.json');
 
 // CORS — explicit origins are required when cookies/sessions are used
 define('ALLOWED_ORIGINS', [
@@ -118,6 +119,150 @@ function ensureSessionStorageDirectory(): ?string {
     return null;
 }
 
+function ensureAdminTokenStorageFile(): ?string {
+    $directory = dirname(ADMIN_TOKEN_STORAGE_FILE);
+
+    if (!is_dir($directory)) {
+        @mkdir($directory, 0755, true);
+    }
+
+    if (!is_dir($directory) || !is_writable($directory)) {
+        return null;
+    }
+
+    if (!file_exists(ADMIN_TOKEN_STORAGE_FILE)) {
+        @file_put_contents(ADMIN_TOKEN_STORAGE_FILE, json_encode([]));
+    }
+
+    if (!is_writable(ADMIN_TOKEN_STORAGE_FILE)) {
+        return null;
+    }
+
+    return ADMIN_TOKEN_STORAGE_FILE;
+}
+
+function loadAdminTokens(): array {
+    $file = ensureAdminTokenStorageFile();
+    if ($file === null) {
+        return [];
+    }
+
+    $raw = file_get_contents($file);
+    $tokens = json_decode($raw ?: '[]', true);
+    return is_array($tokens) ? $tokens : [];
+}
+
+function saveAdminTokens(array $tokens): void {
+    $file = ensureAdminTokenStorageFile();
+    if ($file === null) {
+        return;
+    }
+
+    file_put_contents($file, json_encode(array_values($tokens), JSON_PRETTY_PRINT));
+}
+
+function pruneExpiredAdminTokens(array $tokens): array {
+    $now = time();
+    return array_values(array_filter($tokens, static function ($token) use ($now) {
+        return !empty($token['expires_at']) && (int) $token['expires_at'] > $now;
+    }));
+}
+
+function getAuthorizationHeaderValue(): string {
+    if (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
+        return trim($_SERVER['HTTP_AUTHORIZATION']);
+    }
+
+    if (!empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        return trim($_SERVER['REDIRECT_HTTP_AUTHORIZATION']);
+    }
+
+    return '';
+}
+
+function getAdminBearerToken(): ?string {
+    $header = getAuthorizationHeaderValue();
+    if ($header && preg_match('/Bearer\s+(.+)/i', $header, $matches)) {
+        return trim($matches[1]);
+    }
+
+    if (!empty($_SERVER['HTTP_X_ADMIN_TOKEN'])) {
+        return trim($_SERVER['HTTP_X_ADMIN_TOKEN']);
+    }
+
+    return null;
+}
+
+function issueAdminToken(array $user): ?string {
+    $plainToken = bin2hex(random_bytes(32));
+    $tokens = pruneExpiredAdminTokens(loadAdminTokens());
+    $tokens[] = [
+        'token_hash' => hash('sha256', $plainToken),
+        'user_id' => (int) $user['id'],
+        'expires_at' => time() + SESSION_LIFETIME,
+    ];
+    saveAdminTokens($tokens);
+
+    return $plainToken;
+}
+
+function revokeAdminToken(?string $plainToken): void {
+    if (!$plainToken) {
+        return;
+    }
+
+    $tokenHash = hash('sha256', $plainToken);
+    $tokens = array_values(array_filter(loadAdminTokens(), static function ($token) use ($tokenHash) {
+        return ($token['token_hash'] ?? '') !== $tokenHash;
+    }));
+    saveAdminTokens($tokens);
+}
+
+function getAuthenticatedUserById(int $userId): ?array {
+    $db = getDB();
+    $stmt = $db->prepare('SELECT id, name, email, role, status FROM admin_users WHERE id = ?');
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+
+    if (!$user || $user['status'] !== 'active') {
+        return null;
+    }
+
+    return [
+        'id' => (int) $user['id'],
+        'email' => $user['email'],
+        'role' => $user['role'],
+        'name' => $user['name'],
+    ];
+}
+
+function getUserFromAdminToken(): ?array {
+    $plainToken = getAdminBearerToken();
+    if (!$plainToken) {
+        return null;
+    }
+
+    $tokenHash = hash('sha256', $plainToken);
+    $tokens = pruneExpiredAdminTokens(loadAdminTokens());
+    saveAdminTokens($tokens);
+
+    foreach ($tokens as $token) {
+        if (($token['token_hash'] ?? '') !== $tokenHash) {
+            continue;
+        }
+
+        $user = getAuthenticatedUserById((int) ($token['user_id'] ?? 0));
+        if (!$user) {
+            revokeAdminToken($plainToken);
+            return null;
+        }
+
+        return $user;
+    }
+
+    return null;
+}
+
 function getSessionDebugInfo(): array {
     return [
         'host' => getHostWithoutPort(),
@@ -125,8 +270,10 @@ function getSessionDebugInfo(): array {
         'session_name' => SESSION_NAME,
         'session_id' => session_id(),
         'has_session_cookie' => isset($_COOKIE[SESSION_NAME]),
+        'has_admin_token' => getAdminBearerToken() !== null,
         'session_save_path' => session_save_path(),
         'session_storage_ready' => ensureSessionStorageDirectory() !== null,
+        'token_storage_ready' => ensureAdminTokenStorageFile() !== null,
     ];
 }
 
@@ -136,7 +283,7 @@ function getSessionDebugInfo(): array {
 function setCorsHeaders(): void {
     header('Access-Control-Allow-Origin: ' . getAllowedOrigin());
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Admin-Token');
     header('Access-Control-Allow-Credentials: true');
     header('Vary: Origin');
     header('Content-Type: application/json');
@@ -203,6 +350,17 @@ function startSecureSession(): void {
  */
 function requireAuth(): array {
     startSecureSession();
+
+    $tokenUser = getUserFromAdminToken();
+    if ($tokenUser) {
+        $_SESSION['user_id'] = $tokenUser['id'];
+        $_SESSION['user_email'] = $tokenUser['email'];
+        $_SESSION['user_role'] = $tokenUser['role'];
+        $_SESSION['user_name'] = $tokenUser['name'];
+        $_SESSION['expires_at'] = time() + SESSION_LIFETIME;
+
+        return $tokenUser;
+    }
     
     if (empty($_SESSION['user_id']) || empty($_SESSION['expires_at'])) {
         $error = isset($_COOKIE[SESSION_NAME])
