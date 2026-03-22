@@ -3,9 +3,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import EpisodeCard from "@/components/EpisodeCard";
 import FeaturedEpisode from "@/components/FeaturedEpisode";
-import TopicFilter from "@/components/TopicFilter";
+import BlogFilterBar from "@/components/BlogFilterBar";
 import { Input } from "@/components/ui/input";
-import { Search, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { allEpisodes } from "@/data/episodeData";
 import { Button } from "@/components/ui/button";
 
@@ -13,23 +14,36 @@ const EPISODES_PER_PAGE = 5;
 
 const Episodes = () => {
   const [search, setSearch] = useState("");
+  const [selectedHost, setSelectedHost] = useState<string>("all");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const latestEpisode = allEpisodes[0];
 
+  const hasActiveFilters = selectedHost !== "all" || selectedTopics.length > 0;
+
+  const clearFilters = () => {
+    setSelectedHost("all");
+    setSelectedTopics([]);
+  };
+
   const filteredEpisodes = useMemo(() => {
     const query = search.toLowerCase().trim();
     let episodes = [...allEpisodes];
 
-    // Filter by topics
+    // Host filter
+    if (selectedHost !== "all") {
+      episodes = episodes.filter((ep) => ep.host === selectedHost);
+    }
+
+    // Topic filter
     if (selectedTopics.length > 0) {
       episodes = episodes.filter((ep) =>
         selectedTopics.some((topic) => ep.topics.includes(topic))
       );
     }
 
-    // Filter by search
+    // Search filter
     if (query) {
       episodes = episodes.filter(
         (ep) =>
@@ -45,14 +59,17 @@ const Episodes = () => {
     );
 
     return episodes;
-  }, [search, selectedTopics, sortOrder]);
+  }, [search, selectedHost, selectedTopics, sortOrder]);
 
   // Reset to page 1 when filters change
-  const resetKey = `${search}-${selectedTopics.join()}-${sortOrder}`;
+  const resetKey = `${search}-${selectedHost}-${selectedTopics.join()}-${sortOrder}`;
   useMemo(() => setCurrentPage(1), [resetKey]);
 
   const totalPages = Math.ceil(filteredEpisodes.length / EPISODES_PER_PAGE);
-  const visibleEpisodes = filteredEpisodes.slice((currentPage - 1) * EPISODES_PER_PAGE, currentPage * EPISODES_PER_PAGE);
+  const visibleEpisodes = filteredEpisodes.slice(
+    (currentPage - 1) * EPISODES_PER_PAGE,
+    currentPage * EPISODES_PER_PAGE
+  );
 
   return (
     <div className="min-h-screen">
@@ -60,7 +77,6 @@ const Episodes = () => {
       <main className="pt-20">
         {/* Hero Section */}
         <section className="relative py-20 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
-          {/* Sound wave graphic */}
           <div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ opacity: 0.13 }}
@@ -126,7 +142,7 @@ const Episodes = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               {/* Search & Sort Bar */}
-              <div className="flex flex-col sm:flex-row gap-3 mb-8">
+              <div className="flex flex-col sm:flex-row gap-3 mb-6">
                 <div className="relative flex-1">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
@@ -137,78 +153,120 @@ const Episodes = () => {
                     className="pl-12 h-12 border-2 focus:border-accent"
                   />
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-12 px-4 shrink-0"
-                  onClick={() =>
-                    setSortOrder((s) =>
-                      s === "newest" ? "oldest" : "newest"
-                    )
-                  }
-                >
-                  <ArrowUpDown className="h-4 w-4 mr-2" />
-                  {sortOrder === "newest" ? "Newest" : "Oldest"}
-                </Button>
+                <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as "newest" | "oldest")}>
+                  <SelectTrigger className="h-12 w-full sm:w-[140px] shrink-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest</SelectItem>
+                    <SelectItem value="oldest">Oldest</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              {/* Sidebar + Episode List — wraps on mobile, flex row on desktop */}
-              <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
-                <TopicFilter
-                  selected={selectedTopics}
-                  onChange={setSelectedTopics}
-                />
-                {/* Episode list */}
-                <div className="flex-1 space-y-5">
-                  {filteredEpisodes.length === 0 ? (
-                    <p className="text-center py-16 text-muted-foreground">
-                      No episodes match your filters. Try adjusting your search
-                      or topics.
-                    </p>
-                  ) : (
-                    <>
-                      {visibleEpisodes.map((episode) => (
-                        <EpisodeCard key={episode.number} {...episode} />
-                      ))}
-                      {totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-2 pt-8">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-9 w-9"
-                            disabled={currentPage === 1}
-                            onClick={() => setCurrentPage(p => p - 1)}
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                          </Button>
-                          {Array.from({ length: totalPages }).map((_, i) => (
-                            <Button
-                              key={i + 1}
-                              variant={currentPage === i + 1 ? "default" : "outline"}
-                              size="icon"
-                              className="h-9 w-9"
-                              onClick={() => setCurrentPage(i + 1)}
-                            >
-                              {i + 1}
-                            </Button>
-                          ))}
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-9 w-9"
-                            disabled={currentPage === totalPages}
-                            onClick={() => setCurrentPage(p => p + 1)}
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                          <span className="text-xs text-muted-foreground ml-3">
-                            Page {currentPage} of {totalPages}
-                          </span>
-                        </div>
-                      )}
-                    </>
+              {/* Host & Topic Filter Pills */}
+              <BlogFilterBar
+                selectedHost={selectedHost}
+                onHostChange={setSelectedHost}
+                selectedTopics={selectedTopics}
+                onTopicsChange={setSelectedTopics}
+              />
+
+              {/* Active Filters Bar */}
+              {hasActiveFilters && (
+                <div className="flex items-center flex-wrap gap-2 mb-6 p-3 rounded-lg bg-muted/50 border border-border animate-fade-in">
+                  <span className="text-sm font-medium text-muted-foreground mr-1">Active Filters:</span>
+                  {selectedHost !== "all" && (
+                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white ${
+                      selectedHost === "diana" ? "bg-[hsl(var(--teal))]" : "bg-[hsl(var(--coral))]"
+                    }`}>
+                      {selectedHost === "diana" ? "Diana" : "Mel"}
+                      <button onClick={() => setSelectedHost("all")} className="ml-1 hover:opacity-70">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
                   )}
+                  {selectedTopics.map((topic) => (
+                    <span
+                      key={topic}
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-accent text-accent-foreground"
+                    >
+                      {topic}
+                      <button
+                        onClick={() => setSelectedTopics((prev) => prev.filter((t) => t !== topic))}
+                        className="ml-1 hover:opacity-70"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                  <button
+                    onClick={clearFilters}
+                    className="ml-auto text-xs font-medium text-destructive hover:underline flex items-center gap-1"
+                  >
+                    <X className="h-3 w-3" />
+                    Clear Filters
+                  </button>
                 </div>
+              )}
+
+              {/* Episode List */}
+              <div className="space-y-5 transition-opacity duration-300">
+                {filteredEpisodes.length === 0 ? (
+                  <p className="text-center py-16 text-muted-foreground">
+                    No episodes match your filters. Try adjusting your search or topics.
+                  </p>
+                ) : (
+                  <>
+                    <div key={resetKey}>
+                      {visibleEpisodes.map((episode, i) => (
+                        <div
+                          key={episode.number}
+                          className="animate-fade-in mb-5"
+                          style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
+                        >
+                          <EpisodeCard {...episode} />
+                        </div>
+                      ))}
+                    </div>
+                    {totalPages > 1 && (
+                      <div className="flex items-center justify-center gap-2 pt-8">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-9 w-9"
+                          disabled={currentPage === 1}
+                          onClick={() => setCurrentPage((p) => p - 1)}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        {Array.from({ length: totalPages }).map((_, i) => (
+                          <Button
+                            key={i + 1}
+                            variant={currentPage === i + 1 ? "default" : "outline"}
+                            size="icon"
+                            className="h-9 w-9"
+                            onClick={() => setCurrentPage(i + 1)}
+                          >
+                            {i + 1}
+                          </Button>
+                        ))}
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-9 w-9"
+                          disabled={currentPage === totalPages}
+                          onClick={() => setCurrentPage((p) => p + 1)}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                        <span className="text-xs text-muted-foreground ml-3">
+                          Page {currentPage} of {totalPages}
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>

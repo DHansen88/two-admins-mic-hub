@@ -284,6 +284,7 @@ export interface Episode {
   duration: string;
   date: string;
   topics: SharedTopic[];
+  host?: string;
   riversideEmbedUrl?: string;
   thumbnailUrl?: string;
   audioUrl?: string;
@@ -309,6 +310,7 @@ function parsePodcastJson(mod: Record<string, unknown>): Episode {
     duration: (data.duration as string) || '',
     date: formatDate((data.date as string) || ''),
     topics: ((data.topics as string[]) || []) as SharedTopic[],
+    host: (data.host as string) || undefined,
     riversideEmbedUrl: data.riversideEmbedUrl as string | undefined,
     thumbnailUrl: (data.thumbnailUrl as string) || '/placeholder.svg',
     audioUrl: data.audioUrl as string | undefined,

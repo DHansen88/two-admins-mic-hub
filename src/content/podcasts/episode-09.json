@@ -5,7 +5,15 @@
   "description": "Learn proven time management techniques that help administrators balance competing priorities effectively.",
   "duration": "35 min",
   "date": "2025-11-07",
-  "topics": ["Admin Life", "Career Growth", "Wellness"],
+  "topics": [
+    "Admin Life",
+    "Career Growth",
+    "Wellness"
+  ],
   "thumbnailUrl": "/placeholder.svg",
-  "platformLinks": { "apple": "#", "spotify": "#" }
+  "platformLinks": {
+    "apple": "#",
+    "spotify": "#"
+  },
+  "host": "diana"
 }
