@@ -171,7 +171,6 @@ const BlogFilterBar = ({
                   {filteredCount} posts
                 </span>
               )}
-              )}
             </div>
             <button
               onClick={() => onHostChange("all")}
