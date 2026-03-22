@@ -110,7 +110,7 @@ const BlogFilterBar = ({
         <div className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card animate-fade-in">
           <div className="shrink-0 w-20 sm:w-24 md:w-28">
             <img
-              src={selectedHost === "diana" ? dianaBlogIcon : activeHostData.avatar}
+              src={selectedHost === "diana" ? dianaBlogIcon : selectedHost === "mel" ? melBlogIcon : activeHostData.avatar}
               alt={activeHostData.name}
               className="w-full h-auto object-contain"
             />
