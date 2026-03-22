@@ -50,6 +50,8 @@ import {
   saveToHistory,
 } from "@/lib/file-export";
 import { saveEpisode, saveBlog } from "@/lib/content-manager";
+import { setContentStatus } from "@/lib/content-status";
+import PublishModal from "@/components/PublishModal";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
 
 const PublishEpisode = () => {
