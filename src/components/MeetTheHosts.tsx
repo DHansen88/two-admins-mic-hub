@@ -7,6 +7,7 @@ import dianaHeadshot from "@/assets/images/authors/diana-headshot.jpeg";
 const hosts = [
   {
     initial: "D",
+    headshot: dianaHeadshot,
     name: "Diana Hansen",
     badge: "Admin Awards Loyalty Winner",
     badgeIcon: Award,
