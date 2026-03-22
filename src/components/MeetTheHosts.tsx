@@ -26,6 +26,7 @@ const hosts = [
   },
   {
     initial: "M",
+    headshot: melHeadshot,
     name: "Mel",
     badge: "20+ Years Executive Support",
     badgeIcon: Briefcase,
