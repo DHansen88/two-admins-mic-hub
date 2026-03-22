@@ -19,8 +19,12 @@ define('DB_PASS', 'your_database_password');
 define('SESSION_LIFETIME', 14400); // 4 hours in seconds
 define('SESSION_NAME', 'taam_admin_session');
 
-// CORS — update with your actual frontend domain
-define('ALLOWED_ORIGIN', '*'); // Change to 'https://yourdomain.com' in production
+// CORS — explicit origins are required when cookies/sessions are used
+define('ALLOWED_ORIGINS', [
+    'https://twoadminsandamic.com',
+    'https://www.twoadminsandamic.com',
+    'https://two-admins-mic-hub.lovable.app',
+]);
 
 // Initial admin account (used only during setup)
 define('INITIAL_ADMIN_EMAIL', 'admin@twoadminsandamic.com');
@@ -43,14 +47,71 @@ function getDB(): PDO {
     return $pdo;
 }
 
+function isHttpsRequest(): bool {
+    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        return true;
+    }
+
+    if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+        return strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https';
+    }
+
+    return (int) ($_SERVER['SERVER_PORT'] ?? 80) === 443;
+}
+
+function getHostWithoutPort(): string {
+    $host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+    return preg_replace('/:\d+$/', '', $host) ?? '';
+}
+
+function getRequestOrigin(): string {
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    if ($origin !== '') {
+        return $origin;
+    }
+
+    $host = getHostWithoutPort();
+    if ($host === '') {
+        return '';
+    }
+
+    return (isHttpsRequest() ? 'https' : 'http') . '://' . $host;
+}
+
+function getAllowedOrigin(): string {
+    $origin = getRequestOrigin();
+    $hostOrigin = getRequestOrigin();
+
+    if ($origin !== '' && in_array($origin, ALLOWED_ORIGINS, true)) {
+        return $origin;
+    }
+
+    if ($hostOrigin !== '') {
+        return $hostOrigin;
+    }
+
+    return ALLOWED_ORIGINS[0];
+}
+
+function getSessionCookieDomain(): ?string {
+    $host = getHostWithoutPort();
+
+    if ($host === 'twoadminsandamic.com' || $host === 'www.twoadminsandamic.com') {
+        return '.twoadminsandamic.com';
+    }
+
+    return null;
+}
+
 /**
  * Set CORS headers
  */
 function setCorsHeaders(): void {
-    header('Access-Control-Allow-Origin: ' . ALLOWED_ORIGIN);
+    header('Access-Control-Allow-Origin: ' . getAllowedOrigin());
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, Authorization');
     header('Access-Control-Allow-Credentials: true');
+    header('Vary: Origin');
     header('Content-Type: application/json');
 }
 
@@ -76,14 +137,21 @@ function getRequestBody(): array {
  */
 function startSecureSession(): void {
     if (session_status() === PHP_SESSION_NONE) {
-        session_name(SESSION_NAME);
-        session_set_cookie_params([
+        $cookieParams = [
             'lifetime' => SESSION_LIFETIME,
             'path' => '/',
-            'secure' => isset($_SERVER['HTTPS']),
+            'secure' => isHttpsRequest(),
             'httponly' => true,
             'samesite' => 'Lax',
-        ]);
+        ];
+
+        $cookieDomain = getSessionCookieDomain();
+        if ($cookieDomain) {
+            $cookieParams['domain'] = $cookieDomain;
+        }
+
+        session_name(SESSION_NAME);
+        session_set_cookie_params($cookieParams);
         session_start();
     }
 }
