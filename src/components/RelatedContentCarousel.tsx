@@ -118,11 +118,11 @@ const RelatedContentCarousel = ({ items }: Props) => {
 
           {/* Carousel */}
           <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex gap-4">
+            <div className="flex">
               {items.map((item, idx) => (
                 <div
                   key={`${item.type}-${item.slug}-${idx}`}
-                  className="flex-[0_0_85%] min-w-0 sm:flex-[0_0_calc(50%-8px)] lg:flex-[0_0_calc(33.333%-11px)]"
+                  className="flex-[0_0_85%] min-w-0 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4 first:pl-0"
                 >
                   <RelatedCard item={item} />
                 </div>
