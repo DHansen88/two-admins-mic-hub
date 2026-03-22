@@ -150,9 +150,6 @@ const BlogFilterBar = ({
             />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Now Viewing
-            </p>
             <p className="text-lg font-display font-bold text-foreground">
               {activeHostData.name}'s posts
             </p>
