@@ -192,3 +192,22 @@ All colors MUST be HSL.
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Popup modal responsive content */
+.popup-content iframe,
+.popup-content form,
+.popup-content div {
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.popup-content iframe {
+  height: auto;
+  min-height: 400px;
+}
+
+@media (max-width: 640px) {
+  .popup-content iframe {
+    min-height: 500px;
+  }
+}

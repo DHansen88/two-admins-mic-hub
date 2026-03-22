@@ -38,7 +38,7 @@ const PopupModal = () => {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={close}
     >
       {/* Overlay */}
@@ -46,13 +46,13 @@ const PopupModal = () => {
 
       {/* Modal */}
       <div
-        className="relative z-10 w-full max-w-[980px] max-h-[90vh] overflow-y-auto rounded-2xl bg-card border border-border shadow-2xl animate-fade-in"
+        className="relative z-10 w-full sm:max-w-[980px] max-h-[85vh] sm:max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-card border border-border shadow-2xl animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           onClick={close}
-          className="absolute top-3 right-3 z-20 rounded-full bg-muted/80 hover:bg-muted p-1.5 transition-colors"
+          className="sticky top-2 right-2 z-20 rounded-full bg-muted/80 hover:bg-muted p-1.5 transition-colors ml-auto mr-2 mt-2"
           aria-label="Close popup"
         >
           <X className="h-5 w-5 text-foreground" />
@@ -60,7 +60,7 @@ const PopupModal = () => {
 
         {/* Dynamic content */}
         <div
-          className="popup-content w-full"
+          className="popup-content w-full px-4 pb-6 sm:px-0 sm:pb-0 [&_iframe]{w-full !important} [&_form]{max-w-full !important}"
           dangerouslySetInnerHTML={{ __html: popup.content }}
         />
       </div>
