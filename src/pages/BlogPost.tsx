@@ -324,10 +324,10 @@ const BlogPost = () => {
         </section>
 
         {/* Unified Article Footer */}
-        <section className="py-12 bg-background">
+        <section className="pt-2 pb-8 md:pt-4 md:pb-10 bg-background">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="max-w-[1200px] mx-auto">
-              <div className="max-w-[720px] rounded-2xl bg-muted/40 border border-border p-6 md:p-8 space-y-8">
+              <div className="max-w-[720px] rounded-2xl bg-muted/40 border border-border p-5 md:p-6 space-y-6">
                 {/* Key Takeaways */}
                 {post.keyTakeaways && post.keyTakeaways.length > 0 && (
                   <div>
