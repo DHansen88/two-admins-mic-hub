@@ -3,8 +3,7 @@ import { useEffect, useMemo } from "react";
 import { marked } from "marked";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import BlogCard from "@/components/BlogCard";
-import EpisodeCard from "@/components/EpisodeCard";
+import RelatedContentCarousel, { buildRelatedItems } from "@/components/RelatedContentCarousel";
 import TopicTag from "@/components/TopicTag";
 import BlogBlockRenderer from "@/components/BlogBlockRenderer";
 import TableOfContents, { extractTocItems } from "@/components/TableOfContents";
@@ -379,41 +378,10 @@ const BlogPost = () => {
           </div>
         </section>
 
-        {/* Related Podcast Episodes */}
-        {relatedEpisodes.length > 0 && (
-          <section className="py-16 bg-muted/40 border-t border-border">
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-8">
-                  Related Podcast Episodes
-                </h2>
-                <div className="space-y-5">
-                  {relatedEpisodes.map((ep) => (
-                    <EpisodeCard key={ep.number} {...ep} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Related Posts */}
-        {relatedPosts.length > 0 && (
-          <section className="py-16 bg-muted">
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-8">
-                  Related Articles
-                </h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedPosts.map((blog) => (
-                    <BlogCard key={blog.slug} {...blog} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
+        {/* Related Content Carousel */}
+        <RelatedContentCarousel
+          items={buildRelatedItems(relatedPosts, relatedEpisodes)}
+        />
       </main>
       <Footer />
     </div>
