@@ -141,8 +141,8 @@ const BlogFilterBar = ({
 
       {/* NOW VIEWING host card */}
       {activeHostData && selectedHost !== "all" && (
-        <div className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card animate-fade-in">
-          <div className="shrink-0 w-20 sm:w-24 md:w-28">
+        <div className="flex items-center gap-5 p-4 rounded-xl border border-border bg-card animate-fade-in">
+          <div className="shrink-0 w-[8.75rem] sm:w-[10.5rem] md:w-[12.25rem]">
             <img
               src={selectedHost === "diana" ? dianaBlogIcon : selectedHost === "mel" ? melBlogIcon : activeHostData.avatar}
               alt={activeHostData.name}
