@@ -447,41 +447,10 @@ const EpisodeDetail = () => {
           </div>
         </div>
 
-        {/* Related Blog Posts */}
-        {relatedBlogs.length > 0 && (
-          <section className="py-16 bg-muted/40 border-t border-border">
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-8">
-                  Related Blog Posts
-                </h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedBlogs.map((blog) => (
-                    <BlogCard key={blog.slug} {...blog} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Related Episodes */}
-        {relatedEpisodes.length > 0 && (
-          <section className="bg-muted border-t border-border py-16">
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-8">
-                  You May Also Like
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {relatedEpisodes.map((ep) => (
-                    <EpisodeCard key={ep.number} {...ep} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
+        {/* Related Content Carousel */}
+        <RelatedContentCarousel
+          items={buildRelatedItems(relatedBlogs, relatedEpisodes)}
+        />
       </main>
       <Footer />
     </div>
