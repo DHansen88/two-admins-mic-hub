@@ -65,39 +65,14 @@ const Header = () => {
               </NavLink>
             ))}
 
-            {/* More Dropdown */}
-            <div
-              ref={moreRef}
-              className="relative"
-              onMouseEnter={handleMoreEnter}
-              onMouseLeave={handleMoreLeave}
+            {/* Merch Link */}
+            <NavLink
+              to="/merch"
+              className="text-background hover:text-accent transition-colors duration-300 font-medium"
+              activeClassName="text-accent"
             >
-              <button
-                onClick={() => setIsMoreOpen(!isMoreOpen)}
-                className="flex items-center gap-1 text-background hover:text-accent transition-colors duration-300 font-medium"
-              >
-                More
-                <ChevronDown
-                  size={16}
-                  className={`transition-transform duration-200 ${isMoreOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-              {isMoreOpen && (
-                <div className="absolute top-full right-0 mt-2 w-44 bg-slate border border-navy rounded-lg shadow-lg z-50 py-2 animate-fade-in">
-                  {moreItems.map((item) => (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      className="block px-4 py-2 text-background hover:text-accent hover:bg-navy/30 transition-colors duration-200 font-medium"
-                      activeClassName="text-accent"
-                      onClick={() => setIsMoreOpen(false)}
-                    >
-                      {item.label}
-                    </NavLink>
-                  ))}
-                </div>
-              )}
-            </div>
+              Merch
+            </NavLink>
 
             <Dialog>
               <DialogTrigger asChild>
