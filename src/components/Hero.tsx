@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import heroLogo from "@/assets/hero-logo.png";
 import { allEpisodes } from "@/data/episodeData";
 const Hero = () => {
-  return <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate via-navy to-deep-blue">
+  return <section className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate via-navy to-deep-blue">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
@@ -55,7 +55,7 @@ const Hero = () => {
         </svg>
       </div>
 
-      <div className="container mx-auto px-4 py-32 relative z-10">
+      <div className="container mx-auto px-4 pt-24 pb-12 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-8 animate-fade-in">
 
           {/* Hero Logo */}
