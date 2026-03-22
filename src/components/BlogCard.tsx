@@ -27,7 +27,6 @@ const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug, author }:
     >
       <Card className="h-full bg-card hover:bg-card/80 border-border hover:border-teal transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
         <CardHeader className="pb-2">
-          </div>
           <h3 className="text-xl font-display font-bold text-foreground group-hover:text-teal transition-colors line-clamp-2">
             {title}
           </h3>
