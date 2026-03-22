@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import EpisodeCard from "@/components/EpisodeCard";
-import BlogCard from "@/components/BlogCard";
+import RelatedContentCarousel, { buildRelatedItems } from "@/components/RelatedContentCarousel";
 import TopicTag from "@/components/TopicTag";
 import { Button } from "@/components/ui/button";
 import {
