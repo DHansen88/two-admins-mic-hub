@@ -3,7 +3,7 @@
  * Communicates with the PHP backend for CRUD, falls back to localStorage.
  */
 
-import { canUseAdminFallback, handleAuthFailure, isAdminAuthError } from "./admin-auth";
+import { canUseAdminFallback, getAdminAuthHeaders, handleAuthFailure, isAdminAuthError } from "./admin-auth";
 
 export interface AuthorProfile {
   id: string;
@@ -62,7 +62,7 @@ async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any
   try {
     const res = await fetch(`${API_BASE}/${endpoint}`, {
       ...options,
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders(options.headers || {}) },
       credentials: 'include',
     });
 
@@ -180,6 +180,7 @@ export async function uploadHeadshot(file: File, authorId: string): Promise<{ su
 
     const res = await fetch(`${API_BASE}/authors.php?action=upload-headshot`, {
       method: 'POST',
+      headers: getAdminAuthHeaders(),
       credentials: 'include',
       body: formData,
     });

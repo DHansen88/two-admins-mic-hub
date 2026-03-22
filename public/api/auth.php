@@ -79,9 +79,11 @@ function handleLogin(): void {
     $logStmt->execute([$user['id'], $user['email'], 'login_success', $_SERVER['REMOTE_ADDR'] ?? '']);
     
     $permissions = $user['permissions'] ? json_decode($user['permissions'], true) : null;
+    $token = issueAdminToken($user);
     
     jsonResponse([
         'success' => true,
+        'token' => $token,
         'user' => [
             'id' => $user['id'],
             'name' => $user['name'],
@@ -94,6 +96,7 @@ function handleLogin(): void {
 
 function handleLogout(): void {
     startSecureSession();
+    revokeAdminToken(getAdminBearerToken());
     
     if (!empty($_SESSION['user_id'])) {
         $db = getDB();
@@ -106,23 +109,15 @@ function handleLogout(): void {
 }
 
 function handleSession(): void {
-    startSecureSession();
-    
-    if (empty($_SESSION['user_id']) || time() > ($_SESSION['expires_at'] ?? 0)) {
-        jsonResponse(['authenticated' => false], 401);
-    }
-    
-    // Refresh session
-    $_SESSION['expires_at'] = time() + SESSION_LIFETIME;
-    session_write_close();
-    
-    // Get fresh permissions from DB
+    $sessionUser = requireAuth();
+
     $db = getDB();
     $stmt = $db->prepare('SELECT permissions, role, status FROM admin_users WHERE id = ?');
-    $stmt->execute([$_SESSION['user_id']]);
+    $stmt->execute([$sessionUser['id']]);
     $user = $stmt->fetch();
     
     if (!$user || $user['status'] !== 'active') {
+        revokeAdminToken(getAdminBearerToken());
         session_destroy();
         jsonResponse(['authenticated' => false], 401);
     }
@@ -132,9 +127,9 @@ function handleSession(): void {
     jsonResponse([
         'authenticated' => true,
         'user' => [
-            'id' => $_SESSION['user_id'],
-            'name' => $_SESSION['user_name'],
-            'email' => $_SESSION['user_email'],
+            'id' => $sessionUser['id'],
+            'name' => $sessionUser['name'],
+            'email' => $sessionUser['email'],
             'role' => $user['role'],
             'permissions' => $permissions,
         ],

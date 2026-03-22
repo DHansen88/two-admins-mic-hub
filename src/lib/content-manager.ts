@@ -5,6 +5,8 @@
  * Falls back to localStorage for the preview environment.
  */
 
+import { getAdminAuthHeaders } from "./admin-auth";
+
 export type ContentType = "blog" | "episode";
 export type ContentStatus = "published" | "unpublished" | "trashed";
 
@@ -36,7 +38,7 @@ async function contentApiCall(endpoint: string, options: RequestInit = {}): Prom
   try {
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       ...options,
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders(options.headers || {}) },
       credentials: 'include',
     });
     const data = await response.json();
