@@ -1,17 +1,25 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import LatestEpisodes from "@/components/LatestEpisodes";
-import LatestBlogs from "@/components/LatestBlogs";
+import MeetTheHosts from "@/components/MeetTheHosts";
+import LatestFromTheShow from "@/components/LatestFromTheShow";
+import BrowseTopics from "@/components/BrowseTopics";
+import HomeCTA from "@/components/HomeCTA";
 import Footer from "@/components/Footer";
+
 const Index = () => {
-  return <div className="min-h-screen">
+  return (
+    <div className="min-h-screen">
       <Header />
       <main>
         <Hero />
-        <LatestEpisodes />
-        <LatestBlogs />
+        <MeetTheHosts />
+        <LatestFromTheShow />
+        <BrowseTopics />
+        <HomeCTA />
       </main>
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
