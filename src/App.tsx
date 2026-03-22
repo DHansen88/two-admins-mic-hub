@@ -32,6 +32,8 @@ import ManagePopups from "./pages/admin/ManagePopups";
 import ManageTags from "./pages/admin/ManageTags";
 import ManageUsers from "./pages/admin/ManageUsers";
 import ManageAuthors from "./pages/admin/ManageAuthors";
+import ManageEpisodes from "./pages/admin/ManageEpisodes";
+import ManageBlogPosts from "./pages/admin/ManageBlogPosts";
 
 const queryClient = new QueryClient();
 
@@ -61,7 +63,9 @@ const App = () => (
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path="episodes" element={<ManageEpisodes />} />
             <Route path="publish-episode" element={<PublishEpisode />} />
+            <Route path="blog-posts" element={<ManageBlogPosts />} />
             <Route path="publish-blog" element={<PublishBlog />} />
             <Route path="newsletters" element={<NewsletterDrafts />} />
             <Route path="library" element={<ContentLibrary />} />

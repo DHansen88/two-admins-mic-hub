@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
-import { getAllContentMeta, getEffectiveStatus, removeContentMeta, processScheduledContent, type ContentStatus } from "@/lib/content-status";
+import { getAllContentMeta, getEffectiveStatus, removeContentMeta, processScheduledContent, setContentStatus as setContentStatusFn, type ContentStatus } from "@/lib/content-status";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
