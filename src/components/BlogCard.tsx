@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Link } from "react-router-dom";
-import { getTagByName } from "@/data/tags";
+
 
 interface BlogCardProps {
   title: string;
