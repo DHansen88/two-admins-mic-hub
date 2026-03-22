@@ -92,6 +92,19 @@ const HostCard = ({
     </div>;
 };
 const About = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const el = document.querySelector(location.hash);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+        return;
+      }
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [location.hash]);
+
   return <div className="min-h-screen">
       <Header />
       <main className="pt-20">
