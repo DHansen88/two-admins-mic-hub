@@ -156,7 +156,7 @@ const BlogFilterBar = ({
                 className="w-full h-auto object-contain"
               />
             </div>
-            <div className="flex-1 min-w-0 flex items-center gap-3">
+            <div className="flex-1 min-w-0">
               <p className="text-lg font-display font-bold text-foreground">
                 Now Viewing
               </p>
