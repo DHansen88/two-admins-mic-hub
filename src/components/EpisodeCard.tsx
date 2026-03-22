@@ -86,14 +86,28 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
 
           {episode.topics && episode.topics.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
-              {episode.topics.slice(0, 2).map((topic) => (
-                <span
-                  key={topic}
-                  className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full"
-                >
-                  {topic}
-                </span>
-              ))}
+              {episode.topics.slice(0, 2).map((topic) => {
+                const tag = getTagByName(topic);
+                const bg = tag?.bgColor || "#5A7DFF";
+                const text = tag?.textColor || "#ffffff";
+                return (
+                  <span
+                    key={topic}
+                    className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider rounded-full"
+                    style={{
+                      backgroundColor: bg,
+                      color: text,
+                      padding: "4px 10px",
+                      borderRadius: "999px",
+                      boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
+                      fontWeight: 600,
+                    }}
+                  >
+                    <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: text, opacity: 0.7 }} />
+                    {topic}
+                  </span>
+                );
+              })}
             </div>
           )}
         </div>
