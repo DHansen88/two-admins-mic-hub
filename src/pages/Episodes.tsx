@@ -170,6 +170,7 @@ const Episodes = () => {
                 onHostChange={setSelectedHost}
                 selectedTopics={selectedTopics}
                 onTopicsChange={setSelectedTopics}
+                filteredCount={filteredEpisodes.length}
               />
 
               {/* Active Filters Bar */}
