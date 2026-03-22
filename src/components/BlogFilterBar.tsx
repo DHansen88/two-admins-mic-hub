@@ -2,6 +2,7 @@ import { getTagNames } from "@/data/tags";
 import { X } from "lucide-react";
 import authorsData from "@/content/authors.json";
 import dianaBlogIcon from "@/assets/images/authors/diana-blog.png";
+import melBlogIcon from "@/assets/images/authors/mel-blog.png";
 
 interface BlogFilterBarProps {
   selectedHost: string;
