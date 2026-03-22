@@ -60,6 +60,7 @@ const RelatedContentCarousel = ({ items }: Props) => {
     loop: false,
     slidesToScroll: 1,
     containScroll: "trimSnaps",
+    dragFree: false,
   });
 
   const [canPrev, setCanPrev] = useState(false);
