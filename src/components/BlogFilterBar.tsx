@@ -1,5 +1,6 @@
+import { useRef } from "react";
 import { getTagNames } from "@/data/tags";
-import { X } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import authorsData from "@/content/authors.json";
 import dianaBlogIcon from "@/assets/images/authors/diana-blog.png";
 import melBlogIcon from "@/assets/images/authors/mel-blog.png";
@@ -31,6 +32,7 @@ const BlogFilterBar = ({
   filteredCount,
 }: BlogFilterBarProps) => {
   const topics = getTagNames();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const toggleTopic = (topic: string) => {
     onTopicsChange(
@@ -40,15 +42,22 @@ const BlogFilterBar = ({
     );
   };
 
+  const scroll = (dir: "left" | "right") => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({
+      left: dir === "left" ? -200 : 200,
+      behavior: "smooth",
+    });
+  };
+
   const activeHostData = selectedHost !== "all"
     ? (authorsData as Record<string, { name: string; avatar: string }>)[selectedHost]
     : null;
 
   return (
-    <div className="space-y-4 mb-6">
-      {/* Combined Host + Topic pills in a wrapping row */}
-      <div className="flex flex-wrap items-center gap-2">
-        {/* Host pills */}
+    <div className="space-y-3 mb-6">
+      {/* Host pills row */}
+      <div className="flex items-center gap-2">
         {hosts.map((host) => {
           const isActive = selectedHost === host.id;
           return (
@@ -82,27 +91,52 @@ const BlogFilterBar = ({
             </button>
           );
         })}
+      </div>
 
-        {/* Dot separator */}
-        <span className="text-muted-foreground/40 text-lg select-none">•</span>
+      {/* Topic pills carousel */}
+      <div className="relative group/carousel">
+        {/* Left arrow */}
+        <button
+          onClick={() => scroll("left")}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-background/90 border border-border shadow-md flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity -translate-x-1/2 hover:bg-muted hidden md:flex"
+          aria-label="Scroll topics left"
+        >
+          <ChevronLeft className="h-4 w-4 text-foreground" />
+        </button>
 
-        {/* Topic pills */}
-        {topics.map((topic) => {
-          const isActive = selectedTopics.includes(topic);
-          return (
-            <button
-              key={topic}
-              onClick={() => toggleTopic(topic)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 min-h-[44px] border whitespace-nowrap ${
-                isActive
-                  ? "bg-accent text-accent-foreground border-accent shadow-md"
-                  : "bg-card text-foreground border-border hover:border-accent/50 hover:bg-muted/50"
-              }`}
-            >
-              {topic}
-            </button>
-          );
-        })}
+        <div
+          ref={scrollRef}
+          className="flex gap-2 overflow-x-auto pb-1 scrollbar-none scroll-smooth"
+        >
+          {topics.map((topic) => {
+            const isActive = selectedTopics.includes(topic);
+            return (
+              <button
+                key={topic}
+                onClick={() => toggleTopic(topic)}
+                className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 min-h-[44px] border whitespace-nowrap ${
+                  isActive
+                    ? "bg-accent text-accent-foreground border-accent shadow-md"
+                    : "bg-card text-foreground border-border hover:border-accent/50 hover:bg-muted/50"
+                }`}
+              >
+                {topic}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Right arrow */}
+        <button
+          onClick={() => scroll("right")}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-background/90 border border-border shadow-md flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity translate-x-1/2 hover:bg-muted hidden md:flex"
+          aria-label="Scroll topics right"
+        >
+          <ChevronRight className="h-4 w-4 text-foreground" />
+        </button>
+
+        {/* Right fade */}
+        <div className="absolute right-0 top-0 bottom-1 w-8 pointer-events-none bg-gradient-to-l from-background to-transparent" />
       </div>
 
       {/* NOW VIEWING host card */}
