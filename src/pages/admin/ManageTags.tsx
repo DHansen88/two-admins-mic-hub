@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Tags,
   Plus,
@@ -18,6 +19,7 @@ import {
   updateTag,
   deleteTag,
   generateTagSlug,
+  getContrastTextColor,
   type Tag,
 } from "@/data/tags";
 import {
@@ -28,35 +30,135 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-const PRESET_COLORS = [
-  "199 62% 28%",
-  "160 60% 35%",
-  "25 85% 55%",
-  "250 55% 50%",
-  "340 65% 50%",
-  "140 50% 40%",
-  "210 60% 45%",
-  "45 80% 50%",
-  "0 70% 50%",
-  "280 60% 55%",
-  "180 50% 40%",
-  "30 90% 50%",
+const PRESET_BG_COLORS = [
+  "#2FBF71", "#FF3B7A", "#FF8A00", "#5A7DFF",
+  "#7C5AFF", "#00A6A6", "#E6A817", "#3A8FD6",
+  "#33A66E", "#D94F70", "#8B5CF6", "#EC4899",
 ];
+
+/** Live tag preview pill matching the TopicTag component */
+const TagPreview = ({ name, bgColor, textColor, borderColor }: { name: string; bgColor: string; textColor: string; borderColor?: string }) => (
+  <div className="flex flex-col gap-2">
+    <div className="flex items-center gap-3">
+      <span className="text-sm text-muted-foreground">On light:</span>
+      <div className="bg-white rounded-lg px-4 py-3 border border-border">
+        <span
+          className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
+          style={{
+            backgroundColor: bgColor,
+            color: textColor,
+            padding: "6px 12px",
+            borderRadius: "999px",
+            border: borderColor ? `1.5px solid ${borderColor}` : "none",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.18)",
+            fontWeight: 600,
+          }}
+        >
+          <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: textColor, opacity: 0.7 }} />
+          {name || "Tag Name"}
+        </span>
+      </div>
+    </div>
+    <div className="flex items-center gap-3">
+      <span className="text-sm text-muted-foreground">On dark:</span>
+      <div className="bg-[#1a3a3a] rounded-lg px-4 py-3">
+        <span
+          className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
+          style={{
+            backgroundColor: bgColor,
+            color: textColor,
+            padding: "6px 12px",
+            borderRadius: "999px",
+            border: borderColor ? `1.5px solid ${borderColor}` : "none",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.18)",
+            fontWeight: 600,
+          }}
+        >
+          <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: textColor, opacity: 0.7 }} />
+          {name || "Tag Name"}
+        </span>
+      </div>
+    </div>
+  </div>
+);
+
+/** Color picker row with presets + custom hex input */
+const ColorField = ({
+  label,
+  value,
+  onChange,
+  presets,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  presets?: string[];
+}) => (
+  <div className="space-y-1.5">
+    <Label>{label}</Label>
+    <div className="flex items-center gap-2">
+      <input
+        type="color"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-10 h-10 rounded-lg border border-border cursor-pointer p-0.5"
+      />
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-28 text-sm font-mono"
+        placeholder="#2FBF71"
+      />
+    </div>
+    {presets && (
+      <div className="flex flex-wrap gap-1.5 pt-1">
+        {presets.map((c) => (
+          <button
+            key={c}
+            onClick={() => onChange(c)}
+            className={`w-6 h-6 rounded-full border-2 transition-transform ${
+              value === c ? "border-foreground scale-110" : "border-transparent hover:scale-105"
+            }`}
+            style={{ backgroundColor: c }}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+);
 
 const ManageTags = () => {
   const { toast } = useToast();
   const [tags, setTags] = useState<Tag[]>([]);
   const [newName, setNewName] = useState("");
-  const [newColor, setNewColor] = useState(PRESET_COLORS[0]);
+  const [newBgColor, setNewBgColor] = useState(PRESET_BG_COLORS[0]);
+  const [newTextColor, setNewTextColor] = useState("#ffffff");
+  const [newBorderColor, setNewBorderColor] = useState("");
+  const [autoText, setAutoText] = useState(true);
+
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
-  const [editColor, setEditColor] = useState("");
+  const [editBgColor, setEditBgColor] = useState("");
+  const [editTextColor, setEditTextColor] = useState("");
+  const [editBorderColor, setEditBorderColor] = useState("");
+  const [editAutoText, setEditAutoText] = useState(true);
+
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
     setTags(getAllTags());
   }, []);
+
+  // Auto-contrast for new tag
+  useEffect(() => {
+    if (autoText) setNewTextColor(getContrastTextColor(newBgColor));
+  }, [newBgColor, autoText]);
+
+  // Auto-contrast for editing tag
+  useEffect(() => {
+    if (editAutoText) setEditTextColor(getContrastTextColor(editBgColor));
+  }, [editBgColor, editAutoText]);
 
   const handleAdd = () => {
     const name = newName.trim();
@@ -69,10 +171,20 @@ const ManageTags = () => {
       toast({ title: "A tag with this name already exists", variant: "destructive" });
       return;
     }
-    const updated = addTag({ name, slug, color: newColor });
+    const updated = addTag({
+      name,
+      slug,
+      color: "0 0% 0%", // legacy field
+      bgColor: newBgColor,
+      textColor: newTextColor,
+      borderColor: newBorderColor || undefined,
+    });
     setTags(updated);
     setNewName("");
-    setNewColor(PRESET_COLORS[0]);
+    setNewBgColor(PRESET_BG_COLORS[0]);
+    setNewTextColor("#ffffff");
+    setNewBorderColor("");
+    setAutoText(true);
     setShowAddDialog(false);
     toast({ title: `Tag "${name}" created` });
   };
@@ -80,7 +192,10 @@ const ManageTags = () => {
   const startEdit = (tag: Tag) => {
     setEditingSlug(tag.slug);
     setEditName(tag.name);
-    setEditColor(tag.color);
+    setEditBgColor(tag.bgColor);
+    setEditTextColor(tag.textColor);
+    setEditBorderColor(tag.borderColor || "");
+    setEditAutoText(false);
   };
 
   const saveEdit = () => {
@@ -89,7 +204,9 @@ const ManageTags = () => {
     const updated = updateTag(editingSlug, {
       name: editName.trim(),
       slug: newSlug,
-      color: editColor,
+      bgColor: editBgColor,
+      textColor: editTextColor,
+      borderColor: editBorderColor || undefined,
     });
     setTags(updated);
     setEditingSlug(null);
@@ -122,13 +239,13 @@ const ManageTags = () => {
               New Tag
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Create New Tag</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-2">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Tag Name</label>
+                <Label>Tag Name</Label>
                 <Input
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
@@ -141,44 +258,36 @@ const ManageTags = () => {
                   </p>
                 )}
               </div>
+
+              <ColorField label="Background Color" value={newBgColor} onChange={setNewBgColor} presets={PRESET_BG_COLORS} />
+
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Color</label>
-                <div className="flex flex-wrap gap-2">
-                  {PRESET_COLORS.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setNewColor(color)}
-                      className={`w-8 h-8 rounded-full border-2 transition-transform ${
-                        newColor === color
-                          ? "border-foreground scale-110"
-                          : "border-transparent hover:scale-105"
-                      }`}
-                      style={{ backgroundColor: `hsl(${color})` }}
-                    />
-                  ))}
+                <div className="flex items-center justify-between">
+                  <Label>Text Color</Label>
+                  <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer">
+                    <input type="checkbox" checked={autoText} onChange={(e) => setAutoText(e.target.checked)} className="rounded" />
+                    Auto contrast
+                  </label>
                 </div>
+                {!autoText && <ColorField label="" value={newTextColor} onChange={setNewTextColor} />}
+                {autoText && (
+                  <p className="text-xs text-muted-foreground">Text color auto-set to {newTextColor} for readability.</p>
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Preview:</span>
-                <span
-                  className="inline-block text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full"
-                  style={{
-                    backgroundColor: `hsl(${newColor} / 0.15)`,
-                    color: `hsl(${newColor})`,
-                  }}
-                >
-                  {newName.trim() || "Tag Name"}
-                </span>
+
+              <ColorField label="Border Color (optional)" value={newBorderColor || "#cccccc"} onChange={setNewBorderColor} />
+
+              <div className="space-y-1.5">
+                <Label>Preview</Label>
+                <TagPreview name={newName.trim()} bgColor={newBgColor} textColor={newTextColor} borderColor={newBorderColor || undefined} />
               </div>
-              <Button onClick={handleAdd} className="w-full">
-                Create Tag
-              </Button>
+
+              <Button onClick={handleAdd} className="w-full">Create Tag</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Tags count */}
       <div className="flex items-center gap-4 text-sm text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <Sparkles className="h-4 w-4" />
@@ -186,7 +295,6 @@ const ManageTags = () => {
         </span>
       </div>
 
-      {/* Tags grid */}
       <div className="grid gap-3 sm:grid-cols-2">
         {tags.map((tag) => (
           <Card
@@ -197,7 +305,6 @@ const ManageTags = () => {
           >
             <CardContent className="p-4">
               {editingSlug === tag.slug ? (
-                /* Edit mode */
                 <div className="space-y-3">
                   <Input
                     value={editName}
@@ -205,83 +312,62 @@ const ManageTags = () => {
                     className="text-sm"
                     onKeyDown={(e) => e.key === "Enter" && saveEdit()}
                   />
-                  <div className="flex flex-wrap gap-1.5">
-                    {PRESET_COLORS.map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => setEditColor(color)}
-                        className={`w-6 h-6 rounded-full border-2 transition-transform ${
-                          editColor === color
-                            ? "border-foreground scale-110"
-                            : "border-transparent"
-                        }`}
-                        style={{ backgroundColor: `hsl(${color})` }}
-                      />
-                    ))}
+                  <ColorField label="Background" value={editBgColor} onChange={setEditBgColor} presets={PRESET_BG_COLORS} />
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Text Color</Label>
+                      <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer">
+                        <input type="checkbox" checked={editAutoText} onChange={(e) => setEditAutoText(e.target.checked)} className="rounded" />
+                        Auto
+                      </label>
+                    </div>
+                    {!editAutoText && <ColorField label="" value={editTextColor} onChange={setEditTextColor} />}
                   </div>
+                  <ColorField label="Border (optional)" value={editBorderColor || "#cccccc"} onChange={setEditBorderColor} />
+                  <TagPreview name={editName} bgColor={editBgColor} textColor={editTextColor} borderColor={editBorderColor || undefined} />
                   <div className="flex gap-2">
                     <Button size="sm" onClick={saveEdit} className="gap-1">
                       <Check className="h-3.5 w-3.5" /> Save
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setEditingSlug(null)}
-                      className="gap-1"
-                    >
+                    <Button size="sm" variant="ghost" onClick={() => setEditingSlug(null)} className="gap-1">
                       <X className="h-3.5 w-3.5" /> Cancel
                     </Button>
                   </div>
                 </div>
               ) : (
-                /* View mode */
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className="w-4 h-4 rounded-full shrink-0"
-                      style={{ backgroundColor: `hsl(${tag.color})` }}
-                    />
+                    <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: tag.bgColor }} />
                     <div className="min-w-0">
-                      <p className="font-medium text-sm text-foreground truncate">
-                        {tag.name}
-                      </p>
+                      <p className="font-medium text-sm text-foreground truncate">{tag.name}</p>
                       <p className="text-xs text-muted-foreground">/{tag.slug}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <span
-                      className="hidden sm:inline-block text-xs font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full mr-2"
+                      className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mr-2"
                       style={{
-                        backgroundColor: `hsl(${tag.color} / 0.15)`,
-                        color: `hsl(${tag.color})`,
+                        backgroundColor: tag.bgColor,
+                        color: tag.textColor,
+                        padding: "6px 12px",
+                        borderRadius: "999px",
+                        border: tag.borderColor ? `1.5px solid ${tag.borderColor}` : "none",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.18)",
+                        fontWeight: 600,
                       }}
                     >
+                      <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: tag.textColor, opacity: 0.7 }} />
                       {tag.name}
                     </span>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8"
-                      onClick={() => startEdit(tag)}
-                    >
+                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEdit(tag)}>
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     {deleteConfirm === tag.slug ? (
                       <div className="flex gap-1">
-                        <Button
-                          size="icon"
-                          variant="destructive"
-                          className="h-8 w-8"
-                          onClick={() => handleDelete(tag.slug)}
-                        >
+                        <Button size="icon" variant="destructive" className="h-8 w-8" onClick={() => handleDelete(tag.slug)}>
                           <Check className="h-3.5 w-3.5" />
                         </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8"
-                          onClick={() => setDeleteConfirm(null)}
-                        >
+                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setDeleteConfirm(null)}>
                           <X className="h-3.5 w-3.5" />
                         </Button>
                       </div>

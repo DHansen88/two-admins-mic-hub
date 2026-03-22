@@ -358,8 +358,8 @@ const PublishEpisode = () => {
                   <span
                     className="px-2 py-0.5 rounded-full text-xs font-medium"
                     style={{
-                      backgroundColor: `hsl(${tag.color} / 0.15)`,
-                      color: `hsl(${tag.color})`,
+                      backgroundColor: tag.bgColor,
+                      color: tag.textColor,
                     }}
                   >
                     {tag.name}
@@ -378,7 +378,8 @@ const PublishEpisode = () => {
                   if (e.key === "Enter" && newTagName.trim()) {
                     const slug = generateTagSlug(newTagName.trim());
                     if (!tags.some((t) => t.slug === slug)) {
-                      const newTag: Tag = { name: newTagName.trim(), slug, color: "199 62% 28%" };
+                      const bgColor = "#5A7DFF";
+                      const newTag: Tag = { name: newTagName.trim(), slug, color: "199 62% 28%", bgColor, textColor: "#ffffff" };
                       const updated = addTag(newTag);
                       setTags(updated);
                       setSelectedTopics((prev) => [...prev, newTag.name]);
@@ -397,7 +398,8 @@ const PublishEpisode = () => {
                   if (newTagName.trim()) {
                     const slug = generateTagSlug(newTagName.trim());
                     if (!tags.some((t) => t.slug === slug)) {
-                      const newTag: Tag = { name: newTagName.trim(), slug, color: "199 62% 28%" };
+                      const bgColor = "#5A7DFF";
+                      const newTag: Tag = { name: newTagName.trim(), slug, color: "199 62% 28%", bgColor, textColor: "#ffffff" };
                       const updated = addTag(newTag);
                       setTags(updated);
                       setSelectedTopics((prev) => [...prev, newTag.name]);

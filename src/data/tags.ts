@@ -9,21 +9,61 @@
 export interface Tag {
   name: string;
   slug: string;
-  color: string; // HSL color string for badge display
+  color: string; // Legacy HSL color string (kept for backward compat)
+  bgColor: string; // Hex background color
+  textColor: string; // Hex text color
+  borderColor?: string; // Optional hex border color
+}
+
+/** Returns white or black hex depending on background luminance */
+export function getContrastTextColor(hexBg: string): string {
+  const hex = hexBg.replace("#", "");
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  // Relative luminance formula
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.55 ? "#1a1a1a" : "#ffffff";
+}
+
+/** Convert HSL string "H S% L%" to hex (for migration) */
+function hslToHex(hslStr: string): string {
+  const parts = hslStr.trim().split(/\s+/);
+  const h = parseFloat(parts[0]) || 0;
+  const s = (parseFloat(parts[1]) || 50) / 100;
+  const l = (parseFloat(parts[2]) || 50) / 100;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, "0");
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
 }
 
 const DEFAULT_TAGS: Tag[] = [
-  { name: "Leadership", slug: "leadership", color: "199 62% 28%" },
-  { name: "Career Growth", slug: "career-growth", color: "160 60% 35%" },
-  { name: "Communication", slug: "communication", color: "25 85% 55%" },
-  { name: "Technology", slug: "technology", color: "250 55% 50%" },
-  { name: "Admin Life", slug: "admin-life", color: "340 65% 50%" },
-  { name: "Wellness", slug: "wellness", color: "140 50% 40%" },
-  { name: "Team Building", slug: "team-building", color: "210 60% 45%" },
-  { name: "Humor & Human Moments", slug: "humor-human-moments", color: "45 80% 50%" },
+  { name: "Leadership", slug: "leadership", color: "199 62% 28%", bgColor: "#2FBF71", textColor: "#ffffff" },
+  { name: "Career Growth", slug: "career-growth", color: "160 60% 35%", bgColor: "#5A7DFF", textColor: "#ffffff" },
+  { name: "Communication", slug: "communication", color: "25 85% 55%", bgColor: "#FF8A00", textColor: "#ffffff" },
+  { name: "Technology", slug: "technology", color: "250 55% 50%", bgColor: "#7C5AFF", textColor: "#ffffff" },
+  { name: "Admin Life", slug: "admin-life", color: "340 65% 50%", bgColor: "#FF3B7A", textColor: "#ffffff" },
+  { name: "Wellness", slug: "wellness", color: "140 50% 40%", bgColor: "#33A66E", textColor: "#ffffff" },
+  { name: "Team Building", slug: "team-building", color: "210 60% 45%", bgColor: "#3A8FD6", textColor: "#ffffff" },
+  { name: "Humor & Human Moments", slug: "humor-human-moments", color: "45 80% 50%", bgColor: "#E6A817", textColor: "#1a1a1a" },
 ];
 
 const STORAGE_KEY = "taam_tags";
+
+/** Migrate old tags that lack bgColor/textColor */
+function migrateTag(tag: any): Tag {
+  if (!tag.bgColor) {
+    tag.bgColor = hslToHex(tag.color || "200 50% 50%");
+  }
+  if (!tag.textColor) {
+    tag.textColor = getContrastTextColor(tag.bgColor);
+  }
+  return tag as Tag;
+}
 
 /** Load tags from localStorage, falling back to defaults */
 export function getAllTags(): Tag[] {
@@ -31,7 +71,7 @@ export function getAllTags(): Tag[] {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed.map(migrateTag);
     }
   } catch {}
   // Seed defaults
