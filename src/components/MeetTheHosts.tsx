@@ -70,9 +70,13 @@ const MeetTheHosts = () => {
 
                   {/* Avatar + Name */}
                   <div className="flex items-center gap-3">
-                    <div className={`${host.avatarBg} text-white w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shrink-0`}>
-                      {host.initial}
-                    </div>
+                    {host.headshot ? (
+                      <img src={host.headshot} alt={host.name} className="w-12 h-12 rounded-full object-cover shrink-0" />
+                    ) : (
+                      <div className={`${host.avatarBg} text-white w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shrink-0`}>
+                        {host.initial}
+                      </div>
+                    )}
                     <h3 className="text-xl font-bold text-foreground">{host.name}</h3>
                   </div>
 
