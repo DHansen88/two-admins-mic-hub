@@ -184,6 +184,7 @@ const BlogFilterBar = ({
             </button>
           </>
         )}
+      </div>
     </div>
   );
 };
