@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
-import { isAuthenticated, logout, getCurrentUser, isAdmin } from "@/lib/admin-auth";
+import { isAuthenticated, logout, getCurrentUser, isAdmin, validateSession } from "@/lib/admin-auth";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -15,7 +15,6 @@ import {
   UserCircle,
   LogOut,
   ChevronLeft,
-  Shield,
 } from "lucide-react";
 
 const allNavItems = [
@@ -34,35 +33,59 @@ const allNavItems = [
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = getCurrentUser();
+  const [user, setUser] = useState(getCurrentUser());
+  const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/admin/login");
-    }
+    let mounted = true;
+
+    const verify = async () => {
+      if (!isAuthenticated()) {
+        navigate("/admin/login", { replace: true });
+        return;
+      }
+
+      const isValid = await validateSession();
+      if (!mounted) return;
+
+      if (!isValid) {
+        setUser(null);
+        navigate("/admin/login", { replace: true });
+        return;
+      }
+
+      setUser(getCurrentUser());
+      setCheckingSession(false);
+    };
+
+    verify();
+
+    return () => {
+      mounted = false;
+    };
   }, [navigate]);
 
-  if (!isAuthenticated() || !user) return null;
+  if (checkingSession || !isAuthenticated() || !user) return null;
 
   const handleLogout = () => {
     logout();
-    navigate("/admin/login");
+    setUser(null);
+    navigate("/admin/login", { replace: true });
   };
 
   const navItems = allNavItems.filter((item) => !item.adminOnly || isAdmin());
 
   return (
     <div className="min-h-screen flex bg-muted/30">
-      {/* Sidebar */}
       <aside className="w-64 bg-slate text-primary-foreground flex flex-col shrink-0 sticky top-0 h-screen">
         <div className="p-5 border-b border-white/10">
           <h1 className="font-display font-bold text-lg">Admin Dashboard</h1>
           <div className="flex items-center gap-2 mt-1">
             <p className="text-xs text-white/60">{user.name}</p>
             <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wider ${
-              user.role === 'admin'
-                ? 'bg-amber-500/20 text-amber-300'
-                : 'bg-sky-500/20 text-sky-300'
+              user.role === "admin"
+                ? "bg-amber-500/20 text-amber-300"
+                : "bg-sky-500/20 text-sky-300"
             }`}>
               {user.role}
             </span>
@@ -108,7 +131,6 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      {/* Main content */}
       <main className="flex-1 min-w-0">
         <div className="p-6 lg:p-8 max-w-5xl">
           <Outlet />
