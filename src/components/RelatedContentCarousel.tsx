@@ -141,7 +141,7 @@ function RelatedCard({ item }: { item: RelatedItem }) {
 
   return (
     <Link to={item.slug} onClick={() => window.scrollTo(0, 0)}>
-      <Card className="h-full p-5 bg-card border-border hover:border-teal transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer flex flex-col gap-3">
+      <Card className="h-full p-4 bg-card border-border hover:border-teal transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer flex flex-col gap-2">
         {/* Type badge + duration */}
         <div className="flex items-center justify-between">
           <span
