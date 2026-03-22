@@ -284,6 +284,7 @@ export interface Episode {
   duration: string;
   date: string;
   topics: SharedTopic[];
+  host?: string;
   riversideEmbedUrl?: string;
   thumbnailUrl?: string;
   audioUrl?: string;
