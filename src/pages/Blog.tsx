@@ -143,6 +143,7 @@ const Blog = () => {
                 onHostChange={setSelectedHost}
                 selectedTopics={selectedTopics}
                 onTopicsChange={setSelectedTopics}
+                filteredCount={filteredBlogs.length}
               />
 
               {/* Active Filters Bar */}
