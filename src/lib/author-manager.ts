@@ -18,6 +18,11 @@ export interface AuthorProfile {
 const API_BASE = import.meta.env.VITE_ADMIN_API_URL || '/api';
 const LOCAL_KEY = 'taam_authors';
 
+function isPhpSourceResponse(text: string): boolean {
+  const trimmed = text.trim();
+  return trimmed.startsWith('<?php') || trimmed.includes("require_once __DIR__ . '/config.php'");
+}
+
 // Default authors (used when API is unavailable)
 const DEFAULT_AUTHORS: Record<string, AuthorProfile> = {
   sarah: {
@@ -68,6 +73,12 @@ async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any
       try {
         data = JSON.parse(text);
       } catch {
+        if (isPhpSourceResponse(text)) {
+          return {
+            success: false,
+            error: 'Headshot upload only works on the live site after you log in there — the Lovable preview cannot run the PHP upload endpoint.',
+          };
+        }
         data = null;
       }
     }
