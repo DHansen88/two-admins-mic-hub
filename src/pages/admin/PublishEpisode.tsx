@@ -255,7 +255,42 @@ const PublishEpisode = () => {
       youtubeUrl, transcript, thumbnailName, keyTakeaways, summary,
       seoDescription, generatedBlog, generatedNewsletter,
     });
-    toast({ title: "Draft saved locally" });
+    setContentStatus("episode", episodeNumber || "new", "draft");
+    toast({ title: "Draft saved" });
+    navigate("/admin/episodes");
+  };
+
+  const handlePublishNow = async () => {
+    if (!title || !episodeNumber) {
+      toast({ title: "Episode number and title are required", variant: "destructive" });
+      return;
+    }
+    const data = buildEpisodeData();
+    const result = await saveEpisode(data);
+    if (result.success) {
+      setContentStatus("episode", episodeNumber, "published");
+      saveToHistory("episode", data);
+      toast({ title: "Episode published!" });
+      navigate("/admin/episodes");
+    } else {
+      toast({ title: result.error || "Publish failed", variant: "destructive" });
+    }
+  };
+
+  const handleSchedulePublish = (date: string, time: string) => {
+    if (!title || !episodeNumber) {
+      toast({ title: "Episode number and title are required", variant: "destructive" });
+      return;
+    }
+    saveDraft(`episode-${episodeNumber}`, {
+      episodeNumber, title, description, guestName, publishDate,
+      duration, selectedTopics, riversideUrl, spotifyUrl, appleUrl,
+      youtubeUrl, transcript, thumbnailName, keyTakeaways, summary,
+      seoDescription, generatedBlog, generatedNewsletter,
+    });
+    setContentStatus("episode", episodeNumber, "scheduled", date, time);
+    toast({ title: `Episode scheduled for ${date} at ${time}` });
+    navigate("/admin/episodes");
   };
 
   return (
