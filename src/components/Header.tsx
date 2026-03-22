@@ -20,7 +20,6 @@ const Header = () => {
   ];
 
   const moreItems = [
-    { to: "/about", label: "About" },
     { to: "/merch", label: "Merch" },
     { to: "/contact", label: "Contact" },
   ];
