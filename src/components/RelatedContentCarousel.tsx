@@ -166,18 +166,8 @@ function RelatedCard({ item }: { item: RelatedItem }) {
           {item.title}
         </h3>
 
-        {/* Host + Tags */}
-        <div className="flex items-center justify-between gap-2 mt-auto">
-          {/* Host indicator */}
-          {item.host && (
-            <span
-              className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold text-white shrink-0 ${
-                isD ? "bg-teal" : isM ? "bg-coral" : "bg-muted-foreground"
-              }`}
-            >
-              {isD ? "D" : isM ? "M" : item.host.charAt(0).toUpperCase()}
-            </span>
-          )}
+        {/* Tags */}
+        <div className="flex items-center gap-2 mt-auto">
 
           {/* Tags */}
           <div className="flex flex-wrap gap-1.5 justify-end">
