@@ -191,9 +191,15 @@ const Blog = () => {
                   </p>
                 ) : (
                   <>
-                    <div className="grid md:grid-cols-2 gap-6 animate-fade-in">
-                      {visibleBlogs.map((blog) => (
-                        <BlogCard key={blog.slug} {...blog} />
+                    <div key={resetKey} className="grid md:grid-cols-2 gap-6">
+                      {visibleBlogs.map((blog, i) => (
+                        <div
+                          key={blog.slug}
+                          className="animate-fade-in"
+                          style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
+                        >
+                          <BlogCard {...blog} />
+                        </div>
                       ))}
                     </div>
                     {totalPages > 1 && (
