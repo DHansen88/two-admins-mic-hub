@@ -68,6 +68,7 @@ import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
 
 const PublishBlog = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const [authorOptions, setAuthorOptions] = useState<AuthorProfile[]>([]);
