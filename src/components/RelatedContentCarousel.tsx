@@ -60,6 +60,7 @@ const RelatedContentCarousel = ({ items }: Props) => {
     loop: false,
     slidesToScroll: 1,
     containScroll: "trimSnaps",
+    dragFree: false,
   });
 
   const [canPrev, setCanPrev] = useState(false);
@@ -93,7 +94,7 @@ const RelatedContentCarousel = ({ items }: Props) => {
             <h2 className="text-2xl font-display font-bold text-foreground">
               Related Content
             </h2>
-            <div className="hidden md:flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="icon"
@@ -117,11 +118,11 @@ const RelatedContentCarousel = ({ items }: Props) => {
 
           {/* Carousel */}
           <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex gap-4">
+            <div className="flex">
               {items.map((item, idx) => (
                 <div
                   key={`${item.type}-${item.slug}-${idx}`}
-                  className="flex-[0_0_85%] min-w-0 sm:flex-[0_0_calc(50%-8px)] lg:flex-[0_0_calc(33.333%-11px)]"
+                  className="flex-[0_0_85%] min-w-0 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4 first:pl-0"
                 >
                   <RelatedCard item={item} />
                 </div>
