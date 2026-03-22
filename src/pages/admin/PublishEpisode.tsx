@@ -622,6 +622,14 @@ const PublishEpisode = () => {
           )}
         </div>
       )}
+
+      <PublishModal
+        open={showPublishModal}
+        onOpenChange={setShowPublishModal}
+        onPublishNow={handlePublishNow}
+        onSchedule={handleSchedulePublish}
+        title={title}
+      />
     </div>
   );
 };
