@@ -65,8 +65,18 @@ function migrateTag(tag: any): Tag {
   return tag as Tag;
 }
 
+const TAG_VERSION_KEY = "taam_tags_version";
+const CURRENT_TAG_VERSION = "2"; // Bump to force re-seed with new vibrant colors
+
 /** Load tags from localStorage, falling back to defaults */
 export function getAllTags(): Tag[] {
+  const version = localStorage.getItem(TAG_VERSION_KEY);
+  if (version !== CURRENT_TAG_VERSION) {
+    // Force re-seed with new vibrant default colors
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_TAGS));
+    localStorage.setItem(TAG_VERSION_KEY, CURRENT_TAG_VERSION);
+    return [...DEFAULT_TAGS];
+  }
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
