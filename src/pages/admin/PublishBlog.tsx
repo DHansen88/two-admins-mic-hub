@@ -292,13 +292,49 @@ const PublishBlog = () => {
   };
 
   const handleSaveDraft = () => {
-    saveDraft(`blog-${generateSlug(title) || "new"}`, {
+    const slug = generateSlug(title) || "new";
+    saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
       blocks, markdownContent: editorMode === "markdown" ? markdownContent : blocksToMarkdown(blocks),
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
     });
-    toast({ title: "Draft saved locally" });
+    setContentStatus("blog", slug, "draft");
+    toast({ title: "Draft saved" });
+    navigate("/admin/blog-posts");
+  };
+
+  const handlePublishNow = async () => {
+    if (!title || !currentContent) {
+      toast({ title: "Title and content are required", variant: "destructive" });
+      return;
+    }
+    await handlePublishToServer();
+    const slug = generateSlug(title);
+    setContentStatus("blog", slug, "published");
+    navigate("/admin/blog-posts");
+  };
+
+  const handleSchedulePublish = (date: string, time: string) => {
+    if (!title || !currentContent) {
+      toast({ title: "Title and content are required", variant: "destructive" });
+      return;
+    }
+    const slug = generateSlug(title);
+    handleSaveDraftSilent();
+    setContentStatus("blog", slug, "scheduled", date, time);
+    toast({ title: `Blog scheduled for ${date} at ${time}` });
+    navigate("/admin/blog-posts");
+  };
+
+  const handleSaveDraftSilent = () => {
+    const slug = generateSlug(title) || "new";
+    saveDraft(`blog-${slug}`, {
+      title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
+      blocks, markdownContent: editorMode === "markdown" ? markdownContent : blocksToMarkdown(blocks),
+      featuredImage, excerpt, readingTime, seoDescription,
+      keyTakeaways, generatedNewsletter,
+    });
   };
 
   return (
