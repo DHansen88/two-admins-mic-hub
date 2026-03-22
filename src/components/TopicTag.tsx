@@ -10,31 +10,36 @@ interface TopicTagProps {
 
 /**
  * Clickable topic tag chip that links to /topics/:topic filtered view.
- * Uses tag colors from the centralized tag system.
+ * Uses exact admin-controlled colors — theme-independent.
  */
 const TopicTag = ({ topic, variant = "default", className = "" }: TopicTagProps) => {
   const tag = getTagByName(topic);
-  const color = tag?.color || "199 62% 28%";
-
-  const base =
-    "inline-block text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full transition-colors";
+  const bgColor = tag?.bgColor || "#5A7DFF";
+  const textColor = tag?.textColor || "#ffffff";
+  const borderColor = tag?.borderColor;
 
   return (
     <Link
       to={`/topics/${encodeURIComponent(topic)}`}
-      className={`${base} ${className}`}
+      className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider rounded-full transition-all hover:brightness-110 hover:shadow-md ${className}`}
       style={{
-        backgroundColor: `hsl(${color} / 0.15)`,
-        color: `hsl(${color})`,
+        backgroundColor: bgColor,
+        color: textColor,
+        padding: "6px 12px",
+        borderRadius: "999px",
+        border: borderColor ? `1.5px solid ${borderColor}` : "none",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.18)",
+        fontWeight: 600,
       }}
       onClick={(e) => e.stopPropagation()}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.backgroundColor = `hsl(${color} / 0.25)`;
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.backgroundColor = `hsl(${color} / 0.15)`;
-      }}
     >
+      <span
+        className="inline-block w-2 h-2 rounded-full shrink-0"
+        style={{
+          backgroundColor: textColor,
+          opacity: 0.7,
+        }}
+      />
       {topic}
     </Link>
   );
