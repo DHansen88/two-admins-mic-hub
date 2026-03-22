@@ -32,7 +32,7 @@ const hosts = [
     badgeIcon: Briefcase,
     bio: "Mel has spent two decades in administrative roles across Fortune 500 companies and loves sharing practical strategies that work. Her no-nonsense approach makes complex topics accessible and actionable.",
     skills: ["Operations", "Executive Support", "Process Optimization", "Communication"],
-    meetLink: "/about",
+    meetLink: "/about#melinda",
     articlesLink: "/blog",
     colorClass: "coral-accent",
     bgClass: "bg-coral-accent/5",

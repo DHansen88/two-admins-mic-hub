@@ -30,7 +30,7 @@ const HostCard = ({
 
 }: {host: (typeof hosts)[0];reversed: boolean;}) => {
   const [expanded, setExpanded] = useState(false);
-  return <div className={`flex flex-col ${reversed ? "md:flex-row-reverse" : "md:flex-row"} items-center gap-10 md:gap-16`}>
+  return <div id={host.name.split(" ")[0].toLowerCase()} className={`flex flex-col ${reversed ? "md:flex-row-reverse" : "md:flex-row"} items-center gap-10 md:gap-16 scroll-mt-24`}>
       {/* Polaroid headshot */}
       <div className="flex-shrink-0 group">
         <div className={`relative bg-white p-3 pb-14 shadow-lg ${host.tilt} transition-transform duration-300 hover:rotate-0`} style={{
