@@ -71,17 +71,17 @@ const benefits = [{
   description: "A credential to share on LinkedIn and celebrate your leadership journey."
 }];
 const testimonials = [{
-  quote: "This program changed the way I see my role. I'm not just support—I'm a leader who happens to support executives.",
-  author: "Administrative Professional",
-  role: "Fortune 500 Company"
+  quote: "There's nothing else out there that speaks directly to leadership for administrative professionals like this course does.",
+  author: "Melinda Vail-Goodnight",
+  role: "Senior Executive Assistant at Southwest Airlines"
 }, {
-  quote: "The Blueprint process gave me a framework I can actually use every day. It's not theory—it's real leadership development.",
-  author: "Executive Assistant",
-  role: "Healthcare Organization"
+  quote: "This is different from any other administrative seminar or class… it is a very reflective program and the 'aha's come from helping people reframe their life story into meaningful leadership takeaways.",
+  author: "Dana Gavita",
+  role: "EA to the CEO, Civil & Environmental Consultants, Inc."
 }, {
-  quote: "I finally have the language and confidence to articulate my leadership value. This was transformative.",
-  author: "Senior Administrative Partner",
-  role: "Technology Sector"
+  quote: "This course is so important because it gives Administrative Professionals, who are usually viewed as 'less than,' an opportunity to say, 'I want to become more, and do more, and be more influential.'",
+  author: "Rosalyn Taylor O'Neale",
+  role: "Leadership Coach and Former Chief Diversity & Inclusion Officer, Campbell Soup Company"
 }];
 const stepAccents = [
 { bg: "bg-light-green", text: "text-light-green", border: "border-light-green", bgLight: "bg-light-green/10", ring: "ring-light-green/30" },
