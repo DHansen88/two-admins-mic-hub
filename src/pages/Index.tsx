@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import MeetTheHosts from "@/components/MeetTheHosts";
 import LatestFromTheShow from "@/components/LatestFromTheShow";
-import BrowseTopics from "@/components/BrowseTopics";
+
 import HomeCTA from "@/components/HomeCTA";
 import Footer from "@/components/Footer";
 
@@ -14,7 +14,7 @@ const Index = () => {
         <Hero />
         <MeetTheHosts />
         <LatestFromTheShow />
-        <BrowseTopics />
+        
         <HomeCTA />
       </main>
       <Footer />
