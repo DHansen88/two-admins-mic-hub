@@ -11,6 +11,10 @@
     RewriteEngine On
     RewriteBase /api/
 
+    # Pass Authorization header through to PHP (Hostinger strips it by default)
+    RewriteCond %{HTTP:Authorization} .+
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
     # Allow direct access to real API files only
     RewriteCond %{REQUEST_FILENAME} -f
     RewriteRule ^ - [L]
