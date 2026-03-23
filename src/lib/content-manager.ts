@@ -7,6 +7,35 @@
 
 import { getAdminApiBase, getAdminAuthHeaders } from "./admin-auth";
 
+/** Upload a blog image and return its public URL */
+export async function uploadBlogImage(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
+  const API_BASE = getAdminApiBase();
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const res = await fetch(`${API_BASE}/content.php?action=upload-blog-image`, {
+      method: 'POST',
+      headers: getAdminAuthHeaders(),
+      credentials: 'include',
+      body: formData,
+    });
+
+    const text = await res.text();
+    let data: any = null;
+    try { data = JSON.parse(text); } catch { data = null; }
+
+    if (!res.ok) {
+      return { success: false, error: data?.error || `HTTP ${res.status}` };
+    }
+
+    if (data?.success) return { success: true, url: data.url };
+    return { success: false, error: data?.error || 'Upload failed' };
+  } catch (error: any) {
+    return { success: false, error: error?.message || 'Upload failed' };
+  }
+}
+
 export type ContentType = "blog" | "episode";
 export type ContentStatus = "published" | "unpublished" | "trashed";
 

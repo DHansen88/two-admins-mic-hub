@@ -19,9 +19,11 @@ define('CONTENT_ROOT', realpath(__DIR__ . '/../../') . '/content');
 define('BLOG_DIR', CONTENT_ROOT . '/blog');
 define('PODCAST_DIR', CONTENT_ROOT . '/podcasts');
 define('TRASH_DIR', CONTENT_ROOT . '/trash');
+define('SITE_ROOT_CONTENT', realpath(__DIR__ . '/../../'));
+define('BLOG_UPLOADS_DIR', SITE_ROOT_CONTENT . '/uploads/blog');
 
 // Ensure directories exist
-foreach ([CONTENT_ROOT, BLOG_DIR, PODCAST_DIR, TRASH_DIR] as $dir) {
+foreach ([CONTENT_ROOT, BLOG_DIR, PODCAST_DIR, TRASH_DIR, BLOG_UPLOADS_DIR] as $dir) {
     if (!is_dir($dir)) {
         mkdir($dir, 0755, true);
     }
@@ -68,6 +70,9 @@ switch ($action) {
         break;
     case 'activity-log':
         handleActivityLog();
+        break;
+    case 'upload-blog-image':
+        handleUploadBlogImage();
         break;
     default:
         jsonResponse(['error' => 'Invalid action'], 400);
@@ -614,4 +619,39 @@ function logContentAction(array $user, string $action, string $details): void {
     $db = getDB();
     $stmt = $db->prepare('INSERT INTO admin_activity_log (user_id, user_email, action, details, ip_address) VALUES (?, ?, ?, ?, ?)');
     $stmt->execute([$user['id'], $user['email'], $action, $details, $_SERVER['REMOTE_ADDR'] ?? '']);
+}
+
+function handleUploadBlogImage(): void {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        jsonResponse(['error' => 'Method not allowed'], 405);
+    }
+
+    requireAuth();
+
+    if (empty($_FILES['image'])) {
+        jsonResponse(['error' => 'No file uploaded'], 400);
+    }
+
+    $file = $_FILES['image'];
+
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!in_array($file['type'], $allowedTypes)) {
+        jsonResponse(['error' => 'Invalid file type. Allowed: JPG, PNG, WebP, GIF'], 400);
+    }
+
+    if ($file['size'] > 5 * 1024 * 1024) {
+        jsonResponse(['error' => 'File too large. Maximum 5MB'], 400);
+    }
+
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $slug = preg_replace('/[^a-zA-Z0-9_\-]/', '', pathinfo($file['name'], PATHINFO_FILENAME));
+    $filename = $slug . '-' . time() . '.' . $ext;
+    $targetPath = BLOG_UPLOADS_DIR . '/' . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        jsonResponse(['error' => 'Failed to save file'], 500);
+    }
+
+    $publicUrl = '/uploads/blog/' . $filename;
+    jsonResponse(['success' => true, 'url' => $publicUrl]);
 }
