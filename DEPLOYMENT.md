@@ -52,6 +52,17 @@ Before uploading, edit these files **inside the `dist/` folder**:
 4. Upload the **contents** of `dist/` into `/public_html/`
    - Upload everything **inside** `dist/`, not the folder itself
 
+### Hostinger Git deployment
+
+If you're using **Hostinger Git deployment** instead of manual upload:
+
+1. Set the branch to `deploy`
+2. Set the repository path to your site repo
+3. **Leave the Hostinger "Directory" field empty** so the deploy branch is checked out directly into `/public_html`
+4. Do **not** point Hostinger at a nested folder like `dist/` or `public/`
+
+If the `Directory` field is set incorrectly, Hostinger may serve files from the wrong root and your `/api/*.php` routes can be downloaded as source instead of executing as PHP.
+
 ## 4. Post-upload setup
 
 1. Visit `https://yourdomain.com/api/setup.php` once to create the database tables
@@ -88,3 +99,4 @@ Before uploading, edit these files **inside the `dist/` folder**:
 | Blank page | Check browser console; ensure no CORS or path errors |
 | Newsletter not working | Verify Beehiiv API key is set in `api/subscribe.php` |
 | Admin login fails | Run `setup.php` first, then check DB credentials in `config.php` |
+| `/api/*.php` shows raw PHP code in the browser | Confirm the site root is `/public_html`, leave Hostinger Git `Directory` empty, and make sure the uploaded `api/.htaccess` is present so PHP files are handled by Apache |
