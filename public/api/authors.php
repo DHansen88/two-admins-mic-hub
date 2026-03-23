@@ -14,12 +14,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-define('AUTHORS_DIR', realpath(__DIR__ . '/../../') . '/content');
+define('SITE_ROOT', realpath(__DIR__ . '/../../'));
+define('AUTHORS_DIR', SITE_ROOT . '/content');
 define('AUTHORS_FILE', AUTHORS_DIR . '/authors.json');
-define('AUTHOR_IMAGES_DIR', realpath(__DIR__ . '/../../') . '/assets/images/authors');
+define('UPLOADS_ROOT', SITE_ROOT . '/uploads');
+define('AUTHOR_IMAGES_DIR', UPLOADS_ROOT . '/headshots');
 
 // Ensure directories exist
 if (!is_dir(AUTHORS_DIR)) mkdir(AUTHORS_DIR, 0755, true);
+if (!is_dir(UPLOADS_ROOT)) mkdir(UPLOADS_ROOT, 0755, true);
 if (!is_dir(AUTHOR_IMAGES_DIR)) mkdir(AUTHOR_IMAGES_DIR, 0755, true);
 
 $action = $_GET['action'] ?? '';
@@ -190,7 +193,7 @@ function handleUploadHeadshot(): void {
         jsonResponse(['error' => 'Failed to save file'], 500);
     }
     
-    $publicUrl = '/assets/images/authors/' . $filename;
+    $publicUrl = '/uploads/headshots/' . $filename;
     
     jsonResponse(['success' => true, 'url' => $publicUrl]);
 }

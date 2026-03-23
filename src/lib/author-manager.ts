@@ -3,7 +3,7 @@
  * Communicates with the PHP backend for CRUD, falls back to localStorage.
  */
 
-import { canUseAdminFallback, getAdminAuthHeaders, handleAuthFailure, isAdminAuthError } from "./admin-auth";
+import { canUseAdminFallback, getAdminApiBase, getAdminAuthHeaders, handleAuthFailure, isAdminAuthError } from "./admin-auth";
 
 export interface AuthorProfile {
   id: string;
@@ -15,7 +15,7 @@ export interface AuthorProfile {
   website?: string;
 }
 
-const API_BASE = import.meta.env.VITE_ADMIN_API_URL || '/api';
+const API_BASE = getAdminApiBase();
 const LOCAL_KEY = 'taam_authors';
 
 function isPhpSourceResponse(text: string): boolean {

@@ -5,7 +5,7 @@
  * Falls back to localStorage for the preview environment.
  */
 
-import { getAdminAuthHeaders } from "./admin-auth";
+import { getAdminApiBase, getAdminAuthHeaders } from "./admin-auth";
 
 export type ContentType = "blog" | "episode";
 export type ContentStatus = "published" | "unpublished" | "trashed";
@@ -27,7 +27,7 @@ export interface ActivityLogEntry {
   timestamp: string;
 }
 
-const API_BASE = import.meta.env.VITE_ADMIN_API_URL || '/api';
+const API_BASE = getAdminApiBase();
 const CONTENT_STATE_KEY = "taam_content_state";
 const ACTIVITY_LOG_KEY = "taam_activity_log";
 const MAX_LOG_ENTRIES = 100;
