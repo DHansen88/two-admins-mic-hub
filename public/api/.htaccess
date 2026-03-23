@@ -1,20 +1,33 @@
-# Protect API directory
+# Execute PHP files in this directory instead of exposing source
+<IfModule mod_mime.c>
+    AddType application/x-httpd-php .php .phtml
+</IfModule>
+
+<IfModule mod_actions.c>
+    AddHandler application/x-httpd-php .php .phtml
+</IfModule>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    
-    # Handle CORS preflight requests
-    RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteRule ^(.*)$ $1 [R=200,L]
-    
-    # Ensure PHP files are processed
-    RewriteRule ^(.*)$ - [L]
+    RewriteBase /api/
+
+    # Allow direct access to real API files only
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Block everything else inside /api
+    RewriteRule ^ - [R=404,L]
 </IfModule>
+
+Options -Indexes
+DirectoryIndex disabled
 
 # Security headers
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "DENY"
     Header always set X-XSS-Protection "1; mode=block"
+    Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
 </IfModule>
 
 # Deny access to config.php directly (only allow inclusion)
