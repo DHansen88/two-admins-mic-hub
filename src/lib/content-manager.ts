@@ -8,13 +8,16 @@
 import { getAdminApiBase, getAdminAuthHeaders } from "./admin-auth";
 
 /** Upload a blog image and return its public URL */
-export async function uploadBlogImage(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
-  const API_BASE = getAdminApiBase();
+async function uploadFile(endpoint: string, fieldName: string, file: File, extraFields?: Record<string, string>): Promise<{ success: boolean; url?: string; error?: string }> {
+  const base = getAdminApiBase();
   try {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append(fieldName, file);
+    if (extraFields) {
+      for (const [k, v] of Object.entries(extraFields)) formData.append(k, v);
+    }
 
-    const res = await fetch(`${API_BASE}/content.php?action=upload-blog-image`, {
+    const res = await fetch(`${base}/${endpoint}`, {
       method: 'POST',
       headers: getAdminAuthHeaders(),
       credentials: 'include',
@@ -34,6 +37,21 @@ export async function uploadBlogImage(file: File): Promise<{ success: boolean; u
   } catch (error: any) {
     return { success: false, error: error?.message || 'Upload failed' };
   }
+}
+
+/** Upload a blog image and return its public URL */
+export async function uploadBlogImage(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
+  return uploadFile('content.php?action=upload-blog-image', 'image', file);
+}
+
+/** Upload a podcast audio file and return its public URL */
+export async function uploadPodcastAudio(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
+  return uploadFile('content.php?action=upload-podcast-asset', 'file', file, { type: 'audio' });
+}
+
+/** Upload a podcast cover image and return its public URL */
+export async function uploadPodcastCover(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
+  return uploadFile('content.php?action=upload-podcast-asset', 'file', file, { type: 'cover' });
 }
 
 export type ContentType = "blog" | "episode";

@@ -21,9 +21,10 @@ define('PODCAST_DIR', CONTENT_ROOT . '/podcasts');
 define('TRASH_DIR', CONTENT_ROOT . '/trash');
 define('SITE_ROOT_CONTENT', realpath(__DIR__ . '/../../'));
 define('BLOG_UPLOADS_DIR', SITE_ROOT_CONTENT . '/uploads/blog');
+define('PODCAST_UPLOADS_DIR', SITE_ROOT_CONTENT . '/uploads/podcast');
 
 // Ensure directories exist
-foreach ([CONTENT_ROOT, BLOG_DIR, PODCAST_DIR, TRASH_DIR, BLOG_UPLOADS_DIR] as $dir) {
+foreach ([CONTENT_ROOT, BLOG_DIR, PODCAST_DIR, TRASH_DIR, BLOG_UPLOADS_DIR, PODCAST_UPLOADS_DIR] as $dir) {
     if (!is_dir($dir)) {
         mkdir($dir, 0755, true);
     }
@@ -73,6 +74,9 @@ switch ($action) {
         break;
     case 'upload-blog-image':
         handleUploadBlogImage();
+        break;
+    case 'upload-podcast-asset':
+        handleUploadPodcastAsset();
         break;
     default:
         jsonResponse(['error' => 'Invalid action'], 400);
@@ -653,5 +657,50 @@ function handleUploadBlogImage(): void {
     }
 
     $publicUrl = '/uploads/blog/' . $filename;
+    jsonResponse(['success' => true, 'url' => $publicUrl]);
+}
+
+function handleUploadPodcastAsset(): void {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        jsonResponse(['error' => 'Method not allowed'], 405);
+    }
+
+    requireAuth();
+
+    if (empty($_FILES['file'])) {
+        jsonResponse(['error' => 'No file uploaded'], 400);
+    }
+
+    $file = $_FILES['file'];
+    $type = $_POST['type'] ?? 'audio'; // 'audio' or 'cover'
+
+    if ($type === 'cover') {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        $maxSize = 5 * 1024 * 1024;
+    } else {
+        $allowedTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/x-m4a', 'audio/aac', 'audio/ogg'];
+        $maxSize = 200 * 1024 * 1024;
+    }
+
+    if (!in_array($file['type'], $allowedTypes)) {
+        $label = $type === 'cover' ? 'JPG, PNG, WebP, GIF' : 'MP3, WAV, M4A, AAC, OGG';
+        jsonResponse(['error' => "Invalid file type. Allowed: {$label}"], 400);
+    }
+
+    if ($file['size'] > $maxSize) {
+        $label = $type === 'cover' ? '5MB' : '200MB';
+        jsonResponse(['error' => "File too large. Maximum {$label}"], 400);
+    }
+
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $slug = preg_replace('/[^a-zA-Z0-9_\-]/', '', pathinfo($file['name'], PATHINFO_FILENAME));
+    $filename = $slug . '-' . time() . '.' . $ext;
+    $targetPath = PODCAST_UPLOADS_DIR . '/' . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        jsonResponse(['error' => 'Failed to save file'], 500);
+    }
+
+    $publicUrl = '/uploads/podcast/' . $filename;
     jsonResponse(['success' => true, 'url' => $publicUrl]);
 }
