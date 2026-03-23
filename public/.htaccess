@@ -5,6 +5,10 @@
     RewriteEngine On
     RewriteBase /
 
+    # Pass Authorization header through to PHP (Hostinger strips it by default)
+    RewriteCond %{HTTP:Authorization} .+
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
     # Never route API requests through the SPA fallback
     RewriteRule ^api($|/) - [L]
 
