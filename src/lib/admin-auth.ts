@@ -5,7 +5,36 @@
  * Falls back to localStorage session tracking for the static preview environment.
  */
 
-const API_BASE = import.meta.env.VITE_ADMIN_API_URL || '/api';
+function resolveAdminApiBase(): string {
+  const configuredBase = (import.meta.env.VITE_ADMIN_API_URL || '').trim();
+
+  if (typeof window === 'undefined') {
+    return configuredBase || '/api';
+  }
+
+  if (!configuredBase) {
+    return '/api';
+  }
+
+  if (import.meta.env.DEV) {
+    return configuredBase;
+  }
+
+  try {
+    const url = new URL(configuredBase, window.location.origin);
+    if (url.origin === window.location.origin) {
+      return url.pathname.replace(/\/$/, '') || '/api';
+    }
+  } catch {
+    if (configuredBase.startsWith('/')) {
+      return configuredBase.replace(/\/$/, '') || '/api';
+    }
+  }
+
+  return '/api';
+}
+
+const API_BASE = resolveAdminApiBase();
 const FALLBACK_HOST_PATTERNS = ['localhost', '127.0.0.1', '.lovable.app', '.lovableproject.com'];
 
 const SESSION_KEY = 'taam_admin_session';
@@ -81,6 +110,10 @@ export function getAdminAuthHeaders(headers: HeadersInit = {}): HeadersInit {
   }
 
   return Object.fromEntries(normalizedHeaders.entries());
+}
+
+export function getAdminApiBase(): string {
+  return API_BASE;
 }
 
 function redirectToLogin(): void {
