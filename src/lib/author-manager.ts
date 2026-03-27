@@ -204,7 +204,15 @@ export async function uploadHeadshot(file: File, authorId: string): Promise<{ su
     return { success: false, error: data?.error || 'Upload failed' };
   } catch (error: any) {
     if (isAdminAuthError(error)) {
-      return { success: false, error: error.message };
+      if (canUseAdminFallback()) {
+        const url = URL.createObjectURL(file);
+        return { success: true, url };
+      }
+
+      return {
+        success: false,
+        error: error.message || 'Upload failed because the admin session is no longer valid. Please sign in again on the live site.',
+      };
     }
 
     if (!canUseAdminFallback()) {
