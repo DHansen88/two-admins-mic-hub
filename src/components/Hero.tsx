@@ -65,7 +65,7 @@ const Hero = () => {
 
           {/* Subtitle */}
           <p className="text-xl md:text-2xl lg:text-3xl text-background/90 font-medium max-w-3xl mx-auto">
-            Leadership conversations that empower and inspire
+            Honest conversations elevating the administrative profession and the leaders behind it.
           </p>
 
           {/* Description */}
