@@ -20,10 +20,9 @@ const Episodes = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const latestEpisode = allEpisodes[0];
 
-  const hasActiveFilters = selectedHost !== "all" || selectedTopics.length > 0;
+  const hasActiveFilters = selectedTopics.length > 0;
 
   const clearFilters = () => {
-    setSelectedHost("all");
     setSelectedTopics([]);
   };
 
