@@ -61,7 +61,7 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
           </h3>
 
           <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-            {hostName && (
+            {false && hostName && (
               <span className="inline-flex items-center gap-1.5">
                 <span
                   className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold text-white ${
@@ -77,7 +77,7 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
                 <span className="font-medium">{hostName}</span>
               </span>
             )}
-            {hostName && <span>•</span>}
+            {false && hostName && <span>•</span>}
             <span>{episode.date}</span>
           </div>
 
