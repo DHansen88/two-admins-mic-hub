@@ -12,7 +12,7 @@ const hosts = [{
   image: hostDmh,
   bio: "Diana is the Executive Administrator to Doug Conant at ConantLeadership and for the Conant family. She has built her career supporting senior executives at the highest levels, including roles at General Electric and Campbell Soup Company, where she managed global leaders, complex projects, and high-stakes calendars. A 2022 Admin Award winner, Diana is known for her tenacity, creativity, and uncanny ability to solve problems before they surface. She also leads branding and creative initiatives at ConantLeadership, bringing both strategy and design expertise to the team. Outside of work, Diana enjoys cheering on the Philadelphia Eagles, painting, reading, solving murder mysteries, and spending time with her two granddaughters—powered by humor, sarcasm, Monster Energy drinks, and a perfectly color-coded calendar.",
   tags: ["Leadership", "Career Growth", "Communication"],
-  micBullets: ["Practical frameworks for leading with confidence", "Honest perspectives on balancing empathy with accountability", "A passion for developing the next generation of leaders"],
+  micBullets: ["Executive-level administrative expertise and real-world strategies", "Creative problem-solving and proactive leadership insights", "A blend of humor, heart, and no-nonsense professionalism"],
   tilt: "-rotate-2"
 }, {
   name: "Melinda Vail Goodnight",
@@ -20,7 +20,7 @@ const hosts = [{
   image: hostMelinda,
   bio: "Melinda is a Senior Executive Assistant at Southwest Airlines, where she supports the Vice President and Chief Audit Executive. She also leads the Executive Assistants Professional Development Program at Southwest Airlines, focusing on training and development. Beyond her day-to-day responsibilities, Melinda is an active advocate, contributor, and resource for the administrative community. She has served as an advisory board member for The Admin Awards, contributing her expertise to recognize and celebrate excellence within the administrative profession. She is a respected voice in the admin community, an advocate for growth and recognition, and the kind of person who makes you better simply by being in the room. Outside of her professional work, Melinda enjoys time with her loving (and lively) family, which includes four sons, three daughters-in-law, and six wonderful grandchildren. Her hobbies include hiking, cooking, reading, gardening, and traveling whenever she can find the time.",
   tags: ["Admin Life", "Wellness", "Humor & Human Moments"],
-  micBullets: ["Strategies for creating healthy, high-performing teams", "Insights on navigating change with grace and humor", "Real talk about self-care and sustainability in leadership"],
+  micBullets: ["Senior-level executive support and organizational leadership", "Passion for professional development and mentoring admins", "Authentic perspectives on balancing career, family, and growth"],
   tilt: "rotate-2"
 }];
 const HostCard = ({
