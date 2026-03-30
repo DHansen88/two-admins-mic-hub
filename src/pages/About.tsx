@@ -253,12 +253,10 @@ const About = () => {
                 About the Hosts
               </h2>
               <p className="text-xl md:text-2xl text-background/70 max-w-2xl mx-auto leading-relaxed">
-                Two Admins. Two perspectives. One mic—built to elevate the
-                profession through practical leadership conversations.
+                Two Admins. Two Perspectives. One Mic.
               </p>
               <p className="text-lg md:text-xl text-background/80 leading-relaxed">
-                Empowering leaders through authentic conversations on
-                administration, leadership, and professional growth.
+                Real conversations about leadership, executive partnership, and the evolving power of the administrative profession.
               </p>
             </div>
           </div>
