@@ -60,39 +60,41 @@ const BlogFilterBar = ({
     <div className="space-y-3 mb-6">
       {/* Host pills row */}
       {!hideHostFilter && (
-        {hosts.map((host) => {
-          const isActive = selectedHost === host.id;
-          return (
-            <button
-              key={host.id}
-              onClick={() => onHostChange(host.id)}
-              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 min-h-[44px] border whitespace-nowrap ${
-                isActive
-                  ? host.id === "all"
-                    ? "bg-foreground text-background border-foreground shadow-md"
-                    : host.id === "diana"
-                    ? "bg-[hsl(var(--teal))] text-white border-[hsl(var(--teal))] shadow-md"
-                    : "bg-[hsl(var(--coral))] text-white border-[hsl(var(--coral))] shadow-md"
-                  : "bg-card text-foreground border-border hover:border-muted-foreground/50 hover:bg-muted/50"
-              }`}
-            >
-              {host.letter && (
-                <span
-                  className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${
-                    isActive
-                      ? "bg-white/20 text-white"
+        <div className="flex items-center gap-2">
+          {hosts.map((host) => {
+            const isActive = selectedHost === host.id;
+            return (
+              <button
+                key={host.id}
+                onClick={() => onHostChange(host.id)}
+                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 min-h-[44px] border whitespace-nowrap ${
+                  isActive
+                    ? host.id === "all"
+                      ? "bg-foreground text-background border-foreground shadow-md"
                       : host.id === "diana"
-                      ? "bg-[hsl(var(--teal))]/15 text-[hsl(var(--teal))]"
-                      : "bg-[hsl(var(--coral))]/15 text-[hsl(var(--coral))]"
-                  }`}
-                >
-                  {host.letter}
-                </span>
-              )}
-              {host.label}
-            </button>
-          );
-        })}
+                      ? "bg-[hsl(var(--teal))] text-white border-[hsl(var(--teal))] shadow-md"
+                      : "bg-[hsl(var(--coral))] text-white border-[hsl(var(--coral))] shadow-md"
+                    : "bg-card text-foreground border-border hover:border-muted-foreground/50 hover:bg-muted/50"
+                }`}
+              >
+                {host.letter && (
+                  <span
+                    className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${
+                      isActive
+                        ? "bg-white/20 text-white"
+                        : host.id === "diana"
+                        ? "bg-[hsl(var(--teal))]/15 text-[hsl(var(--teal))]"
+                        : "bg-[hsl(var(--coral))]/15 text-[hsl(var(--coral))]"
+                    }`}
+                  >
+                    {host.letter}
+                  </span>
+                )}
+                {host.label}
+              </button>
+            );
+          })}
+        </div>
       )}
 
       {/* Topic pills carousel */}
