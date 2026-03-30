@@ -28,18 +28,43 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
       data-host={hostKey}
       data-topic={episode.topics.map((t) => t.toLowerCase().replace(/\s+/g, "-")).join(" ")}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-[40%_60%] items-stretch h-full">
-        {/* Thumbnail */}
-        <div className="relative w-full h-full overflow-hidden bg-muted aspect-video sm:aspect-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center h-full">
+        {/* Episode Info */}
+        <div className="p-5 md:p-6 space-y-3 min-w-0 order-2 sm:order-1">
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-xs font-bold text-muted-foreground bg-muted px-3 py-1 rounded-full">
+              Episode {episode.number}
+            </span>
+            <span className="text-xs text-muted-foreground flex items-center gap-1">
+              <Clock className="h-3.5 w-3.5" />
+              {episode.duration}
+            </span>
+          </div>
+
+          <h3 className="text-lg font-bold text-foreground group-hover:text-accent transition-colors leading-snug">
+            {episode.title}
+          </h3>
+
+          <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            <span>{episode.date}</span>
+          </div>
+
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {episode.description}
+          </p>
+        </div>
+
+        {/* Thumbnail — small rectangular */}
+        <div className="relative w-36 h-24 sm:w-40 sm:h-28 md:w-48 md:h-32 shrink-0 overflow-hidden rounded-lg m-4 order-1 sm:order-2">
           <img
             src={episode.thumbnailUrl || "/placeholder.svg"}
             alt={episode.title}
-            className="w-full h-full object-cover block"
+            className="w-full h-full object-cover block rounded-lg"
             loading="lazy"
           />
-          <div className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors">
-            <div className="w-12 h-12 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Play className="h-5 w-5 text-foreground ml-0.5" />
+          <div className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors rounded-lg">
+            <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Play className="h-4 w-4 text-foreground ml-0.5" />
             </div>
           </div>
         </div>
