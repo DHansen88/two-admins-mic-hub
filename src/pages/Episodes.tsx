@@ -163,10 +163,10 @@ const Episodes = () => {
                 </Select>
               </div>
 
-              {/* Host & Topic Filter Pills */}
+              {/* Topic Filter Pills */}
               <BlogFilterBar
-                selectedHost={selectedHost}
-                onHostChange={setSelectedHost}
+                selectedHost="all"
+                onHostChange={() => {}}
                 selectedTopics={selectedTopics}
                 onTopicsChange={setSelectedTopics}
                 filteredCount={filteredEpisodes.length}
