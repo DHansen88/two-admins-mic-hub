@@ -176,16 +176,6 @@ const Episodes = () => {
               {hasActiveFilters && (
                 <div className="flex items-center flex-wrap gap-2 mb-6 p-3 rounded-lg bg-muted/50 border border-border animate-fade-in">
                   <span className="text-sm font-medium text-muted-foreground mr-1">Active Filters:</span>
-                  {selectedHost !== "all" && (
-                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white ${
-                      selectedHost === "diana" ? "bg-[hsl(var(--teal))]" : "bg-[hsl(var(--coral))]"
-                    }`}>
-                      {selectedHost === "diana" ? "Diana" : "Mel"}
-                      <button onClick={() => setSelectedHost("all")} className="ml-1 hover:opacity-70">
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  )}
                   {selectedTopics.map((topic) => (
                     <span
                       key={topic}
