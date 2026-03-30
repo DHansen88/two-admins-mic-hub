@@ -18,7 +18,7 @@ const hosts = [{
   name: "Melinda Vail Goodnight",
   title: "Founder & Co-Host",
   image: hostMelinda,
-  bio: "Melinda is a seasoned administrator with a gift for building collaborative cultures. She's passionate about creating systems that support both people and performance, and she's never afraid to share a good laugh along the way.",
+  bio: "Melinda is a Senior Executive Assistant at Southwest Airlines, where she supports the Vice President and Chief Audit Executive. She also leads the Executive Assistants Professional Development Program at Southwest Airlines, focusing on training and development. Beyond her day-to-day responsibilities, Melinda is an active advocate, contributor, and resource for the administrative community. She has served as an advisory board member for The Admin Awards, contributing her expertise to recognize and celebrate excellence within the administrative profession. She is a respected voice in the admin community, an advocate for growth and recognition, and the kind of person who makes you better simply by being in the room. Outside of her professional work, Melinda enjoys time with her loving (and lively) family, which includes four sons, three daughters-in-law, and six wonderful grandchildren. Her hobbies include hiking, cooking, reading, gardening, and traveling whenever she can find the time.",
   tags: ["Admin Life", "Wellness", "Humor & Human Moments"],
   micBullets: ["Strategies for creating healthy, high-performing teams", "Insights on navigating change with grace and humor", "Real talk about self-care and sustainability in leadership"],
   tilt: "rotate-2"
