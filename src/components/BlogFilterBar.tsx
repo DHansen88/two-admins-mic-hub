@@ -59,7 +59,7 @@ const BlogFilterBar = ({
   return (
     <div className="space-y-3 mb-6">
       {/* Host pills row */}
-      <div className="flex items-center gap-2">
+      {!hideHostFilter && (
         {hosts.map((host) => {
           const isActive = selectedHost === host.id;
           return (
