@@ -31,6 +31,7 @@ const BlogFilterBar = ({
   selectedTopics,
   onTopicsChange,
   filteredCount,
+  hideHostFilter = false,
 }: BlogFilterBarProps) => {
   const topics = getTagNames();
   const scrollRef = useRef<HTMLDivElement>(null);
