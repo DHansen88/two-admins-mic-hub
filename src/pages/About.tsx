@@ -256,7 +256,7 @@ const About = () => {
                 Two Admins. One Mic. Zero Fluff.
               </p>
               <p className="text-lg md:text-xl text-background/80 leading-relaxed">
-                Real conversations about leadership, executive partnership, and the evolving power of the administrative profession.
+                Honest, practical conversations about leadership, executive support, and the real work behind the administrative profession
               </p>
             </div>
           </div>
