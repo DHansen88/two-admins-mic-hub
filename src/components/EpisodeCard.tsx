@@ -69,48 +69,8 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
           </div>
         </div>
 
-        {/* Episode Info */}
-        <div className="p-5 md:p-6 space-y-3 flex-1 min-w-0">
-          <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-xs font-bold text-muted-foreground bg-muted px-3 py-1 rounded-full">
-              Episode {episode.number}
-            </span>
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Clock className="h-3.5 w-3.5" />
-              {episode.duration}
-            </span>
-          </div>
 
-          <h3 className="text-lg font-bold text-foreground group-hover:text-accent transition-colors leading-snug">
-            {episode.title}
-          </h3>
 
-          <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-            {false && hostName && (
-              <span className="inline-flex items-center gap-1.5">
-                <span
-                  className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold text-white ${
-                    isDiana
-                      ? "bg-[hsl(var(--teal))]"
-                      : isMel
-                      ? "bg-[hsl(var(--coral))]"
-                      : "bg-muted-foreground"
-                  }`}
-                >
-                  {hostName.charAt(0)}
-                </span>
-                <span className="font-medium">{hostName}</span>
-              </span>
-            )}
-            {false && hostName && <span>•</span>}
-            <span>{episode.date}</span>
-          </div>
-
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {episode.description}
-          </p>
-
-        </div>
       </div>
     </Card>
   );
