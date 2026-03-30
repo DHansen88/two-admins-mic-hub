@@ -14,16 +14,15 @@ const EPISODES_PER_PAGE = 5;
 
 const Episodes = () => {
   const [search, setSearch] = useState("");
-  const [selectedHost, setSelectedHost] = useState<string>("all");
+  const [selectedHost] = useState<string>("all");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const latestEpisode = allEpisodes[0];
 
-  const hasActiveFilters = selectedHost !== "all" || selectedTopics.length > 0;
+  const hasActiveFilters = selectedTopics.length > 0;
 
   const clearFilters = () => {
-    setSelectedHost("all");
     setSelectedTopics([]);
   };
 
@@ -164,29 +163,20 @@ const Episodes = () => {
                 </Select>
               </div>
 
-              {/* Host & Topic Filter Pills */}
+              {/* Topic Filter Pills */}
               <BlogFilterBar
-                selectedHost={selectedHost}
-                onHostChange={setSelectedHost}
+                selectedHost="all"
+                onHostChange={() => {}}
                 selectedTopics={selectedTopics}
                 onTopicsChange={setSelectedTopics}
                 filteredCount={filteredEpisodes.length}
+                hideHostFilter
               />
 
               {/* Active Filters Bar */}
               {hasActiveFilters && (
                 <div className="flex items-center flex-wrap gap-2 mb-6 p-3 rounded-lg bg-muted/50 border border-border animate-fade-in">
                   <span className="text-sm font-medium text-muted-foreground mr-1">Active Filters:</span>
-                  {selectedHost !== "all" && (
-                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white ${
-                      selectedHost === "diana" ? "bg-[hsl(var(--teal))]" : "bg-[hsl(var(--coral))]"
-                    }`}>
-                      {selectedHost === "diana" ? "Diana" : "Mel"}
-                      <button onClick={() => setSelectedHost("all")} className="ml-1 hover:opacity-70">
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  )}
                   {selectedTopics.map((topic) => (
                     <span
                       key={topic}
