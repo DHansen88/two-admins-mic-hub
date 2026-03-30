@@ -10,7 +10,7 @@ const hosts = [{
   name: "Diana Hansen",
   title: "Founder & Co-Host",
   image: hostDmh,
-  bio: "With decades of experience in educational leadership and administration, Diana brings a grounded, people-first perspective to every conversation. She believes the best leaders are lifelong learners who lead with empathy and clarity.",
+  bio: "Diana is the Executive Administrator to Doug Conant at ConantLeadership and for the Conant family. She has built her career supporting senior executives at the highest levels, including roles at General Electric and Campbell Soup Company, where she managed global leaders, complex projects, and high-stakes calendars. A 2022 Admin Award winner, Diana is known for her tenacity, creativity, and uncanny ability to solve problems before they surface. She also leads branding and creative initiatives at ConantLeadership, bringing both strategy and design expertise to the team. Outside of work, Diana enjoys cheering on the Philadelphia Eagles, painting, reading, solving murder mysteries, and spending time with her two granddaughters—powered by humor, sarcasm, Monster Energy drinks, and a perfectly color-coded calendar.",
   tags: ["Leadership", "Career Growth", "Communication"],
   micBullets: ["Practical frameworks for leading with confidence", "Honest perspectives on balancing empathy with accountability", "A passion for developing the next generation of leaders"],
   tilt: "-rotate-2"
