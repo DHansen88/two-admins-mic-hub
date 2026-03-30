@@ -12,7 +12,7 @@ const hosts = [
     name: "Diana Hansen",
     badge: "Admin Awards Loyalty Winner",
     badgeIcon: Award,
-    bio: "Diana brings 15 years of administrative leadership experience and is passionate about empowering others to reach their full potential. She's a certified leadership coach dedicated to elevating the admin profession.",
+    bio: "Diana is the Executive Administrator to Doug Conant at ConantLeadership and for the Conant family. A 2022 Admin Award winner, she brings years of experience supporting senior leaders at companies like General Electric and Campbell Soup Company. Known for her precision, creativity, and proactive mindset, she also leads branding and creative for ConantLeadership.",
     skills: ["Leadership Coaching", "Strategic Planning", "Team Empowerment", "Culture Building"],
     meetLink: "/about#diana",
     articlesLink: "/blog",
