@@ -11,7 +11,7 @@ const hosts = [{
   title: "Founder & Co-Host",
   image: hostDmh,
   bio: "Diana is the Executive Administrator to Doug Conant at ConantLeadership and for the Conant family. She has built her career supporting senior executives at the highest levels, including roles at General Electric and Campbell Soup Company, where she managed global leaders, complex projects, and high-stakes calendars. A 2022 Admin Award winner, Diana is known for her tenacity, creativity, and uncanny ability to solve problems before they surface. She also leads branding and creative initiatives at ConantLeadership, bringing both strategy and design expertise to the team. Outside of work, Diana enjoys cheering on the Philadelphia Eagles, painting, reading, solving murder mysteries, and spending time with her two granddaughters—powered by humor, sarcasm, Monster Energy drinks, and a perfectly color-coded calendar.",
-  tags: ["Leadership", "Career Growth", "Communication"],
+  tags: ["Executive Administration", "Branding & Creative", "Leadership"],
   micBullets: ["Executive-level administrative expertise and real-world strategies", "Creative problem-solving and proactive leadership insights", "A blend of humor, heart, and no-nonsense professionalism"],
   tilt: "-rotate-2"
 }, {
