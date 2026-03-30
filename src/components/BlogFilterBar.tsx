@@ -11,6 +11,7 @@ interface BlogFilterBarProps {
   selectedTopics: string[];
   onTopicsChange: (topics: string[]) => void;
   filteredCount?: number;
+  hideHostFilter?: boolean;
 }
 
 const hosts = [
