@@ -93,7 +93,7 @@ const BlogFilterBar = ({
             </button>
           );
         })}
-      </div>
+      )}
 
       {/* Topic pills carousel */}
       <div className="relative group/carousel">
