@@ -30,7 +30,7 @@ const hosts = [
     name: "Melinda Vail Goodnight",
     badge: "20+ Years Executive Support",
     badgeIcon: Briefcase,
-    bio: "Mel has spent two decades in administrative roles across Fortune 500 companies and loves sharing practical strategies that work. Her no-nonsense approach makes complex topics accessible and actionable.",
+    bio: "Melinda is a Senior Executive Assistant at Southwest Airlines, supporting the Vice President and Chief Audit Executive. She leads the company’s Executive Assistants Professional Development Program, advancing training and growth across the administrative community. A respected advocate, she has served on The Admin Awards advisory board, championing excellence.",
     skills: ["Operations", "Executive Support", "Process Optimization", "Communication"],
     meetLink: "/about#melinda",
     articlesLink: "/blog",
