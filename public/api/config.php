@@ -21,6 +21,13 @@ define('SESSION_NAME', 'taam_admin_session');
 define('SESSION_STORAGE_DIR', dirname(__DIR__, 2) . '/storage/sessions');
 define('ADMIN_TOKEN_STORAGE_FILE', dirname(__DIR__, 2) . '/storage/admin-tokens.json');
 
+// SMTP settings for outgoing email (Hostinger)
+define('SMTP_HOST', 'smtp.hostinger.com');
+define('SMTP_PORT', 465);
+define('SMTP_USER', 'info@twoadminsandamic.com');
+define('SMTP_PASS', 'YOUR_MAILBOX_PASSWORD_HERE');  // ← Update this on the server
+define('SMTP_FROM_NAME', 'Two Admins and a Mic');
+
 // CORS — explicit origins are required when cookies/sessions are used
 define('ALLOWED_ORIGINS', [
     'https://twoadminsandamic.com',
