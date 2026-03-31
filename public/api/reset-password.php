@@ -361,7 +361,7 @@ function smtpSend(string $from, string $to, string $message): bool {
         $code = (int) substr($response, 0, 3);
 
         if (!in_array($code, $expectedCodes, true)) {
-            error_log("SMTP error after '{$cmd}': {$response}");
+            logResetPasswordEvent("SMTP error after '{$cmd}': {$response}");
             $ok = false;
         }
 
