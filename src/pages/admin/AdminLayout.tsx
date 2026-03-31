@@ -41,6 +41,16 @@ const AdminLayout = () => {
   useEffect(() => {
     let mounted = true;
 
+    const isDev = import.meta.env.DEV || window.location.hostname.includes('lovable.app');
+
+    if (isDev) {
+      // Bypass login in dev/preview
+      setUser({ name: "Dev Admin", role: "admin", email: "dev@localhost" } as any);
+      setShowLogin(false);
+      setCheckingSession(false);
+      return;
+    }
+
     const verify = async () => {
       if (!isAuthenticated()) {
         if (!mounted) return;
