@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock, AlertCircle, Mail, KeyRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const AdminLogin = () => {
+const AdminLogin = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,7 +24,11 @@ const AdminLogin = () => {
       const result = await login(email, password);
       if (result.success && result.user) {
         toast({ title: `Welcome back, ${result.user.name}!` });
-        navigate("/admin");
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate("/admin");
+        }
       } else {
         setError(result.error || "Invalid credentials");
         setPassword("");

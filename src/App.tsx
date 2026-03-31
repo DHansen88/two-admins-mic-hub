@@ -67,7 +67,7 @@ const App = () => (
           <Route path="/cookie-policy" element={<CookiePolicy />} />
 
           {/* Admin Dashboard */}
-          <Route path="/admin/login" element={<AdminLogin />} />
+          
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="episodes" element={<ManageEpisodes />} />
