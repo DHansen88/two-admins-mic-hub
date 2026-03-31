@@ -34,15 +34,12 @@ jobs:
           cp public/robots.txt dist/robots.txt
 
       - name: Deploy to deploy branch
-        uses: peaceiris/actions-gh-pages@v4
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: deploy
-          force_orphan: true
-          commit_message: "deploy: ${{ github.sha }}"
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+          branch: deploy
+          folder: dist
+          clean: true
+          single-commit: true
 
       - name: Sync Hostinger via SSH
         uses: appleboy/ssh-action@v1.2.2
