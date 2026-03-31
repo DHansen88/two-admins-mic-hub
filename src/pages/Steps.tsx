@@ -587,7 +587,7 @@ const Steps = () => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
               <img src={stepsLogo} alt="STEPS – Success Through Empowering Professional Support" className="h-[4.375rem] md:h-[6.25rem] mx-auto" />
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-background leading-tight">
+              <h1 className="text-4xl lg:text-7xl font-display font-bold text-background leading-tight md:text-5xl">
                 You're not "just an admin."
               </h1>
               <h2 className="text-xl lg:text-3xl font-display font-semibold text-teal leading-tight md:text-3xl">
