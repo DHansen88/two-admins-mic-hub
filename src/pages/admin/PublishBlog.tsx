@@ -253,7 +253,7 @@ const PublishBlog = () => {
       title,
       summary: autoExcerpt,
       takeaways: autoTakeaways,
-      url: `/blog/${generateSlug(title)}`,
+      url: `/blog/${customSlug || generateSlug(title)}`,
     });
     setGeneratedNewsletter(newsletter);
     toast({ title: "Content auto-generated!" });
