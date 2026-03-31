@@ -14,10 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-define('SITE_ROOT', realpath(__DIR__ . '/../../'));
+define('SITE_ROOT', dirname(__DIR__, 2));
+define('PUBLIC_ROOT', dirname(__DIR__));
+
 define('AUTHORS_DIR', SITE_ROOT . '/content');
 define('AUTHORS_FILE', AUTHORS_DIR . '/authors.json');
-define('UPLOADS_ROOT', SITE_ROOT . '/uploads');
+
+define('UPLOADS_ROOT', PUBLIC_ROOT . '/uploads');
 define('AUTHOR_IMAGES_DIR', UPLOADS_ROOT . '/headshots');
 
 // Ensure directories exist
