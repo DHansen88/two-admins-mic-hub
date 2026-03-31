@@ -114,6 +114,7 @@ function handleResetRequest(): void {
     $textBody = buildResetEmailPlainText($user['name'], $resetUrl);
 
     $sent = sendResetEmail($user['email'], $user['name'], $subject, $htmlBody, $textBody);
+    $detail = $sent ? 'Email sent' : 'Email send failed';
 
     // Log the request
     $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_id, user_email, action, details, ip_address) VALUES (?, ?, ?, ?, ?)');
@@ -121,9 +122,11 @@ function handleResetRequest(): void {
         $user['id'],
         $user['email'],
         'password_reset_request',
-        $sent ? 'Email sent' : 'Email send failed',
+        $detail,
         $_SERVER['REMOTE_ADDR'] ?? '',
     ]);
+
+    logResetPasswordEvent("Password reset {$detail} for {$user['email']} via " . SMTP_HOST . ':' . SMTP_PORT);
 
     jsonResponse(['success' => true, 'message' => $successMsg]);
 }
