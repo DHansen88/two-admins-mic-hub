@@ -282,32 +282,100 @@ TEXT;
 }
 
 /**
- * Send the reset email using PHP mail()
+ * Send the reset email using authenticated SMTP (Hostinger)
  */
 function sendResetEmail(string $to, string $name, string $subject, string $htmlBody, string $textBody): bool {
-    $boundary = md5(time());
-    $fromEmail = 'info@twoadminsandamic.com';
+    $boundary = md5(uniqid(time()));
+    $fromEmail = SMTP_USER;
+    $fromName = SMTP_FROM_NAME;
 
-    $headers = implode("\r\n", [
-        "From: Two Admins and a Mic <{$fromEmail}>",
-        "Reply-To: {$fromEmail}",
-        'MIME-Version: 1.0',
-        "Content-Type: multipart/alternative; boundary=\"{$boundary}\"",
-    ]);
+    $message = "From: {$fromName} <{$fromEmail}>\r\n";
+    $message .= "To: {$name} <{$to}>\r\n";
+    $message .= "Subject: {$subject}\r\n";
+    $message .= "MIME-Version: 1.0\r\n";
+    $message .= "Content-Type: multipart/alternative; boundary=\"{$boundary}\"\r\n";
+    $message .= "\r\n";
+    $message .= "--{$boundary}\r\n";
+    $message .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
+    $message .= $textBody . "\r\n\r\n";
+    $message .= "--{$boundary}\r\n";
+    $message .= "Content-Type: text/html; charset=UTF-8\r\n\r\n";
+    $message .= $htmlBody . "\r\n\r\n";
+    $message .= "--{$boundary}--\r\n";
 
-    $body = "--{$boundary}\r\n";
-    $body .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
-    $body .= $textBody . "\r\n\r\n";
-    $body .= "--{$boundary}\r\n";
-    $body .= "Content-Type: text/html; charset=UTF-8\r\n\r\n";
-    $body .= $htmlBody . "\r\n\r\n";
-    $body .= "--{$boundary}--";
+    return smtpSend($fromEmail, $to, $message);
+}
 
-    $result = mail($to, $subject, $body, $headers, "-f{$fromEmail}");
+/**
+ * Raw SMTP sender over SSL — no external libraries needed
+ */
+function smtpSend(string $from, string $to, string $message): bool {
+    $host = SMTP_HOST;
+    $port = SMTP_PORT;
+    $user = SMTP_USER;
+    $pass = SMTP_PASS;
 
-    if (!$result) {
-        error_log("Password reset email failed for {$to}: " . print_r(error_get_last(), true));
+    $socket = @fsockopen("ssl://{$host}", $port, $errno, $errstr, 10);
+    if (!$socket) {
+        error_log("SMTP connect failed: [{$errno}] {$errstr}");
+        return false;
     }
 
-    return $result;
+    $response = '';
+    $ok = true;
+
+    $read = function () use ($socket, &$response): string {
+        $buf = '';
+        while ($line = fgets($socket, 512)) {
+            $buf .= $line;
+            if (isset($line[3]) && $line[3] === ' ') break;
+        }
+        return $buf;
+    };
+
+    $send = function (string $cmd, int $expect) use ($socket, $read, &$response, &$ok): bool {
+        if (!$ok) return false;
+        fwrite($socket, $cmd . "\r\n");
+        $response = $read();
+        $code = (int) substr($response, 0, 3);
+        if ($code !== $expect) {
+            error_log("SMTP error: sent '{$cmd}', expected {$expect}, got: {$response}");
+            $ok = false;
+            return false;
+        }
+        return true;
+    };
+
+    // Greeting
+    $response = $read();
+    if ((int) substr($response, 0, 3) !== 220) {
+        error_log("SMTP greeting failed: {$response}");
+        fclose($socket);
+        return false;
+    }
+
+    $send("EHLO twoadminsandamic.com", 250);
+    $send("AUTH LOGIN", 334);
+    $send(base64_encode($user), 334);
+    $send(base64_encode($pass), 235);
+    $send("MAIL FROM:<{$from}>", 250);
+    $send("RCPT TO:<{$to}>", 250);
+    $send("DATA", 354);
+
+    if ($ok) {
+        // Send message body — dot-stuff any lines starting with "."
+        $lines = explode("\n", str_replace("\r\n", "\n", $message));
+        foreach ($lines as $line) {
+            if (isset($line[0]) && $line[0] === '.') {
+                $line = '.' . $line;
+            }
+            fwrite($socket, $line . "\r\n");
+        }
+        $send(".", 250);
+    }
+
+    $send("QUIT", 221);
+    fclose($socket);
+
+    return $ok;
 }
