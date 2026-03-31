@@ -286,13 +286,13 @@ TEXT;
  */
 function sendResetEmail(string $to, string $name, string $subject, string $htmlBody, string $textBody): bool {
     $boundary = md5(time());
+    $fromEmail = 'noreply@twoadminsandamic.com';
 
     $headers = implode("\r\n", [
-        'From: Two Admins and a Mic <noreply@twoadminsandamic.com>',
-        'Reply-To: noreply@twoadminsandamic.com',
+        "From: Two Admins and a Mic <{$fromEmail}>",
+        "Reply-To: {$fromEmail}",
         'MIME-Version: 1.0',
         "Content-Type: multipart/alternative; boundary=\"{$boundary}\"",
-        'X-Mailer: TAAM-Admin/1.0',
     ]);
 
     $body = "--{$boundary}\r\n";
@@ -303,5 +303,11 @@ function sendResetEmail(string $to, string $name, string $subject, string $htmlB
     $body .= $htmlBody . "\r\n\r\n";
     $body .= "--{$boundary}--";
 
-    return @mail($to, $subject, $body, $headers);
+    $result = mail($to, $subject, $body, $headers, "-f{$fromEmail}");
+
+    if (!$result) {
+        error_log("Password reset email failed for {$to}: " . print_r(error_get_last(), true));
+    }
+
+    return $result;
 }
