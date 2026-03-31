@@ -27,9 +27,8 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Copy PHP API & server files to dist
+      - name: Copy server files to dist
         run: |
-          cp -r public/api dist/api
           cp public/.htaccess dist/.htaccess
           cp public/robots.txt dist/robots.txt
 
