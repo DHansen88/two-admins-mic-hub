@@ -43,13 +43,13 @@ jobs:
           commit_message: "deploy: ${{ github.sha }}"
 
       - name: Sync Hostinger via SSH
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.2.2
         with:
-          host: ${{ secrets.HOSTINGER_HOST }}
-          username: ${{ secrets.HOSTINGER_USER }}
+          host: 82.29.86.190
+          username: u808275895
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
           port: 65002
           script: |
-            cd /home/${{ secrets.HOSTINGER_USER }}/domains/twoadminsandamic.com/public_html
+            cd /home/u808275895/domains/twoadminsandamic.com/public_html
             git fetch origin deploy
             git reset --hard origin/deploy
