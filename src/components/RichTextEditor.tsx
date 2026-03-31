@@ -10,7 +10,7 @@ import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Bold,
@@ -34,7 +34,36 @@ interface RichTextEditorProps {
   onChange: (html: string) => void;
 }
 
+const ToolBtn = ({
+  onClick,
+  active,
+  children,
+  title,
+}: {
+  onClick: () => void;
+  active?: boolean;
+  children: React.ReactNode;
+  title: string;
+}) => (
+  <Button
+    type="button"
+    size="icon"
+    variant={active ? "default" : "ghost"}
+    className="h-8 w-8"
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick();
+    }}
+    title={title}
+  >
+    {children}
+  </Button>
+);
+
 const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -54,9 +83,10 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
       }),
       HorizontalRule,
     ],
-    content,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+    content: content || "",
+    immediatelyRender: false,
+    onUpdate: ({ editor: e }) => {
+      onChange(e.getHTML());
     },
     editorProps: {
       attributes: {
@@ -85,41 +115,37 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   }, [editor]);
 
-  const addImage = useCallback(() => {
-    if (!editor) return;
-    const url = window.prompt("Image URL");
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
-    }
-  }, [editor]);
+  const handleImageUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file || !editor) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        editor.chain().focus().setImage({ src: dataUrl }).run();
+      };
+      reader.readAsDataURL(file);
+
+      // Reset so the same file can be re-selected
+      e.target.value = "";
+    },
+    [editor],
+  );
 
   if (!editor) return null;
 
-  const ToolBtn = ({
-    onClick,
-    active,
-    children,
-    title,
-  }: {
-    onClick: () => void;
-    active?: boolean;
-    children: React.ReactNode;
-    title: string;
-  }) => (
-    <Button
-      type="button"
-      size="icon"
-      variant={active ? "default" : "ghost"}
-      className="h-8 w-8"
-      onClick={onClick}
-      title={title}
-    >
-      {children}
-    </Button>
-  );
-
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-background">
+      {/* Hidden file input for image uploads */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={handleImageUpload}
+      />
+
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-border bg-muted/30">
         <ToolBtn
@@ -197,7 +223,10 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
         <ToolBtn onClick={setLink} active={editor.isActive("link")} title="Link">
           <LinkIcon className="h-4 w-4" />
         </ToolBtn>
-        <ToolBtn onClick={addImage} title="Image">
+        <ToolBtn
+          onClick={() => fileInputRef.current?.click()}
+          title="Upload Image"
+        >
           <ImageIcon className="h-4 w-4" />
         </ToolBtn>
         <ToolBtn
