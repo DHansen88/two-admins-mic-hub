@@ -341,7 +341,7 @@ const PublishBlog = () => {
       return;
     }
     await handlePublishToServer();
-    const slug = generateSlug(title);
+    const slug = customSlug || generateSlug(title);
     setContentStatus("blog", slug, "published");
     navigate("/admin/blog-posts");
   };
