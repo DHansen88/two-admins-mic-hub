@@ -118,8 +118,8 @@ export function getAdminApiBase(): string {
 
 function redirectToLogin(): void {
   if (typeof window === 'undefined') return;
-  if (window.location.pathname !== '/admin/login') {
-    window.location.href = '/admin/login';
+  if (window.location.pathname !== '/admin') {
+    window.location.href = '/admin';
   }
 }
 
