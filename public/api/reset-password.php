@@ -15,6 +15,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 $action = $_GET['action'] ?? '';
 
+function logResetPasswordEvent(string $message): void {
+    $storageDir = dirname(__DIR__, 2) . '/storage';
+    if (!is_dir($storageDir)) {
+        @mkdir($storageDir, 0755, true);
+    }
+
+    $entry = '[' . date('c') . '] ' . $message . PHP_EOL;
+    @file_put_contents($storageDir . '/reset-password.log', $entry, FILE_APPEND);
+    error_log($message);
+}
+
 switch ($action) {
     case 'request':
         handleResetRequest();
@@ -78,6 +89,7 @@ function handleResetRequest(): void {
         // Log attempt but return generic success
         $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_email, action, details, ip_address) VALUES (?, ?, ?, ?)');
         $logStmt->execute([$email, 'password_reset_request', 'No matching active account', $_SERVER['REMOTE_ADDR'] ?? '']);
+        logResetPasswordEvent("Password reset requested for missing or inactive account: {$email}");
         jsonResponse(['success' => true, 'message' => $successMsg]);
     }
 
@@ -102,6 +114,7 @@ function handleResetRequest(): void {
     $textBody = buildResetEmailPlainText($user['name'], $resetUrl);
 
     $sent = sendResetEmail($user['email'], $user['name'], $subject, $htmlBody, $textBody);
+    $detail = $sent ? 'Email sent' : 'Email send failed';
 
     // Log the request
     $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_id, user_email, action, details, ip_address) VALUES (?, ?, ?, ?, ?)');
@@ -109,9 +122,11 @@ function handleResetRequest(): void {
         $user['id'],
         $user['email'],
         'password_reset_request',
-        $sent ? 'Email sent' : 'Email send failed',
+        $detail,
         $_SERVER['REMOTE_ADDR'] ?? '',
     ]);
+
+    logResetPasswordEvent("Password reset {$detail} for {$user['email']} via " . SMTP_HOST . ':' . SMTP_PORT);
 
     jsonResponse(['success' => true, 'message' => $successMsg]);
 }
@@ -317,7 +332,7 @@ function smtpSend(string $from, string $to, string $message): bool {
 
     $socket = @stream_socket_client("tcp://{$host}:{$port}", $errno, $errstr, 15);
     if (!$socket) {
-        error_log("SMTP connect failed: [{$errno}] {$errstr}");
+        logResetPasswordEvent("SMTP connect failed: [{$errno}] {$errstr}");
         return false;
     }
 
@@ -346,7 +361,7 @@ function smtpSend(string $from, string $to, string $message): bool {
         $code = (int) substr($response, 0, 3);
 
         if (!in_array($code, $expectedCodes, true)) {
-            error_log("SMTP error after '{$cmd}': {$response}");
+            logResetPasswordEvent("SMTP error after '{$cmd}': {$response}");
             $ok = false;
         }
 
@@ -355,7 +370,7 @@ function smtpSend(string $from, string $to, string $message): bool {
 
     $response = $read();
     if ((int) substr($response, 0, 3) !== 220) {
-        error_log("SMTP greeting failed: {$response}");
+        logResetPasswordEvent("SMTP greeting failed: {$response}");
         fclose($socket);
         return false;
     }
@@ -364,7 +379,7 @@ function smtpSend(string $from, string $to, string $message): bool {
     $send("STARTTLS", [220]);
 
     if ($ok && !stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-        error_log('SMTP STARTTLS negotiation failed');
+        logResetPasswordEvent('SMTP STARTTLS negotiation failed');
         $ok = false;
     }
 
@@ -390,7 +405,7 @@ function smtpSend(string $from, string $to, string $message): bool {
         $response = $read();
         $code = (int) substr($response, 0, 3);
         if ($code !== 250) {
-            error_log("SMTP DATA finalization failed: {$response}");
+            logResetPasswordEvent("SMTP DATA finalization failed: {$response}");
             $ok = false;
         }
     }
