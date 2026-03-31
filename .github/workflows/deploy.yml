@@ -41,3 +41,15 @@ jobs:
           publish_branch: deploy
           force_orphan: true
           commit_message: "deploy: ${{ github.sha }}"
+
+      - name: Sync Hostinger via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: 65002
+          script: |
+            cd /home/${{ secrets.HOSTINGER_USER }}/domains/twoadminsandamic.com/public_html
+            git fetch origin deploy
+            git reset --hard origin/deploy
