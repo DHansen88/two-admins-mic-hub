@@ -32,6 +32,8 @@ define('BEEHIIV_PUBLICATION_ID', 'pub_c5ba8b8c-515d-45fc-87c1-fb21106b1e0a');
 // ─── Input validation ───────────────────────────────────────
 $body = getRequestBody();
 $email = isset($body['email']) ? trim($body['email']) : '';
+$firstName = isset($body['first_name']) ? trim(substr($body['first_name'], 0, 100)) : '';
+$lastName = isset($body['last_name']) ? trim(substr($body['last_name'], 0, 100)) : '';
 
 if (empty($email)) {
     jsonResponse(['error' => 'Email is required'], 400);
@@ -80,11 +82,15 @@ curl_setopt_array($ch, [
         'Content-Type: application/json',
         'Authorization: Bearer ' . $apiKey,
     ],
-    CURLOPT_POSTFIELDS => json_encode([
+    CURLOPT_POSTFIELDS => json_encode(array_filter([
         'email' => $email,
         'reactivate_existing' => false,
         'send_welcome_email' => true,
-    ]),
+        'custom_fields' => array_filter([
+            ['name' => 'First Name', 'value' => $firstName],
+            ['name' => 'Last Name', 'value' => $lastName],
+        ], fn($f) => !empty($f['value'])) ?: null,
+    ], fn($v) => $v !== null)),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT => 15,
     CURLOPT_SSL_VERIFYPEER => true,

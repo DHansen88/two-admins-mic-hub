@@ -32,7 +32,11 @@ const PopupNewsletterForm = () => {
       const res = await fetch("/api/subscribe.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed }),
+        body: JSON.stringify({
+          email: trimmed,
+          first_name: firstName.trim() || undefined,
+          last_name: lastName.trim() || undefined,
+        }),
       });
 
       const data = await res.json().catch(() => null);
