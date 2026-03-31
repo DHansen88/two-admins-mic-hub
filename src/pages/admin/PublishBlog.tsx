@@ -395,6 +395,17 @@ const PublishBlog = () => {
             <label className="text-sm font-medium text-foreground">Title *</label>
             <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="5 Essential Leadership Skills Every Administrator Needs" />
           </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground">URL Slug</label>
+            <Input
+              value={customSlug}
+              onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''))}
+              placeholder={generateSlug(title) || "auto-generated-from-title"}
+            />
+            <p className="text-xs text-muted-foreground">
+              Leave blank to auto-generate. URL: /blog/{customSlug || generateSlug(title) || "..."}
+            </p>
+          </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Publish Date</label>
