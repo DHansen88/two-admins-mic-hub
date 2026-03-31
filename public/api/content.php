@@ -715,7 +715,50 @@ function handleUploadPodcastAsset(): void {
 
     if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
         jsonResponse(['error' => 'Failed to save file'], 500);
+}
+
+// ─── Public: Hidden Content IDs ───
+
+function handleHiddenIds(): void {
+    // No auth required — this is a public endpoint
+    $statuses = getContentStatuses();
+    $hidden = ['blogs' => [], 'episodes' => []];
+
+    foreach ($statuses as $key => $value) {
+        $status = $value['status'] ?? 'published';
+        if ($status !== 'published') {
+            $parts = explode(':', $key, 2);
+            if (count($parts) === 2) {
+                $type = $parts[0];
+                $id = $parts[1];
+                if ($type === 'blog') {
+                    $hidden['blogs'][] = $id;
+                } elseif ($type === 'episode') {
+                    $hidden['episodes'][] = $id;
+                }
+            }
+        }
     }
+
+    // Also check trash directory for files moved there
+    foreach (['blog', 'episode'] as $type) {
+        $dir = TRASH_DIR . "/{$type}";
+        if (!is_dir($dir)) continue;
+        foreach (glob($dir . '/*') as $file) {
+            $ext = pathinfo($file, PATHINFO_EXTENSION);
+            $name = basename($file, ".{$ext}");
+            if ($type === 'blog') {
+                if (!in_array($name, $hidden['blogs'])) $hidden['blogs'][] = $name;
+            } else {
+                $data = json_decode(file_get_contents($file), true);
+                $epId = (string)($data['number'] ?? $name);
+                if (!in_array($epId, $hidden['episodes'])) $hidden['episodes'][] = $epId;
+            }
+        }
+    }
+
+    jsonResponse($hidden);
+}
 
     $publicUrl = '/uploads/podcast/' . $filename;
     jsonResponse(['success' => true, 'url' => $publicUrl]);
