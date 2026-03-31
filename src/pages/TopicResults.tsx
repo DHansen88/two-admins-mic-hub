@@ -36,7 +36,7 @@ const TopicResults = () => {
     );
   }
 
-  const { blogs, episodes } = getContentByTopic(decodedTopic as any);
+  const { blogs, episodes } = useVisibleContentByTopic(decodedTopic);
 
   return (
     <div className="min-h-screen">
