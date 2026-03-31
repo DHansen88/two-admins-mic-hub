@@ -373,11 +373,10 @@ function handleDelete(): void {
     // Find the file
     $moved = false;
     foreach (['md', 'json'] as $ext) {
-        $source = "{$sourceDir}/{$id}.{$ext}";
-        if (file_exists($source)) {
-            rename($source, "{$trashSubDir}/{$id}.{$ext}");
-            $moved = true;
-            break;
+    $source = "{$sourceDir}/{$id}.{$ext}";
+    if (file_exists($source)) {
+        rename($source, "{$trashSubDir}/{$id}.{$ext}");
+        $moved = true;
         }
     }
     
@@ -412,13 +411,12 @@ function handleRestore(): void {
     
     $restored = false;
     foreach (['md', 'json'] as $ext) {
-        $source = "{$trashSubDir}/{$id}.{$ext}";
-        if (file_exists($source)) {
-            rename($source, "{$targetDir}/{$id}.{$ext}");
-            $restored = true;
-            break;
-        }
+    $source = "{$trashSubDir}/{$id}.{$ext}";
+    if (file_exists($source)) {
+        rename($source, "{$targetDir}/{$id}.{$ext}");
+        $restored = true;
     }
+}
     
     // Try episode-XX format
     if (!$restored && $type === 'episode') {
@@ -694,7 +692,7 @@ function handleUploadPodcastAsset(): void {
     }
 
     $file = $_FILES['file'];
-    $type = $_POST['type'] ?? 'audio'; // 'audio' or 'cover'
+    $type = $_POST['type'] ?? 'audio';
 
     if ($type === 'cover') {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -721,6 +719,10 @@ function handleUploadPodcastAsset(): void {
 
     if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
         jsonResponse(['error' => 'Failed to save file'], 500);
+    }
+
+    $publicUrl = '/uploads/podcast/' . $filename;
+    jsonResponse(['success' => true, 'url' => $publicUrl]);
 }
 
 // ─── Public: Blog Listing & Detail (no auth) ───
@@ -830,8 +832,4 @@ function handleHiddenIds(): void {
     }
 
     jsonResponse($hidden);
-}
-
-    $publicUrl = '/uploads/podcast/' . $filename;
-    jsonResponse(['success' => true, 'url' => $publicUrl]);
 }
