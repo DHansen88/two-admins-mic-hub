@@ -9,6 +9,7 @@ const BrowseTopics = () => {
   const allEpisodes = useVisibleEpisodes();
   const allBlogs = useVisibleBlogs();
   const tags = getAllTags();
+  const [selected, setSelected] = useState<string | null>(null);
 
   const filteredEpisodes = selected
     ? allEpisodes.filter((ep) => ep.topics.includes(selected)).slice(0, 3)
