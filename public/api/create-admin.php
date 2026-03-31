@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/config.php';
 
-$email = 'info@twoadminsandamic.com';
+$email = 'support@twoadminsandamic.com';
 $password = 'ChangeMe2025!';
 $name = 'Admin';
 $role = 'admin';
