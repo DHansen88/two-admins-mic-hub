@@ -80,7 +80,7 @@ const AdminLayout = () => {
   const handleLogout = () => {
     logout();
     setUser(null);
-    navigate("/admin/login", { replace: true });
+    setShowLogin(true);
   };
 
   const navItems = allNavItems.filter((item) => !item.adminOnly || isAdmin());
