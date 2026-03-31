@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllTags } from "@/data/tags";
-import { allEpisodes } from "@/data/episodeData";
-import { allBlogs } from "@/data/blogData";
+import { useVisibleEpisodes, useVisibleBlogs } from "@/hooks/useVisibleContent";
 import { Badge } from "./ui/badge";
 import { ArrowRight } from "lucide-react";
 
 const BrowseTopics = () => {
+  const allEpisodes = useVisibleEpisodes();
+  const allBlogs = useVisibleBlogs();
   const tags = getAllTags();
   const [selected, setSelected] = useState<string | null>(null);
 

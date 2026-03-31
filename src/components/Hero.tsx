@@ -2,8 +2,9 @@ import { Button } from "./ui/button";
 import { Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroLogo from "@/assets/hero-logo.png";
-import { allEpisodes } from "@/data/episodeData";
+import { useVisibleEpisodes } from "@/hooks/useVisibleContent";
 const Hero = () => {
+  const allEpisodes = useVisibleEpisodes();
   return <section className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate via-navy to-deep-blue">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10">

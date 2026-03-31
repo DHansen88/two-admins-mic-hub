@@ -1,7 +1,8 @@
 import EpisodeCard from "./EpisodeCard";
-import { allEpisodes } from "@/data/episodeData";
+import { useVisibleEpisodes } from "@/hooks/useVisibleContent";
 
 const LatestEpisodes = () => {
+  const allEpisodes = useVisibleEpisodes();
   const episodes = allEpisodes.slice(0, 4);
 
   return (

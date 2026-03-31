@@ -8,9 +8,7 @@ import TopicTag from "@/components/TopicTag";
 import BlogBlockRenderer from "@/components/BlogBlockRenderer";
 import TableOfContents, { extractTocItems } from "@/components/TableOfContents";
 import EpisodeCallout from "@/components/EpisodeCallout";
-import { getBlogBySlug, getRelatedPosts } from "@/data/blogData";
-import { getRelatedEpisodesForBlog } from "@/data/crossLinks";
-import { allEpisodes } from "@/data/episodeData";
+import { useVisibleBlogBySlug, useVisibleRelatedPosts, useVisibleRelatedEpisodesForBlog, useVisibleEpisodes } from "@/hooks/useVisibleContent";
 import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Link as LinkIcon, Mail, Lightbulb, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,9 +16,10 @@ import { useToast } from "@/hooks/use-toast";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
-  const post = slug ? getBlogBySlug(slug) : undefined;
-  const relatedPosts = slug ? getRelatedPosts(slug, 3) : [];
-  const relatedEpisodes = slug ? getRelatedEpisodesForBlog(slug, 3) : [];
+  const post = useVisibleBlogBySlug(slug || "");
+  const relatedPosts = useVisibleRelatedPosts(slug || "", 3);
+  const relatedEpisodes = useVisibleRelatedEpisodesForBlog(slug || "", 3);
+  const allEpisodes = useVisibleEpisodes();
   const { toast } = useToast();
   const tocItems = useMemo(() => (post?.blocks ? extractTocItems(post.blocks) : []), [post]);
 

@@ -5,11 +5,7 @@ import Footer from "@/components/Footer";
 import RelatedContentCarousel, { buildRelatedItems } from "@/components/RelatedContentCarousel";
 import TopicTag from "@/components/TopicTag";
 import { Button } from "@/components/ui/button";
-import {
-  getEpisodeBySlug,
-  getRelatedEpisodes,
-} from "@/data/episodeData";
-import { getRelatedBlogsForEpisode } from "@/data/crossLinks";
+import { useVisibleEpisodeBySlug, useVisibleRelatedEpisodes, useVisibleRelatedBlogsForEpisode } from "@/hooks/useVisibleContent";
 import {
   Play,
   Clock,
@@ -29,7 +25,7 @@ import { Input } from "@/components/ui/input";
 
 const EpisodeDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const episode = getEpisodeBySlug(slug || "");
+  const episode = useVisibleEpisodeBySlug(slug || "");
   const [transcriptExpanded, setTranscriptExpanded] = useState(false);
   const [transcriptSearch, setTranscriptSearch] = useState("");
 
@@ -55,8 +51,8 @@ const EpisodeDetail = () => {
     );
   }
 
-  const relatedEpisodes = getRelatedEpisodes(episode);
-  const relatedBlogs = getRelatedBlogsForEpisode(slug || "", 3);
+  const relatedEpisodes = useVisibleRelatedEpisodes(episode);
+  const relatedBlogs = useVisibleRelatedBlogsForEpisode(slug || "", 3);
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);
