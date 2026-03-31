@@ -32,6 +32,8 @@ define('BEEHIIV_PUBLICATION_ID', 'pub_c5ba8b8c-515d-45fc-87c1-fb21106b1e0a');
 // ─── Input validation ───────────────────────────────────────
 $body = getRequestBody();
 $email = isset($body['email']) ? trim($body['email']) : '';
+$firstName = isset($body['first_name']) ? trim(substr($body['first_name'], 0, 100)) : '';
+$lastName = isset($body['last_name']) ? trim(substr($body['last_name'], 0, 100)) : '';
 
 if (empty($email)) {
     jsonResponse(['error' => 'Email is required'], 400);
