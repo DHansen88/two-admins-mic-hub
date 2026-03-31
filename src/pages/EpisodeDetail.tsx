@@ -51,8 +51,8 @@ const EpisodeDetail = () => {
     );
   }
 
-  const relatedEpisodes = getRelatedEpisodes(episode);
-  const relatedBlogs = getRelatedBlogsForEpisode(slug || "", 3);
+  const relatedEpisodes = useVisibleRelatedEpisodes(episode);
+  const relatedBlogs = useVisibleRelatedBlogsForEpisode(slug || "", 3);
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);

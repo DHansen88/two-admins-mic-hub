@@ -10,7 +10,6 @@ import TableOfContents, { extractTocItems } from "@/components/TableOfContents";
 import EpisodeCallout from "@/components/EpisodeCallout";
 import { useVisibleBlogBySlug, useVisibleRelatedPosts, useVisibleRelatedEpisodesForBlog, useVisibleEpisodes } from "@/hooks/useVisibleContent";
 import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Link as LinkIcon, Mail, Lightbulb, Globe } from "lucide-react";
-import { Calendar, Clock, ArrowLeft, Share2, Linkedin, Link as LinkIcon, Mail, Lightbulb, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
