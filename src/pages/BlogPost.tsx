@@ -32,6 +32,18 @@ const BlogPost = () => {
     ) || null;
   }, [post]);
 
+  // Render HTML content from the rich text editor
+  const renderedHtml = useMemo(() => {
+    if (!post) return "";
+    // If post has html_content, use it directly
+    if ((post as any).html_content) return (post as any).html_content;
+    // If post has blocks, BlogBlockRenderer handles it
+    if (post.blocks && post.blocks.length > 0) return "";
+    // Fall back to markdown parsing
+    if (post.content) return marked.parse(post.content, { async: false }) as string;
+    return "";
+  }, [post]);
+
   // SEO meta tags
   useEffect(() => {
     if (post) {
@@ -90,12 +102,15 @@ const BlogPost = () => {
     toast({ title: "Link copied to clipboard!" });
   };
 
+  // Check if authors have real data (name not just a key)
+  const hasAuthorData = post.authors.some((a) => a.bio || a.avatar);
+
   return (
     <div className="min-h-screen">
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="py-16 bg-gradient-to-b from-slate to-navy relative overflow-hidden">
+        <section className="py-20 md:py-24 bg-gradient-to-b from-slate to-navy relative overflow-hidden">
           {/* Manuscript lines */}
           {Array.from({ length: 12 }).map((_, i) => (
             <div
@@ -111,25 +126,19 @@ const BlogPost = () => {
             />
           ))}
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
-            <div className="max-w-[1200px] mx-auto animate-fade-in">
+            <div className="max-w-[800px] mx-auto animate-fade-in">
               <Link
                 to="/blog"
-                className="inline-flex items-center space-x-2 text-background/70 hover:text-background transition-colors mb-8"
+                className="inline-flex items-center space-x-2 text-background/70 hover:text-background transition-colors mb-10"
               >
                 <ArrowLeft size={18} />
                 <span>Back to Blog</span>
               </Link>
 
-
-
-
               {/* Title */}
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-background mb-4">
+              <h1 className="text-3xl md:text-5xl font-display font-bold text-background mb-8 leading-tight">
                 {post.title}
               </h1>
-
-              {/* Intro/Summary */}
-              <p className="text-lg text-background/70 mb-6">{post.excerpt}</p>
 
               {/* Meta info */}
               <div className="flex flex-wrap items-center gap-6 text-background/70">
@@ -148,7 +157,9 @@ const BlogPost = () => {
                     <p className="text-background font-medium">
                       {post.authors.map((a) => a.name).join(" & ")}
                     </p>
-                    <p className="text-sm">{post.authors[0]?.role}</p>
+                    {post.authors[0]?.role && (
+                      <p className="text-sm">{post.authors[0].role}</p>
+                    )}
                   </div>
                 </div>
                 <span className="flex items-center space-x-2">
@@ -162,7 +173,7 @@ const BlogPost = () => {
               </div>
 
               {/* Share Actions */}
-              <div className="flex items-center gap-2 mt-6">
+              <div className="flex items-center gap-2 mt-8">
                 <span className="text-background/60 text-sm flex items-center gap-1.5">
                   <Share2 size={14} /> Share
                 </span>
@@ -209,64 +220,121 @@ const BlogPost = () => {
         </section>
 
         {/* Article Content */}
-        <section className="py-12 md:py-16 bg-background">
+        <section className="py-14 md:py-20 bg-background">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="max-w-[1200px] mx-auto">
               {/* Episode Callout — full container width, above the grid */}
               {calloutEpisode && <EpisodeCallout episode={calloutEpisode} />}
 
-              <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-10 lg:gap-12">
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-10 lg:gap-16">
                 {/* Main Content */}
                 <article className="min-w-0">
                   {/* Mobile TOC */}
                   {tocItems.length > 0 && (
-                    <div className="lg:hidden mb-8">
+                    <div className="lg:hidden mb-10">
                       <TableOfContents items={tocItems} />
                     </div>
                   )}
                   {/* Desktop TOC — inline above content on large screens */}
                   {tocItems.length > 0 && (
-                    <div className="hidden lg:block mb-10">
+                    <div className="hidden lg:block mb-12">
                       <TableOfContents items={tocItems} />
                     </div>
                   )}
                   {post.blocks && post.blocks.length > 0 ? (
                     <BlogBlockRenderer blocks={post.blocks} />
-                  ) : (
+                  ) : renderedHtml ? (
                     <div
-                      className="prose prose-lg max-w-[720px] prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-p:text-[18px] prose-p:leading-[1.75] prose-p:text-left prose-p:mb-[1.4em] prose-strong:text-foreground prose-li:text-muted-foreground prose-li:leading-[1.75] prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-12 prose-h2:mb-5 prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-ul:my-5 prose-li:my-1 prose-img:rounded-lg prose-img:w-full max-md:max-w-[680px] max-md:text-base animate-fade-in"
-                      dangerouslySetInnerHTML={{
-                        __html: marked.parse(post.content, { async: false }) as string,
-                      }}
+                      className="prose prose-lg max-w-[720px]
+                        prose-headings:font-display prose-headings:text-foreground
+                        prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-14 prose-h2:mb-6
+                        prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-12 prose-h3:mb-5
+                        prose-p:text-muted-foreground prose-p:text-base prose-p:md:text-lg prose-p:leading-relaxed prose-p:mb-6 prose-p:text-left
+                        prose-strong:text-foreground prose-strong:font-semibold
+                        prose-li:text-muted-foreground prose-li:leading-relaxed prose-li:my-1.5
+                        prose-ul:my-6 prose-ul:pl-6 prose-ol:my-6 prose-ol:pl-6
+                        prose-blockquote:border-l-4 prose-blockquote:border-accent/40 prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-foreground/80
+                        prose-img:rounded-lg prose-img:w-full prose-img:my-8
+                        prose-hr:my-10 prose-hr:border-border
+                        prose-a:text-accent prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-accent/80
+                        animate-fade-in"
+                      dangerouslySetInnerHTML={{ __html: renderedHtml }}
                     />
-                  )}
+                  ) : null}
                 </article>
 
                 {/* Author Sidebar (right) — hidden below lg */}
-                <aside className="hidden lg:block">
-                  <div className="sticky top-24 space-y-6">
-                    <div className="p-6 bg-card rounded-xl border border-border">
-                      <h3 className="font-display font-semibold text-foreground mb-4">
+                {hasAuthorData && (
+                  <aside className="hidden lg:block">
+                    <div className="sticky top-24 space-y-6">
+                      <div className="p-6 bg-card rounded-xl border border-border shadow-sm">
+                        <h3 className="font-display font-semibold text-foreground mb-5 text-lg">
+                          {post.authors.length > 1 ? "About the Authors" : "About the Author"}
+                        </h3>
+                        <div className="space-y-5">
+                          {post.authors.map((a, i) => (
+                            <div key={i}>
+                              <div className="flex items-center space-x-3 mb-3">
+                                <Avatar className="h-14 w-14">
+                                  <AvatarImage src={a.avatar} alt={a.name} />
+                                  <AvatarFallback className="bg-teal text-background text-sm">
+                                    {a.name.split(" ").map((n) => n[0]).join("")}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="font-semibold text-foreground">{a.name}</p>
+                                  {a.role && <p className="text-sm text-muted-foreground">{a.role}</p>}
+                                </div>
+                              </div>
+                              {a.bio && <p className="text-sm text-muted-foreground leading-relaxed">{a.bio}</p>}
+                              {(a.linkedin || a.website) && (
+                                <div className="flex items-center gap-3 mt-3">
+                                  {a.linkedin && (
+                                    <a href={a.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                      <Linkedin className="h-4 w-4" />
+                                    </a>
+                                  )}
+                                  {a.website && (
+                                    <a href={a.website} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                      <Globe className="h-4 w-4" />
+                                    </a>
+                                  )}
+                                </div>
+                              )}
+                              {i < post.authors.length - 1 && <hr className="my-5 border-border" />}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </aside>
+                )}
+
+                {/* Mobile Author Card — shown below lg */}
+                {hasAuthorData && (
+                  <div className="lg:hidden">
+                    <div className="p-6 bg-card rounded-xl border border-border shadow-sm">
+                      <h3 className="font-display font-semibold text-foreground mb-5 text-lg">
                         {post.authors.length > 1 ? "About the Authors" : "About the Author"}
                       </h3>
-                      <div className="space-y-4">
+                      <div className="space-y-5">
                         {post.authors.map((a, i) => (
                           <div key={i}>
-                            <div className="flex items-center space-x-3 mb-2">
-                              <Avatar className="h-12 w-12">
+                            <div className="flex items-center space-x-3 mb-3">
+                              <Avatar className="h-14 w-14">
                                 <AvatarImage src={a.avatar} alt={a.name} />
-                                <AvatarFallback className="bg-teal text-background">
+                                <AvatarFallback className="bg-teal text-background text-sm">
                                   {a.name.split(" ").map((n) => n[0]).join("")}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-medium text-foreground">{a.name}</p>
-                                <p className="text-sm text-muted-foreground">{a.role}</p>
+                                <p className="font-semibold text-foreground">{a.name}</p>
+                                {a.role && <p className="text-sm text-muted-foreground">{a.role}</p>}
                               </div>
                             </div>
-                            <p className="text-sm text-muted-foreground">{a.bio}</p>
+                            {a.bio && <p className="text-sm text-muted-foreground leading-relaxed">{a.bio}</p>}
                             {(a.linkedin || a.website) && (
-                              <div className="flex items-center gap-2 mt-2">
+                              <div className="flex items-center gap-3 mt-3">
                                 {a.linkedin && (
                                   <a href={a.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                                     <Linkedin className="h-4 w-4" />
@@ -279,78 +347,35 @@ const BlogPost = () => {
                                 )}
                               </div>
                             )}
-                            {i < post.authors.length - 1 && <hr className="my-4 border-border" />}
+                            {i < post.authors.length - 1 && <hr className="my-5 border-border" />}
                           </div>
                         ))}
                       </div>
                     </div>
                   </div>
-                </aside>
-
-                {/* Mobile Author Card — shown below lg */}
-                <div className="lg:hidden">
-                  <div className="p-6 bg-card rounded-xl border border-border">
-                    <h3 className="font-display font-semibold text-foreground mb-4">
-                      {post.authors.length > 1 ? "About the Authors" : "About the Author"}
-                    </h3>
-                    <div className="space-y-4">
-                      {post.authors.map((a, i) => (
-                        <div key={i}>
-                          <div className="flex items-center space-x-3 mb-2">
-                            <Avatar className="h-12 w-12">
-                              <AvatarImage src={a.avatar} alt={a.name} />
-                              <AvatarFallback className="bg-teal text-background">
-                                {a.name.split(" ").map((n) => n[0]).join("")}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="font-medium text-foreground">{a.name}</p>
-                              <p className="text-sm text-muted-foreground">{a.role}</p>
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground">{a.bio}</p>
-                          {(a.linkedin || a.website) && (
-                            <div className="flex items-center gap-2 mt-2">
-                              {a.linkedin && (
-                                <a href={a.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                                  <Linkedin className="h-4 w-4" />
-                                </a>
-                              )}
-                              {a.website && (
-                                <a href={a.website} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                                  <Globe className="h-4 w-4" />
-                                </a>
-                              )}
-                            </div>
-                          )}
-                          {i < post.authors.length - 1 && <hr className="my-4 border-border" />}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
         </section>
 
         {/* Unified Article Footer */}
-        <section className="pt-2 pb-8 md:pt-4 md:pb-10 bg-background">
+        <section className="pt-4 pb-12 md:pt-6 md:pb-16 bg-background">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="max-w-[1200px] mx-auto">
-              <div className="max-w-[720px] rounded-2xl bg-muted/40 border border-border p-5 md:p-6 space-y-6">
+              <div className="max-w-[720px] rounded-2xl bg-muted/40 border border-border p-6 md:p-8 space-y-8">
                 {/* Key Takeaways */}
                 {post.keyTakeaways && post.keyTakeaways.length > 0 && (
                   <div>
-                    <h2 className="text-xl md:text-2xl font-display font-bold text-foreground mb-5 flex items-center gap-2">
+                    <h2 className="text-xl md:text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
                       <Lightbulb className="h-5 w-5 text-accent" />
                       Key Takeaways
                     </h2>
-                    <ul className="space-y-3">
+                    <ul className="space-y-4">
                       {post.keyTakeaways.map((takeaway, i) => (
                         <li key={i} className="flex items-start gap-3 text-foreground/80">
                           <span className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0" />
-                          <span className="text-sm leading-relaxed">{takeaway}</span>
+                          <span className="leading-relaxed">{takeaway}</span>
                         </li>
                       ))}
                     </ul>
@@ -364,7 +389,7 @@ const BlogPost = () => {
 
                 {/* Topics */}
                 <div>
-                  <h3 className="text-sm font-display font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                  <h3 className="text-sm font-display font-bold uppercase tracking-widest text-muted-foreground mb-4">
                     Topics
                   </h3>
                   <div className="flex flex-wrap gap-2">

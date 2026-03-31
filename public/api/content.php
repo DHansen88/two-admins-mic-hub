@@ -258,8 +258,20 @@ function handleSaveBlog(): void {
                 $frontmatter .= "  - " . $takeaway . "\n";
             }
         }
+        if (!empty($body['related_episode'])) {
+            $frontmatter .= 'related_episode: ' . $body['related_episode'] . "\n";
+        }
+        if (isset($body['show_episode_callout'])) {
+            $frontmatter .= 'show_episode_callout: ' . ($body['show_episode_callout'] ? 'true' : 'false') . "\n";
+        }
         $frontmatter .= "---\n\n";
         $frontmatter .= $body['content'] ?? '';
+        
+        // Save html_content as a companion JSON file if provided
+        if (!empty($body['html_content'])) {
+            $htmlData = ['html_content' => $body['html_content']];
+            file_put_contents(BLOG_DIR . "/{$slug}.html.json", json_encode($htmlData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        }
         
         file_put_contents($mdPath, $frontmatter);
 
@@ -781,6 +793,14 @@ function handlePublicGetBlog(): void {
         $meta['slug'] = $meta['slug'] ?? $slug;
         $meta['content'] = $meta['_content'] ?? '';
         unset($meta['_content']);
+        // Attach html_content if companion file exists
+        $htmlJsonFile = BLOG_DIR . "/{$slug}.html.json";
+        if (file_exists($htmlJsonFile)) {
+            $htmlData = json_decode(file_get_contents($htmlJsonFile), true);
+            if ($htmlData && !empty($htmlData['html_content'])) {
+                $meta['html_content'] = $htmlData['html_content'];
+            }
+        }
         jsonResponse(['blog' => $meta]);
     } elseif (file_exists($jsonFile)) {
         $data = json_decode(file_get_contents($jsonFile), true);

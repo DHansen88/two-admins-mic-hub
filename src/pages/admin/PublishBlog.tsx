@@ -101,6 +101,7 @@ const PublishBlog = () => {
   const [authorOptions, setAuthorOptions] = useState<AuthorProfile[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
+  const [customSlug, setCustomSlug] = useState("");
   const [selectedAuthors, setSelectedAuthors] = useState<string[]>(["sarah"]);
   const [authorAvatars, setAuthorAvatars] = useState<Record<string, string>>({});
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
@@ -252,7 +253,7 @@ const PublishBlog = () => {
       title,
       summary: autoExcerpt,
       takeaways: autoTakeaways,
-      url: `/blog/${generateSlug(title)}`,
+      url: `/blog/${customSlug || generateSlug(title)}`,
     });
     setGeneratedNewsletter(newsletter);
     toast({ title: "Content auto-generated!" });
@@ -263,7 +264,7 @@ const PublishBlog = () => {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
-    const slug = generateSlug(title);
+    const slug = customSlug || generateSlug(title);
 
     exportBlogMarkdown({
       title,
@@ -285,7 +286,7 @@ const PublishBlog = () => {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
-    const slug = generateSlug(title);
+    const slug = customSlug || generateSlug(title);
     const result = await saveBlog({
       title,
       slug,
@@ -322,7 +323,7 @@ const PublishBlog = () => {
   };
 
   const handleSaveDraft = () => {
-    const slug = generateSlug(title) || "new";
+    const slug = customSlug || generateSlug(title) || "new";
     saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
       htmlContent, markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
@@ -340,7 +341,7 @@ const PublishBlog = () => {
       return;
     }
     await handlePublishToServer();
-    const slug = generateSlug(title);
+    const slug = customSlug || generateSlug(title);
     setContentStatus("blog", slug, "published");
     navigate("/admin/blog-posts");
   };
@@ -350,7 +351,7 @@ const PublishBlog = () => {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
-    const slug = generateSlug(title);
+    const slug = customSlug || generateSlug(title);
     handleSaveDraftSilent();
     setContentStatus("blog", slug, "scheduled", date, time);
     toast({ title: `Blog scheduled for ${date} at ${time}` });
@@ -358,7 +359,7 @@ const PublishBlog = () => {
   };
 
   const handleSaveDraftSilent = () => {
-    const slug = generateSlug(title) || "new";
+    const slug = customSlug || generateSlug(title) || "new";
     saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
       htmlContent, markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
@@ -393,6 +394,17 @@ const PublishBlog = () => {
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Title *</label>
             <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="5 Essential Leadership Skills Every Administrator Needs" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground">URL Slug</label>
+            <Input
+              value={customSlug}
+              onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''))}
+              placeholder={generateSlug(title) || "auto-generated-from-title"}
+            />
+            <p className="text-xs text-muted-foreground">
+              Leave blank to auto-generate. URL: /blog/{customSlug || generateSlug(title) || "..."}
+            </p>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
@@ -652,7 +664,7 @@ const PublishBlog = () => {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground">Slug</label>
-                  <Input value={generateSlug(title)} readOnly className="bg-muted/50" />
+                  <Input value={customSlug || generateSlug(title)} readOnly className="bg-muted/50" />
                 </div>
               </div>
               <div className="space-y-1.5">
