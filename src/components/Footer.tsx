@@ -103,12 +103,15 @@ const Footer = () => {
                   © {currentYear} Two Admins & a Mic. All rights reserved.
                 </p>
                 <div className="flex space-x-6 text-sm">
-                  <a href="#" className="text-background/60 hover:text-background transition-colors">
+                  <NavLink to="/privacy-policy" className="text-background/60 hover:text-background transition-colors">
                     Privacy Policy
-                  </a>
-                  <a href="#" className="text-background/60 hover:text-background transition-colors">
+                  </NavLink>
+                  <NavLink to="/terms-of-service" className="text-background/60 hover:text-background transition-colors">
                     Terms of Service
-                  </a>
+                  </NavLink>
+                  <NavLink to="/cookie-policy" className="text-background/60 hover:text-background transition-colors">
+                    Cookie Policy
+                  </NavLink>
                 </div>
               </div>
             </div>

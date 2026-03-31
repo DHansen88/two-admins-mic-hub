@@ -18,6 +18,10 @@ import Merch from "./pages/Merch";
 import ProductDetail from "./pages/ProductDetail";
 import MerchThankYou from "./pages/MerchThankYou";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
+import CookieConsentBanner from "./components/CookieConsentBanner";
 
 // Admin pages
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -58,6 +62,9 @@ const App = () => (
           <Route path="/merch/thank-you" element={<MerchThankYou />} />
           <Route path="/merch/:slug" element={<ProductDetail />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
 
           {/* Admin Dashboard */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -79,6 +86,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <CookieConsentBanner />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
