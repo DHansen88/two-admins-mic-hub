@@ -233,7 +233,7 @@ function handlePasswordReset(): void {
  * Build HTML email body
  */
 function buildResetEmail(string $name, string $resetUrl): string {
-    $displayName = htmlspecialchars($name);
+    $displayName = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
     return <<<HTML
 <!DOCTYPE html>
 <html lang="en">
@@ -297,57 +297,143 @@ TEXT;
 }
 
 /**
- * Send the reset email using authenticated SMTP (Hostinger)
+ * Prevent header injection in mail headers
  */
-function sendResetEmail(string $to, string $name, string $subject, string $htmlBody, string $textBody): bool {
-    $boundary = md5(uniqid(time()));
-    $fromEmail = SMTP_USER;
-    $fromName = SMTP_FROM_NAME;
-
-    $message = "From: {$fromName} <{$fromEmail}>\r\n";
-    $message .= "To: {$name} <{$to}>\r\n";
-    $message .= "Subject: {$subject}\r\n";
-    $message .= "MIME-Version: 1.0\r\n";
-    $message .= "Content-Type: multipart/alternative; boundary=\"{$boundary}\"\r\n";
-    $message .= "\r\n";
-    $message .= "--{$boundary}\r\n";
-    $message .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
-    $message .= $textBody . "\r\n\r\n";
-    $message .= "--{$boundary}\r\n";
-    $message .= "Content-Type: text/html; charset=UTF-8\r\n\r\n";
-    $message .= $htmlBody . "\r\n\r\n";
-    $message .= "--{$boundary}--\r\n";
-
-    return smtpSend($fromEmail, $to, $message);
+function sanitizeHeaderValue(string $value): string {
+    return trim(str_replace(["\r", "\n"], '', $value));
 }
 
 /**
- * Raw SMTP sender over STARTTLS for Hostinger
+ * Encode UTF-8 mail header values when needed
+ */
+function encodeMimeHeader(string $value): string {
+    $value = sanitizeHeaderValue($value);
+
+    if ($value === '') {
+        return '';
+    }
+
+    if (preg_match('/[^\x20-\x7E]/', $value)) {
+        return '=?UTF-8?B?' . base64_encode($value) . '?=';
+    }
+
+    return $value;
+}
+
+/**
+ * Send the reset email using authenticated SMTP
+ */
+function sendResetEmail(string $to, string $name, string $subject, string $htmlBody, string $textBody): bool {
+    $fromEmail = SMTP_USER;
+    $safeTo = filter_var($to, FILTER_VALIDATE_EMAIL);
+
+    if (!$safeTo) {
+        logResetPasswordEvent("Invalid recipient email address: {$to}");
+        return false;
+    }
+
+    $encodedFromName = encodeMimeHeader(SMTP_FROM_NAME);
+    $encodedToName = encodeMimeHeader($name);
+    $encodedSubject = encodeMimeHeader($subject);
+
+    $boundary = 'b1_' . bin2hex(random_bytes(12));
+    $dateHeader = gmdate('D, d M Y H:i:s O');
+
+    $domain = substr(strrchr($fromEmail, '@') ?: '', 1);
+    if (!$domain) {
+        $domain = 'localhost';
+    }
+
+    $messageId = sprintf('<%s@%s>', bin2hex(random_bytes(16)), $domain);
+
+    $toHeader = $encodedToName !== ''
+        ? "{$encodedToName} <{$safeTo}>"
+        : "<{$safeTo}>";
+
+    $message = "Date: {$dateHeader}\r\n";
+    $message .= "Message-ID: {$messageId}\r\n";
+    $message .= "From: {$encodedFromName} <{$fromEmail}>\r\n";
+    $message .= "To: {$toHeader}\r\n";
+    $message .= "Reply-To: <{$fromEmail}>\r\n";
+    $message .= "Subject: {$encodedSubject}\r\n";
+    $message .= "MIME-Version: 1.0\r\n";
+    $message .= "Content-Type: multipart/alternative; boundary=\"{$boundary}\"\r\n";
+    $message .= "\r\n";
+
+    $message .= "--{$boundary}\r\n";
+    $message .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $message .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+    $message .= str_replace(["\r\n", "\r"], "\n", $textBody) . "\r\n\r\n";
+
+    $message .= "--{$boundary}\r\n";
+    $message .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $message .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+    $message .= str_replace(["\r\n", "\r"], "\n", $htmlBody) . "\r\n\r\n";
+
+    $message .= "--{$boundary}--\r\n";
+
+    return smtpSend($fromEmail, $safeTo, $message);
+}
+
+/**
+ * Raw SMTP sender supporting:
+ * - Port 587 with STARTTLS
+ * - Port 465 with implicit SSL/TLS
  */
 function smtpSend(string $from, string $to, string $message): bool {
     $host = SMTP_HOST;
-    $port = SMTP_PORT;
+    $port = (int) SMTP_PORT;
     $user = SMTP_USER;
     $pass = SMTP_PASS;
 
-    $socket = @stream_socket_client("tcp://{$host}:{$port}", $errno, $errstr, 15);
+    $implicitTls = ($port === 465);
+    $transport = $implicitTls ? 'ssl' : 'tcp';
+
+    $context = stream_context_create([
+        'ssl' => [
+            'verify_peer' => true,
+            'verify_peer_name' => true,
+            'allow_self_signed' => false,
+            'peer_name' => $host,
+            'SNI_enabled' => true,
+        ],
+    ]);
+
+    $socket = @stream_socket_client(
+        "{$transport}://{$host}:{$port}",
+        $errno,
+        $errstr,
+        15,
+        STREAM_CLIENT_CONNECT,
+        $context
+    );
+
     if (!$socket) {
-        logResetPasswordEvent("SMTP connect failed: [{$errno}] {$errstr}");
+        logResetPasswordEvent("SMTP connect failed: [{$errno}] {$errstr} ({$host}:{$port})");
         return false;
     }
 
     stream_set_timeout($socket, 15);
-    $response = '';
     $ok = true;
+
+    $fromDomain = substr(strrchr($from, '@') ?: '', 1);
+    $ehloHost = $_SERVER['SERVER_NAME'] ?? $fromDomain ?? 'localhost';
+    $ehloHost = preg_replace('/[^A-Za-z0-9.\-]/', '', (string) $ehloHost);
+    if (!$ehloHost) {
+        $ehloHost = 'localhost';
+    }
 
     $read = function () use ($socket): string {
         $buffer = '';
+
         while (($line = fgets($socket, 512)) !== false) {
             $buffer .= $line;
+
             if (strlen($line) < 4 || $line[3] === ' ') {
                 break;
             }
         }
+
         return $buffer;
     };
 
@@ -375,16 +461,22 @@ function smtpSend(string $from, string $to, string $message): bool {
         return false;
     }
 
-    $send("EHLO twoadminsandamic.com", [250]);
-    $send("STARTTLS", [220]);
+    $send("EHLO {$ehloHost}", [250]);
 
-    if ($ok && !stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-        logResetPasswordEvent('SMTP STARTTLS negotiation failed');
-        $ok = false;
+    if ($ok && !$implicitTls) {
+        $send("STARTTLS", [220]);
+
+        if ($ok && !stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+            logResetPasswordEvent('SMTP STARTTLS negotiation failed');
+            $ok = false;
+        }
+
+        if ($ok) {
+            $send("EHLO {$ehloHost}", [250]);
+        }
     }
 
     if ($ok) {
-        $send("EHLO twoadminsandamic.com", [250]);
         $send("AUTH LOGIN", [334]);
         $send(base64_encode($user), [334]);
         $send(base64_encode($pass), [235]);
@@ -395,22 +487,25 @@ function smtpSend(string $from, string $to, string $message): bool {
 
     if ($ok) {
         $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", $message));
+
         foreach ($lines as $line) {
             if (isset($line[0]) && $line[0] === '.') {
                 $line = '.' . $line;
             }
             fwrite($socket, $line . "\r\n");
         }
+
         fwrite($socket, ".\r\n");
         $response = $read();
         $code = (int) substr($response, 0, 3);
+
         if ($code !== 250) {
             logResetPasswordEvent("SMTP DATA finalization failed: {$response}");
             $ok = false;
         }
     }
 
-    fwrite($socket, "QUIT\r\n");
+    @fwrite($socket, "QUIT\r\n");
     fclose($socket);
 
     return $ok;
