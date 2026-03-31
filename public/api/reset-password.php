@@ -89,6 +89,7 @@ function handleResetRequest(): void {
         // Log attempt but return generic success
         $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_email, action, details, ip_address) VALUES (?, ?, ?, ?)');
         $logStmt->execute([$email, 'password_reset_request', 'No matching active account', $_SERVER['REMOTE_ADDR'] ?? '']);
+        logResetPasswordEvent("Password reset requested for missing or inactive account: {$email}");
         jsonResponse(['success' => true, 'message' => $successMsg]);
     }
 
