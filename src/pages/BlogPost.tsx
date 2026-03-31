@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
-  const post = useVisibleBlogBySlug(slug || "");
+  const { post, isLoading } = useVisibleBlogBySlug(slug || "");
   const relatedPosts = useVisibleRelatedPosts(slug || "", 3);
   const relatedEpisodes = useVisibleRelatedEpisodesForBlog(slug || "", 3);
   const allEpisodes = useVisibleEpisodes();
