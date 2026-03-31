@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { allEpisodes } from "@/data/episodeData";
-import { allBlogs } from "@/data/blogData";
+import { useVisibleEpisodes, useVisibleBlogs } from "@/hooks/useVisibleContent";
 import { Headphones, FileText, ArrowRight } from "lucide-react";
+import { Button } from "./ui/button";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 
