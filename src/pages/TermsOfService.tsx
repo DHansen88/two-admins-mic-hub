@@ -111,6 +111,7 @@ const TermsOfService = () => {
         </div>
       </main>
       <Footer />
+      <BackToTopButton />
     </>
   );
 };
