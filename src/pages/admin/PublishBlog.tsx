@@ -323,7 +323,7 @@ const PublishBlog = () => {
   };
 
   const handleSaveDraft = () => {
-    const slug = generateSlug(title) || "new";
+    const slug = customSlug || generateSlug(title) || "new";
     saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
       htmlContent, markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
