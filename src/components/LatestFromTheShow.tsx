@@ -6,6 +6,8 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 
 const LatestFromTheShow = () => {
+  const allEpisodes = useVisibleEpisodes();
+  const allBlogs = useVisibleBlogs();
   const latestEpisode = allEpisodes[0];
   const latestBlog = allBlogs[0];
 

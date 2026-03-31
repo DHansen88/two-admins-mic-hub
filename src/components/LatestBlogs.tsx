@@ -1,11 +1,12 @@
 import BlogCard from "./BlogCard";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import { allBlogs } from "@/data/blogData";
-
-const latestBlogs = allBlogs.slice(0, 3);
+import { useVisibleBlogs } from "@/hooks/useVisibleContent";
 
 const LatestBlogs = () => {
+  const allBlogs = useVisibleBlogs();
+  const latestBlogs = allBlogs.slice(0, 3);
+
   return (
     <section className="py-20 bg-muted">
       <div className="container mx-auto px-4">
