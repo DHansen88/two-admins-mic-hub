@@ -28,10 +28,25 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
       data-host={hostKey}
       data-topic={episode.topics.map((t) => t.toLowerCase().replace(/\s+/g, "-")).join(" ")}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center h-full">
+      <div className="flex flex-col sm:flex-row sm:items-center h-full">
+        {/* Thumbnail — full width on mobile, fixed size on sm+ */}
+        <div className="relative w-full aspect-video sm:w-40 sm:h-28 sm:aspect-auto md:w-48 md:h-32 lg:w-56 lg:h-36 shrink-0 overflow-hidden sm:rounded-lg sm:m-4 sm:order-2">
+          <img
+            src={episode.thumbnailUrl || "/placeholder.svg"}
+            alt={episode.title}
+            className="w-full h-full object-cover block sm:rounded-lg"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors sm:rounded-lg">
+            <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Play className="h-4 w-4 text-foreground ml-0.5" />
+            </div>
+          </div>
+        </div>
+
         {/* Episode Info */}
-        <div className="p-5 md:p-6 space-y-3 min-w-0 order-2 sm:order-1">
-          <div className="flex items-center gap-3 flex-wrap">
+        <div className="p-4 sm:p-5 md:p-6 space-y-2 sm:space-y-3 min-w-0 flex-1 sm:order-1">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <span className="text-xs font-bold text-muted-foreground bg-muted px-3 py-1 rounded-full">
               Episode {episode.number}
             </span>
@@ -41,7 +56,7 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
             </span>
           </div>
 
-          <h3 className="text-lg font-bold text-foreground group-hover:text-accent transition-colors leading-snug">
+          <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent transition-colors leading-snug">
             {episode.title}
           </h3>
 
@@ -53,22 +68,6 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
             {episode.description}
           </p>
         </div>
-
-        {/* Thumbnail — small rectangular */}
-        <div className="relative w-36 h-24 sm:w-40 sm:h-28 md:w-48 md:h-32 shrink-0 overflow-hidden rounded-lg m-4 order-1 sm:order-2">
-          <img
-            src={episode.thumbnailUrl || "/placeholder.svg"}
-            alt={episode.title}
-            className="w-full h-full object-cover block rounded-lg"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors rounded-lg">
-            <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Play className="h-4 w-4 text-foreground ml-0.5" />
-            </div>
-          </div>
-        </div>
-
 
 
       </div>
