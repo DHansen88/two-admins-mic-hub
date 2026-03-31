@@ -18,6 +18,10 @@ import Merch from "./pages/Merch";
 import ProductDetail from "./pages/ProductDetail";
 import MerchThankYou from "./pages/MerchThankYou";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
+import CookieConsentBanner from "./components/CookieConsentBanner";
 
 // Admin pages
 import AdminLogin from "./pages/admin/AdminLogin";

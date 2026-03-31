@@ -1,15 +1,14 @@
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Helmet } from "react-helmet-async";
 
 const TermsOfService = () => {
+  useEffect(() => {
+    document.title = "Terms of Service | Two Admins & a Mic";
+  }, []);
+
   return (
     <>
-      <Helmet>
-        <title>Terms of Service | Two Admins &amp; a Mic</title>
-        <meta name="description" content="Terms of Service for Two Admins & a Mic. Read our terms and conditions for using our website, podcast, and merchandise." />
-        <link rel="canonical" href="https://two-admins-mic-hub.lovable.app/terms-of-service" />
-      </Helmet>
       <Header />
       <main className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-16 max-w-4xl">

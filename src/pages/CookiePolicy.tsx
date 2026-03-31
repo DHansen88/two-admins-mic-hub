@@ -1,15 +1,14 @@
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Helmet } from "react-helmet-async";
 
 const CookiePolicy = () => {
+  useEffect(() => {
+    document.title = "Cookie Policy | Two Admins & a Mic";
+  }, []);
+
   return (
     <>
-      <Helmet>
-        <title>Cookie Policy | Two Admins &amp; a Mic</title>
-        <meta name="description" content="Cookie Policy for Two Admins & a Mic. Learn about the cookies and tracking technologies we use on our website." />
-        <link rel="canonical" href="https://two-admins-mic-hub.lovable.app/cookie-policy" />
-      </Helmet>
       <Header />
       <main className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-16 max-w-4xl">

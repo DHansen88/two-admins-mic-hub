@@ -1,15 +1,14 @@
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Helmet } from "react-helmet-async";
 
 const PrivacyPolicy = () => {
+  useEffect(() => {
+    document.title = "Privacy Policy | Two Admins & a Mic";
+  }, []);
+
   return (
     <>
-      <Helmet>
-        <title>Privacy Policy | Two Admins &amp; a Mic</title>
-        <meta name="description" content="Privacy Policy for Two Admins & a Mic. Learn how we collect, use, and protect your personal information." />
-        <link rel="canonical" href="https://two-admins-mic-hub.lovable.app/privacy-policy" />
-      </Helmet>
       <Header />
       <main className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-16 max-w-4xl">
