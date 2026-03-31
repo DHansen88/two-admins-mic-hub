@@ -105,7 +105,13 @@ const ManageBlogPosts = () => {
   };
 
   const handlePermanentDelete = (id: string) => {
-    removeContentMeta("blog", id);
+    const existsInStatic = allBlogsUnfiltered.some((b) => b.slug === id);
+    if (existsInStatic) {
+      // Keep trashed status so it doesn't reappear as "published"
+      setContentStatusFn("blog", id, "trashed");
+    } else {
+      removeContentMeta("blog", id);
+    }
     localStorage.removeItem(`draft_blog-${id}`);
     setPermanentDeleteTarget(null);
     setSelected((s) => { const n = new Set(s); n.delete(id); return n; });
@@ -123,7 +129,12 @@ const ManageBlogPosts = () => {
       toast({ title: `${ids.length} post(s) restored` });
     } else if (bulkAction === "permanent-delete") {
       ids.forEach((id) => {
-        removeContentMeta("blog", id);
+        const existsInStatic = allBlogsUnfiltered.some((b) => b.slug === id);
+        if (existsInStatic) {
+          setContentStatusFn("blog", id, "trashed");
+        } else {
+          removeContentMeta("blog", id);
+        }
         localStorage.removeItem(`draft_blog-${id}`);
       });
       toast({ title: `${ids.length} post(s) permanently deleted` });
