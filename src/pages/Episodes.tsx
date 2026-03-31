@@ -7,7 +7,7 @@ import BlogFilterBar from "@/components/BlogFilterBar";
 import { Input } from "@/components/ui/input";
 import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { allEpisodes } from "@/data/episodeData";
+import { useVisibleEpisodes } from "@/hooks/useVisibleContent";
 import { Button } from "@/components/ui/button";
 
 const EPISODES_PER_PAGE = 5;
