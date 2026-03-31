@@ -108,7 +108,12 @@ const ManageEpisodes = () => {
   };
 
   const handlePermanentDelete = (id: string) => {
-    removeContentMeta("episode", id);
+    const existsInStatic = allEpisodesUnfiltered.some((e) => e.slug === id);
+    if (existsInStatic) {
+      setContentStatusFn("episode", id, "trashed");
+    } else {
+      removeContentMeta("episode", id);
+    }
     localStorage.removeItem(`draft_episode-${id}`);
     setPermanentDeleteTarget(null);
     setSelected((s) => { const n = new Set(s); n.delete(id); return n; });
