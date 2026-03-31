@@ -13,6 +13,7 @@ import blogBanner from "@/assets/blog-banner.png";
 const POSTS_PER_PAGE = 6;
 
 const Blog = () => {
+  const allBlogs = useVisibleBlogs();
   const [search, setSearch] = useState("");
   const [selectedHost, setSelectedHost] = useState<string>("all");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);

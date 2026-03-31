@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 const EPISODES_PER_PAGE = 5;
 
 const Episodes = () => {
+  const allEpisodes = useVisibleEpisodes();
   const [search, setSearch] = useState("");
   const [selectedHost] = useState<string>("all");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);

@@ -17,9 +17,10 @@ import { useToast } from "@/hooks/use-toast";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
-  const post = slug ? getBlogBySlug(slug) : undefined;
-  const relatedPosts = slug ? getRelatedPosts(slug, 3) : [];
-  const relatedEpisodes = slug ? getRelatedEpisodesForBlog(slug, 3) : [];
+  const post = useVisibleBlogBySlug(slug || "");
+  const relatedPosts = useVisibleRelatedPosts(slug || "", 3);
+  const relatedEpisodes = useVisibleRelatedEpisodesForBlog(slug || "", 3);
+  const allEpisodes = useVisibleEpisodes();
   const { toast } = useToast();
   const tocItems = useMemo(() => (post?.blocks ? extractTocItems(post.blocks) : []), [post]);
 

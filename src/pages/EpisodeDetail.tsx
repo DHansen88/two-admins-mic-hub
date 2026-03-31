@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 
 const EpisodeDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const episode = getEpisodeBySlug(slug || "");
+  const episode = useVisibleEpisodeBySlug(slug || "");
   const [transcriptExpanded, setTranscriptExpanded] = useState(false);
   const [transcriptSearch, setTranscriptSearch] = useState("");
 
