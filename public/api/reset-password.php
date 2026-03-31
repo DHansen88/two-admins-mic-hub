@@ -370,7 +370,7 @@ function smtpSend(string $from, string $to, string $message): bool {
 
     $response = $read();
     if ((int) substr($response, 0, 3) !== 220) {
-        error_log("SMTP greeting failed: {$response}");
+        logResetPasswordEvent("SMTP greeting failed: {$response}");
         fclose($socket);
         return false;
     }
