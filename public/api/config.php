@@ -23,7 +23,7 @@ define('ADMIN_TOKEN_STORAGE_FILE', dirname(__DIR__, 2) . '/storage/admin-tokens.
 
 // SMTP settings for outgoing email (Hostinger)
 define('SMTP_HOST', 'smtp.hostinger.com');
-define('SMTP_PORT', 465);
+define('SMTP_PORT', 587);
 define('SMTP_USER', 'info@twoadminsandamic.com');
 define('SMTP_PASS', 'YOUR_MAILBOX_PASSWORD_HERE');  // ← Update this on the server
 define('SMTP_FROM_NAME', 'Two Admins and a Mic');
