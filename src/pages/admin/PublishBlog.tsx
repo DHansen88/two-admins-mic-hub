@@ -444,30 +444,6 @@ const PublishBlog = () => {
               })}
             </div>
 
-            {selectedAuthors.length > 0 && (
-              <div className="space-y-2 pt-2">
-                <p className="text-xs text-muted-foreground">Override profile pictures (optional — paste image URL):</p>
-                {selectedAuthors.map((key) => {
-                  const opt = authorOptions.find((a) => a.id === key);
-                  return (
-                    <div key={key} className="flex items-center gap-2">
-                      <Avatar className="h-7 w-7 shrink-0">
-                        <AvatarImage src={authorAvatars[key] || opt?.avatar} />
-                        <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
-                          {opt?.name?.split(" ").map((n) => n[0]).join("") || "?"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <Input
-                        value={authorAvatars[key] || ""}
-                        onChange={(e) => setAuthorAvatars((prev) => ({ ...prev, [key]: e.target.value }))}
-                        placeholder={`Profile picture URL for ${opt?.name || key}`}
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
 
             {selectedAuthors.length === 0 && (
               <p className="text-xs text-destructive">Please select at least one author.</p>
