@@ -81,6 +81,9 @@ switch ($action) {
     case 'upload-podcast-asset':
         handleUploadPodcastAsset();
         break;
+    case 'hidden-ids':
+        handleHiddenIds();
+        break;
     default:
         jsonResponse(['error' => 'Invalid action'], 400);
 }
