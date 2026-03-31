@@ -1,9 +1,9 @@
 /**
  * Content status management using localStorage.
- * Tracks draft/scheduled/published status for episodes and blog posts.
+ * Tracks draft/scheduled/published/trashed/deleted status for episodes and blog posts.
  */
 
-export type ContentStatus = "draft" | "scheduled" | "published" | "trashed";
+export type ContentStatus = "draft" | "scheduled" | "published" | "trashed" | "deleted";
 
 export interface ContentMeta {
   id: string;

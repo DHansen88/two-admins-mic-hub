@@ -6,6 +6,7 @@
  */
 
 import { getAdminApiBase, getAdminAuthHeaders } from "./admin-auth";
+import { getContentMeta } from "./content-status";
 
 /** Upload a blog image and return its public URL */
 async function uploadFile(endpoint: string, fieldName: string, file: File, extraFields?: Record<string, string>): Promise<{ success: boolean; url?: string; error?: string }> {
@@ -273,7 +274,13 @@ export function getContentStatus(type: ContentType, id: string): ContentStatus {
 }
 
 export function isContentVisible(type: ContentType, id: string): boolean {
-  return getContentStatus(type, id) === "published";
+  const legacyMeta = getContentMeta(type, id);
+
+  if (legacyMeta && legacyMeta.status !== "published") {
+    return false;
+  }
+
+  return getContentStatus(type, id) === "published" && !isPermanentlyDeleted(type, id);
 }
 
 export function setContentStatus(
@@ -334,6 +341,11 @@ export function permanentlyDelete(type: ContentType, id: string): void {
 }
 
 export function isPermanentlyDeleted(type: ContentType, id: string): boolean {
+  const legacyMeta = getContentMeta(type, id);
+  if (legacyMeta?.status === "deleted") {
+    return true;
+  }
+
   try {
     const perm = JSON.parse(localStorage.getItem("taam_permanently_deleted") || "[]");
     return perm.includes(getContentKey(type, id));

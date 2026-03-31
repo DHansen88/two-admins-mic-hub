@@ -23,6 +23,7 @@ const statusConfig: Record<ContentStatus, { label: string; className: string }> 
   scheduled: { label: "Scheduled", className: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" },
   published: { label: "Published", className: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" },
   trashed: { label: "Trashed", className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+  deleted: { label: "Deleted", className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 type FilterStatus = "all" | ContentStatus;
@@ -84,7 +85,7 @@ const ManageBlogPosts = () => {
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const filtered = filter === "all"
-    ? blogs.filter((b) => b.status !== "trashed")
+    ? blogs.filter((b) => b.status !== "trashed" && b.status !== "deleted")
     : blogs.filter((b) => b.status === filter);
 
   const isTrashView = filter === "trashed";
@@ -107,8 +108,7 @@ const ManageBlogPosts = () => {
   const handlePermanentDelete = (id: string) => {
     const existsInStatic = allBlogsUnfiltered.some((b) => b.slug === id);
     if (existsInStatic) {
-      // Keep trashed status so it doesn't reappear as "published"
-      setContentStatusFn("blog", id, "trashed");
+      setContentStatusFn("blog", id, "deleted");
     } else {
       removeContentMeta("blog", id);
     }
@@ -131,7 +131,7 @@ const ManageBlogPosts = () => {
       ids.forEach((id) => {
         const existsInStatic = allBlogsUnfiltered.some((b) => b.slug === id);
         if (existsInStatic) {
-          setContentStatusFn("blog", id, "trashed");
+          setContentStatusFn("blog", id, "deleted");
         } else {
           removeContentMeta("blog", id);
         }
