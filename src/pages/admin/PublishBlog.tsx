@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   FileText,
@@ -28,7 +27,6 @@ import {
   Mail,
   Plus,
   Lightbulb,
-  Blocks,
   Code,
   List,
   Mic,
@@ -54,17 +52,46 @@ import {
 import { saveBlog } from "@/lib/content-manager";
 import { setContentStatus } from "@/lib/content-status";
 import PublishModal from "@/components/PublishModal";
-import BlockEditor from "@/components/BlogBlockEditor";
-import { extractTocItems } from "@/components/TableOfContents";
+import RichTextEditor from "@/components/RichTextEditor";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
 import { allBlogsUnfiltered } from "@/data/blogData";
-import {
-  type ContentBlock,
-  blocksToMarkdown,
-  markdownToBlocks,
-} from "@/lib/block-types";
+import { blocksToMarkdown, markdownToBlocks } from "@/lib/block-types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
+
+/** Strip HTML tags to get plain text for word count etc. */
+function htmlToPlainText(html: string): string {
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent || div.innerText || "";
+}
+
+/** Convert HTML to markdown (basic) for export */
+function htmlToMarkdown(html: string): string {
+  return html
+    .replace(/<h1[^>]*>(.*?)<\/h1>/gi, "# $1\n\n")
+    .replace(/<h2[^>]*>(.*?)<\/h2>/gi, "## $1\n\n")
+    .replace(/<h3[^>]*>(.*?)<\/h3>/gi, "### $1\n\n")
+    .replace(/<strong>(.*?)<\/strong>/gi, "**$1**")
+    .replace(/<b>(.*?)<\/b>/gi, "**$1**")
+    .replace(/<em>(.*?)<\/em>/gi, "*$1*")
+    .replace(/<i>(.*?)<\/i>/gi, "*$1*")
+    .replace(/<u>(.*?)<\/u>/gi, "$1")
+    .replace(/<a[^>]+href="([^"]*)"[^>]*>(.*?)<\/a>/gi, "[$2]($1)")
+    .replace(/<img[^>]+src="([^"]*)"[^>]*alt="([^"]*)"[^>]*\/?>/gi, "![$2]($1)")
+    .replace(/<img[^>]+src="([^"]*)"[^>]*\/?>/gi, "![]($1)")
+    .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gis, (_, c) =>
+      c.replace(/<p[^>]*>(.*?)<\/p>/gi, "> $1\n").trim()
+    )
+    .replace(/<li[^>]*>(.*?)<\/li>/gi, "- $1\n")
+    .replace(/<\/?[uo]l[^>]*>/gi, "\n")
+    .replace(/<hr\s*\/?>/gi, "\n---\n")
+    .replace(/<p[^>]*>(.*?)<\/p>/gi, "$1\n\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?[^>]+(>|$)/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
 
 const PublishBlog = () => {
   const { toast } = useToast();
@@ -81,12 +108,12 @@ const PublishBlog = () => {
   const [featuredImage, setFeaturedImage] = useState("");
   const [newTagName, setNewTagName] = useState("");
   const [suggestedTags, setSuggestedTags] = useState<Tag[]>([]);
-  const [editorMode, setEditorMode] = useState<"blocks" | "markdown">("blocks");
+  const [editorMode, setEditorMode] = useState<"rich" | "markdown">("rich");
   const [relatedEpisode, setRelatedEpisode] = useState("");
   const [showEpisodeCallout, setShowEpisodeCallout] = useState(true);
 
-  // Block editor state
-  const [blocks, setBlocks] = useState<ContentBlock[]>([]);
+  // Rich text editor state (HTML)
+  const [htmlContent, setHtmlContent] = useState("");
 
   // Markdown editor state (legacy)
   const [markdownContent, setMarkdownContent] = useState("");
@@ -112,13 +139,11 @@ const PublishBlog = () => {
     const blog = allBlogsUnfiltered.find((b) => b.slug === editSlug);
     if (!blog) return;
     setTitle(blog.title);
-    // Load authors
     const keys = blog.authors.map((a) => {
       const found = authorOptions.find((opt) => opt.name === a.name);
       return found?.id || a.name.toLowerCase().replace(/\s+/g, '-');
     });
     setSelectedAuthors(keys.length > 0 ? keys : ["sarah"]);
-    // Load custom avatars
     const avatarMap: Record<string, string> = {};
     blog.authors.forEach((a, i) => {
       if (a.avatar && keys[i]) avatarMap[keys[i]] = a.avatar;
@@ -133,25 +158,42 @@ const PublishBlog = () => {
       setRelatedEpisode(blog.relatedEpisode);
       setShowEpisodeCallout(true);
     }
-    if (blog.blocks && blog.blocks.length > 0) {
-      setBlocks(blog.blocks);
-      setEditorMode("blocks");
-    } else if (blog.content) {
-      setMarkdownContent(blog.content);
-      setEditorMode("markdown");
+    // Load content into rich editor (convert markdown/blocks to HTML if needed)
+    if (blog.content) {
+      // If content looks like markdown, wrap in basic HTML
+      const md = blog.content;
+      const basicHtml = md
+        .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+        .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+        .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.+?)\*/g, "<em>$1</em>")
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+        .replace(/^- (.+)$/gm, "<li>$1</li>")
+        .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
+        .replace(/^(?!<[hulo])((?!<).+)$/gm, "<p>$1</p>")
+        .replace(/\n{2,}/g, "");
+      setHtmlContent(basicHtml);
+      setMarkdownContent(md);
     }
+    setEditorMode("rich");
     toast({ title: `Editing: ${blog.title}` });
   }, [searchParams]);
 
-  // Derive content from current editor mode
-  const currentContent = useMemo(() => {
-    if (editorMode === "blocks") return blocksToMarkdown(blocks);
+  // Derive plain text content for word count, auto-gen etc.
+  const currentPlainText = useMemo(() => {
+    if (editorMode === "rich") return htmlToPlainText(htmlContent);
     return markdownContent;
-  }, [editorMode, blocks, markdownContent]);
+  }, [editorMode, htmlContent, markdownContent]);
+
+  const currentMarkdown = useMemo(() => {
+    if (editorMode === "rich") return htmlToMarkdown(htmlContent);
+    return markdownContent;
+  }, [editorMode, htmlContent, markdownContent]);
 
   const wordCount = useMemo(() => {
-    return currentContent.split(/\s+/).filter(Boolean).length;
-  }, [currentContent]);
+    return currentPlainText.split(/\s+/).filter(Boolean).length;
+  }, [currentPlainText]);
 
   const toggleTopic = (topic: string) => {
     setSelectedTopics((prev) =>
@@ -167,32 +209,43 @@ const PublishBlog = () => {
     }
   };
 
-  const handleSwitchMode = (mode: "blocks" | "markdown") => {
-    if (mode === "markdown" && editorMode === "blocks") {
-      setMarkdownContent(blocksToMarkdown(blocks));
-    } else if (mode === "blocks" && editorMode === "markdown") {
-      setBlocks(markdownToBlocks(markdownContent));
+  const handleSwitchMode = (mode: "rich" | "markdown") => {
+    if (mode === "markdown" && editorMode === "rich") {
+      setMarkdownContent(htmlToMarkdown(htmlContent));
+    } else if (mode === "rich" && editorMode === "markdown") {
+      // Convert markdown to basic HTML for the rich editor
+      const basicHtml = markdownContent
+        .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+        .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+        .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.+?)\*/g, "<em>$1</em>")
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+        .replace(/^- (.+)$/gm, "<li>$1</li>")
+        .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
+        .replace(/^(?!<[hulo])((?!<).+)$/gm, "<p>$1</p>");
+      setHtmlContent(basicHtml);
     }
     setEditorMode(mode);
   };
 
   const handleAutoGenerate = () => {
-    if (!currentContent) {
+    if (!currentPlainText) {
       toast({ title: "Write content first", variant: "destructive" });
       return;
     }
 
-    const autoExcerpt = generateExcerpt(currentContent);
-    const autoTime = calculateReadingTime(currentContent);
+    const autoExcerpt = generateExcerpt(currentPlainText);
+    const autoTime = calculateReadingTime(currentPlainText);
     const autoSeo = generateSEODescription(title, autoExcerpt);
-    const autoTakeaways = generateKeyTakeaways(currentContent);
+    const autoTakeaways = generateKeyTakeaways(currentMarkdown);
 
     setExcerpt(autoExcerpt);
     setReadingTime(autoTime);
     setSeoDescription(autoSeo);
     setKeyTakeaways(autoTakeaways);
     setShowGenerated(true);
-    setSuggestedTags(suggestTags(currentContent + " " + title));
+    setSuggestedTags(suggestTags(currentPlainText + " " + title));
 
     const newsletter = generateNewsletterDraft({
       type: "blog",
@@ -206,52 +259,29 @@ const PublishBlog = () => {
   };
 
   const handleExport = () => {
-    if (!title || !currentContent) {
+    if (!title || !currentPlainText) {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
     const slug = generateSlug(title);
 
-    if (editorMode === "blocks") {
-      // Export as JSON with blocks
-      const data = {
-        title,
-        slug,
-        author: selectedAuthors[0] || "sarah",
-        authors: selectedAuthors,
-        author_avatars: selectedAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
-          ? selectedAuthors.map((k) => authorAvatars[k] || "")
-          : undefined,
-        publish_date: publishDate,
-        tags: selectedTopics,
-        excerpt: excerpt || generateExcerpt(currentContent),
-        featured_image: featuredImage || undefined,
-        key_takeaways: keyTakeaways,
-        related_episode: relatedEpisode || undefined,
-        show_episode_callout: showEpisodeCallout,
-        blocks,
-      };
-      downloadFile(JSON.stringify(data, null, 2), `${slug}.json`, "application/json");
-      toast({ title: "Blog JSON exported with blocks! Place it in content/blog/" });
-    } else {
-      exportBlogMarkdown({
-        title,
-        slug,
-        author: selectedAuthors.join(", "),
-        publish_date: publishDate,
-        tags: selectedTopics,
-        excerpt: excerpt || generateExcerpt(currentContent),
-        featured_image: featuredImage || undefined,
-        key_takeaways: keyTakeaways,
-        content: markdownContent,
-      });
-      toast({ title: "Blog Markdown exported!" });
-    }
+    exportBlogMarkdown({
+      title,
+      slug,
+      author: selectedAuthors.join(", "),
+      publish_date: publishDate,
+      tags: selectedTopics,
+      excerpt: excerpt || generateExcerpt(currentPlainText),
+      featured_image: featuredImage || undefined,
+      key_takeaways: keyTakeaways,
+      content: currentMarkdown,
+    });
+    toast({ title: "Blog Markdown exported!" });
     saveToHistory("blog", { title, slug, date: publishDate, author: selectedAuthors.join(",") });
   };
 
   const handlePublishToServer = async () => {
-    if (!title || !currentContent) {
+    if (!title || !currentPlainText) {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
@@ -266,14 +296,14 @@ const PublishBlog = () => {
         : undefined,
       publish_date: publishDate,
       tags: selectedTopics,
-      excerpt: excerpt || generateExcerpt(currentContent),
+      excerpt: excerpt || generateExcerpt(currentPlainText),
       featured_image: featuredImage || undefined,
       key_takeaways: keyTakeaways,
       related_episode: relatedEpisode || undefined,
       show_episode_callout: showEpisodeCallout,
-      content: currentContent,
-      blocks: editorMode === "blocks" ? blocks : undefined,
-      format: editorMode === "blocks" ? "json" : "md",
+      content: currentMarkdown,
+      html_content: editorMode === "rich" ? htmlContent : undefined,
+      format: "md",
     });
     if (result.success) {
       saveToHistory("blog", { title, slug, date: publishDate, author: selectedAuthors.join(",") });
@@ -295,7 +325,7 @@ const PublishBlog = () => {
     const slug = generateSlug(title) || "new";
     saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
-      blocks, markdownContent: editorMode === "markdown" ? markdownContent : blocksToMarkdown(blocks),
+      htmlContent, markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
     });
@@ -305,7 +335,7 @@ const PublishBlog = () => {
   };
 
   const handlePublishNow = async () => {
-    if (!title || !currentContent) {
+    if (!title || !currentPlainText) {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
@@ -316,7 +346,7 @@ const PublishBlog = () => {
   };
 
   const handleSchedulePublish = (date: string, time: string) => {
-    if (!title || !currentContent) {
+    if (!title || !currentPlainText) {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
@@ -331,7 +361,7 @@ const PublishBlog = () => {
     const slug = generateSlug(title) || "new";
     saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
-      blocks, markdownContent: editorMode === "markdown" ? markdownContent : blocksToMarkdown(blocks),
+      htmlContent, markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
     });
@@ -346,7 +376,7 @@ const PublishBlog = () => {
             {searchParams.get("edit") ? "Edit Blog Post" : "Publish Blog Post"}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {searchParams.get("edit") ? "Update your existing blog post." : "Build your blog post with structured blocks or raw Markdown."}
+            {searchParams.get("edit") ? "Update your existing blog post." : "Write your blog post with the rich text editor."}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={handleSaveDraft}>
@@ -414,7 +444,6 @@ const PublishBlog = () => {
               })}
             </div>
 
-            {/* Custom avatar URL per selected author */}
             {selectedAuthors.length > 0 && (
               <div className="space-y-2 pt-2">
                 <p className="text-xs text-muted-foreground">Override profile pictures (optional — paste image URL):</p>
@@ -454,10 +483,7 @@ const PublishBlog = () => {
                   <Checkbox checked={selectedTopics.includes(tag.name)} onCheckedChange={() => toggleTopic(tag.name)} />
                   <span
                     className="px-2 py-0.5 rounded-full text-xs font-medium"
-                    style={{
-                      backgroundColor: tag.bgColor,
-                      color: tag.textColor,
-                    }}
+                    style={{ backgroundColor: tag.bgColor, color: tag.textColor }}
                   >
                     {tag.name}
                   </span>
@@ -556,7 +582,7 @@ const PublishBlog = () => {
               ))}
             </select>
             <p className="text-xs text-muted-foreground">
-              Select an episode to display a "Listen to the Episode" callout in the article. Choose "None" to hide the callout.
+              Select an episode to display a "Listen to the Episode" callout in the article.
             </p>
           </div>
         </CardContent>
@@ -570,12 +596,12 @@ const PublishBlog = () => {
             <Button
               type="button"
               size="sm"
-              variant={editorMode === "blocks" ? "default" : "ghost"}
+              variant={editorMode === "rich" ? "default" : "ghost"}
               className="h-7 text-xs gap-1.5"
-              onClick={() => handleSwitchMode("blocks")}
+              onClick={() => handleSwitchMode("rich")}
             >
-              <Blocks className="h-3.5 w-3.5" />
-              Block Editor
+              <FileText className="h-3.5 w-3.5" />
+              Rich Editor
             </Button>
             <Button
               type="button"
@@ -590,8 +616,8 @@ const PublishBlog = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {editorMode === "blocks" ? (
-            <BlockEditor blocks={blocks} onChange={setBlocks} />
+          {editorMode === "rich" ? (
+            <RichTextEditor content={htmlContent} onChange={setHtmlContent} />
           ) : (
             <div>
               <Textarea
@@ -605,38 +631,12 @@ const PublishBlog = () => {
           )}
           <p className="text-xs text-muted-foreground mt-2">
             {wordCount > 0
-              ? `${wordCount} words • ${calculateReadingTime(currentContent)}`
+              ? `${wordCount} words • ${calculateReadingTime(currentPlainText)}`
               : "0 words"
             }
-            {editorMode === "blocks" && ` • ${blocks.length} blocks`}
           </p>
         </CardContent>
       </Card>
-
-      {/* Auto-generated TOC Preview */}
-      {editorMode === "blocks" && blocks.filter(b => b.type === "heading" && (b as any).level <= 3).length > 0 && (
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-sm flex items-center gap-2 text-muted-foreground">
-              <List className="h-4 w-4" />
-              Auto-Generated Table of Contents
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground mb-3">This TOC will appear automatically on the published article. No manual setup needed.</p>
-            <ul className="space-y-1">
-              {extractTocItems(blocks).map((item) => (
-                <li
-                  key={item.id}
-                  className={`text-sm text-foreground/70 border-l-2 border-border ${item.level === 3 ? "pl-5" : "pl-3"} py-1`}
-                >
-                  {item.text}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Actions */}
       <div className="flex flex-wrap gap-3">
@@ -650,7 +650,7 @@ const PublishBlog = () => {
         </Button>
         <Button onClick={handleExport} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
-          Export {editorMode === "blocks" ? "JSON" : "Markdown"}
+          Export Markdown
         </Button>
       </div>
 
@@ -722,16 +722,27 @@ const PublishBlog = () => {
                 </pre>
               </CardContent>
             </Card>
+          )}
+
+          <PublishModal
+            open={showPublishModal}
+            onOpenChange={setShowPublishModal}
+            onPublishNow={handlePublishNow}
+            onSchedule={handleSchedulePublish}
+            title={title}
+          />
+        </div>
       )}
 
-      <PublishModal
-        open={showPublishModal}
-        onOpenChange={setShowPublishModal}
-        onPublishNow={handlePublishNow}
-        onSchedule={handleSchedulePublish}
-        title={title}
-      />
-    </div>
+      {/* Publish modal when generated fields not shown */}
+      {!showGenerated && (
+        <PublishModal
+          open={showPublishModal}
+          onOpenChange={setShowPublishModal}
+          onPublishNow={handlePublishNow}
+          onSchedule={handleSchedulePublish}
+          title={title}
+        />
       )}
     </div>
   );
