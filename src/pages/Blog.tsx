@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { allBlogs } from "@/data/blogData";
+import { useVisibleBlogs } from "@/hooks/useVisibleContent";
 import blogBanner from "@/assets/blog-banner.png";
 
 const POSTS_PER_PAGE = 6;
