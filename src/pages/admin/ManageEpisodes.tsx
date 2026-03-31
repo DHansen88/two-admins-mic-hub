@@ -131,7 +131,12 @@ const ManageEpisodes = () => {
       toast({ title: `${ids.length} episode(s) restored` });
     } else if (bulkAction === "permanent-delete") {
       ids.forEach((id) => {
-        removeContentMeta("episode", id);
+        const existsInStatic = allEpisodesUnfiltered.some((e) => e.slug === id);
+        if (existsInStatic) {
+          setContentStatusFn("episode", id, "trashed");
+        } else {
+          removeContentMeta("episode", id);
+        }
         localStorage.removeItem(`draft_episode-${id}`);
       });
       toast({ title: `${ids.length} episode(s) permanently deleted` });
