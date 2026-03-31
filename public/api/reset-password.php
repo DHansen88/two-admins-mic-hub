@@ -286,7 +286,7 @@ TEXT;
  */
 function sendResetEmail(string $to, string $name, string $subject, string $htmlBody, string $textBody): bool {
     $boundary = md5(time());
-    $fromEmail = 'noreply@twoadminsandamic.com';
+    $fromEmail = 'info@twoadminsandamic.com';
 
     $headers = implode("\r\n", [
         "From: Two Admins and a Mic <{$fromEmail}>",
