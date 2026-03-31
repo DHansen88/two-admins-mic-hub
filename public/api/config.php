@@ -1,46 +1,38 @@
 <?php
 /**
  * Two Admins & a Mic — Admin Backend Configuration
- * 
- * SETUP INSTRUCTIONS:
- * 1. Create a MySQL database on Hostinger
- * 2. Update the credentials below
- * 3. Upload the /api folder to your Hostinger hosting
- * 4. Run setup.php once to create tables and the initial admin account
  */
 
-// Database credentials — update these for your Hostinger setup
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'your_database_name');
-define('DB_USER', 'your_database_user');
-define('DB_PASS', 'your_database_password');
+if (file_exists(__DIR__ . '/config.local.php')) {
+    require_once __DIR__ . '/config.local.php';
+}
 
-// Session settings
-define('SESSION_LIFETIME', 14400); // 4 hours in seconds
-define('SESSION_NAME', 'taam_admin_session');
-define('SESSION_STORAGE_DIR', dirname(__DIR__, 2) . '/storage/sessions');
-define('ADMIN_TOKEN_STORAGE_FILE', dirname(__DIR__, 2) . '/storage/admin-tokens.json');
+defined('DB_HOST') || define('DB_HOST', 'localhost');
+defined('DB_NAME') || define('DB_NAME', 'your_database_name');
+defined('DB_USER') || define('DB_USER', 'your_database_user');
+defined('DB_PASS') || define('DB_PASS', 'your_database_password');
 
-// SMTP settings for outgoing email (Hostinger)
-// Use the exact outgoing server shown in Hostinger → Emails → Connect Apps & Devices
-// Common values: smtp.hostinger.com or smtp.titan.email
-define('SMTP_HOST', 'smtp.hostinger.com');
-define('SMTP_PORT', 587);
-define('SMTP_USER', 'info@twoadminsandamic.com');
-define('SMTP_PASS', 'YOUR_MAILBOX_PASSWORD_HERE');  // ← Update this on the server
-define('SMTP_FROM_NAME', 'Two Admins and a Mic');
+defined('SESSION_LIFETIME') || define('SESSION_LIFETIME', 14400);
+defined('SESSION_NAME') || define('SESSION_NAME', 'taam_admin_session');
+defined('SESSION_STORAGE_DIR') || define('SESSION_STORAGE_DIR', dirname(__DIR__, 2) . '/storage/sessions');
+defined('ADMIN_TOKEN_STORAGE_FILE') || define('ADMIN_TOKEN_STORAGE_FILE', dirname(__DIR__, 2) . '/storage/admin-tokens.json');
+
+defined('SMTP_HOST') || define('SMTP_HOST', 'smtp.hostinger.com');
+defined('SMTP_PORT') || define('SMTP_PORT', 587);
+defined('SMTP_USER') || define('SMTP_USER', 'your-email@example.com');
+defined('SMTP_PASS') || define('SMTP_PASS', 'your_mailbox_password');
+defined('SMTP_FROM_NAME') || define('SMTP_FROM_NAME', 'Two Admins and a Mic');
 
 // CORS — explicit origins are required when cookies/sessions are used
-define('ALLOWED_ORIGINS', [
+defined('ALLOWED_ORIGINS') || define('ALLOWED_ORIGINS', [
     'https://twoadminsandamic.com',
     'https://www.twoadminsandamic.com',
     'https://two-admins-mic-hub.lovable.app',
 ]);
 
-// Initial admin account (used only during setup)
-define('INITIAL_ADMIN_EMAIL', 'admin@twoadminsandamic.com');
-define('INITIAL_ADMIN_PASSWORD', 'ChangeMe2025!');
-define('INITIAL_ADMIN_NAME', 'Site Admin');
+defined('INITIAL_ADMIN_EMAIL') || define('INITIAL_ADMIN_EMAIL', 'admin@example.com');
+defined('INITIAL_ADMIN_PASSWORD') || define('INITIAL_ADMIN_PASSWORD', 'CHANGE_ME_IN_LOCAL_SETUP');
+defined('INITIAL_ADMIN_NAME') || define('INITIAL_ADMIN_NAME', 'Site Admin');
 
 /**
  * Get PDO database connection
