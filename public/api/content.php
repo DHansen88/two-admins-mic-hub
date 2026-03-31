@@ -793,6 +793,14 @@ function handlePublicGetBlog(): void {
         $meta['slug'] = $meta['slug'] ?? $slug;
         $meta['content'] = $meta['_content'] ?? '';
         unset($meta['_content']);
+        // Attach html_content if companion file exists
+        $htmlJsonFile = BLOG_DIR . "/{$slug}.html.json";
+        if (file_exists($htmlJsonFile)) {
+            $htmlData = json_decode(file_get_contents($htmlJsonFile), true);
+            if ($htmlData && !empty($htmlData['html_content'])) {
+                $meta['html_content'] = $htmlData['html_content'];
+            }
+        }
         jsonResponse(['blog' => $meta]);
     } elseif (file_exists($jsonFile)) {
         $data = json_decode(file_get_contents($jsonFile), true);
