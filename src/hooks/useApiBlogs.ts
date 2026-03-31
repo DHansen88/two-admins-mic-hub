@@ -6,6 +6,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAdminApiBase } from "@/lib/admin-auth";
 import type { BlogPost, Author } from "@/lib/content-loader";
+import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
 
 const API_BASE = getAdminApiBase();
 
@@ -24,11 +25,10 @@ interface ApiBlogRaw {
   key_takeaways?: string[];
   content?: string;
   _content?: string;
+  html_content?: string;
   related_episode?: string;
   show_episode_callout?: boolean | string;
   status?: string;
-  // Author objects resolved server-side or client-side
-  _resolved_authors?: Author[];
 }
 
 function calculateReadingTime(text: string): string {
@@ -50,34 +50,55 @@ function formatDate(dateStr: string): string {
   }
 }
 
-function rawToBlogPost(raw: ApiBlogRaw): BlogPost {
+/** Cache for author profiles so we don't re-fetch per blog */
+let cachedAuthorProfiles: AuthorProfile[] | null = null;
+
+async function loadAuthorProfiles(): Promise<AuthorProfile[]> {
+  if (cachedAuthorProfiles) return cachedAuthorProfiles;
+  try {
+    cachedAuthorProfiles = await fetchAuthors();
+  } catch {
+    cachedAuthorProfiles = [];
+  }
+  return cachedAuthorProfiles;
+}
+
+function resolveAuthor(key: string, profiles: AuthorProfile[]): Author {
+  // Try exact id match
+  const profile = profiles.find((p) => p.id === key) ||
+    profiles.find((p) => p.name.toLowerCase() === key.toLowerCase());
+  if (profile) {
+    return {
+      name: profile.name,
+      role: profile.role || "",
+      bio: profile.bio || "",
+      avatar: profile.avatar || "",
+      linkedin: profile.linkedin,
+      website: profile.website,
+    };
+  }
+  return { name: key, role: "", bio: "", avatar: "" };
+}
+
+function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
   const content = raw._content || raw.content || "";
   const slug = raw.slug || "";
   const tags = Array.isArray(raw.tags) ? raw.tags : [];
 
-  // Build a minimal author from the key string
-  const authorName = Array.isArray(raw.authors)
-    ? raw.authors[0] || raw.author || ""
-    : raw.author || "";
+  const authorKeys = Array.isArray(raw.authors) && raw.authors.length > 0
+    ? raw.authors
+    : [raw.author || ""];
 
-  const author: Author = {
-    name: authorName,
-    role: raw.author_role || "",
-    bio: "",
-    avatar: "",
-  };
+  const authors: Author[] = authorKeys.map((key) => resolveAuthor(key, profiles));
 
-  const authors: Author[] = Array.isArray(raw.authors)
-    ? raw.authors.map((name) => ({ name, role: "", bio: "", avatar: "" }))
-    : [author];
-
+  // Override avatars if explicitly provided
   if (raw.author_avatars) {
     raw.author_avatars.forEach((av, i) => {
       if (av && authors[i]) authors[i].avatar = av;
     });
   }
 
-  return {
+  const post: BlogPost & { html_content?: string } = {
     title: raw.title || "Untitled",
     slug,
     content,
@@ -85,22 +106,31 @@ function rawToBlogPost(raw: ApiBlogRaw): BlogPost {
     date: formatDate(raw.publish_date || raw.date || ""),
     readTime: calculateReadingTime(content),
     topics: tags as any,
-    author: authors[0] || author,
+    author: authors[0],
     authors,
     featuredImage: raw.featured_image || undefined,
     keyTakeaways: raw.key_takeaways || undefined,
     relatedEpisode: raw.related_episode || undefined,
     showEpisodeCallout: String(raw.show_episode_callout) !== "false",
   };
+
+  if (raw.html_content) {
+    (post as any).html_content = raw.html_content;
+  }
+
+  return post;
 }
 
 async function fetchPublicBlogs(): Promise<BlogPost[]> {
   try {
-    const res = await fetch(`${API_BASE}/content.php?action=public-list-blogs`);
+    const [res, profiles] = await Promise.all([
+      fetch(`${API_BASE}/content.php?action=public-list-blogs`),
+      loadAuthorProfiles(),
+    ]);
     if (!res.ok) return [];
     const data = await res.json();
     const blogs: ApiBlogRaw[] = data.blogs ?? [];
-    return blogs.map(rawToBlogPost);
+    return blogs.map((b) => rawToBlogPost(b, profiles));
   } catch {
     return [];
   }
@@ -108,13 +138,14 @@ async function fetchPublicBlogs(): Promise<BlogPost[]> {
 
 async function fetchPublicBlog(slug: string): Promise<BlogPost | null> {
   try {
-    const res = await fetch(
-      `${API_BASE}/content.php?action=public-get-blog&slug=${encodeURIComponent(slug)}`
-    );
+    const [res, profiles] = await Promise.all([
+      fetch(`${API_BASE}/content.php?action=public-get-blog&slug=${encodeURIComponent(slug)}`),
+      loadAuthorProfiles(),
+    ]);
     if (!res.ok) return null;
     const data = await res.json();
     if (!data.blog) return null;
-    return rawToBlogPost(data.blog);
+    return rawToBlogPost(data.blog, profiles);
   } catch {
     return null;
   }
