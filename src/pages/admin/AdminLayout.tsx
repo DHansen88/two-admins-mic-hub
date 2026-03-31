@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
-import { isAuthenticated, logout, getCurrentUser, isAdmin, validateSession } from "@/lib/admin-auth";
+import { isAuthenticated, logout, getCurrentUser, isAdmin, validateSession, login } from "@/lib/admin-auth";
+import AdminLogin from "./AdminLogin";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
