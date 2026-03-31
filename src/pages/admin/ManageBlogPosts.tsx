@@ -129,7 +129,12 @@ const ManageBlogPosts = () => {
       toast({ title: `${ids.length} post(s) restored` });
     } else if (bulkAction === "permanent-delete") {
       ids.forEach((id) => {
-        removeContentMeta("blog", id);
+        const existsInStatic = allBlogsUnfiltered.some((b) => b.slug === id);
+        if (existsInStatic) {
+          setContentStatusFn("blog", id, "trashed");
+        } else {
+          removeContentMeta("blog", id);
+        }
         localStorage.removeItem(`draft_blog-${id}`);
       });
       toast({ title: `${ids.length} post(s) permanently deleted` });
