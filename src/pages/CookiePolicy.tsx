@@ -12,7 +12,7 @@ const CookiePolicy = () => {
     <>
       <Header />
       <main className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-16 max-w-4xl">
+        <div className="container mx-auto px-4 pt-28 pb-16 max-w-4xl">
           <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">Cookie Policy</h1>
           <p className="text-muted-foreground mb-12">Last updated: March 31, 2026</p>
 
