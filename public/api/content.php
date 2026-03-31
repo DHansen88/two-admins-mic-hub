@@ -203,6 +203,8 @@ function handleSaveBlog(): void {
     if (empty($body['title'])) jsonResponse(['error' => 'Title is required'], 400);
     
     $format = $body['format'] ?? 'md';
+    $mdPath = BLOG_DIR . "/{$slug}.md";
+    $jsonPath = BLOG_DIR . "/{$slug}.json";
     
     if ($format === 'md') {
         // Build markdown with frontmatter
@@ -250,7 +252,11 @@ function handleSaveBlog(): void {
         $frontmatter .= "---\n\n";
         $frontmatter .= $body['content'] ?? '';
         
-        file_put_contents(BLOG_DIR . "/{$slug}.md", $frontmatter);
+        file_put_contents($mdPath, $frontmatter);
+
+        if (file_exists($jsonPath)) {
+            unlink($jsonPath);
+        }
     } else {
         $data = [
             'title' => $body['title'],
@@ -275,7 +281,11 @@ function handleSaveBlog(): void {
             }
         }
         
-        file_put_contents(BLOG_DIR . "/{$slug}.json", json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        file_put_contents($jsonPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        if (file_exists($mdPath)) {
+            unlink($mdPath);
+        }
     }
     
     logContentAction($user, 'blog_published', "Published blog: {$body['title']}");
