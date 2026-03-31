@@ -286,7 +286,7 @@ const PublishBlog = () => {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
-    const slug = generateSlug(title);
+    const slug = customSlug || generateSlug(title);
     const result = await saveBlog({
       title,
       slug,
