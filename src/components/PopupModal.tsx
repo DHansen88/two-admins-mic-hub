@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { X } from "lucide-react";
+import { X, CheckCircle } from "lucide-react";
 import {
   getActivePopupForPath,
   hasSeenPopup,
@@ -12,6 +12,8 @@ const PopupModal = () => {
   const { pathname } = useLocation();
   const [popup, setPopup] = useState<PopupConfig | null>(null);
   const [visible, setVisible] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [fadingOut, setFadingOut] = useState(false);
 
   useEffect(() => {
     const match = getActivePopupForPath(pathname);
@@ -29,9 +31,47 @@ const PopupModal = () => {
     return () => clearTimeout(timer);
   }, [pathname]);
 
+  // Listen for Beehiiv subscription success via postMessage
+  useEffect(() => {
+    if (!visible) return;
+
+    const handleMessage = (event: MessageEvent) => {
+      // Beehiiv sends messages when subscription completes
+      if (
+        typeof event.data === "string" &&
+        (event.data.includes("beehiiv") || event.data.includes("subscribe"))
+      ) {
+        triggerSuccess();
+      }
+      // Also handle object-based messages
+      if (
+        typeof event.data === "object" &&
+        event.data !== null &&
+        (event.data.type === "beehiiv:subscribe" || event.data.subscribed)
+      ) {
+        triggerSuccess();
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [visible]);
+
+  const triggerSuccess = () => {
+    setShowSuccess(true);
+    setFadingOut(false);
+    // Start fade-out after 4s, then hide at 5s
+    setTimeout(() => setFadingOut(true), 4000);
+    setTimeout(() => {
+      setShowSuccess(false);
+      setFadingOut(false);
+    }, 5000);
+  };
+
   const close = () => {
     if (popup) markPopupSeen(popup.id, popup.cooldownDays);
     setVisible(false);
+    setShowSuccess(false);
   };
 
   if (!visible || !popup) return null;
@@ -57,6 +97,22 @@ const PopupModal = () => {
         >
           <X className="h-5 w-5 text-foreground" />
         </button>
+
+        {/* Success message overlay */}
+        {showSuccess && (
+          <div
+            className={`absolute inset-0 z-30 flex items-center justify-center bg-card/95 rounded-2xl transition-opacity duration-1000 ${
+              fadingOut ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <div className="text-center px-6">
+              <CheckCircle className="h-12 w-12 text-teal mx-auto mb-3" />
+              <p className="text-lg font-semibold text-foreground">
+                Welcome! Check your email to confirm your subscription is live.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Dynamic content */}
         <div

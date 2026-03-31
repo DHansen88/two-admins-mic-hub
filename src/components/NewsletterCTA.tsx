@@ -108,8 +108,8 @@ No spam — just the good stuff.
                 </div>
 
                 {status === "success" &&
-                <p className="text-teal text-sm mt-2 flex items-center justify-center gap-1.5 animate-fade-in">
-                    <CheckCircle className="h-3.5 w-3.5" /> You're in! Welcome aboard.
+                <p className="text-teal text-sm mt-2 flex items-center justify-center gap-1.5 animate-fade-in transition-opacity duration-500">
+                    <CheckCircle className="h-3.5 w-3.5" /> Welcome! Check your email to confirm your subscription is live.
                   </p>
                 }
                 {errorMsg &&
