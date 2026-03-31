@@ -4,37 +4,25 @@ import { allEpisodesUnfiltered } from "@/data/episodeData";
 import { getAllContentMeta, getEffectiveStatus, removeContentMeta, processScheduledContent, setContentStatus as setContentStatusFn, type ContentStatus } from "@/lib/content-status";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, MoreHorizontal, Pencil, Copy, Trash2, Mic } from "lucide-react";
+import { Plus, MoreHorizontal, Pencil, Copy, Trash2, Mic, RotateCcw, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
 const statusConfig: Record<ContentStatus, { label: string; className: string }> = {
   draft: { label: "Draft", className: "bg-muted text-muted-foreground" },
   scheduled: { label: "Scheduled", className: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" },
   published: { label: "Published", className: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" },
+  trashed: { label: "Trashed", className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 type FilterStatus = "all" | ContentStatus;
@@ -44,15 +32,20 @@ const ManageEpisodes = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<FilterStatus>("all");
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [permanentDeleteTarget, setPermanentDeleteTarget] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkAction, setBulkAction] = useState<"trash" | "restore" | "permanent-delete" | null>(null);
+  const [, forceUpdate] = useState(0);
 
   useEffect(() => {
     processScheduledContent();
   }, []);
 
-  // Build episode list with statuses
   const drafts = getAllContentMeta("episode").filter(
     (m) => m.status === "draft" && !allEpisodesUnfiltered.some((ep) => String(ep.number) === m.id)
   );
+
+  const trashedMeta = getAllContentMeta("episode").filter((m) => m.status === "trashed");
 
   const episodes = [
     ...allEpisodesUnfiltered.map((ep) => ({
@@ -65,7 +58,6 @@ const ManageEpisodes = () => {
       status: getEffectiveStatus("episode", String(ep.number), true),
     })),
     ...drafts.map((d) => {
-      // Try to load draft data from localStorage
       const raw = localStorage.getItem(`draft_episode-${d.id}`);
       const data = raw ? JSON.parse(raw) : {};
       return {
@@ -78,17 +70,70 @@ const ManageEpisodes = () => {
         status: "draft" as ContentStatus,
       };
     }),
+    ...trashedMeta.map((d) => {
+      const raw = localStorage.getItem(`draft_episode-${d.id}`);
+      const data = raw ? JSON.parse(raw) : {};
+      const existing = allEpisodesUnfiltered.find((ep) => String(ep.number) === d.id);
+      return {
+        id: d.id,
+        number: existing?.number || parseInt(d.id) || 0,
+        title: existing?.title || data.title || `Episode ${d.id}`,
+        date: existing?.date || data.publishDate || "",
+        duration: existing?.duration || data.duration || "",
+        topics: existing?.topics || data.selectedTopics || [],
+        status: "trashed" as ContentStatus,
+      };
+    }),
   ].sort((a, b) => b.number - a.number);
 
-  const filtered = filter === "all" ? episodes : episodes.filter((ep) => ep.status === filter);
+  const filtered = filter === "all"
+    ? episodes.filter((ep) => ep.status !== "trashed")
+    : episodes.filter((ep) => ep.status === filter);
 
-  const handleDelete = (id: string) => {
+  const isTrashView = filter === "trashed";
+
+  const handleMoveToTrash = (id: string) => {
+    setContentStatusFn("episode", id, "trashed");
+    setDeleteTarget(null);
+    setSelected((s) => { const n = new Set(s); n.delete(id); return n; });
+    toast({ title: "Episode moved to trash" });
+    forceUpdate((n) => n + 1);
+  };
+
+  const handleRestore = (id: string) => {
+    setContentStatusFn("episode", id, "draft");
+    setSelected((s) => { const n = new Set(s); n.delete(id); return n; });
+    toast({ title: "Episode restored as draft" });
+    forceUpdate((n) => n + 1);
+  };
+
+  const handlePermanentDelete = (id: string) => {
     removeContentMeta("episode", id);
     localStorage.removeItem(`draft_episode-${id}`);
-    setDeleteTarget(null);
-    toast({ title: "Episode removed" });
-    // Force re-render
-    window.location.reload();
+    setPermanentDeleteTarget(null);
+    setSelected((s) => { const n = new Set(s); n.delete(id); return n; });
+    toast({ title: "Episode permanently deleted" });
+    forceUpdate((n) => n + 1);
+  };
+
+  const handleBulkConfirm = () => {
+    const ids = Array.from(selected);
+    if (bulkAction === "trash") {
+      ids.forEach((id) => setContentStatusFn("episode", id, "trashed"));
+      toast({ title: `${ids.length} episode(s) moved to trash` });
+    } else if (bulkAction === "restore") {
+      ids.forEach((id) => setContentStatusFn("episode", id, "draft"));
+      toast({ title: `${ids.length} episode(s) restored` });
+    } else if (bulkAction === "permanent-delete") {
+      ids.forEach((id) => {
+        removeContentMeta("episode", id);
+        localStorage.removeItem(`draft_episode-${id}`);
+      });
+      toast({ title: `${ids.length} episode(s) permanently deleted` });
+    }
+    setSelected(new Set());
+    setBulkAction(null);
+    forceUpdate((n) => n + 1);
   };
 
   const handleDuplicate = (ep: typeof episodes[0]) => {
@@ -102,10 +147,25 @@ const ManageEpisodes = () => {
       description: "",
     };
     localStorage.setItem(`draft_episode-${newNum}`, JSON.stringify(draftData));
-    // Mark as draft
     setContentStatusFn("episode", newNum, "draft");
     toast({ title: `Episode duplicated as draft #${newNum}` });
     navigate(`/admin/publish-episode?edit=${newNum}`);
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    if (selected.size === filtered.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(filtered.map((ep) => ep.id)));
+    }
   };
 
   const filters: { label: string; value: FilterStatus }[] = [
@@ -113,6 +173,7 @@ const ManageEpisodes = () => {
     { label: "Draft", value: "draft" },
     { label: "Scheduled", value: "scheduled" },
     { label: "Published", value: "published" },
+    { label: "Trash", value: "trashed" },
   ];
 
   return (
@@ -140,18 +201,51 @@ const ManageEpisodes = () => {
             key={f.value}
             variant={filter === f.value ? "default" : "outline"}
             size="sm"
-            onClick={() => setFilter(f.value)}
+            onClick={() => { setFilter(f.value); setSelected(new Set()); }}
           >
             {f.label}
+            {f.value === "trashed" && trashedMeta.length > 0 && (
+              <span className="ml-1.5 text-xs bg-destructive/20 text-destructive rounded-full px-1.5">
+                {trashedMeta.length}
+              </span>
+            )}
           </Button>
         ))}
       </div>
+
+      {/* Bulk Actions */}
+      {selected.size > 0 && (
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-muted border border-border">
+          <span className="text-sm font-medium">{selected.size} selected</span>
+          {isTrashView ? (
+            <>
+              <Button size="sm" variant="outline" onClick={() => setBulkAction("restore")}>
+                <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Restore
+              </Button>
+              <Button size="sm" variant="destructive" onClick={() => setBulkAction("permanent-delete")}>
+                <XCircle className="h-3.5 w-3.5 mr-1.5" /> Delete Forever
+              </Button>
+            </>
+          ) : (
+            <Button size="sm" variant="destructive" onClick={() => setBulkAction("trash")}>
+              <Trash2 className="h-3.5 w-3.5 mr-1.5" /> Move to Trash
+            </Button>
+          )}
+          <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>Clear</Button>
+        </div>
+      )}
 
       {/* Table */}
       <div className="rounded-lg border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={filtered.length > 0 && selected.size === filtered.length}
+                  onCheckedChange={toggleAll}
+                />
+              </TableHead>
               <TableHead className="w-20">Ep #</TableHead>
               <TableHead>Title</TableHead>
               <TableHead className="w-28">Status</TableHead>
@@ -164,15 +258,21 @@ const ManageEpisodes = () => {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
-                  No episodes found.
+                <TableCell colSpan={8} className="text-center text-muted-foreground py-12">
+                  {isTrashView ? "Trash is empty." : "No episodes found."}
                 </TableCell>
               </TableRow>
             ) : (
               filtered.map((ep) => {
                 const cfg = statusConfig[ep.status];
                 return (
-                  <TableRow key={ep.id}>
+                  <TableRow key={ep.id} className={selected.has(ep.id) ? "bg-muted/50" : ""}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selected.has(ep.id)}
+                        onCheckedChange={() => toggleSelect(ep.id)}
+                      />
+                    </TableCell>
                     <TableCell className="font-medium">{ep.number}</TableCell>
                     <TableCell className="font-medium">{ep.title}</TableCell>
                     <TableCell>
@@ -200,18 +300,34 @@ const ManageEpisodes = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => navigate(`/admin/publish-episode?edit=${ep.id}`)}>
-                            <Pencil className="h-4 w-4 mr-2" /> Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDuplicate(ep)}>
-                            <Copy className="h-4 w-4 mr-2" /> Duplicate
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => setDeleteTarget(ep.id)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" /> Delete
-                          </DropdownMenuItem>
+                          {isTrashView ? (
+                            <>
+                              <DropdownMenuItem onClick={() => handleRestore(ep.id)}>
+                                <RotateCcw className="h-4 w-4 mr-2" /> Restore
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => setPermanentDeleteTarget(ep.id)}
+                              >
+                                <XCircle className="h-4 w-4 mr-2" /> Delete Forever
+                              </DropdownMenuItem>
+                            </>
+                          ) : (
+                            <>
+                              <DropdownMenuItem onClick={() => navigate(`/admin/publish-episode?edit=${ep.id}`)}>
+                                <Pencil className="h-4 w-4 mr-2" /> Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleDuplicate(ep)}>
+                                <Copy className="h-4 w-4 mr-2" /> Duplicate
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => setDeleteTarget(ep.id)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" /> Move to Trash
+                              </DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -223,17 +339,65 @@ const ManageEpisodes = () => {
         </Table>
       </div>
 
-      {/* Delete dialog */}
+      {/* Move to Trash dialog */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this episode?</AlertDialogTitle>
-            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+            <AlertDialogTitle>Move to trash?</AlertDialogTitle>
+            <AlertDialogDescription>This episode will be moved to trash. You can restore it later.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteTarget && handleDelete(deleteTarget)}>
-              Delete
+            <AlertDialogAction onClick={() => deleteTarget && handleMoveToTrash(deleteTarget)}>
+              Move to Trash
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Permanent Delete dialog */}
+      <AlertDialog open={!!permanentDeleteTarget} onOpenChange={(o) => !o && setPermanentDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Permanently delete?</AlertDialogTitle>
+            <AlertDialogDescription>This action cannot be undone. The episode will be permanently removed.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => permanentDeleteTarget && handlePermanentDelete(permanentDeleteTarget)}
+            >
+              Delete Forever
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Action dialog */}
+      <AlertDialog open={!!bulkAction} onOpenChange={(o) => !o && setBulkAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {bulkAction === "trash" && `Move ${selected.size} episode(s) to trash?`}
+              {bulkAction === "restore" && `Restore ${selected.size} episode(s)?`}
+              {bulkAction === "permanent-delete" && `Permanently delete ${selected.size} episode(s)?`}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {bulkAction === "permanent-delete"
+                ? "This action cannot be undone."
+                : bulkAction === "trash"
+                  ? "You can restore them from trash later."
+                  : "Items will be restored as drafts."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className={bulkAction === "permanent-delete" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+              onClick={handleBulkConfirm}
+            >
+              Confirm
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

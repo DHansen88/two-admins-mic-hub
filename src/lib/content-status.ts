@@ -3,7 +3,7 @@
  * Tracks draft/scheduled/published status for episodes and blog posts.
  */
 
-export type ContentStatus = "draft" | "scheduled" | "published";
+export type ContentStatus = "draft" | "scheduled" | "published" | "trashed";
 
 export interface ContentMeta {
   id: string;
