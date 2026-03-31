@@ -405,7 +405,7 @@ function smtpSend(string $from, string $to, string $message): bool {
         $response = $read();
         $code = (int) substr($response, 0, 3);
         if ($code !== 250) {
-            error_log("SMTP DATA finalization failed: {$response}");
+            logResetPasswordEvent("SMTP DATA finalization failed: {$response}");
             $ok = false;
         }
     }
