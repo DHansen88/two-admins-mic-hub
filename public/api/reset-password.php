@@ -307,7 +307,7 @@ function sendResetEmail(string $to, string $name, string $subject, string $htmlB
 }
 
 /**
- * Raw SMTP sender over SSL — no external libraries needed
+ * Raw SMTP sender over STARTTLS for Hostinger
  */
 function smtpSend(string $from, string $to, string $message): bool {
     $host = SMTP_HOST;
@@ -315,38 +315,44 @@ function smtpSend(string $from, string $to, string $message): bool {
     $user = SMTP_USER;
     $pass = SMTP_PASS;
 
-    $socket = @fsockopen("ssl://{$host}", $port, $errno, $errstr, 10);
+    $socket = @stream_socket_client("tcp://{$host}:{$port}", $errno, $errstr, 15);
     if (!$socket) {
         error_log("SMTP connect failed: [{$errno}] {$errstr}");
         return false;
     }
 
+    stream_set_timeout($socket, 15);
     $response = '';
     $ok = true;
 
-    $read = function () use ($socket, &$response): string {
-        $buf = '';
-        while ($line = fgets($socket, 512)) {
-            $buf .= $line;
-            if (isset($line[3]) && $line[3] === ' ') break;
+    $read = function () use ($socket): string {
+        $buffer = '';
+        while (($line = fgets($socket, 512)) !== false) {
+            $buffer .= $line;
+            if (strlen($line) < 4 || $line[3] === ' ') {
+                break;
+            }
         }
-        return $buf;
+        return $buffer;
     };
 
-    $send = function (string $cmd, int $expect) use ($socket, $read, &$response, &$ok): bool {
-        if (!$ok) return false;
+    $send = function (string $cmd, array $expectedCodes) use ($socket, $read, &$ok): string {
+        if (!$ok) {
+            return '';
+        }
+
         fwrite($socket, $cmd . "\r\n");
         $response = $read();
         $code = (int) substr($response, 0, 3);
-        if ($code !== $expect) {
-            error_log("SMTP error: sent '{$cmd}', expected {$expect}, got: {$response}");
+
+        if (!in_array($code, $expectedCodes, true)) {
+            error_log("SMTP error after '{$cmd}': {$response}");
             $ok = false;
-            return false;
         }
-        return true;
+
+        return $response;
     };
 
-    // Greeting
     $response = $read();
     if ((int) substr($response, 0, 3) !== 220) {
         error_log("SMTP greeting failed: {$response}");
@@ -354,27 +360,42 @@ function smtpSend(string $from, string $to, string $message): bool {
         return false;
     }
 
-    $send("EHLO twoadminsandamic.com", 250);
-    $send("AUTH LOGIN", 334);
-    $send(base64_encode($user), 334);
-    $send(base64_encode($pass), 235);
-    $send("MAIL FROM:<{$from}>", 250);
-    $send("RCPT TO:<{$to}>", 250);
-    $send("DATA", 354);
+    $send("EHLO twoadminsandamic.com", [250]);
+    $send("STARTTLS", [220]);
+
+    if ($ok && !stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+        error_log('SMTP STARTTLS negotiation failed');
+        $ok = false;
+    }
 
     if ($ok) {
-        // Send message body — dot-stuff any lines starting with "."
-        $lines = explode("\n", str_replace("\r\n", "\n", $message));
+        $send("EHLO twoadminsandamic.com", [250]);
+        $send("AUTH LOGIN", [334]);
+        $send(base64_encode($user), [334]);
+        $send(base64_encode($pass), [235]);
+        $send("MAIL FROM:<{$from}>", [250]);
+        $send("RCPT TO:<{$to}>", [250, 251]);
+        $send("DATA", [354]);
+    }
+
+    if ($ok) {
+        $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", $message));
         foreach ($lines as $line) {
             if (isset($line[0]) && $line[0] === '.') {
                 $line = '.' . $line;
             }
             fwrite($socket, $line . "\r\n");
         }
-        $send(".", 250);
+        fwrite($socket, ".\r\n");
+        $response = $read();
+        $code = (int) substr($response, 0, 3);
+        if ($code !== 250) {
+            error_log("SMTP DATA finalization failed: {$response}");
+            $ok = false;
+        }
     }
 
-    $send("QUIT", 221);
+    fwrite($socket, "QUIT\r\n");
     fclose($socket);
 
     return $ok;
