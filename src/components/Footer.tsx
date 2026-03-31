@@ -100,7 +100,7 @@ const Footer = () => {
             <div className="pt-8 border-t border-navy/50 text-center md:text-left">
               <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 <p className="text-background/60 text-sm">
-                  © {currentYear} Two Admins & a Mic. All rights reserved.
+                  © {currentYear} Two Admins & a Mic. All rights reserved. ✨
                 </p>
                 <div className="flex space-x-6 text-sm">
                   <NavLink to="/privacy-policy" className="text-background/60 hover:text-background transition-colors">
