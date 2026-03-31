@@ -84,6 +84,12 @@ switch ($action) {
     case 'hidden-ids':
         handleHiddenIds();
         break;
+    case 'public-list-blogs':
+        handlePublicListBlogs();
+        break;
+    case 'public-get-blog':
+        handlePublicGetBlog();
+        break;
     default:
         jsonResponse(['error' => 'Invalid action'], 400);
 }
