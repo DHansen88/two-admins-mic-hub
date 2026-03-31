@@ -22,6 +22,8 @@ define('SESSION_STORAGE_DIR', dirname(__DIR__, 2) . '/storage/sessions');
 define('ADMIN_TOKEN_STORAGE_FILE', dirname(__DIR__, 2) . '/storage/admin-tokens.json');
 
 // SMTP settings for outgoing email (Hostinger)
+// Use the exact outgoing server shown in Hostinger → Emails → Connect Apps & Devices
+// Common values: smtp.hostinger.com or smtp.titan.email
 define('SMTP_HOST', 'smtp.hostinger.com');
 define('SMTP_PORT', 587);
 define('SMTP_USER', 'info@twoadminsandamic.com');

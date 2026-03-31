@@ -332,7 +332,7 @@ function smtpSend(string $from, string $to, string $message): bool {
 
     $socket = @stream_socket_client("tcp://{$host}:{$port}", $errno, $errstr, 15);
     if (!$socket) {
-        error_log("SMTP connect failed: [{$errno}] {$errstr}");
+        logResetPasswordEvent("SMTP connect failed: [{$errno}] {$errstr}");
         return false;
     }
 
