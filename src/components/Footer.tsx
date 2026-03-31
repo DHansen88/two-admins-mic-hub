@@ -1,4 +1,4 @@
-import { Mail, Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
+import { Mail, Instagram, Twitter, Linkedin, Youtube, Star } from "lucide-react";
 import { NavLink } from "./NavLink";
 import footerLogo from "@/assets/footer-logo.png";
 import NewsletterCTA from "./NewsletterCTA";
