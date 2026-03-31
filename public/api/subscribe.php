@@ -82,11 +82,15 @@ curl_setopt_array($ch, [
         'Content-Type: application/json',
         'Authorization: Bearer ' . $apiKey,
     ],
-    CURLOPT_POSTFIELDS => json_encode([
+    CURLOPT_POSTFIELDS => json_encode(array_filter([
         'email' => $email,
         'reactivate_existing' => false,
         'send_welcome_email' => true,
-    ]),
+        'custom_fields' => array_filter([
+            ['name' => 'First Name', 'value' => $firstName],
+            ['name' => 'Last Name', 'value' => $lastName],
+        ], fn($f) => !empty($f['value'])) ?: null,
+    ], fn($v) => $v !== null)),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT => 15,
     CURLOPT_SSL_VERIFYPEER => true,
