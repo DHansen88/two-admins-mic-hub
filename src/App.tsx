@@ -24,7 +24,7 @@ import CookiePolicy from "./pages/CookiePolicy";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 
 // Admin pages
-import AdminLogin from "./pages/admin/AdminLogin";
+
 import AdminLayout from "./pages/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import PublishEpisode from "./pages/admin/PublishEpisode";
@@ -67,7 +67,7 @@ const App = () => (
           <Route path="/cookie-policy" element={<CookiePolicy />} />
 
           {/* Admin Dashboard */}
-          <Route path="/admin/login" element={<AdminLogin />} />
+          
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="episodes" element={<ManageEpisodes />} />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
-import { isAuthenticated, logout, getCurrentUser, isAdmin, validateSession } from "@/lib/admin-auth";
+import { isAuthenticated, logout, getCurrentUser, isAdmin, validateSession, login } from "@/lib/admin-auth";
+import AdminLogin from "./AdminLogin";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -35,13 +36,16 @@ const AdminLayout = () => {
   const location = useLocation();
   const [user, setUser] = useState(getCurrentUser());
   const [checkingSession, setCheckingSession] = useState(true);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     let mounted = true;
 
     const verify = async () => {
       if (!isAuthenticated()) {
-        navigate("/admin/login", { replace: true });
+        if (!mounted) return;
+        setShowLogin(true);
+        setCheckingSession(false);
         return;
       }
 
@@ -50,11 +54,13 @@ const AdminLayout = () => {
 
       if (!isValid) {
         setUser(null);
-        navigate("/admin/login", { replace: true });
+        setShowLogin(true);
+        setCheckingSession(false);
         return;
       }
 
       setUser(getCurrentUser());
+      setShowLogin(false);
       setCheckingSession(false);
     };
 
@@ -65,12 +71,16 @@ const AdminLayout = () => {
     };
   }, [navigate]);
 
-  if (checkingSession || !isAuthenticated() || !user) return null;
+  if (checkingSession) return null;
+
+  if (showLogin || !user) {
+    return <AdminLogin onSuccess={() => { setUser(getCurrentUser()); setShowLogin(false); }} />;
+  }
 
   const handleLogout = () => {
     logout();
     setUser(null);
-    navigate("/admin/login", { replace: true });
+    setShowLogin(true);
   };
 
   const navItems = allNavItems.filter((item) => !item.adminOnly || isAdmin());
