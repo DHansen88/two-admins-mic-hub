@@ -93,6 +93,44 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
         class:
           "prose prose-sm sm:prose dark:prose-invert max-w-none min-h-[400px] focus:outline-none px-4 py-3",
       },
+      handleDrop: (view, event) => {
+        const files = event.dataTransfer?.files;
+        if (!files?.length) return false;
+        const file = files[0];
+        if (!file.type.startsWith("image/")) return false;
+        event.preventDefault();
+        const reader = new FileReader();
+        reader.onload = () => {
+          const { state } = view;
+          const pos = view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos ?? state.selection.from;
+          const node = state.schema.nodes.image.create({ src: reader.result as string });
+          const tr = state.tr.insert(pos, node);
+          view.dispatch(tr);
+        };
+        reader.readAsDataURL(file);
+        return true;
+      },
+      handlePaste: (view, event) => {
+        const items = event.clipboardData?.items;
+        if (!items) return false;
+        for (const item of Array.from(items)) {
+          if (item.type.startsWith("image/")) {
+            event.preventDefault();
+            const file = item.getAsFile();
+            if (!file) return false;
+            const reader = new FileReader();
+            reader.onload = () => {
+              const { state } = view;
+              const node = state.schema.nodes.image.create({ src: reader.result as string });
+              const tr = state.tr.replaceSelectionWith(node);
+              view.dispatch(tr);
+            };
+            reader.readAsDataURL(file);
+            return true;
+          }
+        }
+        return false;
+      },
     },
   });
 
