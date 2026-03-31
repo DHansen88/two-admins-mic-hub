@@ -15,13 +15,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Content directories (relative to site root)
-define('CONTENT_ROOT', realpath(__DIR__ . '/../../') . '/content');
+define('CONTENT_ROOT', dirname(__DIR__, 2) . '/content');
 define('BLOG_DIR', CONTENT_ROOT . '/blog');
 define('PODCAST_DIR', CONTENT_ROOT . '/podcasts');
 define('TRASH_DIR', CONTENT_ROOT . '/trash');
-define('SITE_ROOT_CONTENT', realpath(__DIR__ . '/../../'));
-define('BLOG_UPLOADS_DIR', SITE_ROOT_CONTENT . '/uploads/blog');
-define('PODCAST_UPLOADS_DIR', SITE_ROOT_CONTENT . '/uploads/podcast');
+
+define('SITE_ROOT_CONTENT', dirname(__DIR__, 2));
+define('PUBLIC_ROOT_CONTENT', dirname(__DIR__));
+
+define('BLOG_UPLOADS_DIR', PUBLIC_ROOT_CONTENT . '/uploads/blog');
+define('PODCAST_UPLOADS_DIR', PUBLIC_ROOT_CONTENT . '/uploads/podcast');
 
 // Ensure directories exist
 foreach ([CONTENT_ROOT, BLOG_DIR, PODCAST_DIR, TRASH_DIR, BLOG_UPLOADS_DIR, PODCAST_UPLOADS_DIR] as $dir) {
