@@ -41,14 +41,13 @@ jobs:
           clean: true
           single-commit: true
 
-      - name: Sync Hostinger via SSH
-        uses: appleboy/ssh-action@v1.2.2
+      - name: Upload dist to Hostinger
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: 82.29.86.190
           username: u808275895
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
           port: 65002
-          script: |
-            cd /home/u808275895/domains/twoadminsandamic.com/public_html
-            git fetch origin deploy
-            git reset --hard origin/deploy
+          source: "dist/*"
+          target: "/home/u808275895/domains/twoadminsandamic.com/public_html"
+          strip_components: 1
