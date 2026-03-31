@@ -84,6 +84,12 @@ switch ($action) {
     case 'hidden-ids':
         handleHiddenIds();
         break;
+    case 'public-list-blogs':
+        handlePublicListBlogs();
+        break;
+    case 'public-get-blog':
+        handlePublicGetBlog();
+        break;
     default:
         jsonResponse(['error' => 'Invalid action'], 400);
 }
@@ -715,6 +721,72 @@ function handleUploadPodcastAsset(): void {
 
     if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
         jsonResponse(['error' => 'Failed to save file'], 500);
+}
+
+// ─── Public: Blog Listing & Detail (no auth) ───
+
+function handlePublicListBlogs(): void {
+    $blogs = [];
+    $statuses = getContentStatuses();
+
+    if (is_dir(BLOG_DIR)) {
+        foreach (glob(BLOG_DIR . '/*.md') as $file) {
+            $slug = basename($file, '.md');
+            $st = $statuses["blog:{$slug}"]['status'] ?? 'published';
+            if ($st !== 'published') continue;
+
+            $raw = file_get_contents($file);
+            $meta = parseFrontMatter($raw);
+            $meta['slug'] = $meta['slug'] ?? $slug;
+            $meta['content'] = $meta['_content'] ?? '';
+            unset($meta['_content']);
+            $blogs[] = $meta;
+        }
+        foreach (glob(BLOG_DIR . '/*.json') as $file) {
+            $slug = basename($file, '.json');
+            $st = $statuses["blog:{$slug}"]['status'] ?? 'published';
+            if ($st !== 'published') continue;
+
+            $data = json_decode(file_get_contents($file), true);
+            $data['slug'] = $data['slug'] ?? $slug;
+            $blogs[] = $data;
+        }
+    }
+
+    usort($blogs, function($a, $b) {
+        $da = strtotime($a['publish_date'] ?? $a['date'] ?? '2000-01-01');
+        $db = strtotime($b['publish_date'] ?? $b['date'] ?? '2000-01-01');
+        return $db - $da;
+    });
+
+    jsonResponse(['blogs' => $blogs]);
+}
+
+function handlePublicGetBlog(): void {
+    $slug = sanitizeFilename($_GET['slug'] ?? '');
+    if (!$slug) jsonResponse(['error' => 'Slug required'], 400);
+
+    $statuses = getContentStatuses();
+    $st = $statuses["blog:{$slug}"]['status'] ?? 'published';
+    if ($st !== 'published') jsonResponse(['error' => 'Blog not found'], 404);
+
+    $mdFile = BLOG_DIR . "/{$slug}.md";
+    $jsonFile = BLOG_DIR . "/{$slug}.json";
+
+    if (file_exists($mdFile)) {
+        $raw = file_get_contents($mdFile);
+        $meta = parseFrontMatter($raw);
+        $meta['slug'] = $meta['slug'] ?? $slug;
+        $meta['content'] = $meta['_content'] ?? '';
+        unset($meta['_content']);
+        jsonResponse(['blog' => $meta]);
+    } elseif (file_exists($jsonFile)) {
+        $data = json_decode(file_get_contents($jsonFile), true);
+        $data['slug'] = $data['slug'] ?? $slug;
+        jsonResponse(['blog' => $data]);
+    } else {
+        jsonResponse(['error' => 'Blog not found'], 404);
+    }
 }
 
 // ─── Public: Hidden Content IDs ───
