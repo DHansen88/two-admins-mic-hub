@@ -23,6 +23,7 @@ const statusConfig: Record<ContentStatus, { label: string; className: string }> 
   scheduled: { label: "Scheduled", className: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" },
   published: { label: "Published", className: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" },
   trashed: { label: "Trashed", className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+  deleted: { label: "Deleted", className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 type FilterStatus = "all" | ContentStatus;
@@ -87,7 +88,7 @@ const ManageEpisodes = () => {
   ].sort((a, b) => b.number - a.number);
 
   const filtered = filter === "all"
-    ? episodes.filter((ep) => ep.status !== "trashed")
+    ? episodes.filter((ep) => ep.status !== "trashed" && ep.status !== "deleted")
     : episodes.filter((ep) => ep.status === filter);
 
   const isTrashView = filter === "trashed";
@@ -108,9 +109,9 @@ const ManageEpisodes = () => {
   };
 
   const handlePermanentDelete = (id: string) => {
-    const existsInStatic = allEpisodesUnfiltered.some((e) => e.slug === id);
+    const existsInStatic = allEpisodesUnfiltered.some((ep) => String(ep.number) === id);
     if (existsInStatic) {
-      setContentStatusFn("episode", id, "trashed");
+      setContentStatusFn("episode", id, "deleted");
     } else {
       removeContentMeta("episode", id);
     }
@@ -131,9 +132,9 @@ const ManageEpisodes = () => {
       toast({ title: `${ids.length} episode(s) restored` });
     } else if (bulkAction === "permanent-delete") {
       ids.forEach((id) => {
-        const existsInStatic = allEpisodesUnfiltered.some((e) => e.slug === id);
+        const existsInStatic = allEpisodesUnfiltered.some((ep) => String(ep.number) === id);
         if (existsInStatic) {
-          setContentStatusFn("episode", id, "trashed");
+          setContentStatusFn("episode", id, "deleted");
         } else {
           removeContentMeta("episode", id);
         }
