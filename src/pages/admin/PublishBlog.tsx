@@ -664,7 +664,7 @@ const PublishBlog = () => {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground">Slug</label>
-                  <Input value={generateSlug(title)} readOnly className="bg-muted/50" />
+                  <Input value={customSlug || generateSlug(title)} readOnly className="bg-muted/50" />
                 </div>
               </div>
               <div className="space-y-1.5">
