@@ -379,7 +379,7 @@ function smtpSend(string $from, string $to, string $message): bool {
     $send("STARTTLS", [220]);
 
     if ($ok && !stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-        error_log('SMTP STARTTLS negotiation failed');
+        logResetPasswordEvent('SMTP STARTTLS negotiation failed');
         $ok = false;
     }
 
