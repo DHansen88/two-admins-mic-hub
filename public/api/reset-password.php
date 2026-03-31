@@ -15,6 +15,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 $action = $_GET['action'] ?? '';
 
+function logResetPasswordEvent(string $message): void {
+    $storageDir = dirname(__DIR__, 2) . '/storage';
+    if (!is_dir($storageDir)) {
+        @mkdir($storageDir, 0755, true);
+    }
+
+    $entry = '[' . date('c') . '] ' . $message . PHP_EOL;
+    @file_put_contents($storageDir . '/reset-password.log', $entry, FILE_APPEND);
+    error_log($message);
+}
+
 switch ($action) {
     case 'request':
         handleResetRequest();
