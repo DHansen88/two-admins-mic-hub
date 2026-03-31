@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackToTopButton from "@/components/BackToTopButton";
 
 const PrivacyPolicy = () => {
   useEffect(() => {
@@ -120,6 +121,7 @@ const PrivacyPolicy = () => {
         </div>
       </main>
       <Footer />
+      <BackToTopButton />
     </>
   );
 };

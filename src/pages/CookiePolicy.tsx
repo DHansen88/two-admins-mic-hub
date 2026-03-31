@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackToTopButton from "@/components/BackToTopButton";
 
 const CookiePolicy = () => {
   useEffect(() => {
@@ -101,6 +102,7 @@ const CookiePolicy = () => {
         </div>
       </main>
       <Footer />
+      <BackToTopButton />
     </>
   );
 };
