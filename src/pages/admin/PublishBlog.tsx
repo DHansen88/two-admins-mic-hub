@@ -500,8 +500,10 @@ const PublishBlog = () => {
                   if (e.key === "Enter" && newTagName.trim()) {
                     const slug = generateTagSlug(newTagName.trim());
                     if (!tags.some((t) => t.slug === slug)) {
-                      const bgColor = "#5A7DFF";
-                      const newTag: Tag = { name: newTagName.trim(), slug, color: "199 62% 28%", bgColor, textColor: "#ffffff" };
+                      const TAG_PALETTE = ["#9CCC66", "#4ABC94", "#49C2F2", "#0086BF", "#00628C", "#124459", "#F26D7D", "#8B5CF6", "#F59E0B"];
+                      const bgColor = TAG_PALETTE[tags.length % TAG_PALETTE.length];
+                      const textColor = ["#9CCC66", "#49C2F2", "#F59E0B"].includes(bgColor) ? "#000000" : "#ffffff";
+                      const newTag: Tag = { name: newTagName.trim(), slug, color: "199 62% 28%", bgColor, textColor };
                       const updated = addTag(newTag);
                       setTags(updated);
                       setSelectedTopics((prev) => [...prev, newTag.name]);
