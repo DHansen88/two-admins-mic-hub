@@ -67,6 +67,18 @@ const BlogPost = () => {
     }
   }, [post]);
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="pt-20 flex items-center justify-center min-h-[50vh]">
+          <p className="text-muted-foreground">Loading...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   if (!post) {
     return <Navigate to="/blog" replace />;
   }
