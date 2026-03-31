@@ -5,11 +5,7 @@ import Footer from "@/components/Footer";
 import RelatedContentCarousel, { buildRelatedItems } from "@/components/RelatedContentCarousel";
 import TopicTag from "@/components/TopicTag";
 import { Button } from "@/components/ui/button";
-import {
-  getEpisodeBySlug,
-  getRelatedEpisodes,
-} from "@/data/episodeData";
-import { getRelatedBlogsForEpisode } from "@/data/crossLinks";
+import { useVisibleEpisodeBySlug, useVisibleRelatedEpisodes, useVisibleRelatedBlogsForEpisode } from "@/hooks/useVisibleContent";
 import {
   Play,
   Clock,
