@@ -5,7 +5,7 @@ import BlogCard from "@/components/BlogCard";
 import EpisodeCard from "@/components/EpisodeCard";
 import TopicTag from "@/components/TopicTag";
 import { getTagNames } from "@/data/tags";
-import { getContentByTopic } from "@/data/crossLinks";
+import { useVisibleContentByTopic } from "@/hooks/useVisibleContent";
 import { ArrowLeft } from "lucide-react";
 
 const TopicResults = () => {
