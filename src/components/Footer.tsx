@@ -1,4 +1,4 @@
-import { Mail, Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
+import { Mail, Instagram, Twitter, Linkedin, Youtube, Star } from "lucide-react";
 import { NavLink } from "./NavLink";
 import footerLogo from "@/assets/footer-logo.png";
 import NewsletterCTA from "./NewsletterCTA";
@@ -99,8 +99,8 @@ const Footer = () => {
             {/* Bottom Bar */}
             <div className="pt-8 border-t border-navy/50 text-center md:text-left">
               <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                <p className="text-background/60 text-sm">
-                  © {currentYear} Two Admins & a Mic. All rights reserved.
+                <p className="text-background/60 text-sm flex items-center gap-1">
+                  © {currentYear} Two Admins & a Mic. All rights reserved. <Star className="h-4 w-4 fill-current" />
                 </p>
                 <div className="flex space-x-6 text-sm">
                   <NavLink to="/privacy-policy" className="text-background/60 hover:text-background transition-colors">
