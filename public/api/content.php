@@ -258,8 +258,20 @@ function handleSaveBlog(): void {
                 $frontmatter .= "  - " . $takeaway . "\n";
             }
         }
+        if (!empty($body['related_episode'])) {
+            $frontmatter .= 'related_episode: ' . $body['related_episode'] . "\n";
+        }
+        if (isset($body['show_episode_callout'])) {
+            $frontmatter .= 'show_episode_callout: ' . ($body['show_episode_callout'] ? 'true' : 'false') . "\n";
+        }
         $frontmatter .= "---\n\n";
         $frontmatter .= $body['content'] ?? '';
+        
+        // Save html_content as a companion JSON file if provided
+        if (!empty($body['html_content'])) {
+            $htmlData = ['html_content' => $body['html_content']];
+            file_put_contents(BLOG_DIR . "/{$slug}.html.json", json_encode($htmlData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        }
         
         file_put_contents($mdPath, $frontmatter);
 
