@@ -1,6 +1,6 @@
 const QuillAnimation = () => {
   return (
-    <div className="absolute bottom-[40px] left-[60px] w-[260px] md:w-[260px] w-[180px] z-[1] pointer-events-none">
+    <div className="absolute bottom-[40px] left-[60px] w-[180px] md:w-[260px] z-[1] pointer-events-none">
       <svg
         viewBox="0 0 260 120"
         fill="none"
