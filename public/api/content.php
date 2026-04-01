@@ -292,8 +292,14 @@ function handleSaveBlog(): void {
         $frontmatter .= "---\n\n";
         $frontmatter .= $body['content'] ?? '';
 
-        if (!empty($body['html_content'])) {
-            $htmlData = ['html_content' => $body['html_content']];
+        if (!empty($body['html_content']) || !empty($body['tag_styles'])) {
+            $htmlData = [];
+            if (!empty($body['html_content'])) {
+                $htmlData['html_content'] = $body['html_content'];
+            }
+            if (!empty($body['tag_styles']) && is_array($body['tag_styles'])) {
+                $htmlData['tag_styles'] = $body['tag_styles'];
+            }
             file_put_contents($htmlJsonPath, json_encode($htmlData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         } elseif (file_exists($htmlJsonPath)) {
             unlink($htmlJsonPath);
@@ -333,6 +339,9 @@ function handleSaveBlog(): void {
             if (!empty($hasCustomAvatars)) {
                 $data['author_avatars'] = $body['author_avatars'];
             }
+        }
+        if (!empty($body['tag_styles']) && is_array($body['tag_styles'])) {
+            $data['tag_styles'] = $body['tag_styles'];
         }
 
         file_put_contents($jsonPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
@@ -858,6 +867,9 @@ function handlePublicListBlogs(): void {
                 if ($htmlData && !empty($htmlData['html_content'])) {
                     $meta['html_content'] = $htmlData['html_content'];
                 }
+                if ($htmlData && !empty($htmlData['tag_styles'])) {
+                    $meta['tag_styles'] = $htmlData['tag_styles'];
+                }
             }
             $blogs[] = $meta;
         }
@@ -908,6 +920,9 @@ function handlePublicGetBlog(): void {
             $htmlData = json_decode(file_get_contents($htmlJsonFile), true);
             if ($htmlData && !empty($htmlData['html_content'])) {
                 $meta['html_content'] = $htmlData['html_content'];
+            }
+            if ($htmlData && !empty($htmlData['tag_styles'])) {
+                $meta['tag_styles'] = $htmlData['tag_styles'];
             }
         }
         jsonResponse(['blog' => $meta]);

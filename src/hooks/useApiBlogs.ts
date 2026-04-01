@@ -18,6 +18,7 @@ interface ApiBlogRaw {
   authors?: string[];
   author_role?: string;
   author_avatars?: string[];
+  tag_styles?: Record<string, { bgColor: string; textColor: string; borderColor?: string }>;
   publish_date?: string;
   date?: string;
   tags?: string[];
@@ -129,6 +130,7 @@ function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
     authors: finalAuthors,
     authorIds: authorKeys,
     authorAvatarOverrides: raw.author_avatars || undefined,
+    tagStyles: raw.tag_styles || undefined,
     featuredImage: raw.featured_image || undefined,
     keyTakeaways: raw.key_takeaways || undefined,
     relatedEpisode: raw.related_episode || undefined,

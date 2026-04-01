@@ -30,7 +30,7 @@ const BlogPost = () => {
     if (!post) return "";
     if ((post as any).html_content) return (post as any).html_content;
     if (post.blocks && post.blocks.length > 0) return "";
-    if (post.content) return marked.parse(post.content, { async: false }) as string;
+    if (post.content) return marked.parse(post.content, { async: false, breaks: true }) as string;
     return "";
   }, [post]);
 
@@ -143,6 +143,7 @@ const BlogPost = () => {
           ) : renderedHtml ? (
             <div
               className="article-content prose prose-lg max-w-none
+                [&>*+*]:mt-6 [&_div+div]:mt-6 [&_p:empty]:hidden
                 prose-headings:font-display prose-headings:text-foreground
                 prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-8 prose-h2:mb-4
                 prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-7 prose-h3:mb-3
@@ -164,7 +165,7 @@ const BlogPost = () => {
             <div className="mt-10 pt-6 border-t border-border">
               <div className="flex flex-wrap gap-2">
                 {post.topics.map((topic) => (
-                  <TopicTag key={topic} topic={topic} />
+                  <TopicTag key={topic} topic={topic} styleOverride={post.tagStyles?.[topic]} />
                 ))}
               </div>
             </div>

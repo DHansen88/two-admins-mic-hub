@@ -394,6 +394,19 @@ setAuthorAvatars(avatarMap);
   const handlePublishToServer = async (): Promise<boolean> => {
   const validAuthors = selectedAuthors.filter(Boolean);
   const slug = customSlug || generateSlug(title);
+  const tagStyles = Object.fromEntries(
+    selectedTopics
+      .map((topic) => {
+        const match = tags.find((tag) => tag.name === topic);
+        if (!match) return null;
+        return [topic, {
+          bgColor: match.bgColor,
+          textColor: match.textColor,
+          borderColor: match.borderColor,
+        }];
+      })
+      .filter(Boolean) as Array<[string, { bgColor: string; textColor: string; borderColor?: string }]>
+  );
 
   if (!title || !currentPlainText) {
     toast({ title: "Title and content are required", variant: "destructive" });
@@ -416,6 +429,7 @@ setAuthorAvatars(avatarMap);
         : undefined,
     publish_date: publishDate,
     tags: selectedTopics,
+    tag_styles: Object.keys(tagStyles).length > 0 ? tagStyles : undefined,
     excerpt: excerpt || generateExcerpt(currentPlainText),
     featured_image: featuredImage || undefined,
     key_takeaways: keyTakeaways,

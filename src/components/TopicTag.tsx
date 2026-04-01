@@ -6,17 +6,23 @@ interface TopicTagProps {
   /** Visual variant: light (for dark backgrounds) or default (for light backgrounds) */
   variant?: "default" | "light";
   className?: string;
+  styleOverride?: {
+    bgColor?: string;
+    textColor?: string;
+    borderColor?: string;
+  };
 }
 
 /**
  * Clickable topic tag chip that links to /topics/:topic filtered view.
  * Uses exact admin-controlled colors — theme-independent.
  */
-const TopicTag = ({ topic, variant = "default", className = "" }: TopicTagProps) => {
+const TopicTag = ({ topic, variant = "default", className = "", styleOverride }: TopicTagProps) => {
   const tag = getTagByName(topic);
-  const bgColor = tag?.bgColor || "#5A7DFF";
-  const textColor = tag?.textColor || "#ffffff";
-  const borderColor = tag?.borderColor;
+  void variant;
+  const bgColor = styleOverride?.bgColor || tag?.bgColor || "#5A7DFF";
+  const textColor = styleOverride?.textColor || tag?.textColor || "#ffffff";
+  const borderColor = styleOverride?.borderColor || tag?.borderColor;
 
   return (
     <Link

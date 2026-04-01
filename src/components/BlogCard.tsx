@@ -12,9 +12,10 @@ interface BlogCardProps {
   slug: string;
   author?: { name: string; avatar?: string };
   featuredImage?: string;
+  tagStyles?: Record<string, { bgColor: string; textColor: string; borderColor?: string }>;
 }
 
-const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug, author, featuredImage }: BlogCardProps) => {
+const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug, author, featuredImage, tagStyles }: BlogCardProps) => {
   return (
     <Link
       to={`/blog/${slug}`}
@@ -67,7 +68,12 @@ const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug, author, f
           {topics.length > 0 && (
             <div className="flex flex-wrap gap-1.5 pt-1">
               {topics.slice(0, 3).map((topic) => (
-                <TopicTag key={topic} topic={topic} className="!text-[10px] !py-1 !px-2.5" />
+                <TopicTag
+                  key={topic}
+                  topic={topic}
+                  className="!text-[10px] !py-1 !px-2.5"
+                  styleOverride={tagStyles?.[topic]}
+                />
               ))}
               {topics.length > 3 && (
                 <span className="text-xs text-muted-foreground self-center">+{topics.length - 3}</span>
