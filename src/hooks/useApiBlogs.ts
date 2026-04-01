@@ -99,7 +99,7 @@ function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
   }
 
   const post: BlogPost & { html_content?: string } = {
-    title: raw.title || "Untitled",
+    title: raw.title?.trim() || "",
     slug,
     content,
     excerpt: raw.excerpt || "",
@@ -128,9 +128,19 @@ async function fetchPublicBlogs(): Promise<BlogPost[]> {
       loadAuthorProfiles(),
     ]);
     if (!res.ok) return [];
+
     const data = await res.json();
     const blogs: ApiBlogRaw[] = data.blogs ?? [];
-    return blogs.map((b) => rawToBlogPost(b, profiles));
+
+    const cleaned = Array.from(
+      new Map(
+        blogs
+          .filter((b) => (b.slug || "").trim() && (b.title || "").trim())
+          .map((b) => [b.slug!.trim(), b])
+      ).values()
+    );
+
+    return cleaned.map((b) => rawToBlogPost(b, profiles));
   } catch {
     return [];
   }
