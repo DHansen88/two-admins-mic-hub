@@ -52,29 +52,9 @@ switch ($action) {
 
 function loadAuthors(): array {
     if (!file_exists(AUTHORS_FILE)) {
-        // Initialize with default authors
-        $defaults = [
-            'sarah' => [
-                'id' => 'sarah',
-                'name' => 'Sarah Mitchell',
-                'role' => 'Co-Host & Leadership Coach',
-                'bio' => 'Sarah brings 15 years of administrative leadership experience and is passionate about empowering others to reach their full potential.',
-                'avatar' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face',
-                'linkedin' => '',
-                'website' => '',
-            ],
-            'marcus' => [
-                'id' => 'marcus',
-                'name' => 'Marcus Chen',
-                'role' => 'Co-Host & Operations Expert',
-                'bio' => 'Marcus has spent two decades in administrative roles across Fortune 500 companies and loves sharing practical strategies that work.',
-                'avatar' => 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-                'linkedin' => '',
-                'website' => '',
-            ],
-        ];
-        file_put_contents(AUTHORS_FILE, json_encode($defaults, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        return $defaults;
+        // Initialize with empty authors file — real authors are added via admin UI
+        file_put_contents(AUTHORS_FILE, json_encode((object)[], JSON_PRETTY_PRINT));
+        return [];
     }
     return json_decode(file_get_contents(AUTHORS_FILE), true) ?? [];
 }
