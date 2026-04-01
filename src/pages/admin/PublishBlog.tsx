@@ -136,7 +136,7 @@ const PublishBlog = () => {
   // Load existing blog for editing from the live PHP API
   useEffect(() => {
     const editSlug = searchParams.get("edit");
-    if (!editSlug) return;
+    if (!editSlug || authorOptions.length === 0) return;
 
     const loadBlog = async () => {
       try {
