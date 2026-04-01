@@ -1,6 +1,7 @@
-import { Card, CardContent, CardHeader } from "./ui/card";
+import { Card } from "./ui/card";
 import { Link } from "react-router-dom";
-
+import TopicTag from "./TopicTag";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface BlogCardProps {
   title: string;
@@ -9,49 +10,71 @@ interface BlogCardProps {
   readTime: string;
   topics: string[];
   slug: string;
-  author?: { name: string };
+  author?: { name: string; avatar?: string };
+  featuredImage?: string;
 }
 
-const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug, author }: BlogCardProps) => {
-  const hostName = author?.name?.toLowerCase() || "";
-  const isD = hostName === "diana";
-  const isM = hostName === "mel";
-
+const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug, author, featuredImage }: BlogCardProps) => {
   return (
     <Link
       to={`/blog/${slug}`}
       className="block group"
       onClick={() => window.scrollTo(0, 0)}
-      data-host={hostName}
-      data-topic={topics.map((t) => t.toLowerCase().replace(/\s+/g, "-")).join(" ")}
     >
-      <Card className="h-full bg-card hover:bg-card/80 border-border hover:border-teal transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
-        <CardHeader className="pb-2">
-          <h3 className="text-xl font-display font-bold text-foreground group-hover:text-teal transition-colors line-clamp-2">
+      <Card className="h-full overflow-hidden bg-card border-border hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer rounded-xl">
+        {/* Featured Image */}
+        <div className="relative w-full h-[200px] overflow-hidden bg-muted">
+          {featuredImage ? (
+            <img
+              src={featuredImage}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-slate to-navy flex items-center justify-center">
+              <span className="text-background/30 text-5xl font-display font-bold">✦</span>
+            </div>
+          )}
+        </div>
+
+        {/* Card Content */}
+        <div className="p-5 space-y-3">
+          <h2 className="text-lg font-display font-semibold text-foreground group-hover:text-teal transition-colors line-clamp-2 leading-snug">
             {title}
-          </h3>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground line-clamp-2">{excerpt}</p>
-          <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
+          </h2>
+
+          {/* Meta */}
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
             {author?.name && (
               <span className="inline-flex items-center gap-1.5">
-                <span
-                  className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold text-white ${
-                    isD ? "bg-[hsl(var(--teal))]" : isM ? "bg-[hsl(var(--coral))]" : "bg-muted-foreground"
-                  }`}
-                >
-                  {author.name.charAt(0)}
-                </span>
+                <Avatar className="h-5 w-5">
+                  <AvatarImage src={author.avatar} alt={author.name} />
+                  <AvatarFallback className="text-[9px] bg-teal text-background">
+                    {author.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
                 <span className="font-medium">{author.name}</span>
               </span>
             )}
-            <span>•</span>
+            <span className="text-border">•</span>
             <span>{date}</span>
-            <span>•</span>
+            <span className="text-border">•</span>
             <span>{readTime}</span>
           </div>
-        </CardContent>
+
+          {/* Tags */}
+          {topics.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {topics.slice(0, 3).map((topic) => (
+                <TopicTag key={topic} topic={topic} className="!text-[10px] !py-1 !px-2.5" />
+              ))}
+              {topics.length > 3 && (
+                <span className="text-xs text-muted-foreground self-center">+{topics.length - 3}</span>
+              )}
+            </div>
+          )}
+        </div>
       </Card>
     </Link>
   );
