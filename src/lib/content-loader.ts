@@ -171,7 +171,7 @@ function parseBlogMd(raw: string, filename: string): BlogPost {
     authors: allAuthors,
     authorIds: authorKeys,
     authorAvatarOverrides: Array.isArray(data.author_avatars) ? (data.author_avatars as string[]) : undefined,
-    tagStyles: (data.tag_styles as Record<string, { bgColor: string; textColor: string; borderColor?: string }>) || undefined,
+    tagStyles: (data.tag_styles as unknown as Record<string, { bgColor: string; textColor: string; borderColor?: string }>) || undefined,
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
     relatedEpisode: (data.related_episode as string) || undefined,
