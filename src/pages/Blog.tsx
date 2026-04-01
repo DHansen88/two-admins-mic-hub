@@ -73,13 +73,13 @@ const Blog = () => {
       <Header />
       <main className="pt-20">
         {/* Banner */}
-        <section className="relative py-20 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
+        <section className="relative py-20 min-h-[280px] md:min-h-[320px] bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden flex items-center justify-center">
           <div className="container mx-auto px-4 relative z-10">
             <div className="flex items-center justify-center animate-fade-in">
               <img
                 src={blogBanner}
                 alt="Two Admins & a Blog"
-                className="max-h-[200px] md:max-h-[240px] w-auto object-contain"
+                className="max-h-[180px] md:max-h-[220px] w-auto object-contain"
               />
             </div>
           </div>
