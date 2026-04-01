@@ -145,63 +145,44 @@ const QuillAnimation = () => {
 
           {/* Quill - nib at origin (0,0) so it leads the writing */}
           <g transform="translate(0, 0)">
-            {/* Nib / tip */}
-            <path d="M0 0 L-4 -3 L-14 -1.5 L-4 3 Z" stroke="white" strokeWidth="1" fill="none" />
-            <line x1="-10" y1="0" x2="-2" y2="0" stroke="white" strokeWidth="0.5" />
-            {/* Split in nib */}
-            <line x1="-14" y1="-1.5" x2="-4" y2="0.5" stroke="white" strokeWidth="0.4" />
+            {/* Nib - small pointed tip */}
+            <path d="M0 0 L-5 -2 L-10 -1 L-5 2 Z" stroke="white" strokeWidth="0.8" fill="none" />
+            <line x1="-7" y1="0" x2="-1" y2="0" stroke="white" strokeWidth="0.4" />
 
-            {/* Shaft */}
-            <line x1="-14" y1="-1.5" x2="-85" y2="-30" stroke="white" strokeWidth="1.6" strokeLinecap="round" />
+            {/* Shaft / calamus - long gentle line */}
+            <path d="M-10 -1 Q-30 -10 -50 -20" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none" />
 
-            {/* Ornamental grip */}
-            <circle cx="-22" cy="-5" r="2.5" stroke="white" strokeWidth="1" fill="none" />
-            <path d="M-26 -6.5 Q-24 -8 -22 -6.5 Q-20 -8 -18 -6.5" stroke="white" strokeWidth="0.8" fill="none" />
+            {/* Feather - elegant continuous-line oval like the reference */}
+            {/* Outer contour - one smooth elongated teardrop */}
+            <path d="M-50 -20
+              Q-52 -22 -56 -28
+              Q-62 -38 -68 -50
+              Q-74 -62 -78 -72
+              Q-82 -82 -82 -90
+              Q-82 -98 -78 -102
+              Q-74 -106 -68 -104
+              Q-62 -102 -58 -94
+              Q-54 -86 -52 -76
+              Q-50 -66 -50 -56
+              Q-50 -46 -50 -36
+              Q-50 -28 -50 -20"
+              stroke="white" strokeWidth="1.1" fill="none" strokeLinejoin="round" />
 
-            {/* Feather - smooth realistic shape */}
-            {/* Right vane (top side) */}
-            <path d="M-45 -16
-              Q-50 -20 -55 -28
-              Q-60 -36 -65 -42
-              Q-72 -50 -78 -52
-              Q-85 -54 -90 -50
-              Q-94 -46 -92 -40
-              Q-90 -35 -85 -32
-              L-85 -30"
-              stroke="white" strokeWidth="1.2" fill="none" />
+            {/* Central rachis / spine */}
+            <path d="M-50 -20 Q-64 -50 -74 -80 Q-78 -92 -74 -100"
+              stroke="white" strokeWidth="0.6" fill="none" />
 
-            {/* Left vane (bottom side) */}
-            <path d="M-45 -16
-              Q-48 -14 -52 -10
-              Q-58 -5 -65 -2
-              Q-72 0 -78 -2
-              Q-84 -5 -88 -12
-              Q-90 -18 -88 -24
-              Q-86 -28 -85 -30"
-              stroke="white" strokeWidth="1.2" fill="none" />
+            {/* Inner vein lines - right side (subtle, sparse) */}
+            <path d="M-56 -36 Q-52 -40 -50 -38" stroke="white" strokeWidth="0.35" fill="none" />
+            <path d="M-62 -52 Q-56 -56 -52 -52" stroke="white" strokeWidth="0.35" fill="none" />
+            <path d="M-68 -66 Q-60 -70 -54 -64" stroke="white" strokeWidth="0.35" fill="none" />
+            <path d="M-74 -80 Q-66 -84 -58 -78" stroke="white" strokeWidth="0.3" fill="none" />
 
-            {/* Central rachis (spine) */}
-            <line x1="-45" y1="-16" x2="-90" y2="-42" stroke="white" strokeWidth="0.7" />
-
-            {/* Barb lines - right side */}
-            <path d="M-52 -21 Q-56 -30 -58 -36" stroke="white" strokeWidth="0.4" fill="none" />
-            <path d="M-58 -24 Q-62 -33 -65 -40" stroke="white" strokeWidth="0.4" fill="none" />
-            <path d="M-64 -27 Q-68 -36 -72 -44" stroke="white" strokeWidth="0.4" fill="none" />
-            <path d="M-70 -29 Q-74 -37 -78 -46" stroke="white" strokeWidth="0.4" fill="none" />
-            <path d="M-76 -30 Q-80 -38 -84 -46" stroke="white" strokeWidth="0.35" fill="none" />
-            <path d="M-80 -31 Q-84 -38 -88 -44" stroke="white" strokeWidth="0.3" fill="none" />
-
-            {/* Barb lines - left side */}
-            <path d="M-52 -21 Q-54 -14 -56 -8" stroke="white" strokeWidth="0.4" fill="none" />
-            <path d="M-58 -24 Q-60 -16 -63 -8" stroke="white" strokeWidth="0.4" fill="none" />
-            <path d="M-64 -27 Q-66 -18 -70 -8" stroke="white" strokeWidth="0.4" fill="none" />
-            <path d="M-70 -29 Q-73 -20 -76 -10" stroke="white" strokeWidth="0.4" fill="none" />
-            <path d="M-76 -30 Q-79 -22 -82 -14" stroke="white" strokeWidth="0.35" fill="none" />
-            <path d="M-80 -31 Q-83 -24 -86 -18" stroke="white" strokeWidth="0.3" fill="none" />
-
-            {/* Downy barbs at base */}
-            <path d="M-84 -32 Q-88 -30 -92 -34" stroke="white" strokeWidth="0.3" fill="none" />
-            <path d="M-86 -34 Q-92 -32 -94 -38" stroke="white" strokeWidth="0.25" fill="none" />
+            {/* Inner vein lines - left side */}
+            <path d="M-58 -36 Q-62 -38 -64 -34" stroke="white" strokeWidth="0.35" fill="none" />
+            <path d="M-66 -52 Q-70 -54 -72 -48" stroke="white" strokeWidth="0.35" fill="none" />
+            <path d="M-72 -66 Q-76 -68 -78 -62" stroke="white" strokeWidth="0.35" fill="none" />
+            <path d="M-76 -80 Q-80 -82 -80 -76" stroke="white" strokeWidth="0.3" fill="none" />
           </g>
         </g>
 
