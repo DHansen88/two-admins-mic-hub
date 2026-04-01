@@ -222,10 +222,14 @@ const ManageUsers = () => {
                 <div className={`p-2 rounded-full shrink-0 ${
                   user.role === "admin"
                     ? "bg-amber-500/10 text-amber-600"
+                    : user.role === "intern"
+                    ? "bg-violet-500/10 text-violet-600"
                     : "bg-sky-500/10 text-sky-600"
                 }`}>
                   {user.role === "admin" ? (
                     <ShieldCheck className="h-4 w-4" />
+                  ) : user.role === "intern" ? (
+                    <Users className="h-4 w-4" />
                   ) : (
                     <UserCog className="h-4 w-4" />
                   )}
