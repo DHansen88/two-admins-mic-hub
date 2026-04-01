@@ -23,6 +23,7 @@ import type { SharedTopic } from '@/data/topics';
 // --------------- Authors ---------------
 
 export interface Author {
+  id?: string;
   name: string;
   role: string;
   bio: string;
