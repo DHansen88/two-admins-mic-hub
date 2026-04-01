@@ -416,7 +416,7 @@ export async function createUser(data: {
   name: string;
   email: string;
   password: string;
-  role: 'admin' | 'manager';
+  role: 'admin' | 'manager' | 'intern';
   permissions?: UserPermissions;
 }): Promise<{ success: boolean; error?: string }> {
   try {
