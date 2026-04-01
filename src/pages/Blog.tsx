@@ -34,8 +34,10 @@ const Blog = () => {
 
     if (selectedHost !== "all") {
       blogs = blogs.filter(b => {
-        const authorName = b.author?.name?.toLowerCase() || "";
-        return authorName === selectedHost.toLowerCase();
+        const authorId = (b.author?.id || "").toLowerCase();
+        const authorName = (b.author?.name || "").toLowerCase();
+        const host = selectedHost.toLowerCase();
+        return authorId === host || authorName === host;
       });
     }
 

@@ -35,14 +35,15 @@ export interface Author {
 const authors: Record<string, Author> = authorsData;
 
 export function getAuthor(key: string): Author {
-  return (
-    authors[key] ?? {
-      name: key,
-      role: '',
-      bio: '',
-      avatar: '',
-    }
-  );
+  const a = authors[key];
+  if (a) return { ...a, id: key };
+  return {
+    id: key.toLowerCase(),
+    name: key,
+    role: '',
+    bio: '',
+    avatar: '',
+  };
 }
 
 // --------------- Blog Posts ---------------
