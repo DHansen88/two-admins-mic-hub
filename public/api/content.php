@@ -109,11 +109,15 @@ function handleListBlogs(): void {
             $blogs[] = $meta;
         }
         foreach (glob(BLOG_DIR . '/*.json') as $file) {
-            $data = json_decode(file_get_contents($file), true);
-            $data['filename'] = basename($file);
-            $data['status'] = getContentStatus('blog', basename($file, '.json'));
-            $blogs[] = $data;
-        }
+    if (str_ends_with($file, '.html.json')) {
+        continue;
+    }
+
+    $data = json_decode(file_get_contents($file), true);
+    $data['filename'] = basename($file);
+    $data['status'] = getContentStatus('blog', basename($file, '.json'));
+    $blogs[] = $data;
+}
     }
     
     // Sort by date, newest first
@@ -215,41 +219,42 @@ function handleSaveBlog(): void {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         jsonResponse(['error' => 'Method not allowed'], 405);
     }
-    
+
     $user = requireAuth();
     checkPermission($user, 'canPublishContent');
-    
+
     $body = getRequestBody();
     $slug = sanitizeFilename($body['slug'] ?? '');
-    
+
     if (!$slug) jsonResponse(['error' => 'Slug is required'], 400);
     if (empty($body['title'])) jsonResponse(['error' => 'Title is required'], 400);
-    
+
     $format = $body['format'] ?? 'md';
     $mdPath = BLOG_DIR . "/{$slug}.md";
     $jsonPath = BLOG_DIR . "/{$slug}.json";
-    
+    $htmlJsonPath = BLOG_DIR . "/{$slug}.html.json";
+
     if ($format === 'md') {
-        // Build markdown with frontmatter
         $frontmatter = "---\n";
         $frontmatter .= 'title: "' . ($body['title'] ?? '') . "\"\n";
         $frontmatter .= 'slug: ' . $slug . "\n";
-        
-        // Always save authors as array; clear legacy singular author field
+
         $authorList = [];
         if (!empty($body['authors']) && is_array($body['authors'])) {
             $authorList = array_values(array_filter($body['authors'], fn($v) => $v !== ''));
         } elseif (!empty($body['author']) && $body['author'] !== '') {
             $authorList = [$body['author']];
         }
-        if (!empty($authorList)) {
-            $frontmatter .= "authors:\n";
-            foreach ($authorList as $authorKey) {
-                $frontmatter .= "  - " . $authorKey . "\n";
-            }
+
+        if (empty($authorList)) {
+            jsonResponse(['error' => 'At least one author is required'], 400);
         }
-        // Do NOT write a singular 'author:' field — authors array is canonical
-        
+
+        $frontmatter .= "authors:\n";
+        foreach ($authorList as $authorKey) {
+            $frontmatter .= "  - " . $authorKey . "\n";
+        }
+
         if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
             $hasCustomAvatars = array_filter($body['author_avatars'], fn($v) => !empty($v));
             if (!empty($hasCustomAvatars)) {
@@ -259,9 +264,9 @@ function handleSaveBlog(): void {
                 }
             }
         }
-        
+
         $frontmatter .= 'publish_date: ' . ($body['publish_date'] ?? date('Y-m-d')) . "\n";
-        
+
         if (!empty($body['tags'])) {
             $frontmatter .= 'tags: ' . implode(', ', $body['tags']) . "\n";
         }
@@ -283,27 +288,32 @@ function handleSaveBlog(): void {
         if (isset($body['show_episode_callout'])) {
             $frontmatter .= 'show_episode_callout: ' . ($body['show_episode_callout'] ? 'true' : 'false') . "\n";
         }
+
         $frontmatter .= "---\n\n";
         $frontmatter .= $body['content'] ?? '';
-        
-        // Save html_content as a companion JSON file if provided
+
         if (!empty($body['html_content'])) {
             $htmlData = ['html_content' => $body['html_content']];
-            file_put_contents(BLOG_DIR . "/{$slug}.html.json", json_encode($htmlData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            file_put_contents($htmlJsonPath, json_encode($htmlData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        } elseif (file_exists($htmlJsonPath)) {
+            unlink($htmlJsonPath);
         }
-        
+
         file_put_contents($mdPath, $frontmatter);
 
         if (file_exists($jsonPath)) {
             unlink($jsonPath);
         }
     } else {
-    // Build authors array — canonical source
         $authorList = [];
         if (!empty($body['authors']) && is_array($body['authors'])) {
             $authorList = array_values(array_filter($body['authors'], fn($v) => $v !== ''));
         } elseif (!empty($body['author']) && $body['author'] !== '') {
             $authorList = [$body['author']];
+        }
+
+        if (empty($authorList)) {
+            jsonResponse(['error' => 'At least one author is required'], 400);
         }
 
         $data = [
@@ -317,23 +327,28 @@ function handleSaveBlog(): void {
             'key_takeaways' => $body['key_takeaways'] ?? [],
             'content' => $body['content'] ?? '',
         ];
+
         if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
             $hasCustomAvatars = array_filter($body['author_avatars'], fn($v) => !empty($v));
             if (!empty($hasCustomAvatars)) {
                 $data['author_avatars'] = $body['author_avatars'];
             }
         }
-        
+
         file_put_contents($jsonPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         if (file_exists($mdPath)) {
             unlink($mdPath);
         }
+
+        if (file_exists($htmlJsonPath)) {
+            unlink($htmlJsonPath);
+        }
     }
-    
+
     logContentAction($user, 'blog_published', "Published blog: {$body['title']}");
     setContentStatus('blog', $slug, 'published');
-    
+
     jsonResponse(['success' => true, 'slug' => $slug]);
 }
 
@@ -389,32 +404,36 @@ function handleSaveEpisode(): void {
 // ─── Delete / Restore / Unpublish ───
 
 function handleDelete(): void {
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonResponse(['error' => 'Method not allowed'], 405);
-    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        jsonResponse(['error' => 'Method not allowed'], 405);
+    }
+
     $user = requireAuth();
     $body = getRequestBody();
     $type = $body['type'] ?? '';
     $id = $body['id'] ?? '';
-    
-    if (!$type || !$id) jsonResponse(['error' => 'Type and ID required'], 400);
-    
+
+    if (!$type || !$id) {
+        jsonResponse(['error' => 'Type and ID required'], 400);
+    }
+
     $id = sanitizeFilename($id);
     $sourceDir = $type === 'blog' ? BLOG_DIR : PODCAST_DIR;
     $trashSubDir = TRASH_DIR . "/{$type}";
-    
-    if (!is_dir($trashSubDir)) mkdir($trashSubDir, 0755, true);
-    
-    // Find the file
+
+    if (!is_dir($trashSubDir)) {
+        mkdir($trashSubDir, 0755, true);
+    }
+
     $moved = false;
     foreach (['md', 'json'] as $ext) {
-    $source = "{$sourceDir}/{$id}.{$ext}";
-    if (file_exists($source)) {
-        rename($source, "{$trashSubDir}/{$id}.{$ext}");
-        $moved = true;
+        $source = "{$sourceDir}/{$id}.{$ext}";
+        if (file_exists($source)) {
+            rename($source, "{$trashSubDir}/{$id}.{$ext}");
+            $moved = true;
         }
     }
-    
-    // For episodes, try episode-XX format
+
     if (!$moved && $type === 'episode') {
         $padded = "episode-" . str_pad($id, 2, '0', STR_PAD_LEFT);
         $source = "{$sourceDir}/{$padded}.json";
@@ -423,36 +442,47 @@ function handleDelete(): void {
             $moved = true;
         }
     }
-    
+
+    if ($type === 'blog') {
+        $htmlSource = "{$sourceDir}/{$id}.html.json";
+        $htmlTarget = "{$trashSubDir}/{$id}.html.json";
+        if (file_exists($htmlSource)) {
+            rename($htmlSource, $htmlTarget);
+        }
+    }
+
     setContentStatus($type, $id, 'trashed');
     logContentAction($user, 'content_deleted', "Moved to trash: {$type}/{$id}");
-    
+
     jsonResponse(['success' => true]);
 }
 
 function handleRestore(): void {
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonResponse(['error' => 'Method not allowed'], 405);
-    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        jsonResponse(['error' => 'Method not allowed'], 405);
+    }
+
     $user = requireAuth();
     $body = getRequestBody();
     $type = $body['type'] ?? '';
     $id = sanitizeFilename($body['id'] ?? '');
-    
-    if (!$type || !$id) jsonResponse(['error' => 'Type and ID required'], 400);
-    
+
+    if (!$type || !$id) {
+        jsonResponse(['error' => 'Type and ID required'], 400);
+    }
+
     $trashSubDir = TRASH_DIR . "/{$type}";
     $targetDir = $type === 'blog' ? BLOG_DIR : PODCAST_DIR;
-    
+
     $restored = false;
     foreach (['md', 'json'] as $ext) {
-    $source = "{$trashSubDir}/{$id}.{$ext}";
-    if (file_exists($source)) {
-        rename($source, "{$targetDir}/{$id}.{$ext}");
-        $restored = true;
+        $source = "{$trashSubDir}/{$id}.{$ext}";
+        if (file_exists($source)) {
+            rename($source, "{$targetDir}/{$id}.{$ext}");
+            $restored = true;
+        }
     }
-}
-    
-    // Try episode-XX format
+
     if (!$restored && $type === 'episode') {
         $padded = "episode-" . str_pad($id, 2, '0', STR_PAD_LEFT);
         $source = "{$trashSubDir}/{$padded}.json";
@@ -461,10 +491,18 @@ function handleRestore(): void {
             $restored = true;
         }
     }
-    
+
+    if ($type === 'blog') {
+        $htmlSource = "{$trashSubDir}/{$id}.html.json";
+        $htmlTarget = "{$targetDir}/{$id}.html.json";
+        if (file_exists($htmlSource)) {
+            rename($htmlSource, $htmlTarget);
+        }
+    }
+
     setContentStatus($type, $id, 'published');
     logContentAction($user, 'content_restored', "Restored: {$type}/{$id}");
-    
+
     jsonResponse(['success' => true]);
 }
 
@@ -502,6 +540,13 @@ function handlePermanentDelete(): void {
         $padded = "episode-" . str_pad($id, 2, '0', STR_PAD_LEFT);
         $file = "{$trashSubDir}/{$padded}.json";
         if (file_exists($file)) unlink($file);
+    }
+
+    if ($type === 'blog') {
+        $htmlFile = "{$trashSubDir}/{$id}.html.json";
+        if (file_exists($htmlFile)) {
+            unlink($htmlFile);
+        }
     }
     
     logContentAction($user, 'content_permanently_deleted', "Permanently deleted: {$type}/{$id}");
@@ -541,15 +586,19 @@ function handlePublish(): void {
 function handleListTrash(): void {
     requireAuth();
     $items = [];
-    
+
     foreach (['blog', 'episode'] as $type) {
         $dir = TRASH_DIR . "/{$type}";
         if (!is_dir($dir)) continue;
-        
+
         foreach (glob($dir . '/*') as $file) {
+            if ($type === 'blog' && str_ends_with($file, '.html.json')) {
+                continue;
+            }
+
             $ext = pathinfo($file, PATHINFO_EXTENSION);
             $name = basename($file, ".{$ext}");
-            
+
             if ($ext === 'json') {
                 $data = json_decode(file_get_contents($file), true);
                 $items[] = [
@@ -572,7 +621,7 @@ function handleListTrash(): void {
             }
         }
     }
-    
+
     jsonResponse(['items' => $items]);
 }
 
@@ -813,14 +862,18 @@ function handlePublicListBlogs(): void {
             $blogs[] = $meta;
         }
         foreach (glob(BLOG_DIR . '/*.json') as $file) {
-            $slug = basename($file, '.json');
-            $st = $statuses["blog:{$slug}"]['status'] ?? 'published';
-            if ($st !== 'published') continue;
+    if (str_ends_with($file, '.html.json')) {
+        continue;
+    }
 
-            $data = json_decode(file_get_contents($file), true);
-            $data['slug'] = $data['slug'] ?? $slug;
-            $blogs[] = $data;
-        }
+    $slug = basename($file, '.json');
+    $st = $statuses["blog:{$slug}"]['status'] ?? 'published';
+    if ($st !== 'published') continue;
+
+    $data = json_decode(file_get_contents($file), true);
+    $data['slug'] = $data['slug'] ?? $slug;
+    $blogs[] = $data;
+}
     }
 
     usort($blogs, function($a, $b) {
@@ -894,15 +947,25 @@ function handleHiddenIds(): void {
     foreach (['blog', 'episode'] as $type) {
         $dir = TRASH_DIR . "/{$type}";
         if (!is_dir($dir)) continue;
+
         foreach (glob($dir . '/*') as $file) {
+            if ($type === 'blog' && str_ends_with($file, '.html.json')) {
+                continue;
+            }
+
             $ext = pathinfo($file, PATHINFO_EXTENSION);
             $name = basename($file, ".{$ext}");
+
             if ($type === 'blog') {
-                if (!in_array($name, $hidden['blogs'])) $hidden['blogs'][] = $name;
+                if (!in_array($name, $hidden['blogs'])) {
+                    $hidden['blogs'][] = $name;
+                }
             } else {
                 $data = json_decode(file_get_contents($file), true);
                 $epId = (string)($data['number'] ?? $name);
-                if (!in_array($epId, $hidden['episodes'])) $hidden['episodes'][] = $epId;
+                if (!in_array($epId, $hidden['episodes'])) {
+                    $hidden['episodes'][] = $epId;
+                }
             }
         }
     }
