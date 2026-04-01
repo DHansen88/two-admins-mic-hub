@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAdminApiBase } from "@/lib/admin-auth";
 import type { BlogPost, Author } from "@/lib/content-loader";
 import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
+import authorsJson from "@/content/authors.json";
 
 const API_BASE = getAdminApiBase();
 
