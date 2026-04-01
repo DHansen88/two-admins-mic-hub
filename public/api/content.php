@@ -282,7 +282,7 @@ function handleSaveBlog(): void {
         $data = [
             'title' => $body['title'],
             'slug' => $slug,
-            'author' => $body['author'] ?? 'sarah',
+            'author' => $body['author'] ?? '',
             'publish_date' => $body['publish_date'] ?? date('Y-m-d'),
             'tags' => $body['tags'] ?? [],
             'excerpt' => $body['excerpt'] ?? '',

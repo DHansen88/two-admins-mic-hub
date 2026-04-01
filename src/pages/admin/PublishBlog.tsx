@@ -341,7 +341,7 @@ const PublishBlog = () => {
     const result = await saveBlog({
       title,
       slug,
-      author: selectedAuthors[0] || "sarah",
+      author: selectedAuthors[0] || "",
       authors: selectedAuthors,
       author_avatars: selectedAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
         ? selectedAuthors.map((k) => authorAvatars[k] || "")
