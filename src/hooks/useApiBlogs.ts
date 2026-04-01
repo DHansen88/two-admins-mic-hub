@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAdminApiBase } from "@/lib/admin-auth";
 import type { BlogPost, Author } from "@/lib/content-loader";
 import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
+import authorsJson from "@/content/authors.json";
 
 const API_BASE = getAdminApiBase();
 
@@ -50,23 +51,32 @@ function formatDate(dateStr: string): string {
   }
 }
 
+/** Local author profiles from authors.json — always available as fallback */
+const localAuthorProfiles: AuthorProfile[] = Object.entries(
+  authorsJson as Record<string, { name: string; role?: string; bio?: string; avatar?: string; linkedin?: string; website?: string }>
+).map(([id, a]) => ({ id, name: a.name, role: a.role || "", bio: a.bio || "", avatar: a.avatar || "", linkedin: a.linkedin, website: a.website }));
+
 /** Cache for author profiles so we don't re-fetch per blog */
 let cachedAuthorProfiles: AuthorProfile[] | null = null;
 
 async function loadAuthorProfiles(): Promise<AuthorProfile[]> {
   if (cachedAuthorProfiles) return cachedAuthorProfiles;
   try {
-    cachedAuthorProfiles = await fetchAuthors();
+    const fetched = await fetchAuthors();
+    // Merge: API profiles take precedence, then fill in from local JSON
+    const byId = new Map(localAuthorProfiles.map((p) => [p.id, p]));
+    for (const p of fetched) byId.set(p.id, p);
+    cachedAuthorProfiles = Array.from(byId.values());
   } catch {
-    cachedAuthorProfiles = [];
+    cachedAuthorProfiles = [...localAuthorProfiles];
   }
   return cachedAuthorProfiles;
 }
 
 function resolveAuthor(key: string, profiles: AuthorProfile[]): Author {
-  // Try exact id match
-  const profile = profiles.find((p) => p.id === key) ||
-    profiles.find((p) => p.name.toLowerCase() === key.toLowerCase());
+  const k = (key || "").trim().toLowerCase();
+  const profile = profiles.find((p) => p.id.toLowerCase() === k) ||
+    profiles.find((p) => p.name.toLowerCase() === k);
   if (profile) {
     return {
       name: profile.name,
@@ -77,7 +87,8 @@ function resolveAuthor(key: string, profiles: AuthorProfile[]): Author {
       website: profile.website,
     };
   }
-  return { name: key, role: "", bio: "", avatar: "" };
+  // Capitalize first letter as fallback display name
+  return { name: key.charAt(0).toUpperCase() + key.slice(1), role: "", bio: "", avatar: "" };
 }
 
 function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
