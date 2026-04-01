@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import blogBanner from "@/assets/TA_Blog_NoBackground.png";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
