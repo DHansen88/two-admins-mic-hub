@@ -145,44 +145,49 @@ const QuillAnimation = () => {
 
           {/* Quill - nib at origin (0,0) so it leads the writing */}
           <g transform="translate(0, 0)">
-            {/* Nib - small pointed tip */}
-            <path d="M0 0 L-5 -2 L-10 -1 L-5 2 Z" stroke="white" strokeWidth="0.8" fill="none" />
-            <line x1="-7" y1="0" x2="-1" y2="0" stroke="white" strokeWidth="0.4" />
+            {/* Nib point */}
+            <path d="M0 0 L-3 -2 L-6 -1 L-3 1.5 Z" stroke="white" strokeWidth="0.6" fill="white" fillOpacity="0.8" />
 
-            {/* Shaft / calamus - long gentle line */}
-            <path d="M-10 -1 Q-30 -10 -50 -20" stroke="white" strokeWidth="1.4" strokeLinecap="round" fill="none" />
+            {/* Shaft */}
+            <line x1="-6" y1="-1" x2="-18" y2="-8" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
 
-            {/* Feather - elegant continuous-line oval like the reference */}
-            {/* Outer contour - one smooth elongated teardrop */}
-            <path d="M-50 -20
-              Q-52 -22 -56 -28
-              Q-62 -38 -68 -50
-              Q-74 -62 -78 -72
-              Q-82 -82 -82 -90
-              Q-82 -98 -78 -102
-              Q-74 -106 -68 -104
-              Q-62 -102 -58 -94
-              Q-54 -86 -52 -76
-              Q-50 -66 -50 -56
-              Q-50 -46 -50 -36
-              Q-50 -28 -50 -20"
-              stroke="white" strokeWidth="1.1" fill="none" strokeLinejoin="round" />
+            {/* Feather - bold filled silhouette like the reference */}
+            {/* Wide at base, sweeping curve, sharp point at tip */}
+            <path d="M-18 -8
+              Q-22 -12 -28 -22
+              Q-34 -34 -38 -48
+              Q-42 -62 -44 -76
+              Q-46 -88 -44 -96
+              Q-42 -104 -38 -108
+              Q-34 -110 -32 -108
+              Q-28 -104 -26 -96
+              Q-24 -86 -24 -74
+              Q-24 -60 -26 -46
+              Q-28 -34 -30 -24
+              Q-32 -16 -30 -12
+              Q-26 -8 -22 -8
+              Z"
+              stroke="white" strokeWidth="0.8" fill="white" fillOpacity="0.7" />
 
-            {/* Central rachis / spine */}
-            <path d="M-50 -20 Q-64 -50 -74 -80 Q-78 -92 -74 -100"
-              stroke="white" strokeWidth="0.6" fill="none" />
+            {/* Central rachis - white line through filled feather */}
+            <path d="M-18 -8 Q-30 -30 -38 -60 Q-42 -80 -40 -100 Q-38 -108 -34 -110"
+              stroke="hsl(var(--navy))" strokeWidth="0.8" fill="none" />
 
-            {/* Inner vein lines - right side (subtle, sparse) */}
-            <path d="M-56 -36 Q-52 -40 -50 -38" stroke="white" strokeWidth="0.35" fill="none" />
-            <path d="M-62 -52 Q-56 -56 -52 -52" stroke="white" strokeWidth="0.35" fill="none" />
-            <path d="M-68 -66 Q-60 -70 -54 -64" stroke="white" strokeWidth="0.35" fill="none" />
-            <path d="M-74 -80 Q-66 -84 -58 -78" stroke="white" strokeWidth="0.3" fill="none" />
+            {/* Vein lines branching from rachis - cutting through fill */}
+            {/* Right side veins */}
+            <path d="M-28 -24 Q-26 -30 -24 -28" stroke="hsl(var(--navy))" strokeWidth="0.4" fill="none" />
+            <path d="M-32 -38 Q-28 -44 -26 -40" stroke="hsl(var(--navy))" strokeWidth="0.4" fill="none" />
+            <path d="M-36 -52 Q-30 -58 -26 -54" stroke="hsl(var(--navy))" strokeWidth="0.4" fill="none" />
+            <path d="M-40 -66 Q-34 -72 -28 -68" stroke="hsl(var(--navy))" strokeWidth="0.35" fill="none" />
+            <path d="M-42 -78 Q-36 -84 -28 -80" stroke="hsl(var(--navy))" strokeWidth="0.35" fill="none" />
+            <path d="M-44 -90 Q-38 -94 -30 -90" stroke="hsl(var(--navy))" strokeWidth="0.3" fill="none" />
 
-            {/* Inner vein lines - left side */}
-            <path d="M-58 -36 Q-62 -38 -64 -34" stroke="white" strokeWidth="0.35" fill="none" />
-            <path d="M-66 -52 Q-70 -54 -72 -48" stroke="white" strokeWidth="0.35" fill="none" />
-            <path d="M-72 -66 Q-76 -68 -78 -62" stroke="white" strokeWidth="0.35" fill="none" />
-            <path d="M-76 -80 Q-80 -82 -80 -76" stroke="white" strokeWidth="0.3" fill="none" />
+            {/* Left side veins */}
+            <path d="M-30 -24 Q-34 -28 -36 -24" stroke="hsl(var(--navy))" strokeWidth="0.4" fill="none" />
+            <path d="M-34 -38 Q-38 -44 -40 -38" stroke="hsl(var(--navy))" strokeWidth="0.4" fill="none" />
+            <path d="M-38 -52 Q-42 -58 -44 -52" stroke="hsl(var(--navy))" strokeWidth="0.4" fill="none" />
+            <path d="M-40 -66 Q-44 -72 -46 -66" stroke="hsl(var(--navy))" strokeWidth="0.35" fill="none" />
+            <path d="M-42 -78 Q-46 -84 -46 -78" stroke="hsl(var(--navy))" strokeWidth="0.35" fill="none" />
           </g>
         </g>
 
