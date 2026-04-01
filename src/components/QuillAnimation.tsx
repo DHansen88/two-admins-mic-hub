@@ -1,58 +1,20 @@
 const QuillAnimation = () => {
-  // Calligraphy "Blog" - carefully shaped cursive letters
-  const blogWriting = `
-    M 220 265
-    C 220 245 220 240 225 235
-    C 232 228 240 232 238 242
-    C 236 252 228 258 222 255
-    C 218 252 220 248 222 245
-    C 225 240 235 235 240 240
-    C 245 248 240 258 232 260
-    C 226 262 222 258 224 252
-    L 250 265
+  // Carefully crafted cursive "Blog" - each letter clearly readable
+  const letterB = `M 200 270 L 200 235 C 200 232 210 230 215 233 C 220 236 218 242 212 243 C 207 244 200 243 200 250 C 200 248 208 245 214 248 C 220 251 218 258 212 260 C 206 262 200 260 200 258`;
+  const letterL = `M 230 270 L 230 232`;
+  const letterO = `M 245 258 C 245 248 255 245 260 250 C 265 255 262 268 255 270 C 248 272 245 265 245 258`;
+  const letterG = `M 275 258 C 275 248 285 245 290 250 C 295 255 292 265 285 267 C 278 269 275 265 275 260 L 278 270 C 278 280 274 286 270 286 C 266 286 266 282 268 279`;
 
-    L 265 230
-    L 265 268
+  const blogPath = `${letterB} ${letterL} ${letterO} ${letterG}`;
 
-    C 280 265 288 255 292 250
-    C 298 242 305 240 308 245
-    C 312 252 308 260 300 262
-    C 292 264 286 258 288 250
-    C 290 244 296 240 302 242
+  // Connecting strokes between letters
+  const connections = `M 212 258 Q 220 268 230 270 M 230 270 Q 238 272 245 258 M 260 268 Q 268 274 275 258`;
 
-    L 318 268
-    C 322 264 328 255 334 250
-    C 340 244 348 242 350 248
-    C 352 256 348 264 340 266
-    C 332 268 328 262 330 255
-    L 330 268
-    L 332 280
-    C 332 290 326 292 322 288
-    C 320 284 322 278 328 278
-  `;
+  // Decorative flourish after g
+  const flourish = `M 268 279 C 280 275 310 265 350 260 C 400 252 460 255 520 248 C 580 240 640 245 700 238 C 760 230 820 235 880 228 C 940 220 1000 225 1050 218 C 1080 214 1100 218 1095 225 C 1090 232 1078 228 1076 222`;
 
-  // Decorative swirls after Blog
-  const swirls = `
-    M 350 270
-    C 380 258 420 248 460 252
-    C 500 256 530 245 560 240
-    C 600 232 640 238 680 230
-    C 720 222 760 228 800 220
-    C 840 212 880 218 920 210
-    C 950 204 980 210 1000 205
-    C 1030 198 1060 205 1080 200
-    C 1100 195 1110 200 1105 210
-    C 1100 218 1088 215 1085 208
-  `;
-
-  // Full motion path: inkwell dip → write Blog → swirl across
-  const motionPath = `
-    M 180 270
-    L 180 276
-    L 180 270
-    ${blogWriting.replace(/M\s*220\s*265/, 'L 220 265')}
-    ${swirls.replace(/M\s*350\s*270/, 'L 350 270')}
-  `;
+  // Full motion path for the pen
+  const motionPath = `M 165 262 L 165 268 L 165 262 L ${letterB.replace('M 200 270', '200 270')} ${connections.replace(/M\s/g, 'L ').replace(/\sM\s/g, ' L ')} L 230 270 L 230 232 L 245 258 ${letterO.replace('M 245 258', '')} L 275 258 ${letterG.replace('M 275 258', '')} ${flourish.replace('M 268 279', 'L 268 279')}`;
 
   return (
     <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
@@ -64,95 +26,103 @@ const QuillAnimation = () => {
         preserveAspectRatio="xMidYMid slice"
         style={{ opacity: 0.12 }}
       >
-        {/* Ink well - small elegant */}
-        <g transform="translate(155, 248)">
-          <ellipse cx="0" cy="18" rx="14" ry="5" stroke="white" strokeWidth="1.5" fill="none" />
-          <path d="M-10 18 L-10 6 Q-10 0 -4 -2 L4 -2 Q10 0 10 6 L10 18" stroke="white" strokeWidth="1.5" fill="none" />
-          <ellipse cx="0" cy="-2" rx="8" ry="3" stroke="white" strokeWidth="1" fill="none" />
+        {/* Ink well */}
+        <g transform="translate(145, 240)">
+          <ellipse cx="0" cy="20" rx="12" ry="4.5" stroke="white" strokeWidth="1.5" fill="none" />
+          <path d="M-8 20 L-8 8 Q-8 2 -2 0 L2 0 Q8 2 8 8 L8 20" stroke="white" strokeWidth="1.5" fill="none" />
+          <ellipse cx="0" cy="0" rx="6" ry="2.5" stroke="white" strokeWidth="1" fill="none" />
         </g>
 
-        {/* Motion path (hidden) */}
-        <path id="qPath" d={motionPath} stroke="none" fill="none" />
+        {/* Hidden motion path */}
+        <path id="penPath" d={motionPath} stroke="none" fill="none" />
 
-        {/* Animated quill - small, nib-forward */}
+        {/* Animated pen */}
         <g>
           <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
-            <mpath href="#qPath" />
+            <mpath href="#penPath" />
           </animateMotion>
 
-          {/* Quill - nib at (0,0), feather trails behind */}
           <g>
-            {/* Writing pressure bob */}
+            {/* Writing pressure */}
             <animateTransform
               attributeName="transform"
               type="translate"
-              values="0,0; 0,2; 0,0"
-              dur="1.5s"
+              values="0,0; 0,1.5; 0,0"
+              dur="1.2s"
               repeatCount="indefinite"
             />
 
-            {/* Nib */}
-            <path d="M0 0 L-3 -1.5 L-5 0 L-3 1.5 Z" stroke="white" strokeWidth="0.8" strokeLinejoin="round" fill="none" />
-            <line x1="-3.5" y1="0" x2="-1" y2="0" stroke="white" strokeWidth="0.4" />
-
-            {/* Short shaft */}
-            <line x1="-5" y1="0" x2="-14" y2="-5" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
-
-            {/* Feather - small elegant quill shape */}
-            {/* Spine */}
-            <path d="M-14 -5 C-18 -8 -24 -16 -28 -26 C-32 -36 -34 -46 -32 -52 C-30 -56 -28 -58 -26 -56"
-              stroke="white" strokeWidth="1" strokeLinecap="round" fill="none" />
-
-            {/* Right barbs - soft curves */}
-            <path d="M-16 -8 C-14 -12 -12 -11 -11 -10" stroke="white" strokeWidth="0.6" strokeLinecap="round" fill="none" />
-            <path d="M-19 -14 C-16 -18 -13 -17 -12 -15" stroke="white" strokeWidth="0.6" strokeLinecap="round" fill="none" />
-            <path d="M-22 -20 C-18 -25 -15 -23 -14 -21" stroke="white" strokeWidth="0.55" strokeLinecap="round" fill="none" />
-            <path d="M-25 -26 C-21 -32 -17 -30 -16 -27" stroke="white" strokeWidth="0.55" strokeLinecap="round" fill="none" />
-            <path d="M-28 -32 C-24 -38 -20 -36 -19 -33" stroke="white" strokeWidth="0.5" strokeLinecap="round" fill="none" />
-            <path d="M-30 -38 C-26 -44 -22 -42 -21 -39" stroke="white" strokeWidth="0.5" strokeLinecap="round" fill="none" />
-            <path d="M-32 -44 C-28 -50 -25 -48 -24 -45" stroke="white" strokeWidth="0.45" strokeLinecap="round" fill="none" />
-
-            {/* Left barbs */}
-            <path d="M-16 -8 C-18 -10 -20 -8 -20 -6" stroke="white" strokeWidth="0.6" strokeLinecap="round" fill="none" />
-            <path d="M-19 -14 C-22 -16 -24 -13 -24 -11" stroke="white" strokeWidth="0.6" strokeLinecap="round" fill="none" />
-            <path d="M-22 -20 C-26 -22 -28 -18 -28 -16" stroke="white" strokeWidth="0.55" strokeLinecap="round" fill="none" />
-            <path d="M-25 -26 C-30 -28 -32 -24 -32 -22" stroke="white" strokeWidth="0.55" strokeLinecap="round" fill="none" />
-            <path d="M-28 -32 C-33 -33 -36 -29 -36 -27" stroke="white" strokeWidth="0.5" strokeLinecap="round" fill="none" />
-            <path d="M-30 -38 C-35 -39 -38 -35 -38 -33" stroke="white" strokeWidth="0.5" strokeLinecap="round" fill="none" />
-            <path d="M-32 -44 C-36 -45 -38 -42 -38 -40" stroke="white" strokeWidth="0.45" strokeLinecap="round" fill="none" />
+            {/* Pen body - sleek fountain pen shape */}
+            {/* Nib at origin */}
+            <path d="M0 0 L-2 -1 L-6 -0.5 L-2 1 Z" stroke="white" strokeWidth="0.7" fill="none" strokeLinejoin="round" />
+            {/* Grip section */}
+            <path d="M-6 -0.5 L-7 -1.2 L-18 -6 L-17 -7.5 L-6 -1.5" stroke="white" strokeWidth="0.9" fill="none" strokeLinecap="round" />
+            {/* Barrel */}
+            <path d="M-18 -6 L-40 -16 M-17 -7.5 L-39 -17.5" stroke="white" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+            {/* Cap / end */}
+            <path d="M-40 -16 L-42 -16.8 L-41 -18.2 L-39 -17.5" stroke="white" strokeWidth="0.7" fill="none" />
+            {/* Clip */}
+            <path d="M-35 -17 L-28 -14 L-28 -13" stroke="white" strokeWidth="0.5" fill="none" strokeLinecap="round" />
           </g>
         </g>
 
-        {/* The calligraphy "Blog" trail */}
+        {/* Blog calligraphy - letter B */}
         <path
-          d={blogWriting}
+          d={`${letterB} ${connections}`}
           stroke="white"
           strokeWidth="2"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeDasharray="600"
-          strokeDashoffset="600"
+          strokeDasharray="500"
+          strokeDashoffset="500"
         >
           <animate
             attributeName="stroke-dashoffset"
-            values="600;600;0;0;0;600"
-            keyTimes="0;0.05;0.5;0.55;0.9;1"
+            values="500;500;350;0;0;0;500"
+            keyTimes="0;0.04;0.2;0.48;0.52;0.9;1"
             dur="10s"
             repeatCount="indefinite"
           />
           <animate
             attributeName="opacity"
-            values="0;1;1;1;0;0"
-            keyTimes="0;0.05;0.55;0.84;0.94;1"
+            values="0;1;1;1;1;0;0"
+            keyTimes="0;0.04;0.48;0.52;0.85;0.95;1"
             dur="10s"
             repeatCount="indefinite"
           />
         </path>
 
-        {/* Decorative swirls after g */}
+        {/* Blog calligraphy - letters l, o, g */}
         <path
-          d={swirls}
+          d={`${letterL} ${letterO} ${letterG}`}
+          stroke="white"
+          strokeWidth="2"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray="400"
+          strokeDashoffset="400"
+        >
+          <animate
+            attributeName="stroke-dashoffset"
+            values="400;400;400;0;0;0;400"
+            keyTimes="0;0.18;0.22;0.5;0.54;0.9;1"
+            dur="10s"
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="opacity"
+            values="0;0;1;1;1;0;0"
+            keyTimes="0;0.18;0.22;0.54;0.85;0.95;1"
+            dur="10s"
+            repeatCount="indefinite"
+          />
+        </path>
+
+        {/* Decorative flourish */}
+        <path
+          d={flourish}
           stroke="white"
           strokeWidth="1.5"
           fill="none"
@@ -163,14 +133,14 @@ const QuillAnimation = () => {
           <animate
             attributeName="stroke-dashoffset"
             values="900;900;900;0;0;900"
-            keyTimes="0;0.5;0.52;0.88;0.9;1"
+            keyTimes="0;0.5;0.54;0.88;0.9;1"
             dur="10s"
             repeatCount="indefinite"
           />
           <animate
             attributeName="opacity"
             values="0;0;0.7;0.7;0;0"
-            keyTimes="0;0.5;0.54;0.84;0.94;1"
+            keyTimes="0;0.52;0.56;0.84;0.95;1"
             dur="10s"
             repeatCount="indefinite"
           />
