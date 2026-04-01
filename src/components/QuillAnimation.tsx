@@ -1,4 +1,99 @@
 const QuillAnimation = () => {
+  // Cursive "Blog" path - carefully crafted to be legible
+  // B: start at baseline, up stem, two bumps
+  // l: tall stroke
+  // o: oval
+  // g: oval with descender
+  const blogPath = `
+    M 140 260
+    L 140 220
+    Q 140 218 145 220
+    Q 165 228 160 245
+    Q 158 252 145 250
+    Q 140 249 140 245
+    Q 140 243 148 240
+    Q 168 235 162 258
+    Q 160 268 145 265
+    Q 140 264 143 260
+    L 170 260
+
+    L 185 260
+    L 185 222
+    Q 185 220 188 225
+    L 195 260
+
+    Q 195 258 200 248
+    Q 208 238 218 238
+    Q 228 238 228 250
+    Q 228 262 218 262
+    Q 208 262 205 252
+    Q 202 245 208 240
+    L 230 260
+
+    Q 232 258 238 248
+    Q 245 238 255 238
+    Q 265 238 265 248
+    Q 265 260 255 262
+    Q 245 262 240 255
+    L 240 260
+    L 240 278
+    Q 240 290 232 290
+    Q 224 290 225 282
+    Q 226 276 232 278
+  `;
+
+  // Extended decorative trail after the "g"
+  const swirlPath = `
+    M 250 268
+    Q 280 240 320 230
+    Q 370 218 420 225
+    Q 470 232 510 215
+    Q 560 195 610 205
+    Q 660 215 700 195
+    Q 750 172 800 185
+    Q 850 198 900 178
+    Q 940 162 980 172
+    Q 1020 182 1050 165
+    Q 1080 150 1110 162
+    Q 1130 172 1120 185
+    Q 1108 200 1095 188
+    Q 1085 175 1100 168
+  `;
+
+  // Loop flourishes
+  const loops = `
+    M 650 208
+    Q 670 180 685 170
+    Q 700 162 695 175
+    Q 690 190 680 200
+    Q 670 210 685 212
+    Q 700 212 705 195
+
+    M 850 192
+    Q 870 165 885 155
+    Q 900 148 895 162
+    Q 888 178 878 188
+    Q 868 198 882 200
+    Q 898 200 902 182
+
+    M 1020 175
+    Q 1035 152 1048 145
+    Q 1060 140 1055 152
+    Q 1048 168 1040 178
+    Q 1032 188 1045 188
+    Q 1058 188 1060 172
+  `;
+
+  // Full motion path for quill (inkwell dip → Blog → swirls)
+  const motionPath = `
+    M 80 248
+    L 80 255
+    L 80 248
+    L 140 260
+    ${blogPath.replace(/M\s*140\s*260/, '')}
+    ${swirlPath.replace(/M\s*250\s*268/, 'L 250 268')}
+  `;
+
   return (
     <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
       <svg
@@ -9,268 +104,205 @@ const QuillAnimation = () => {
         preserveAspectRatio="xMidYMid slice"
         style={{ opacity: 0.15 }}
       >
-        {/* Ink well - bottom left */}
-        <g transform="translate(60, 200)">
-          <path d="M-10 60 Q-10 65 0 68 L50 68 Q60 65 60 60 L60 55 Q60 50 50 48 L0 48 Q-10 50 -10 55 Z" stroke="white" strokeWidth="2" fill="none" />
-          <path d="M8 48 L8 20 Q8 12 16 10 L34 10 Q42 12 42 20 L42 48" stroke="white" strokeWidth="2" fill="none" />
-          <path d="M16 10 L16 4 Q16 0 20 0 L30 0 Q34 0 34 4 L34 10" stroke="white" strokeWidth="2" fill="none" />
-          <ellipse cx="25" cy="0" rx="10" ry="3" stroke="white" strokeWidth="1.5" fill="none" />
-          <path d="M20 -3 Q25 -8 30 -3" stroke="white" strokeWidth="1.5" fill="none" />
-          <rect x="12" y="22" width="26" height="16" rx="2" stroke="white" strokeWidth="1" fill="none" />
-          <line x1="16" y1="28" x2="36" y2="28" stroke="white" strokeWidth="0.5" />
-          <line x1="18" y1="32" x2="34" y2="32" stroke="white" strokeWidth="0.5" />
-          <path d="M10 40 Q25 36 40 40" stroke="white" strokeWidth="0.8" fill="none" />
+        <defs>
+          {/* Feather gradient for subtle depth */}
+          <linearGradient id="featherGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="white" stopOpacity="0.6" />
+            <stop offset="50%" stopColor="white" stopOpacity="1" />
+            <stop offset="100%" stopColor="white" stopOpacity="0.4" />
+          </linearGradient>
+        </defs>
+
+        {/* Ink well */}
+        <g transform="translate(55, 205)">
+          {/* Base */}
+          <path d="M-12 62 Q-8 70 25 72 Q58 70 62 62 L62 56 Q58 50 25 48 Q-8 50 -12 56 Z"
+            stroke="white" strokeWidth="1.8" fill="none" />
+          <ellipse cx="25" cy="48" rx="37" ry="8" stroke="white" strokeWidth="1.2" fill="none" />
+          {/* Bottle */}
+          <path d="M8 48 L8 18 Q8 10 18 8 L32 8 Q42 10 42 18 L42 48" stroke="white" strokeWidth="1.8" fill="none" />
+          {/* Neck */}
+          <path d="M14 8 L14 2 Q14 -2 20 -3 L30 -3 Q36 -2 36 2 L36 8" stroke="white" strokeWidth="1.5" fill="none" />
+          {/* Cap */}
+          <ellipse cx="25" cy="-3" rx="12" ry="3.5" stroke="white" strokeWidth="1.2" fill="none" />
+          <path d="M19 -6 Q25 -12 31 -6" stroke="white" strokeWidth="1.2" fill="none" />
+          {/* Label */}
+          <rect x="13" y="22" width="24" height="14" rx="2" stroke="white" strokeWidth="0.8" fill="none" />
         </g>
 
-        {/* Quill pen - animated along motion path */}
-        <g style={{ opacity: 1 }}>
+        {/* Hidden motion path */}
+        <path id="quillMotion" d={motionPath} stroke="none" fill="none" />
+
+        {/* Animated quill group */}
+        <g>
           <animateMotion
             dur="16s"
             repeatCount="indefinite"
             rotate="auto"
-            keyPoints="0;0;0.05;0.12;0.2;0.28;0.36;0.42;0.5;0.58;0.66;0.74;0.82;0.9;0.96;1"
-            keyTimes="0;0.04;0.08;0.18;0.28;0.38;0.46;0.5;0.56;0.62;0.7;0.78;0.86;0.92;0.97;1"
           >
-            <mpath href="#quillPath" />
+            <mpath href="#quillMotion" />
           </animateMotion>
 
-          <g transform="rotate(-135) translate(-80, -10)">
-            <line x1="0" y1="0" x2="75" y2="0" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-            <path d="M75 0 Q82 -4 90 -6 Q85 -10 80 -18 Q78 -12 75 -6 Q72 -3 75 0" stroke="white" strokeWidth="1.2" fill="none" />
-            <path d="M65 0 Q72 -3 78 -5 Q74 -9 70 -15 Q68 -10 65 -5 Q63 -2 65 0" stroke="white" strokeWidth="1" fill="none" />
-            <path d="M55 0 Q60 -2 66 -4 Q63 -8 60 -13 Q58 -8 55 -4 Q54 -1 55 0" stroke="white" strokeWidth="0.8" fill="none" />
-            <path d="M45 0 Q50 -2 55 -3 Q52 -6 50 -10 Q48 -6 45 -3 Q44 -1 45 0" stroke="white" strokeWidth="0.7" fill="none" />
-            <path d="M75 0 Q82 4 90 6 Q85 10 80 18 Q78 12 75 6 Q72 3 75 0" stroke="white" strokeWidth="1.2" fill="none" />
-            <path d="M65 0 Q72 3 78 5 Q74 9 70 15 Q68 10 65 5 Q63 2 65 0" stroke="white" strokeWidth="1" fill="none" />
-            <path d="M55 0 Q60 2 66 4 Q63 8 60 13 Q58 8 55 4 Q54 1 55 0" stroke="white" strokeWidth="0.8" fill="none" />
-            <path d="M45 0 Q50 2 55 3 Q52 6 50 10 Q48 6 45 3 Q44 1 45 0" stroke="white" strokeWidth="0.7" fill="none" />
-            <line x1="40" y1="0" x2="90" y2="0" stroke="white" strokeWidth="0.6" />
-            <circle cx="12" cy="0" r="3" stroke="white" strokeWidth="1.2" fill="none" />
-            <path d="M15 0 Q18 -2 20 0 Q18 2 15 0" stroke="white" strokeWidth="1" fill="none" />
-            <path d="M0 0 L-8 -2 L-12 0 L-8 2 Z" stroke="white" strokeWidth="1.2" fill="none" />
-            <line x1="-6" y1="0" x2="0" y2="0" stroke="white" strokeWidth="0.6" />
+          {/* Quill - nib at origin (0,0) so it leads the writing */}
+          <g transform="translate(0, 0)">
+            {/* Nib / tip */}
+            <path d="M0 0 L-4 -3 L-14 -1.5 L-4 3 Z" stroke="white" strokeWidth="1" fill="none" />
+            <line x1="-10" y1="0" x2="-2" y2="0" stroke="white" strokeWidth="0.5" />
+            {/* Split in nib */}
+            <line x1="-14" y1="-1.5" x2="-4" y2="0.5" stroke="white" strokeWidth="0.4" />
+
+            {/* Shaft */}
+            <line x1="-14" y1="-1.5" x2="-85" y2="-30" stroke="white" strokeWidth="1.6" strokeLinecap="round" />
+
+            {/* Ornamental grip */}
+            <circle cx="-22" cy="-5" r="2.5" stroke="white" strokeWidth="1" fill="none" />
+            <path d="M-26 -6.5 Q-24 -8 -22 -6.5 Q-20 -8 -18 -6.5" stroke="white" strokeWidth="0.8" fill="none" />
+
+            {/* Feather - smooth realistic shape */}
+            {/* Right vane (top side) */}
+            <path d="M-45 -16
+              Q-50 -20 -55 -28
+              Q-60 -36 -65 -42
+              Q-72 -50 -78 -52
+              Q-85 -54 -90 -50
+              Q-94 -46 -92 -40
+              Q-90 -35 -85 -32
+              L-85 -30"
+              stroke="white" strokeWidth="1.2" fill="none" />
+
+            {/* Left vane (bottom side) */}
+            <path d="M-45 -16
+              Q-48 -14 -52 -10
+              Q-58 -5 -65 -2
+              Q-72 0 -78 -2
+              Q-84 -5 -88 -12
+              Q-90 -18 -88 -24
+              Q-86 -28 -85 -30"
+              stroke="white" strokeWidth="1.2" fill="none" />
+
+            {/* Central rachis (spine) */}
+            <line x1="-45" y1="-16" x2="-90" y2="-42" stroke="white" strokeWidth="0.7" />
+
+            {/* Barb lines - right side */}
+            <path d="M-52 -21 Q-56 -30 -58 -36" stroke="white" strokeWidth="0.4" fill="none" />
+            <path d="M-58 -24 Q-62 -33 -65 -40" stroke="white" strokeWidth="0.4" fill="none" />
+            <path d="M-64 -27 Q-68 -36 -72 -44" stroke="white" strokeWidth="0.4" fill="none" />
+            <path d="M-70 -29 Q-74 -37 -78 -46" stroke="white" strokeWidth="0.4" fill="none" />
+            <path d="M-76 -30 Q-80 -38 -84 -46" stroke="white" strokeWidth="0.35" fill="none" />
+            <path d="M-80 -31 Q-84 -38 -88 -44" stroke="white" strokeWidth="0.3" fill="none" />
+
+            {/* Barb lines - left side */}
+            <path d="M-52 -21 Q-54 -14 -56 -8" stroke="white" strokeWidth="0.4" fill="none" />
+            <path d="M-58 -24 Q-60 -16 -63 -8" stroke="white" strokeWidth="0.4" fill="none" />
+            <path d="M-64 -27 Q-66 -18 -70 -8" stroke="white" strokeWidth="0.4" fill="none" />
+            <path d="M-70 -29 Q-73 -20 -76 -10" stroke="white" strokeWidth="0.4" fill="none" />
+            <path d="M-76 -30 Q-79 -22 -82 -14" stroke="white" strokeWidth="0.35" fill="none" />
+            <path d="M-80 -31 Q-83 -24 -86 -18" stroke="white" strokeWidth="0.3" fill="none" />
+
+            {/* Downy barbs at base */}
+            <path d="M-84 -32 Q-88 -30 -92 -34" stroke="white" strokeWidth="0.3" fill="none" />
+            <path d="M-86 -34 Q-92 -32 -94 -38" stroke="white" strokeWidth="0.25" fill="none" />
           </g>
         </g>
 
-        {/* Motion path */}
+        {/* Calligraphy "Blog" - revealed by stroke animation */}
         <path
-          id="quillPath"
-          d="M85 240
-             L85 246 L85 240
-             L180 260
-             Q180 240 190 235 Q200 230 200 245 Q200 260 190 260 Q180 260 180 250
-             L220 230 L220 280
-             L260 240 Q260 230 270 228 Q280 226 280 240 Q280 258 270 260 Q260 262 260 248
-             L310 230 Q310 228 320 226 Q335 224 335 240 Q335 258 320 262 L340 270 Q345 272 340 268
-             L400 250
-             Q440 230 480 210
-             Q520 190 560 200
-             Q580 206 600 190
-             Q620 170 650 180 Q670 190 660 170 Q650 150 670 140 Q690 130 680 150
-             Q700 180 740 160
-             Q760 145 780 155 Q800 170 790 150 Q780 130 800 120 Q820 110 810 130
-             Q830 160 870 140
-             Q900 120 930 140 Q950 155 940 135 Q930 115 950 105 Q970 95 960 115
-             Q980 145 1020 125
-             Q1050 108 1080 120 Q1100 130 1090 115 Q1080 100 1100 90 Q1120 82 1110 100
-             Q1130 130 1160 140
-             Q1180 150 1170 170 Q1160 190 1140 175 Q1120 160 1140 145 Q1160 130 1150 150"
-          stroke="none"
-          fill="none"
-        />
-
-        {/* Calligraphy "Blog" */}
-        <path
-          d="M180 260
-             Q180 240 190 235 Q200 230 200 245 Q200 260 190 260 Q180 260 180 250
-             L220 230 L220 280
-             L260 240 Q260 230 270 228 Q280 226 280 240 Q280 258 270 260 Q260 262 260 248
-             L310 230 Q310 228 320 226 Q335 224 335 240 Q335 258 320 262 L340 270 Q345 272 340 268"
+          d={blogPath}
           stroke="white"
-          strokeWidth="2.2"
+          strokeWidth="2.5"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeDasharray="500"
-          strokeDashoffset="500"
+          strokeDasharray="600"
+          strokeDashoffset="600"
         >
           <animate
             attributeName="stroke-dashoffset"
-            values="500;500;0;0;0;500"
-            keyTimes="0;0.08;0.46;0.5;0.88;1"
+            values="600;600;0;0;0;600"
+            keyTimes="0;0.06;0.44;0.48;0.88;1"
             dur="16s"
             repeatCount="indefinite"
           />
           <animate
             attributeName="opacity"
             values="0;1;1;1;0;0"
-            keyTimes="0;0.08;0.5;0.82;0.92;1"
+            keyTimes="0;0.06;0.48;0.82;0.92;1"
             dur="16s"
             repeatCount="indefinite"
           />
         </path>
 
-        {/* Decorative swirls after "g" - main trail */}
+        {/* Decorative swirls */}
         <path
-          d="M400 250
-             Q440 230 480 210
-             Q520 190 560 200
-             Q580 206 600 190
-             Q620 170 650 180
-             Q700 180 740 160
-             Q830 160 870 140
-             Q980 145 1020 125
-             Q1130 130 1160 140"
+          d={swirlPath}
           stroke="white"
           strokeWidth="1.5"
           fill="none"
           strokeLinecap="round"
-          strokeDasharray="900"
-          strokeDashoffset="900"
+          strokeDasharray="1000"
+          strokeDashoffset="1000"
         >
           <animate
             attributeName="stroke-dashoffset"
-            values="900;900;900;0;0;900"
-            keyTimes="0;0.46;0.5;0.85;0.88;1"
+            values="1000;1000;1000;0;0;1000"
+            keyTimes="0;0.44;0.48;0.85;0.88;1"
             dur="16s"
             repeatCount="indefinite"
           />
           <animate
             attributeName="opacity"
             values="0;0;0.7;0.7;0;0"
-            keyTimes="0;0.48;0.52;0.82;0.92;1"
+            keyTimes="0;0.46;0.5;0.82;0.92;1"
             dur="16s"
             repeatCount="indefinite"
           />
         </path>
 
-        {/* Loop cluster 1 */}
+        {/* Loop flourishes */}
         <path
-          d="M640 180 Q660 160 670 140 Q680 120 670 130 Q660 145 650 165 Q645 180 660 185 Q675 188 680 170 Q682 155 670 150"
-          stroke="white"
-          strokeWidth="1.3"
-          fill="none"
-          strokeLinecap="round"
-          strokeDasharray="250"
-          strokeDashoffset="250"
-        >
-          <animate
-            attributeName="stroke-dashoffset"
-            values="250;250;250;0;0;250"
-            keyTimes="0;0.55;0.58;0.7;0.82;1"
-            dur="16s"
-            repeatCount="indefinite"
-          />
-          <animate
-            attributeName="opacity"
-            values="0;0;0.6;0.6;0;0"
-            keyTimes="0;0.55;0.6;0.78;0.92;1"
-            dur="16s"
-            repeatCount="indefinite"
-          />
-        </path>
-
-        {/* Loop cluster 2 */}
-        <path
-          d="M790 155 Q810 130 820 110 Q830 90 815 105 Q800 125 795 145 Q790 160 805 165 Q820 168 825 150 Q828 135 815 130
-             M830 120 Q845 100 855 115 Q860 130 845 140 Q835 145 838 130"
+          d={loops}
           stroke="white"
           strokeWidth="1.2"
           fill="none"
           strokeLinecap="round"
-          strokeDasharray="350"
-          strokeDashoffset="350"
+          strokeDasharray="500"
+          strokeDashoffset="500"
         >
           <animate
             attributeName="stroke-dashoffset"
-            values="350;350;350;0;0;350"
-            keyTimes="0;0.62;0.65;0.78;0.84;1"
+            values="500;500;500;0;0;500"
+            keyTimes="0;0.55;0.58;0.82;0.86;1"
             dur="16s"
             repeatCount="indefinite"
           />
           <animate
             attributeName="opacity"
             values="0;0;0.5;0.5;0;0"
-            keyTimes="0;0.62;0.67;0.8;0.92;1"
+            keyTimes="0;0.55;0.6;0.8;0.92;1"
             dur="16s"
             repeatCount="indefinite"
           />
         </path>
 
-        {/* Loop cluster 3 */}
-        <path
-          d="M940 140 Q960 110 975 95 Q990 80 975 95 Q960 115 955 135 Q950 155 965 158 Q980 160 985 140 Q988 125 975 120
-             M990 115 Q1005 95 1015 108 Q1020 120 1005 130 Q995 135 1000 118
-             M1020 108 Q1035 88 1045 100 Q1050 112 1038 120 Q1028 125 1032 110"
-          stroke="white"
-          strokeWidth="1.1"
-          fill="none"
-          strokeLinecap="round"
-          strokeDasharray="450"
-          strokeDashoffset="450"
-        >
-          <animate
-            attributeName="stroke-dashoffset"
-            values="450;450;450;0;0;450"
-            keyTimes="0;0.7;0.73;0.86;0.88;1"
-            dur="16s"
-            repeatCount="indefinite"
-          />
-          <animate
-            attributeName="opacity"
-            values="0;0;0.5;0.5;0;0"
-            keyTimes="0;0.7;0.75;0.84;0.92;1"
-            dur="16s"
-            repeatCount="indefinite"
-          />
-        </path>
-
-        {/* Final flourish spiral */}
-        <path
-          d="M1100 120 Q1130 100 1150 110 Q1170 125 1155 145 Q1140 160 1120 150 Q1105 140 1115 125 Q1125 112 1140 118 Q1150 125 1145 135"
-          stroke="white"
-          strokeWidth="1.3"
-          fill="none"
-          strokeLinecap="round"
-          strokeDasharray="200"
-          strokeDashoffset="200"
-        >
-          <animate
-            attributeName="stroke-dashoffset"
-            values="200;200;200;0;0;200"
-            keyTimes="0;0.78;0.8;0.9;0.92;1"
-            dur="16s"
-            repeatCount="indefinite"
-          />
-          <animate
-            attributeName="opacity"
-            values="0;0;0.7;0.7;0;0"
-            keyTimes="0;0.78;0.82;0.88;0.95;1"
-            dur="16s"
-            repeatCount="indefinite"
-          />
-        </path>
-
-        {/* Small decorative dots that appear along the trail */}
+        {/* Ink dots along trail */}
         {[
-          { cx: 500, cy: 205, delay: "0.55" },
-          { cx: 620, cy: 185, delay: "0.6" },
-          { cx: 750, cy: 158, delay: "0.68" },
-          { cx: 880, cy: 138, delay: "0.75" },
-          { cx: 1010, cy: 122, delay: "0.82" },
+          { cx: 420, cy: 225, delay: 0.55 },
+          { cx: 610, cy: 205, delay: 0.62 },
+          { cx: 800, cy: 185, delay: 0.7 },
+          { cx: 980, cy: 172, delay: 0.78 },
         ].map((dot, i) => (
-          <circle key={i} cx={dot.cx} cy={dot.cy} r="2" fill="white">
+          <circle key={i} cx={dot.cx} cy={dot.cy} r="0" fill="white">
             <animate
-              attributeName="opacity"
-              values={`0;0;0.6;0.6;0;0`}
-              keyTimes={`0;${dot.delay};${(parseFloat(dot.delay) + 0.03).toFixed(2)};0.85;0.92;1`}
+              attributeName="r"
+              values="0;0;2.5;2;0;0"
+              keyTimes={`0;${dot.delay};${(dot.delay + 0.03).toFixed(2)};0.85;0.92;1`}
               dur="16s"
               repeatCount="indefinite"
             />
             <animate
-              attributeName="r"
-              values="0;0;2.5;2;0;0"
-              keyTimes={`0;${dot.delay};${(parseFloat(dot.delay) + 0.03).toFixed(2)};0.85;0.92;1`}
+              attributeName="opacity"
+              values="0;0;0.6;0.5;0;0"
+              keyTimes={`0;${dot.delay};${(dot.delay + 0.03).toFixed(2)};0.85;0.92;1`}
               dur="16s"
               repeatCount="indefinite"
             />
