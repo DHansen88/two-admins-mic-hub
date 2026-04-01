@@ -79,6 +79,7 @@ function resolveAuthor(key: string, profiles: AuthorProfile[]): Author {
     profiles.find((p) => p.name.toLowerCase() === k);
   if (profile) {
     return {
+      id: profile.id,
       name: profile.name,
       role: profile.role || "",
       bio: profile.bio || "",
@@ -87,8 +88,7 @@ function resolveAuthor(key: string, profiles: AuthorProfile[]): Author {
       website: profile.website,
     };
   }
-  // Capitalize first letter as fallback display name
-  return { name: key.charAt(0).toUpperCase() + key.slice(1), role: "", bio: "", avatar: "" };
+  return { id: k, name: key.charAt(0).toUpperCase() + key.slice(1), role: "", bio: "", avatar: "" };
 }
 
 function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
