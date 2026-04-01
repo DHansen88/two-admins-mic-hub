@@ -73,8 +73,8 @@ function handleCreate(): void {
     if (!$password || strlen($password) < 8) {
         jsonResponse(['error' => 'Password must be at least 8 characters'], 400);
     }
-    if (!in_array($role, ['admin', 'manager'])) {
-        jsonResponse(['error' => 'Role must be admin or manager'], 400);
+    if (!in_array($role, ['admin', 'manager', 'intern'])) {
+        jsonResponse(['error' => 'Role must be admin, manager, or intern'], 400);
     }
     
     $db = getDB();
@@ -133,7 +133,7 @@ function handleUpdate(): void {
         $fields[] = 'name = ?';
         $params[] = trim($body['name']);
     }
-    if (isset($body['role']) && in_array($body['role'], ['admin', 'manager'])) {
+    if (isset($body['role']) && in_array($body['role'], ['admin', 'manager', 'intern'])) {
         $fields[] = 'role = ?';
         $params[] = $body['role'];
     }

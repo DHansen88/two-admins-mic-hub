@@ -25,13 +25,9 @@ import CookieConsentBanner from "./components/CookieConsentBanner";
 import ResetPassword from "./pages/ResetPassword";
 
 // Admin pages
-
 import AdminLayout from "./pages/admin/AdminLayout";
-import Dashboard from "./pages/admin/Dashboard";
 import PublishEpisode from "./pages/admin/PublishEpisode";
 import PublishBlog from "./pages/admin/PublishBlog";
-import NewsletterDrafts from "./pages/admin/NewsletterDrafts";
-import ContentLibrary from "./pages/admin/ContentLibrary";
 import ManageMerch from "./pages/admin/ManageMerch";
 import ManagePopups from "./pages/admin/ManagePopups";
 import ManageTags from "./pages/admin/ManageTags";
@@ -68,16 +64,14 @@ const App = () => (
           <Route path="/cookie-policy" element={<CookiePolicy />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Admin Dashboard */}
+          {/* Admin */}
           <Route path="/admin/login" element={<Navigate to="/admin" replace />} />
           <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Dashboard />} />
+            <Route index element={<Navigate to="/admin/blog-posts" replace />} />
             <Route path="episodes" element={<ManageEpisodes />} />
             <Route path="publish-episode" element={<PublishEpisode />} />
             <Route path="blog-posts" element={<ManageBlogPosts />} />
             <Route path="publish-blog" element={<PublishBlog />} />
-            <Route path="newsletters" element={<NewsletterDrafts />} />
-            <Route path="library" element={<ContentLibrary />} />
             <Route path="merchandise" element={<ManageMerch />} />
             <Route path="popups" element={<ManagePopups />} />
             <Route path="tags" element={<ManageTags />} />

@@ -47,7 +47,7 @@ export interface AdminUser {
   id: number;
   name: string;
   email: string;
-  role: 'admin' | 'manager';
+  role: 'admin' | 'manager' | 'intern';
   permissions?: UserPermissions;
 }
 
@@ -416,7 +416,7 @@ export async function createUser(data: {
   name: string;
   email: string;
   password: string;
-  role: 'admin' | 'manager';
+  role: 'admin' | 'manager' | 'intern';
   permissions?: UserPermissions;
 }): Promise<{ success: boolean; error?: string }> {
   try {
@@ -449,7 +449,7 @@ export async function createUser(data: {
 
 export async function updateUser(id: number, updates: Partial<{
   name: string;
-  role: 'admin' | 'manager';
+  role: 'admin' | 'manager' | 'intern';
   status: 'active' | 'disabled';
   permissions: UserPermissions;
 }>): Promise<{ success: boolean; error?: string }> {

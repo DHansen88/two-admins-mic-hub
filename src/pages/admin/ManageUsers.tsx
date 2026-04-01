@@ -64,13 +64,13 @@ const ManageUsers = () => {
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [newRole, setNewRole] = useState<"admin" | "manager">("manager");
+  const [newRole, setNewRole] = useState<"admin" | "manager" | "intern">("manager");
   const [newPermissions, setNewPermissions] = useState<UserPermissions>({ ...DEFAULT_PERMISSIONS });
 
   // Edit dialog
   const [editUser, setEditUser] = useState<any | null>(null);
   const [editName, setEditName] = useState("");
-  const [editRole, setEditRole] = useState<"admin" | "manager">("manager");
+  const [editRole, setEditRole] = useState<"admin" | "manager" | "intern">("manager");
   const [editPermissions, setEditPermissions] = useState<UserPermissions>({ ...DEFAULT_PERMISSIONS });
 
   // Reset password dialog
@@ -222,10 +222,14 @@ const ManageUsers = () => {
                 <div className={`p-2 rounded-full shrink-0 ${
                   user.role === "admin"
                     ? "bg-amber-500/10 text-amber-600"
+                    : user.role === "intern"
+                    ? "bg-violet-500/10 text-violet-600"
                     : "bg-sky-500/10 text-sky-600"
                 }`}>
                   {user.role === "admin" ? (
                     <ShieldCheck className="h-4 w-4" />
+                  ) : user.role === "intern" ? (
+                    <Users className="h-4 w-4" />
                   ) : (
                     <UserCog className="h-4 w-4" />
                   )}
@@ -237,6 +241,8 @@ const ManageUsers = () => {
                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ${
                       user.role === "admin"
                         ? "bg-amber-500/15 text-amber-600"
+                        : user.role === "intern"
+                        ? "bg-violet-500/15 text-violet-600"
                         : "bg-sky-500/15 text-sky-600"
                     }`}>
                       {user.role}
@@ -321,7 +327,7 @@ const ManageUsers = () => {
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Role</label>
               <div className="flex gap-2">
-                {(["manager", "admin"] as const).map((role) => (
+                {(["intern", "manager", "admin"] as const).map((role) => (
                   <Button
                     key={role}
                     type="button"
@@ -335,7 +341,7 @@ const ManageUsers = () => {
                 ))}
               </div>
             </div>
-            {newRole === "manager" && (
+            {newRole !== "admin" && (
               <div className="space-y-2 border border-border rounded-lg p-3">
                 <p className="text-sm font-medium">Permissions</p>
                 {(Object.keys(PERMISSION_LABELS) as (keyof UserPermissions)[]).map((key) => (
@@ -370,7 +376,7 @@ const ManageUsers = () => {
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Role</label>
               <div className="flex gap-2">
-                {(["manager", "admin"] as const).map((role) => (
+                {(["intern", "manager", "admin"] as const).map((role) => (
                   <Button
                     key={role}
                     type="button"
@@ -384,7 +390,7 @@ const ManageUsers = () => {
                 ))}
               </div>
             </div>
-            {editRole === "manager" && (
+            {editRole !== "admin" && (
               <div className="space-y-2 border border-border rounded-lg p-3">
                 <p className="text-sm font-medium">Permissions</p>
                 {(Object.keys(PERMISSION_LABELS) as (keyof UserPermissions)[]).map((key) => (
