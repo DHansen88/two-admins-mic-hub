@@ -175,7 +175,7 @@ const PublishBlog = () => {
         const avatarMap: Record<string, string> = {};
         if (Array.isArray(blog.author_avatars)) {
           blog.author_avatars.forEach((av: string, i: number) => {
-            if (av && authorKeys[i]) avatarMap[authorKeys[i]] = av;
+            if (av && validAuthorKeys[i]) avatarMap[validAuthorKeys[i]] = av;
           });
         }
         setAuthorAvatars(avatarMap);
