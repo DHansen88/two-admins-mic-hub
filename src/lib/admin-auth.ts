@@ -449,7 +449,7 @@ export async function createUser(data: {
 
 export async function updateUser(id: number, updates: Partial<{
   name: string;
-  role: 'admin' | 'manager';
+  role: 'admin' | 'manager' | 'intern';
   status: 'active' | 'disabled';
   permissions: UserPermissions;
 }>): Promise<{ success: boolean; error?: string }> {
