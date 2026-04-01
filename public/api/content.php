@@ -796,6 +796,20 @@ function handlePublicListBlogs(): void {
             $meta['slug'] = $meta['slug'] ?? $slug;
             $meta['content'] = $meta['_content'] ?? '';
             unset($meta['_content']);
+            // Normalize authors
+            if (!empty($meta['authors']) && is_array($meta['authors'])) {
+                // authors array is canonical
+            } elseif (!empty($meta['author'])) {
+                $meta['authors'] = [$meta['author']];
+            }
+            // Attach html_content if companion file exists
+            $htmlJsonFile = BLOG_DIR . "/{$slug}.html.json";
+            if (file_exists($htmlJsonFile)) {
+                $htmlData = json_decode(file_get_contents($htmlJsonFile), true);
+                if ($htmlData && !empty($htmlData['html_content'])) {
+                    $meta['html_content'] = $htmlData['html_content'];
+                }
+            }
             $blogs[] = $meta;
         }
         foreach (glob(BLOG_DIR . '/*.json') as $file) {
