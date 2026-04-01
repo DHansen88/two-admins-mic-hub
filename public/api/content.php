@@ -163,6 +163,20 @@ function handleGetBlog(): void {
         $data = parseFrontMatter($raw);
         $data['_format'] = 'md';
         $data['_raw'] = $raw;
+        // Attach html_content if companion file exists
+        $htmlJsonFile = BLOG_DIR . "/{$slug}.html.json";
+        if (file_exists($htmlJsonFile)) {
+            $htmlData = json_decode(file_get_contents($htmlJsonFile), true);
+            if ($htmlData && !empty($htmlData['html_content'])) {
+                $data['html_content'] = $htmlData['html_content'];
+            }
+        }
+        // Normalize: ensure authors array is canonical, remove stale singular author
+        if (!empty($data['authors']) && is_array($data['authors'])) {
+            $data['author'] = $data['authors'][0] ?? '';
+        } elseif (!empty($data['author'])) {
+            $data['authors'] = [$data['author']];
+        }
         jsonResponse(['blog' => $data]);
     } elseif (file_exists($jsonFile)) {
         $data = json_decode(file_get_contents($jsonFile), true);

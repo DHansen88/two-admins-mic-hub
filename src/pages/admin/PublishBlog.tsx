@@ -342,11 +342,12 @@ const PublishBlog = () => {
       return;
     }
     const slug = customSlug || generateSlug(title);
+    const validAuthors = selectedAuthors.filter(Boolean);
     const result = await saveBlog({
       title,
       slug,
-      author: selectedAuthors[0] || "",
-      authors: selectedAuthors,
+      author: "",
+      authors: validAuthors,
       author_avatars: selectedAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
         ? selectedAuthors.map((k) => authorAvatars[k] || "")
         : undefined,

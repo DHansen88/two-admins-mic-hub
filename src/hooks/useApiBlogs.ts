@@ -115,6 +115,9 @@ function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
     });
   }
 
+  // If no valid authors resolved, use a generic placeholder
+  const finalAuthors = authors.length > 0 ? authors : [{ id: "", name: "Unknown", role: "", bio: "", avatar: "" }];
+
   const post: BlogPost & { html_content?: string } = {
     title: raw.title?.trim() || "",
     slug,
@@ -123,8 +126,8 @@ function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
     date: formatDate(raw.publish_date || raw.date || ""),
     readTime: calculateReadingTime(content),
     topics: tags as any,
-    author: authors[0],
-    authors,
+    author: finalAuthors[0],
+    authors: finalAuthors,
     featuredImage: raw.featured_image || undefined,
     keyTakeaways: raw.key_takeaways || undefined,
     relatedEpisode: raw.related_episode || undefined,
