@@ -10,8 +10,22 @@ const QuillAnimation = () => {
   // Connecting strokes between letters
   const connections = `M 212 258 Q 220 268 230 270 M 230 270 Q 238 272 245 258 M 260 268 Q 268 274 275 258`;
 
-  // Decorative flourish after g
-  const flourish = `M 268 279 C 280 275 310 265 350 260 C 400 252 460 255 520 248 C 580 240 640 245 700 238 C 760 230 820 235 880 228 C 940 220 1000 225 1050 218 C 1080 214 1100 218 1095 225 C 1090 232 1078 228 1076 222`;
+  // Decorative flourish after g - flowing waves, loops, and curves
+  const flourish = `M 268 279
+    C 290 270 320 255 360 265
+    C 400 275 420 250 450 240
+    C 480 230 500 255 530 260
+    C 560 265 580 235 610 225
+    C 640 215 660 245 690 250
+    C 720 255 740 220 770 210
+    C 800 200 820 235 850 240
+    C 870 244 880 215 910 208
+    C 940 200 950 230 975 235
+    C 1000 240 1010 210 1040 205
+    C 1060 200 1075 220 1085 230
+    C 1095 240 1100 225 1095 215
+    C 1090 205 1075 210 1070 220
+    C 1065 230 1075 240 1085 235`;
 
   // Full motion path for the pen
   const motionPath = `M 165 262 L 165 268 L 165 262 L ${letterB.replace('M 200 270', '200 270')} ${connections.replace(/M\s/g, 'L ').replace(/\sM\s/g, ' L ')} L 230 270 L 230 232 L 245 258 ${letterO.replace('M 245 258', '')} L 275 258 ${letterG.replace('M 275 258', '')} ${flourish.replace('M 268 279', 'L 268 279')}`;
