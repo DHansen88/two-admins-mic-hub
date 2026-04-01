@@ -284,10 +284,18 @@ function handleSaveBlog(): void {
             unlink($jsonPath);
         }
     } else {
+    // Build authors array — canonical source
+        $authorList = [];
+        if (!empty($body['authors']) && is_array($body['authors'])) {
+            $authorList = array_values(array_filter($body['authors'], fn($v) => $v !== ''));
+        } elseif (!empty($body['author']) && $body['author'] !== '') {
+            $authorList = [$body['author']];
+        }
+
         $data = [
             'title' => $body['title'],
             'slug' => $slug,
-            'author' => $body['author'] ?? '',
+            'authors' => $authorList,
             'publish_date' => $body['publish_date'] ?? date('Y-m-d'),
             'tags' => $body['tags'] ?? [],
             'excerpt' => $body['excerpt'] ?? '',
@@ -295,11 +303,6 @@ function handleSaveBlog(): void {
             'key_takeaways' => $body['key_takeaways'] ?? [],
             'content' => $body['content'] ?? '',
         ];
-        
-        // Add multiple authors support
-        if (!empty($body['authors']) && is_array($body['authors'])) {
-            $data['authors'] = $body['authors'];
-        }
         if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
             $hasCustomAvatars = array_filter($body['author_avatars'], fn($v) => !empty($v));
             if (!empty($hasCustomAvatars)) {
