@@ -4,11 +4,8 @@ import { isAuthenticated, logout, getCurrentUser, isAdmin, validateSession, logi
 import AdminLogin from "./AdminLogin";
 import { Button } from "@/components/ui/button";
 import {
-  LayoutDashboard,
   Mic,
   FileText,
-  Mail,
-  Library,
   ShoppingBag,
   Megaphone,
   Tags,
