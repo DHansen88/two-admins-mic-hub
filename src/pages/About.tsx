@@ -109,7 +109,7 @@ const About = () => {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
+        <section className="relative py-20 min-h-[280px] md:min-h-[320px] bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden flex items-center justify-center">
           {/* Animated Microphone Background */}
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             {/* Microphone icon */}

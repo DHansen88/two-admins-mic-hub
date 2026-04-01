@@ -14,7 +14,7 @@ const Merch = () => {
       <Header />
       <main className="pt-20">
         {/* Banner */}
-        <section className="relative py-20 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
+        <section className="relative py-20 min-h-[280px] md:min-h-[320px] bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden flex items-center justify-center">
           <div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ opacity: 0.2 }}
