@@ -81,7 +81,7 @@ const Blog = () => {
               <img
                 src={blogBanner}
                 alt="Two Admins & a Blog"
-                className="max-h-[180px] md:max-h-[220px] w-auto object-contain"
+                className="max-h-[140px] sm:max-h-[160px] md:max-h-[200px] lg:max-h-[220px] w-auto object-contain"
               />
             </div>
           </div>
