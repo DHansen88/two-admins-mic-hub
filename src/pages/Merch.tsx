@@ -58,11 +58,11 @@ const Merch = () => {
             </svg>
           </div>
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center space-y-5 animate-fade-in">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-background">
+            <div className="max-w-4xl mx-auto text-center space-y-4 animate-fade-in">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-background">
                 Gear for the Admins Who Run the World
               </h1>
-              <p className="text-lg md:text-xl text-background/80">
+              <p className="text-base sm:text-lg md:text-xl text-background/80 max-w-2xl mx-auto leading-relaxed">
                 Show your admin pride with official Two Admins &amp; a Mic merchandise.
               </p>
               <p className="text-sm md:text-base text-background/60 italic">

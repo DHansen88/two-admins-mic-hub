@@ -247,15 +247,14 @@ const About = () => {
           </div>
 
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
-              
-              <h2 className="text-3xl font-display font-bold text-background pt-6 md:text-6xl">
+            <div className="max-w-4xl mx-auto text-center space-y-4 animate-fade-in">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-background">
                 About the Hosts
               </h2>
-              <p className="text-xl md:text-2xl text-background/70 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-background/70 max-w-2xl mx-auto leading-relaxed">
                 Two Admins. One Mic. Zero Fluff.
               </p>
-              <p className="text-lg md:text-xl text-background/80 leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-background/80 max-w-2xl mx-auto leading-relaxed">
                 Honest, practical conversations about leadership, executive support, and the real work behind the administrative profession
               </p>
             </div>

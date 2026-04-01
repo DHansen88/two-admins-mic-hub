@@ -585,18 +585,17 @@ const Steps = () => {
           </div>
 
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
-              <img src={stepsLogo} alt="STEPS – Success Through Empowering Professional Support" className="h-[4.375rem] md:h-[6.25rem] mx-auto" />
-              <h1 className="text-4xl lg:text-7xl font-display font-bold text-background leading-tight md:text-5xl">
+            <div className="max-w-4xl mx-auto text-center space-y-5 animate-fade-in">
+              <img src={stepsLogo} alt="STEPS – Success Through Empowering Professional Support" className="h-14 sm:h-[4.375rem] md:h-[5.5rem] lg:h-[6.25rem] mx-auto" />
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-background leading-tight">
                 You're not "just an admin."
               </h1>
-              <h2 className="text-xl lg:text-3xl font-display font-semibold text-teal leading-tight md:text-3xl">
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-display font-semibold text-teal leading-tight">
                 You're a leader who hasn't been developed like one.
               </h2>
-              <p className="text-lg md:text-xl text-background/75 max-w-2xl mx-auto leading-relaxed">
-                STEP into your leadership journey inspired by EA experience and taught through the Blueprint process used by senior executives. This program is inspired by EA.       
-              
-            </p>
+              <p className="text-base sm:text-lg md:text-xl text-background/75 max-w-2xl mx-auto leading-relaxed">
+                STEP into your leadership journey inspired by EA experience and taught through the Blueprint process used by senior executives. This program is inspired by EA.
+              </p>
               <Button onClick={scrollToBlueprint} size="lg" className="bg-teal hover:bg-teal/90 text-background font-semibold px-8 py-6 text-base">
                 Explore the Journey
               </Button>
