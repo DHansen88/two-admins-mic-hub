@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import blogBanner from "@/assets/TAAM_Blog_Transparent.png";
+import QuillAnimation from "@/components/QuillAnimation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
