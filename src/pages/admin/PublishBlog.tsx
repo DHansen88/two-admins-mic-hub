@@ -1,23 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   FileText,
   Wand2,
@@ -28,7 +16,6 @@ import {
   Plus,
   Lightbulb,
   Code,
-  List,
   Mic,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -47,7 +34,6 @@ import {
   exportNewsletterDraft,
   saveDraft,
   saveToHistory,
-  downloadFile,
 } from "@/lib/file-export";
 import { saveBlog } from "@/lib/content-manager";
 import { setContentStatus } from "@/lib/content-status";
@@ -55,7 +41,6 @@ import PublishModal from "@/components/PublishModal";
 import RichTextEditor from "@/components/RichTextEditor";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
 
-import { blocksToMarkdown, markdownToBlocks } from "@/lib/block-types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
 
@@ -91,6 +76,29 @@ function htmlToMarkdown(html: string): string {
     .replace(/<\/?[^>]+(>|$)/g, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+async function uploadFeaturedImageToServer(file: File): Promise<string> {
+  const { getAdminApiBase, getAdminAuthHeaders } = await import("@/lib/admin-auth");
+  const base = getAdminApiBase();
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch(`${base}/content.php?action=upload-blog-image`, {
+    method: "POST",
+    headers: getAdminAuthHeaders(),
+    credentials: "include",
+    body: formData,
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data?.success || !data?.url) {
+    throw new Error(data?.error || "Image upload failed");
+  }
+
+  return data.url;
 }
 
 const PublishBlog = () => {
@@ -167,18 +175,26 @@ const PublishBlog = () => {
             ? [blog.author]
             : [];
         // Filter to only real authors that exist in the loaded author options
-        const validAuthorKeys = rawAuthorKeys.filter(
-          (k) => authorOptions.some((a) => a.id.toLowerCase() === k.toLowerCase() || a.name.toLowerCase() === k.toLowerCase())
-        );
-        setSelectedAuthors(validAuthorKeys);
+        const validAuthorKeys = rawAuthorKeys
+  .map((k) => {
+    const match = authorOptions.find(
+      (a) => a.id.toLowerCase() === k.toLowerCase() || a.name.toLowerCase() === k.toLowerCase()
+    );
+    return match ? match.id : null;
+  })
+  .filter(Boolean) as string[];
 
-        const avatarMap: Record<string, string> = {};
-        if (Array.isArray(blog.author_avatars)) {
-          blog.author_avatars.forEach((av: string, i: number) => {
-            if (av && validAuthorKeys[i]) avatarMap[validAuthorKeys[i]] = av;
-          });
-        }
-        setAuthorAvatars(avatarMap);
+setSelectedAuthors(validAuthorKeys);
+
+const avatarMap: Record<string, string> = {};
+if (Array.isArray(blog.author_avatars)) {
+  blog.author_avatars.forEach((av: string, i: number) => {
+    if (av && validAuthorKeys[i]) {
+      avatarMap[validAuthorKeys[i]] = av;
+    }
+  });
+}
+setAuthorAvatars(avatarMap);
 
         // Parse date — handle both publish_date and date fields
         const rawDate = blog.publish_date || blog.date || "";
@@ -257,13 +273,21 @@ const PublishBlog = () => {
     );
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFeaturedImage(`/assets/images/${file.name}`);
-      toast({ title: `Image selected: ${file.name}. Upload the file to /assets/images/ on your server.` });
-    }
-  };
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const uploadedUrl = await uploadFeaturedImageToServer(file);
+    setFeaturedImage(uploadedUrl);
+    toast({ title: "Featured image uploaded" });
+  } catch (error: any) {
+    toast({
+      title: error?.message || "Failed to upload image",
+      variant: "destructive",
+    });
+  }
+};
 
   const handleSwitchMode = (mode: "rich" | "markdown") => {
     if (mode === "markdown" && editorMode === "rich") {
@@ -333,41 +357,8 @@ const PublishBlog = () => {
       content: currentMarkdown,
     });
     toast({ title: "Blog Markdown exported!" });
-    saveToHistory("blog", { title, slug, date: publishDate, author: selectedAuthors.join(",") });
-  };
-
-  const handlePublishToServer = async () => {
-    if (!title || !currentPlainText) {
-      toast({ title: "Title and content are required", variant: "destructive" });
-      return;
-    }
-    const slug = customSlug || generateSlug(title);
     const validAuthors = selectedAuthors.filter(Boolean);
-    const result = await saveBlog({
-      title,
-      slug,
-      author: "",
-      authors: validAuthors,
-      author_avatars: selectedAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
-        ? selectedAuthors.map((k) => authorAvatars[k] || "")
-        : undefined,
-      publish_date: publishDate,
-      tags: selectedTopics,
-      excerpt: excerpt || generateExcerpt(currentPlainText),
-      featured_image: featuredImage || undefined,
-      key_takeaways: keyTakeaways,
-      related_episode: relatedEpisode || undefined,
-      show_episode_callout: showEpisodeCallout,
-      content: currentMarkdown,
-      html_content: editorMode === "rich" ? htmlContent : undefined,
-      format: "md",
-    });
-    if (result.success) {
-      saveToHistory("blog", { title, slug, date: publishDate, author: selectedAuthors.join(",") });
-      toast({ title: "Blog published to server!" });
-    } else {
-      toast({ title: result.error || "Publish failed", variant: "destructive" });
-    }
+    saveToHistory("blog", { title, slug, date: publishDate, author: validAuthors.join(",") });
   };
 
   const handleExportNewsletter = () => {
@@ -392,15 +383,58 @@ const PublishBlog = () => {
   };
 
   const handlePublishNow = async () => {
-    if (!title || !currentPlainText) {
-      toast({ title: "Title and content are required", variant: "destructive" });
-      return;
-    }
-    await handlePublishToServer();
-    const slug = customSlug || generateSlug(title);
-    setContentStatus("blog", slug, "published");
-    navigate("/admin/blog-posts");
-  };
+  const success = await handlePublishToServer();
+  if (!success) return;
+
+  const slug = customSlug || generateSlug(title);
+  setContentStatus("blog", slug, "published");
+  navigate("/admin/blog-posts");
+};
+
+  const handlePublishToServer = async (): Promise<boolean> => {
+  const validAuthors = selectedAuthors.filter(Boolean);
+  const slug = customSlug || generateSlug(title);
+
+  if (!title || !currentPlainText) {
+    toast({ title: "Title and content are required", variant: "destructive" });
+    return false;
+  }
+
+  if (validAuthors.length === 0) {
+    toast({ title: "Please select at least one valid author", variant: "destructive" });
+    return false;
+  }
+
+  const result = await saveBlog({
+    title,
+    slug,
+    author: validAuthors[0],
+    authors: validAuthors,
+    author_avatars:
+      validAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
+        ? validAuthors.map((k) => authorAvatars[k] || "")
+        : undefined,
+    publish_date: publishDate,
+    tags: selectedTopics,
+    excerpt: excerpt || generateExcerpt(currentPlainText),
+    featured_image: featuredImage || undefined,
+    key_takeaways: keyTakeaways,
+    related_episode: relatedEpisode || undefined,
+    show_episode_callout: showEpisodeCallout,
+    content: currentMarkdown,
+    html_content: editorMode === "rich" ? htmlContent : undefined,
+    format: "md",
+  });
+
+  if (result.success) {
+    saveToHistory("blog", { title, slug, date: publishDate, author: validAuthors.join(",") });
+    toast({ title: "Blog published to server!" });
+    return true;
+  }
+
+  toast({ title: result.error || "Publish failed", variant: "destructive" });
+  return false;
+};
 
   const handleSchedulePublish = (date: string, time: string) => {
     if (!title || !currentPlainText) {
