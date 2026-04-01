@@ -327,7 +327,7 @@ const ManageUsers = () => {
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Role</label>
               <div className="flex gap-2">
-                {(["manager", "admin"] as const).map((role) => (
+                {(["intern", "manager", "admin"] as const).map((role) => (
                   <Button
                     key={role}
                     type="button"
