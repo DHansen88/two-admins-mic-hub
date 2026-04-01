@@ -241,6 +241,8 @@ const ManageUsers = () => {
                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ${
                       user.role === "admin"
                         ? "bg-amber-500/15 text-amber-600"
+                        : user.role === "intern"
+                        ? "bg-violet-500/15 text-violet-600"
                         : "bg-sky-500/15 text-sky-600"
                     }`}>
                       {user.role}
