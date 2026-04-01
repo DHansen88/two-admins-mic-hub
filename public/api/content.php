@@ -163,6 +163,20 @@ function handleGetBlog(): void {
         $data = parseFrontMatter($raw);
         $data['_format'] = 'md';
         $data['_raw'] = $raw;
+        // Attach html_content if companion file exists
+        $htmlJsonFile = BLOG_DIR . "/{$slug}.html.json";
+        if (file_exists($htmlJsonFile)) {
+            $htmlData = json_decode(file_get_contents($htmlJsonFile), true);
+            if ($htmlData && !empty($htmlData['html_content'])) {
+                $data['html_content'] = $htmlData['html_content'];
+            }
+        }
+        // Normalize: ensure authors array is canonical, remove stale singular author
+        if (!empty($data['authors']) && is_array($data['authors'])) {
+            $data['author'] = $data['authors'][0] ?? '';
+        } elseif (!empty($data['author'])) {
+            $data['authors'] = [$data['author']];
+        }
         jsonResponse(['blog' => $data]);
     } elseif (file_exists($jsonFile)) {
         $data = json_decode(file_get_contents($jsonFile), true);
@@ -221,15 +235,20 @@ function handleSaveBlog(): void {
         $frontmatter .= 'title: "' . ($body['title'] ?? '') . "\"\n";
         $frontmatter .= 'slug: ' . $slug . "\n";
         
-        // Support multiple authors
+        // Always save authors as array; clear legacy singular author field
+        $authorList = [];
         if (!empty($body['authors']) && is_array($body['authors'])) {
+            $authorList = array_values(array_filter($body['authors'], fn($v) => $v !== ''));
+        } elseif (!empty($body['author']) && $body['author'] !== '') {
+            $authorList = [$body['author']];
+        }
+        if (!empty($authorList)) {
             $frontmatter .= "authors:\n";
-            foreach ($body['authors'] as $authorKey) {
+            foreach ($authorList as $authorKey) {
                 $frontmatter .= "  - " . $authorKey . "\n";
             }
-        } else {
-            $frontmatter .= 'author: ' . ($body['author'] ?? '') . "\n";
         }
+        // Do NOT write a singular 'author:' field — authors array is canonical
         
         if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
             $hasCustomAvatars = array_filter($body['author_avatars'], fn($v) => !empty($v));
@@ -279,10 +298,18 @@ function handleSaveBlog(): void {
             unlink($jsonPath);
         }
     } else {
+    // Build authors array — canonical source
+        $authorList = [];
+        if (!empty($body['authors']) && is_array($body['authors'])) {
+            $authorList = array_values(array_filter($body['authors'], fn($v) => $v !== ''));
+        } elseif (!empty($body['author']) && $body['author'] !== '') {
+            $authorList = [$body['author']];
+        }
+
         $data = [
             'title' => $body['title'],
             'slug' => $slug,
-            'author' => $body['author'] ?? '',
+            'authors' => $authorList,
             'publish_date' => $body['publish_date'] ?? date('Y-m-d'),
             'tags' => $body['tags'] ?? [],
             'excerpt' => $body['excerpt'] ?? '',
@@ -290,11 +317,6 @@ function handleSaveBlog(): void {
             'key_takeaways' => $body['key_takeaways'] ?? [],
             'content' => $body['content'] ?? '',
         ];
-        
-        // Add multiple authors support
-        if (!empty($body['authors']) && is_array($body['authors'])) {
-            $data['authors'] = $body['authors'];
-        }
         if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
             $hasCustomAvatars = array_filter($body['author_avatars'], fn($v) => !empty($v));
             if (!empty($hasCustomAvatars)) {
@@ -774,6 +796,20 @@ function handlePublicListBlogs(): void {
             $meta['slug'] = $meta['slug'] ?? $slug;
             $meta['content'] = $meta['_content'] ?? '';
             unset($meta['_content']);
+            // Normalize authors
+            if (!empty($meta['authors']) && is_array($meta['authors'])) {
+                // authors array is canonical
+            } elseif (!empty($meta['author'])) {
+                $meta['authors'] = [$meta['author']];
+            }
+            // Attach html_content if companion file exists
+            $htmlJsonFile = BLOG_DIR . "/{$slug}.html.json";
+            if (file_exists($htmlJsonFile)) {
+                $htmlData = json_decode(file_get_contents($htmlJsonFile), true);
+                if ($htmlData && !empty($htmlData['html_content'])) {
+                    $meta['html_content'] = $htmlData['html_content'];
+                }
+            }
             $blogs[] = $meta;
         }
         foreach (glob(BLOG_DIR . '/*.json') as $file) {

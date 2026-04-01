@@ -136,7 +136,7 @@ const PublishBlog = () => {
   // Load existing blog for editing from the live PHP API
   useEffect(() => {
     const editSlug = searchParams.get("edit");
-    if (!editSlug) return;
+    if (!editSlug || authorOptions.length === 0) return;
 
     const loadBlog = async () => {
       try {
@@ -160,18 +160,22 @@ const PublishBlog = () => {
         setTitle(blog.title || "");
         setCustomSlug(blog.slug || editSlug);
 
-        // Resolve authors from the API data
-        const authorKeys: string[] = Array.isArray(blog.authors) && blog.authors.length > 0
+        // Resolve authors from the API data — only keep IDs that exist in author system
+        const rawAuthorKeys: string[] = Array.isArray(blog.authors) && blog.authors.length > 0
           ? blog.authors
           : blog.author
             ? [blog.author]
             : [];
-        setSelectedAuthors(authorKeys);
+        // Filter to only real authors that exist in the loaded author options
+        const validAuthorKeys = rawAuthorKeys.filter(
+          (k) => authorOptions.some((a) => a.id.toLowerCase() === k.toLowerCase() || a.name.toLowerCase() === k.toLowerCase())
+        );
+        setSelectedAuthors(validAuthorKeys);
 
         const avatarMap: Record<string, string> = {};
         if (Array.isArray(blog.author_avatars)) {
           blog.author_avatars.forEach((av: string, i: number) => {
-            if (av && authorKeys[i]) avatarMap[authorKeys[i]] = av;
+            if (av && validAuthorKeys[i]) avatarMap[validAuthorKeys[i]] = av;
           });
         }
         setAuthorAvatars(avatarMap);
@@ -230,7 +234,7 @@ const PublishBlog = () => {
     };
 
     loadBlog();
-  }, [searchParams]);
+  }, [searchParams, authorOptions]);
 
   // Derive plain text content for word count, auto-gen etc.
   const currentPlainText = useMemo(() => {
@@ -338,11 +342,12 @@ const PublishBlog = () => {
       return;
     }
     const slug = customSlug || generateSlug(title);
+    const validAuthors = selectedAuthors.filter(Boolean);
     const result = await saveBlog({
       title,
       slug,
-      author: selectedAuthors[0] || "",
-      authors: selectedAuthors,
+      author: "",
+      authors: validAuthors,
       author_avatars: selectedAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
         ? selectedAuthors.map((k) => authorAvatars[k] || "")
         : undefined,

@@ -96,11 +96,17 @@ function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
   const slug = raw.slug || "";
   const tags = Array.isArray(raw.tags) ? raw.tags : [];
 
-  const authorKeys = Array.isArray(raw.authors) && raw.authors.length > 0
-    ? raw.authors
-    : [raw.author || ""];
+  // Canonical: prefer authors array, fall back to singular author, filter blanks
+  const authorKeys = (
+    Array.isArray(raw.authors) && raw.authors.length > 0
+      ? raw.authors
+      : raw.author ? [raw.author] : []
+  ).filter((k) => k && k.trim() !== "");
 
-  const authors: Author[] = authorKeys.map((key) => resolveAuthor(key, profiles));
+  // Only resolve authors that exist in profiles; skip unknown/stale IDs
+  const authors: Author[] = authorKeys
+    .map((key) => resolveAuthor(key, profiles))
+    .filter((a) => a.avatar !== "" || profiles.some((p) => p.id.toLowerCase() === a.id.toLowerCase()));
 
   // Override avatars if explicitly provided
   if (raw.author_avatars) {
@@ -108,6 +114,9 @@ function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
       if (av && authors[i]) authors[i].avatar = av;
     });
   }
+
+  // If no valid authors resolved, use a generic placeholder
+  const finalAuthors = authors.length > 0 ? authors : [{ id: "", name: "Unknown", role: "", bio: "", avatar: "" }];
 
   const post: BlogPost & { html_content?: string } = {
     title: raw.title?.trim() || "",
@@ -117,8 +126,8 @@ function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
     date: formatDate(raw.publish_date || raw.date || ""),
     readTime: calculateReadingTime(content),
     topics: tags as any,
-    author: authors[0],
-    authors,
+    author: finalAuthors[0],
+    authors: finalAuthors,
     featuredImage: raw.featured_image || undefined,
     keyTakeaways: raw.key_takeaways || undefined,
     relatedEpisode: raw.related_episode || undefined,
