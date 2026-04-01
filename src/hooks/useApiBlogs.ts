@@ -74,9 +74,9 @@ async function loadAuthorProfiles(): Promise<AuthorProfile[]> {
 }
 
 function resolveAuthor(key: string, profiles: AuthorProfile[]): Author {
-  // Try exact id match
-  const profile = profiles.find((p) => p.id === key) ||
-    profiles.find((p) => p.name.toLowerCase() === key.toLowerCase());
+  const k = (key || "").trim().toLowerCase();
+  const profile = profiles.find((p) => p.id.toLowerCase() === k) ||
+    profiles.find((p) => p.name.toLowerCase() === k);
   if (profile) {
     return {
       name: profile.name,
@@ -87,7 +87,8 @@ function resolveAuthor(key: string, profiles: AuthorProfile[]): Author {
       website: profile.website,
     };
   }
-  return { name: key, role: "", bio: "", avatar: "" };
+  // Capitalize first letter as fallback display name
+  return { name: key.charAt(0).toUpperCase() + key.slice(1), role: "", bio: "", avatar: "" };
 }
 
 function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
