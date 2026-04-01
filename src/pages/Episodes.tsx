@@ -123,11 +123,11 @@ const Episodes = () => {
             </svg>
           </div>
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in">
-              <h1 className="text-5xl md:text-6xl font-display font-bold text-background">
+            <div className="max-w-4xl mx-auto text-center space-y-4 animate-fade-in">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-background">
                 All Episodes
               </h1>
-              <p className="text-xl md:text-2xl text-background/80">
+              <p className="text-base sm:text-lg md:text-xl text-background/80 max-w-2xl mx-auto leading-relaxed">
                 Explore our complete collection of leadership conversations
               </p>
             </div>
