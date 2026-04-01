@@ -93,7 +93,7 @@ const AdminLayout = () => {
     setShowLogin(true);
   };
 
-  const navItems = allNavItems.filter((item) => !item.adminOnly || isAdmin());
+  const navItems = allNavItems.filter((item) => hasMinRole(user.role, item.minRole));
 
   return (
     <div className="min-h-screen flex bg-muted/30">
