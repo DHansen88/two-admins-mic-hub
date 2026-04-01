@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import blogBanner from "@/assets/TA_Blog_NoBackground.png";
+import blogBanner from "@/assets/TAAM_Blog_Transparent.png";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
@@ -79,7 +79,7 @@ const Blog = () => {
               <img
                 src={blogBanner}
                 alt="Two Admins & a Blog"
-                className="max-h-[280px] md:max-h-[340px] w-auto object-contain"
+                className="max-h-[200px] md:max-h-[240px] w-auto object-contain"
               />
             </div>
           </div>
