@@ -399,7 +399,7 @@ const PublishBlog = () => {
             <label className="text-sm font-medium text-foreground">URL Slug</label>
             <Input
               value={customSlug}
-              onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''))}
+              onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\-]/g, '-').replace(/-{2,}/g, '-'))}
               placeholder={generateSlug(title) || "auto-generated-from-title"}
             />
             <p className="text-xs text-muted-foreground">
