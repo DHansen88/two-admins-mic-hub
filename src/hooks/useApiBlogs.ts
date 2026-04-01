@@ -51,15 +51,24 @@ function formatDate(dateStr: string): string {
   }
 }
 
+/** Local author profiles from authors.json — always available as fallback */
+const localAuthorProfiles: AuthorProfile[] = Object.entries(
+  authorsJson as Record<string, { name: string; role?: string; bio?: string; avatar?: string; linkedin?: string; website?: string }>
+).map(([id, a]) => ({ id, name: a.name, role: a.role || "", bio: a.bio || "", avatar: a.avatar || "", linkedin: a.linkedin, website: a.website }));
+
 /** Cache for author profiles so we don't re-fetch per blog */
 let cachedAuthorProfiles: AuthorProfile[] | null = null;
 
 async function loadAuthorProfiles(): Promise<AuthorProfile[]> {
   if (cachedAuthorProfiles) return cachedAuthorProfiles;
   try {
-    cachedAuthorProfiles = await fetchAuthors();
+    const fetched = await fetchAuthors();
+    // Merge: API profiles take precedence, then fill in from local JSON
+    const byId = new Map(localAuthorProfiles.map((p) => [p.id, p]));
+    for (const p of fetched) byId.set(p.id, p);
+    cachedAuthorProfiles = Array.from(byId.values());
   } catch {
-    cachedAuthorProfiles = [];
+    cachedAuthorProfiles = [...localAuthorProfiles];
   }
   return cachedAuthorProfiles;
 }
