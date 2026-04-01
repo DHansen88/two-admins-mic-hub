@@ -76,7 +76,7 @@ const Episodes = () => {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
+        <section className="relative py-20 min-h-[280px] md:min-h-[320px] bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden">
           <div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ opacity: 0.13 }}
