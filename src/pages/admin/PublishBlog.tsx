@@ -102,7 +102,7 @@ const PublishBlog = () => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
   const [customSlug, setCustomSlug] = useState("");
-  const [selectedAuthors, setSelectedAuthors] = useState<string[]>(["sarah"]);
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
   const [authorAvatars, setAuthorAvatars] = useState<Record<string, string>>({});
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
