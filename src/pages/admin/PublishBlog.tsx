@@ -160,13 +160,17 @@ const PublishBlog = () => {
         setTitle(blog.title || "");
         setCustomSlug(blog.slug || editSlug);
 
-        // Resolve authors from the API data
-        const authorKeys: string[] = Array.isArray(blog.authors) && blog.authors.length > 0
+        // Resolve authors from the API data — only keep IDs that exist in author system
+        const rawAuthorKeys: string[] = Array.isArray(blog.authors) && blog.authors.length > 0
           ? blog.authors
           : blog.author
             ? [blog.author]
             : [];
-        setSelectedAuthors(authorKeys);
+        // Filter to only real authors that exist in the loaded author options
+        const validAuthorKeys = rawAuthorKeys.filter(
+          (k) => authorOptions.some((a) => a.id.toLowerCase() === k.toLowerCase() || a.name.toLowerCase() === k.toLowerCase())
+        );
+        setSelectedAuthors(validAuthorKeys);
 
         const avatarMap: Record<string, string> = {};
         if (Array.isArray(blog.author_avatars)) {
