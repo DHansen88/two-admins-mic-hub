@@ -25,13 +25,9 @@ import CookieConsentBanner from "./components/CookieConsentBanner";
 import ResetPassword from "./pages/ResetPassword";
 
 // Admin pages
-
 import AdminLayout from "./pages/admin/AdminLayout";
-import Dashboard from "./pages/admin/Dashboard";
 import PublishEpisode from "./pages/admin/PublishEpisode";
 import PublishBlog from "./pages/admin/PublishBlog";
-import NewsletterDrafts from "./pages/admin/NewsletterDrafts";
-import ContentLibrary from "./pages/admin/ContentLibrary";
 import ManageMerch from "./pages/admin/ManageMerch";
 import ManagePopups from "./pages/admin/ManagePopups";
 import ManageTags from "./pages/admin/ManageTags";
