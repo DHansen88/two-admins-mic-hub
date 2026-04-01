@@ -47,7 +47,7 @@ export interface AdminUser {
   id: number;
   name: string;
   email: string;
-  role: 'admin' | 'manager';
+  role: 'admin' | 'manager' | 'intern';
   permissions?: UserPermissions;
 }
 
