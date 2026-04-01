@@ -6,7 +6,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAdminApiBase } from "@/lib/admin-auth";
 import type { BlogPost, Author } from "@/lib/content-loader";
-import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
+import { fetchPublicAuthors, type AuthorProfile } from "@/lib/author-manager";
 import authorsJson from "@/content/authors.json";
 
 const API_BASE = getAdminApiBase();
@@ -62,10 +62,9 @@ let cachedAuthorProfiles: AuthorProfile[] | null = null;
 async function loadAuthorProfiles(): Promise<AuthorProfile[]> {
   if (cachedAuthorProfiles) return cachedAuthorProfiles;
   try {
-    const fetched = await fetchAuthors();
-    // Merge: API profiles take precedence, then fill in from local JSON
+    const fetched = await fetchPublicAuthors();
     const byId = new Map(localAuthorProfiles.map((p) => [p.id, p]));
-    for (const p of fetched) byId.set(p.id, p);
+    for (const p of Object.values(fetched)) byId.set(p.id, p);
     cachedAuthorProfiles = Array.from(byId.values());
   } catch {
     cachedAuthorProfiles = [...localAuthorProfiles];
@@ -128,6 +127,8 @@ function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {
     topics: tags as any,
     author: finalAuthors[0],
     authors: finalAuthors,
+    authorIds: authorKeys,
+    authorAvatarOverrides: raw.author_avatars || undefined,
     featuredImage: raw.featured_image || undefined,
     keyTakeaways: raw.key_takeaways || undefined,
     relatedEpisode: raw.related_episode || undefined,

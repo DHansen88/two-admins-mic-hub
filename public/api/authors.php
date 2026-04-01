@@ -34,6 +34,9 @@ switch ($action) {
     case 'list':
         handleListAuthors();
         break;
+    case 'list-public':
+        handleListPublicAuthors();
+        break;
     case 'get':
         handleGetAuthor();
         break;
@@ -65,6 +68,11 @@ function saveAuthors(array $authors): void {
 
 function handleListAuthors(): void {
     requireAuth();
+    $authors = loadAuthors();
+    jsonResponse(['authors' => $authors]);
+}
+
+function handleListPublicAuthors(): void {
     $authors = loadAuthors();
     jsonResponse(['authors' => $authors]);
 }

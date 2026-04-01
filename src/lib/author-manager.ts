@@ -39,6 +39,10 @@ function setLocal(authors: Record<string, AuthorProfile>) {
   localStorage.setItem(LOCAL_KEY, JSON.stringify(authors));
 }
 
+export function getCachedAuthors(): Record<string, AuthorProfile> {
+  return getLocal();
+}
+
 async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any> {
   try {
     const res = await fetch(`${API_BASE}/${endpoint}`, {
@@ -89,6 +93,25 @@ export async function fetchAuthors(): Promise<AuthorProfile[]> {
     if (isAdminAuthError(error)) return [];
   }
   return canUseAdminFallback() ? Object.values(getLocal()) : [];
+}
+
+/** Fetch authors for the public site without requiring admin auth */
+export async function fetchPublicAuthors(): Promise<Record<string, AuthorProfile>> {
+  try {
+    const res = await fetch(`${API_BASE}/authors.php?action=list-public`, {
+      credentials: 'include',
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    if (data?.authors) {
+      const authors = data.authors as Record<string, AuthorProfile>;
+      setLocal(authors);
+      return authors;
+    }
+  } catch {
+    // Fall back to local cache
+  }
+  return getLocal();
 }
 
 /** Save (create or update) an author */

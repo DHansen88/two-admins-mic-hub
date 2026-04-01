@@ -59,6 +59,8 @@ export interface BlogPost {
   author: Author;
   /** Multiple authors support — first entry is always === author */
   authors: Author[];
+  authorIds: string[];
+  authorAvatarOverrides?: string[];
   featuredImage?: string;
   keyTakeaways?: string[];
   blocks?: import('@/lib/block-types').ContentBlock[];
@@ -166,6 +168,8 @@ function parseBlogMd(raw: string, filename: string): BlogPost {
     topics: tags,
     author,
     authors: allAuthors,
+    authorIds: authorKeys,
+    authorAvatarOverrides: Array.isArray(data.author_avatars) ? (data.author_avatars as string[]) : undefined,
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
     relatedEpisode: (data.related_episode as string) || undefined,
@@ -228,6 +232,8 @@ function parseBlogJson(mod: Record<string, unknown>, filename: string): BlogPost
     topics: tags,
     author,
     authors: allAuthors,
+    authorIds: authorKeys,
+    authorAvatarOverrides: Array.isArray(data.author_avatars) ? (data.author_avatars as string[]) : undefined,
     featuredImage: (data.featured_image as string) || undefined,
     keyTakeaways,
     blocks,
