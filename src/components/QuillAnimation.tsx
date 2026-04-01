@@ -1,4 +1,59 @@
 const QuillAnimation = () => {
+  // Calligraphy "Blog" - carefully shaped cursive letters
+  const blogWriting = `
+    M 220 265
+    C 220 245 220 240 225 235
+    C 232 228 240 232 238 242
+    C 236 252 228 258 222 255
+    C 218 252 220 248 222 245
+    C 225 240 235 235 240 240
+    C 245 248 240 258 232 260
+    C 226 262 222 258 224 252
+    L 250 265
+
+    L 265 230
+    L 265 268
+
+    C 280 265 288 255 292 250
+    C 298 242 305 240 308 245
+    C 312 252 308 260 300 262
+    C 292 264 286 258 288 250
+    C 290 244 296 240 302 242
+
+    L 318 268
+    C 322 264 328 255 334 250
+    C 340 244 348 242 350 248
+    C 352 256 348 264 340 266
+    C 332 268 328 262 330 255
+    L 330 268
+    L 332 280
+    C 332 290 326 292 322 288
+    C 320 284 322 278 328 278
+  `;
+
+  // Decorative swirls after Blog
+  const swirls = `
+    M 350 270
+    C 380 258 420 248 460 252
+    C 500 256 530 245 560 240
+    C 600 232 640 238 680 230
+    C 720 222 760 228 800 220
+    C 840 212 880 218 920 210
+    C 950 204 980 210 1000 205
+    C 1030 198 1060 205 1080 200
+    C 1100 195 1110 200 1105 210
+    C 1100 218 1088 215 1085 208
+  `;
+
+  // Full motion path: inkwell dip → write Blog → swirl across
+  const motionPath = `
+    M 180 270
+    L 180 276
+    L 180 270
+    ${blogWriting.replace(/M\s*220\s*265/, 'L 220 265')}
+    ${swirls.replace(/M\s*350\s*270/, 'L 350 270')}
+  `;
+
   return (
     <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
       <svg
@@ -7,137 +62,115 @@ const QuillAnimation = () => {
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full"
         preserveAspectRatio="xMidYMid slice"
-        style={{ opacity: 0.1 }}
+        style={{ opacity: 0.12 }}
       >
-        {/* Quill feather group - positioned bottom-left, angled for writing */}
-        <g transform="translate(120, 230)">
-          {/* Subtle writing pressure animation */}
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="120,230; 120,234; 120,230"
-            dur="2s"
-            repeatCount="indefinite"
-            additive="replace"
-          />
+        {/* Ink well - small elegant */}
+        <g transform="translate(155, 248)">
+          <ellipse cx="0" cy="18" rx="14" ry="5" stroke="white" strokeWidth="1.5" fill="none" />
+          <path d="M-10 18 L-10 6 Q-10 0 -4 -2 L4 -2 Q10 0 10 6 L10 18" stroke="white" strokeWidth="1.5" fill="none" />
+          <ellipse cx="0" cy="-2" rx="8" ry="3" stroke="white" strokeWidth="1" fill="none" />
+        </g>
+
+        {/* Motion path (hidden) */}
+        <path id="qPath" d={motionPath} stroke="none" fill="none" />
+
+        {/* Animated quill - small, nib-forward */}
+        <g>
+          <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#qPath" />
+          </animateMotion>
+
+          {/* Quill - nib at (0,0), feather trails behind */}
           <g>
+            {/* Writing pressure bob */}
             <animateTransform
               attributeName="transform"
-              type="rotate"
-              values="0; 2; 0"
-              dur="2s"
+              type="translate"
+              values="0,0; 0,2; 0,0"
+              dur="1.5s"
               repeatCount="indefinite"
             />
 
-            {/* Central spine - the backbone of the feather */}
-            <path
-              d="M0 0 Q-20 -15 -40 -35 Q-55 -52 -65 -72 Q-72 -88 -74 -105 Q-75 -118 -72 -128 Q-68 -138 -62 -142"
-              stroke="white"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
+            {/* Nib */}
+            <path d="M0 0 L-3 -1.5 L-5 0 L-3 1.5 Z" stroke="white" strokeWidth="0.8" strokeLinejoin="round" fill="none" />
+            <line x1="-3.5" y1="0" x2="-1" y2="0" stroke="white" strokeWidth="0.4" />
 
-            {/* Right barbs - elegant thin curves */}
-            <path d="M-20 -15 Q-14 -22 -10 -20" stroke="white" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-            <path d="M-28 -25 Q-20 -34 -14 -30" stroke="white" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-            <path d="M-36 -35 Q-26 -46 -18 -42" stroke="white" strokeWidth="1.1" strokeLinecap="round" fill="none" />
-            <path d="M-44 -46 Q-34 -58 -24 -52" stroke="white" strokeWidth="1.1" strokeLinecap="round" fill="none" />
-            <path d="M-52 -56 Q-42 -70 -30 -64" stroke="white" strokeWidth="1" strokeLinecap="round" fill="none" />
-            <path d="M-58 -66 Q-48 -80 -36 -74" stroke="white" strokeWidth="1" strokeLinecap="round" fill="none" />
-            <path d="M-63 -76 Q-54 -90 -42 -84" stroke="white" strokeWidth="0.9" strokeLinecap="round" fill="none" />
-            <path d="M-67 -86 Q-58 -100 -48 -94" stroke="white" strokeWidth="0.9" strokeLinecap="round" fill="none" />
-            <path d="M-70 -96 Q-62 -108 -54 -104" stroke="white" strokeWidth="0.8" strokeLinecap="round" fill="none" />
-            <path d="M-72 -106 Q-66 -116 -58 -114" stroke="white" strokeWidth="0.7" strokeLinecap="round" fill="none" />
-            <path d="M-73 -115 Q-68 -124 -62 -122" stroke="white" strokeWidth="0.6" strokeLinecap="round" fill="none" />
+            {/* Short shaft */}
+            <line x1="-5" y1="0" x2="-14" y2="-5" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+
+            {/* Feather - small elegant quill shape */}
+            {/* Spine */}
+            <path d="M-14 -5 C-18 -8 -24 -16 -28 -26 C-32 -36 -34 -46 -32 -52 C-30 -56 -28 -58 -26 -56"
+              stroke="white" strokeWidth="1" strokeLinecap="round" fill="none" />
+
+            {/* Right barbs - soft curves */}
+            <path d="M-16 -8 C-14 -12 -12 -11 -11 -10" stroke="white" strokeWidth="0.6" strokeLinecap="round" fill="none" />
+            <path d="M-19 -14 C-16 -18 -13 -17 -12 -15" stroke="white" strokeWidth="0.6" strokeLinecap="round" fill="none" />
+            <path d="M-22 -20 C-18 -25 -15 -23 -14 -21" stroke="white" strokeWidth="0.55" strokeLinecap="round" fill="none" />
+            <path d="M-25 -26 C-21 -32 -17 -30 -16 -27" stroke="white" strokeWidth="0.55" strokeLinecap="round" fill="none" />
+            <path d="M-28 -32 C-24 -38 -20 -36 -19 -33" stroke="white" strokeWidth="0.5" strokeLinecap="round" fill="none" />
+            <path d="M-30 -38 C-26 -44 -22 -42 -21 -39" stroke="white" strokeWidth="0.5" strokeLinecap="round" fill="none" />
+            <path d="M-32 -44 C-28 -50 -25 -48 -24 -45" stroke="white" strokeWidth="0.45" strokeLinecap="round" fill="none" />
 
             {/* Left barbs */}
-            <path d="M-20 -15 Q-26 -20 -30 -16" stroke="white" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-            <path d="M-28 -25 Q-36 -30 -40 -24" stroke="white" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-            <path d="M-36 -35 Q-46 -40 -50 -32" stroke="white" strokeWidth="1.1" strokeLinecap="round" fill="none" />
-            <path d="M-44 -46 Q-54 -50 -60 -42" stroke="white" strokeWidth="1.1" strokeLinecap="round" fill="none" />
-            <path d="M-52 -56 Q-62 -60 -68 -50" stroke="white" strokeWidth="1" strokeLinecap="round" fill="none" />
-            <path d="M-58 -66 Q-68 -68 -74 -60" stroke="white" strokeWidth="1" strokeLinecap="round" fill="none" />
-            <path d="M-63 -76 Q-72 -78 -78 -70" stroke="white" strokeWidth="0.9" strokeLinecap="round" fill="none" />
-            <path d="M-67 -86 Q-76 -86 -80 -80" stroke="white" strokeWidth="0.9" strokeLinecap="round" fill="none" />
-            <path d="M-70 -96 Q-78 -96 -82 -90" stroke="white" strokeWidth="0.8" strokeLinecap="round" fill="none" />
-            <path d="M-72 -106 Q-78 -106 -80 -100" stroke="white" strokeWidth="0.7" strokeLinecap="round" fill="none" />
-            <path d="M-73 -115 Q-78 -116 -78 -110" stroke="white" strokeWidth="0.6" strokeLinecap="round" fill="none" />
-
-            {/* Nib / tip - small sharp point */}
-            <path d="M0 0 L4 2 L8 0 L4 -1.5 Z" stroke="white" strokeWidth="1" strokeLinejoin="round" fill="none" />
-            <line x1="2" y1="0.5" x2="7" y2="0" stroke="white" strokeWidth="0.5" />
+            <path d="M-16 -8 C-18 -10 -20 -8 -20 -6" stroke="white" strokeWidth="0.6" strokeLinecap="round" fill="none" />
+            <path d="M-19 -14 C-22 -16 -24 -13 -24 -11" stroke="white" strokeWidth="0.6" strokeLinecap="round" fill="none" />
+            <path d="M-22 -20 C-26 -22 -28 -18 -28 -16" stroke="white" strokeWidth="0.55" strokeLinecap="round" fill="none" />
+            <path d="M-25 -26 C-30 -28 -32 -24 -32 -22" stroke="white" strokeWidth="0.55" strokeLinecap="round" fill="none" />
+            <path d="M-28 -32 C-33 -33 -36 -29 -36 -27" stroke="white" strokeWidth="0.5" strokeLinecap="round" fill="none" />
+            <path d="M-30 -38 C-35 -39 -38 -35 -38 -33" stroke="white" strokeWidth="0.5" strokeLinecap="round" fill="none" />
+            <path d="M-32 -44 C-36 -45 -38 -42 -38 -40" stroke="white" strokeWidth="0.45" strokeLinecap="round" fill="none" />
           </g>
         </g>
 
-        {/* Writing line - continuous from quill tip, writes "Blog" in calligraphy */}
+        {/* The calligraphy "Blog" trail */}
         <path
-          d="M128 230
-             Q140 232 160 240
-             Q170 244 175 238
-             Q180 228 185 225
-             Q192 220 195 228
-             Q198 238 195 244
-             Q190 250 182 248
-             Q176 246 175 240
-             Q176 236 180 235
-             L200 248
-
-             L215 220 L215 252
-
-             Q220 248 228 240
-             Q236 232 244 232
-             Q252 232 254 240
-             Q256 250 248 254
-             Q240 256 234 250
-             Q230 244 236 238
-
-             L262 252
-             Q268 248 274 240
-             Q280 232 288 232
-             Q296 232 298 240
-             Q300 250 292 254
-             Q284 256 280 250
-             L278 252
-             L278 270
-             Q278 280 272 282
-             Q266 284 266 278
-             Q266 272 272 272
-
-             Q290 260 320 248
-             Q360 232 400 228
-             Q450 222 500 230
-             Q540 238 570 225
-             Q600 212 640 220
-             Q680 230 720 215
-             Q760 200 800 210
-             Q840 220 880 205
-             Q920 190 960 200
-             Q1000 210 1040 195
-             Q1060 188 1080 195
-             Q1100 202 1090 215
-             Q1080 225 1068 218
-             Q1058 210 1070 200"
+          d={blogWriting}
           stroke="white"
-          strokeWidth="1.8"
+          strokeWidth="2"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeDasharray="2000"
-          strokeDashoffset="2000"
+          strokeDasharray="600"
+          strokeDashoffset="600"
         >
           <animate
             attributeName="stroke-dashoffset"
-            values="2000;2000;0;0;0;2000"
-            keyTimes="0;0.05;0.85;0.88;0.92;1"
+            values="600;600;0;0;0;600"
+            keyTimes="0;0.05;0.5;0.55;0.9;1"
             dur="10s"
             repeatCount="indefinite"
           />
           <animate
             attributeName="opacity"
             values="0;1;1;1;0;0"
-            keyTimes="0;0.05;0.85;0.88;0.95;1"
+            keyTimes="0;0.05;0.55;0.84;0.94;1"
+            dur="10s"
+            repeatCount="indefinite"
+          />
+        </path>
+
+        {/* Decorative swirls after g */}
+        <path
+          d={swirls}
+          stroke="white"
+          strokeWidth="1.5"
+          fill="none"
+          strokeLinecap="round"
+          strokeDasharray="900"
+          strokeDashoffset="900"
+        >
+          <animate
+            attributeName="stroke-dashoffset"
+            values="900;900;900;0;0;900"
+            keyTimes="0;0.5;0.52;0.88;0.9;1"
+            dur="10s"
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="opacity"
+            values="0;0;0.7;0.7;0;0"
+            keyTimes="0;0.5;0.54;0.84;0.94;1"
             dur="10s"
             repeatCount="indefinite"
           />
