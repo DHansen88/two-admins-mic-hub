@@ -582,26 +582,46 @@ function parseFrontMatter(string $raw): array {
     if (preg_match('/^---\s*\n(.*?)\n---\s*\n(.*)/s', $raw, $matches)) {
         $yaml = $matches[1];
         $data['_content'] = $matches[2];
-        
-        foreach (explode("\n", $yaml) as $line) {
-            $line = trim($line);
-            if (empty($line) || strpos($line, '  -') === 0) continue;
-            
-            $parts = explode(':', $line, 2);
-            if (count($parts) === 2) {
-                $key = trim($parts[0]);
-                $value = trim($parts[1]);
-                $value = trim($value, '"\'');
-                
-                if ($key === 'tags') {
-                    $data[$key] = array_map('trim', explode(',', $value));
-                } elseif ($key === 'key_takeaways') {
-                    // Parse YAML list
+
+        $lines = explode("\n", $yaml);
+        $currentKey = '';
+        $collectingList = false;
+
+        for ($i = 0; $i < count($lines); $i++) {
+            $line = $lines[$i];
+
+            // Check if this is a YAML list item (  - value)
+            if (preg_match('/^\s+-\s+(.+)$/', $line, $listMatch)) {
+                if ($collectingList && $currentKey) {
+                    if (!isset($data[$currentKey]) || !is_array($data[$currentKey])) {
+                        $data[$currentKey] = [];
+                    }
+                    $data[$currentKey][] = trim($listMatch[1], '"\'');
+                }
+                continue;
+            }
+
+            // Key: value line
+            if (preg_match('/^([a-zA-Z_][a-zA-Z0-9_]*):\s*(.*)$/', $line, $kvMatch)) {
+                $key = $kvMatch[1];
+                $value = trim($kvMatch[2]);
+                $currentKey = $key;
+                $collectingList = false;
+
+                if ($value === '' || $value === '[]') {
+                    // Empty value — next lines may be YAML list items
+                    $collectingList = true;
                     $data[$key] = [];
-                    preg_match_all('/^\s+-\s+(.+)$/m', $yaml, $listMatches);
-                    $data[$key] = $listMatches[1] ?? [];
+                } elseif (preg_match('/^\[(.+)\]$/', $value, $inlineArr)) {
+                    // Inline array: [a, b, c]
+                    $data[$key] = array_map(function($s) {
+                        return trim(trim($s), '"\'');
+                    }, explode(',', $inlineArr[1]));
+                } elseif ($key === 'tags' && strpos($value, ',') !== false) {
+                    // Comma-separated tags
+                    $data[$key] = array_map('trim', explode(',', $value));
                 } else {
-                    $data[$key] = $value;
+                    $data[$key] = trim($value, '"\'');
                 }
             }
         }
