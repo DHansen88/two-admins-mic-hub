@@ -230,7 +230,7 @@ const PublishEpisode = () => {
     exportBlogMarkdown({
       title: generatedBlog.title,
       slug: generateSlug(generatedBlog.title),
-      author: "sarah",
+      author: "",
       publish_date: publishDate,
       tags: selectedTopics,
       excerpt: generatedBlog.excerpt,
