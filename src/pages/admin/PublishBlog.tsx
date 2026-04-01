@@ -400,6 +400,7 @@ const PublishBlog = () => {
             <Input
               value={customSlug}
               onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\-]/g, '-').replace(/-{2,}/g, '-'))}
+              onBlur={() => setCustomSlug((s) => s.replace(/^-+|-+$/g, ''))}
               placeholder={generateSlug(title) || "auto-generated-from-title"}
             />
             <p className="text-xs text-muted-foreground">
