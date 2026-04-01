@@ -70,7 +70,7 @@ const ManageUsers = () => {
   // Edit dialog
   const [editUser, setEditUser] = useState<any | null>(null);
   const [editName, setEditName] = useState("");
-  const [editRole, setEditRole] = useState<"admin" | "manager">("manager");
+  const [editRole, setEditRole] = useState<"admin" | "manager" | "intern">("manager");
   const [editPermissions, setEditPermissions] = useState<UserPermissions>({ ...DEFAULT_PERMISSIONS });
 
   // Reset password dialog
