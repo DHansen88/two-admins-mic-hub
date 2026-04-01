@@ -234,7 +234,7 @@ const PublishBlog = () => {
     };
 
     loadBlog();
-  }, [searchParams]);
+  }, [searchParams, authorOptions]);
 
   // Derive plain text content for word count, auto-gen etc.
   const currentPlainText = useMemo(() => {
