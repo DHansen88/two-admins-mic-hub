@@ -221,15 +221,20 @@ function handleSaveBlog(): void {
         $frontmatter .= 'title: "' . ($body['title'] ?? '') . "\"\n";
         $frontmatter .= 'slug: ' . $slug . "\n";
         
-        // Support multiple authors
+        // Always save authors as array; clear legacy singular author field
+        $authorList = [];
         if (!empty($body['authors']) && is_array($body['authors'])) {
+            $authorList = array_values(array_filter($body['authors'], fn($v) => $v !== ''));
+        } elseif (!empty($body['author']) && $body['author'] !== '') {
+            $authorList = [$body['author']];
+        }
+        if (!empty($authorList)) {
             $frontmatter .= "authors:\n";
-            foreach ($body['authors'] as $authorKey) {
+            foreach ($authorList as $authorKey) {
                 $frontmatter .= "  - " . $authorKey . "\n";
             }
-        } else {
-            $frontmatter .= 'author: ' . ($body['author'] ?? '') . "\n";
         }
+        // Do NOT write a singular 'author:' field — authors array is canonical
         
         if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
             $hasCustomAvatars = array_filter($body['author_avatars'], fn($v) => !empty($v));
