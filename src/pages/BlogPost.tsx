@@ -149,8 +149,9 @@ const BlogPost = () => {
                 prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-7 prose-h3:mb-3
                 prose-p:text-foreground/80 prose-p:text-base prose-p:md:text-lg prose-p:leading-[1.75] prose-p:mb-6 prose-p:text-left
                 prose-strong:text-foreground prose-strong:font-semibold
-                prose-li:text-foreground/80 prose-li:leading-relaxed prose-li:my-2
-                prose-ul:my-6 prose-ul:pl-5 prose-ol:my-6 prose-ol:pl-5
+                prose-li:text-foreground/80 prose-li:leading-relaxed prose-li:my-2 prose-li:pl-1 prose-li:marker:text-foreground/60
+                prose-ul:my-6 prose-ul:pl-6 prose-ul:list-disc prose-ol:my-6 prose-ol:pl-6 prose-ol:list-decimal
+                [&_li_p]:my-0 [&_ul_ul]:mt-3 [&_ol_ol]:mt-3
                 prose-blockquote:border-l-4 prose-blockquote:border-border prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-foreground/70 prose-blockquote:my-6
                 prose-img:rounded-lg prose-img:w-full prose-img:my-8
                 prose-hr:my-10 prose-hr:border-border

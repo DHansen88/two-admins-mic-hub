@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
+import { marked } from "marked";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,31 +52,158 @@ function htmlToPlainText(html: string): string {
   return div.textContent || div.innerText || "";
 }
 
-/** Convert HTML to markdown (basic) for export */
-function htmlToMarkdown(html: string): string {
-  return html
-    .replace(/<h1[^>]*>(.*?)<\/h1>/gi, "# $1\n\n")
-    .replace(/<h2[^>]*>(.*?)<\/h2>/gi, "## $1\n\n")
-    .replace(/<h3[^>]*>(.*?)<\/h3>/gi, "### $1\n\n")
-    .replace(/<strong>(.*?)<\/strong>/gi, "**$1**")
-    .replace(/<b>(.*?)<\/b>/gi, "**$1**")
-    .replace(/<em>(.*?)<\/em>/gi, "*$1*")
-    .replace(/<i>(.*?)<\/i>/gi, "*$1*")
-    .replace(/<u>(.*?)<\/u>/gi, "$1")
-    .replace(/<a[^>]+href="([^"]*)"[^>]*>(.*?)<\/a>/gi, "[$2]($1)")
-    .replace(/<img[^>]+src="([^"]*)"[^>]*alt="([^"]*)"[^>]*\/?>/gi, "![$2]($1)")
-    .replace(/<img[^>]+src="([^"]*)"[^>]*\/?>/gi, "![]($1)")
-    .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gis, (_, c) =>
-      c.replace(/<p[^>]*>(.*?)<\/p>/gi, "> $1\n").trim()
-    )
-    .replace(/<li[^>]*>(.*?)<\/li>/gi, "- $1\n")
-    .replace(/<\/?[uo]l[^>]*>/gi, "\n")
-    .replace(/<hr\s*\/?>/gi, "\n---\n")
-    .replace(/<p[^>]*>(.*?)<\/p>/gi, "$1\n\n")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/?[^>]+(>|$)/g, "")
+function markdownToHtml(markdown: string): string {
+  return marked.parse(markdown, { async: false, breaks: true }) as string;
+}
+
+function normalizeMarkdownSpacing(markdown: string): string {
+  return markdown
+    .replace(/\r\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+function inlineNodeToMarkdown(node: Node): string {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.textContent || "";
+  }
+
+  if (node.nodeType !== Node.ELEMENT_NODE) {
+    return "";
+  }
+
+  const el = node as HTMLElement;
+  const tag = el.tagName.toLowerCase();
+  const content = Array.from(el.childNodes).map(inlineNodeToMarkdown).join("");
+
+  switch (tag) {
+    case "strong":
+    case "b":
+      return `**${content}**`;
+    case "em":
+    case "i":
+      return `*${content}*`;
+    case "u":
+      return `<u>${content}</u>`;
+    case "code":
+      return `\`${content}\``;
+    case "a": {
+      const href = el.getAttribute("href") || "";
+      return href ? `[${content}](${href})` : content;
+    }
+    case "img": {
+      const src = el.getAttribute("src") || "";
+      const alt = el.getAttribute("alt") || "";
+      return src ? `![${alt}](${src})` : "";
+    }
+    case "br":
+      return "\n";
+    default:
+      return content;
+  }
+}
+
+function listToMarkdown(listEl: HTMLElement, depth = 0): string {
+  const ordered = listEl.tagName.toLowerCase() === "ol";
+  const indent = "  ".repeat(depth);
+
+  const items = Array.from(listEl.children)
+    .filter((child) => child.tagName.toLowerCase() === "li")
+    .map((child, index) => {
+      const li = child as HTMLElement;
+      const marker = ordered ? `${index + 1}. ` : "- ";
+
+      const inlineParts: string[] = [];
+      const nestedLists: string[] = [];
+
+      Array.from(li.childNodes).forEach((node) => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const childEl = node as HTMLElement;
+          const childTag = childEl.tagName.toLowerCase();
+
+          if (childTag === "ul" || childTag === "ol") {
+            nestedLists.push(listToMarkdown(childEl, depth + 1).trimEnd());
+            return;
+          }
+
+          if (childTag === "p") {
+            const paragraph = Array.from(childEl.childNodes).map(inlineNodeToMarkdown).join("").trim();
+            if (paragraph) inlineParts.push(paragraph);
+            return;
+          }
+        }
+
+        const chunk = inlineNodeToMarkdown(node).trim();
+        if (chunk) inlineParts.push(chunk);
+      });
+
+      const inlineText = inlineParts.join(" ").replace(/\s+/g, " ").trim();
+      const baseLine = `${indent}${marker}${inlineText}`.trimEnd();
+
+      if (nestedLists.length === 0) {
+        return baseLine;
+      }
+
+      return [baseLine, ...nestedLists].filter(Boolean).join("\n");
+    });
+
+  return `${items.join("\n")}\n\n`;
+}
+
+/** Convert HTML to markdown for export and fallback rendering */
+function htmlToMarkdown(html: string): string {
+  const container = document.createElement("div");
+  container.innerHTML = html;
+
+  const blockToMarkdown = (node: Node): string => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent?.trim() || "";
+      return text ? `${text}\n\n` : "";
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return "";
+    }
+
+    const el = node as HTMLElement;
+    const tag = el.tagName.toLowerCase();
+    const inlineContent = Array.from(el.childNodes).map(inlineNodeToMarkdown).join("").trim();
+
+    switch (tag) {
+      case "h1":
+        return `# ${inlineContent}\n\n`;
+      case "h2":
+        return `## ${inlineContent}\n\n`;
+      case "h3":
+        return `### ${inlineContent}\n\n`;
+      case "p":
+        return inlineContent ? `${inlineContent}\n\n` : "";
+      case "blockquote": {
+        const content = Array.from(el.childNodes).map(blockToMarkdown).join("").trim();
+        if (!content) return "";
+        return `${content
+          .split("\n")
+          .filter(Boolean)
+          .map((line) => `> ${line}`)
+          .join("\n")}\n\n`;
+      }
+      case "ul":
+      case "ol":
+        return listToMarkdown(el);
+      case "hr":
+        return "---\n\n";
+      case "div":
+        return Array.from(el.childNodes).map(blockToMarkdown).join("");
+      default: {
+        const fallback = Array.from(el.childNodes).map(blockToMarkdown).join("");
+        return fallback || (inlineContent ? `${inlineContent}\n\n` : "");
+      }
+    }
+  };
+
+  return normalizeMarkdownSpacing(
+    Array.from(container.childNodes).map(blockToMarkdown).join("")
+  );
 }
 
 async function uploadFeaturedImageToServer(file: File): Promise<string> {
@@ -226,17 +354,7 @@ setAuthorAvatars(avatarMap);
           setEditorMode("rich");
         } else if (contentBody) {
           const md = contentBody;
-          const basicHtml = md
-            .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-            .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-            .replace(/^# (.+)$/gm, "<h1>$1</h1>")
-            .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-            .replace(/\*(.+?)\*/g, "<em>$1</em>")
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-            .replace(/^- (.+)$/gm, "<li>$1</li>")
-            .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
-            .replace(/^(?!<[hulo])((?!<).+)$/gm, "<p>$1</p>")
-            .replace(/\n{2,}/g, "");
+          const basicHtml = markdownToHtml(md);
           setHtmlContent(basicHtml);
           setMarkdownContent(md);
           setEditorMode("rich");
@@ -293,17 +411,7 @@ setAuthorAvatars(avatarMap);
     if (mode === "markdown" && editorMode === "rich") {
       setMarkdownContent(htmlToMarkdown(htmlContent));
     } else if (mode === "rich" && editorMode === "markdown") {
-      // Convert markdown to basic HTML for the rich editor
-      const basicHtml = markdownContent
-        .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-        .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-        .replace(/^# (.+)$/gm, "<h1>$1</h1>")
-        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-        .replace(/\*(.+?)\*/g, "<em>$1</em>")
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-        .replace(/^- (.+)$/gm, "<li>$1</li>")
-        .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
-        .replace(/^(?!<[hulo])((?!<).+)$/gm, "<p>$1</p>");
+      const basicHtml = markdownToHtml(markdownContent);
       setHtmlContent(basicHtml);
     }
     setEditorMode(mode);
