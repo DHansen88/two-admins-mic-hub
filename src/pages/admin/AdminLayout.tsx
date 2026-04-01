@@ -19,17 +19,20 @@ import {
 } from "lucide-react";
 
 const allNavItems = [
-  { label: "Dashboard", path: "/admin", icon: LayoutDashboard, adminOnly: false },
-  { label: "Episodes", path: "/admin/episodes", icon: Mic, adminOnly: false },
-  { label: "Blog Posts", path: "/admin/blog-posts", icon: FileText, adminOnly: false },
-  { label: "Tag Manager", path: "/admin/tags", icon: Tags, adminOnly: false },
-  { label: "Author Library", path: "/admin/authors", icon: UserCircle, adminOnly: false },
-  { label: "Newsletter Drafts", path: "/admin/newsletters", icon: Mail, adminOnly: false },
-  { label: "Content Library", path: "/admin/library", icon: Library, adminOnly: false },
-  { label: "Merchandise", path: "/admin/merchandise", icon: ShoppingBag, adminOnly: false },
-  { label: "Popups", path: "/admin/popups", icon: Megaphone, adminOnly: false },
-  { label: "User Management", path: "/admin/users", icon: Users, adminOnly: true },
+  { label: "Episodes", path: "/admin/episodes", icon: Mic, minRole: "intern" as const },
+  { label: "Blog Posts", path: "/admin/blog-posts", icon: FileText, minRole: "intern" as const },
+  { label: "Tag Manager", path: "/admin/tags", icon: Tags, minRole: "manager" as const },
+  { label: "Author Library", path: "/admin/authors", icon: UserCircle, minRole: "manager" as const },
+  { label: "Merchandise", path: "/admin/merchandise", icon: ShoppingBag, minRole: "manager" as const },
+  { label: "Popups", path: "/admin/popups", icon: Megaphone, minRole: "manager" as const },
+  { label: "User Management", path: "/admin/users", icon: Users, minRole: "admin" as const },
 ];
+
+const ROLE_RANK: Record<string, number> = { intern: 0, manager: 1, admin: 2 };
+
+function hasMinRole(userRole: string, minRole: string): boolean {
+  return (ROLE_RANK[userRole] ?? 0) >= (ROLE_RANK[minRole] ?? 99);
+}
 
 const AdminLayout = () => {
   const navigate = useNavigate();
