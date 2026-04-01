@@ -390,7 +390,7 @@ const ManageUsers = () => {
                 ))}
               </div>
             </div>
-            {editRole === "manager" && (
+            {editRole !== "admin" && (
               <div className="space-y-2 border border-border rounded-lg p-3">
                 <p className="text-sm font-medium">Permissions</p>
                 {(Object.keys(PERMISSION_LABELS) as (keyof UserPermissions)[]).map((key) => (
