@@ -228,7 +228,7 @@ function handleSaveBlog(): void {
                 $frontmatter .= "  - " . $authorKey . "\n";
             }
         } else {
-            $frontmatter .= 'author: ' . ($body['author'] ?? 'sarah') . "\n";
+            $frontmatter .= 'author: ' . ($body['author'] ?? '') . "\n";
         }
         
         if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
@@ -282,7 +282,7 @@ function handleSaveBlog(): void {
         $data = [
             'title' => $body['title'],
             'slug' => $slug,
-            'author' => $body['author'] ?? 'sarah',
+            'author' => $body['author'] ?? '',
             'publish_date' => $body['publish_date'] ?? date('Y-m-d'),
             'tags' => $body['tags'] ?? [],
             'excerpt' => $body['excerpt'] ?? '',

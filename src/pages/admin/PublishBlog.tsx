@@ -54,7 +54,7 @@ import { setContentStatus } from "@/lib/content-status";
 import PublishModal from "@/components/PublishModal";
 import RichTextEditor from "@/components/RichTextEditor";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
-import { allBlogsUnfiltered } from "@/data/blogData";
+
 import { blocksToMarkdown, markdownToBlocks } from "@/lib/block-types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fetchAuthors, type AuthorProfile } from "@/lib/author-manager";
@@ -102,7 +102,7 @@ const PublishBlog = () => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
   const [customSlug, setCustomSlug] = useState("");
-  const [selectedAuthors, setSelectedAuthors] = useState<string[]>(["sarah"]);
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
   const [authorAvatars, setAuthorAvatars] = useState<Record<string, string>>({});
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
@@ -133,52 +133,103 @@ const PublishBlog = () => {
     fetchAuthors().then(setAuthorOptions);
   }, []);
 
-  // Load existing blog for editing
+  // Load existing blog for editing from the live PHP API
   useEffect(() => {
     const editSlug = searchParams.get("edit");
     if (!editSlug) return;
-    const blog = allBlogsUnfiltered.find((b) => b.slug === editSlug);
-    if (!blog) return;
-    setTitle(blog.title);
-    const keys = blog.authors.map((a) => {
-      const found = authorOptions.find((opt) => opt.name === a.name);
-      return found?.id || a.name.toLowerCase().replace(/\s+/g, '-');
-    });
-    setSelectedAuthors(keys.length > 0 ? keys : ["sarah"]);
-    const avatarMap: Record<string, string> = {};
-    blog.authors.forEach((a, i) => {
-      if (a.avatar && keys[i]) avatarMap[keys[i]] = a.avatar;
-    });
-    setAuthorAvatars(avatarMap);
-    setPublishDate(blog.date || formatDateISO(new Date()));
-    setSelectedTopics(blog.topics || []);
-    setFeaturedImage(blog.featuredImage || "");
-    setExcerpt(blog.excerpt || "");
-    setKeyTakeaways(blog.keyTakeaways || []);
-    if (blog.relatedEpisode) {
-      setRelatedEpisode(blog.relatedEpisode);
-      setShowEpisodeCallout(true);
-    }
-    // Load content into rich editor (convert markdown/blocks to HTML if needed)
-    if (blog.content) {
-      // If content looks like markdown, wrap in basic HTML
-      const md = blog.content;
-      const basicHtml = md
-        .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-        .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-        .replace(/^# (.+)$/gm, "<h1>$1</h1>")
-        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-        .replace(/\*(.+?)\*/g, "<em>$1</em>")
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-        .replace(/^- (.+)$/gm, "<li>$1</li>")
-        .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
-        .replace(/^(?!<[hulo])((?!<).+)$/gm, "<p>$1</p>")
-        .replace(/\n{2,}/g, "");
-      setHtmlContent(basicHtml);
-      setMarkdownContent(md);
-    }
-    setEditorMode("rich");
-    toast({ title: `Editing: ${blog.title}` });
+
+    const loadBlog = async () => {
+      try {
+        const { getAdminApiBase, getAdminAuthHeaders } = await import("@/lib/admin-auth");
+        const base = getAdminApiBase();
+        const res = await fetch(`${base}/content.php?action=get-blog&slug=${encodeURIComponent(editSlug)}`, {
+          headers: getAdminAuthHeaders(),
+          credentials: "include",
+        });
+        if (!res.ok) {
+          toast({ title: "Blog not found on server", variant: "destructive" });
+          return;
+        }
+        const data = await res.json();
+        const blog = data.blog;
+        if (!blog) {
+          toast({ title: "Blog not found", variant: "destructive" });
+          return;
+        }
+
+        setTitle(blog.title || "");
+        setCustomSlug(blog.slug || editSlug);
+
+        // Resolve authors from the API data
+        const authorKeys: string[] = Array.isArray(blog.authors) && blog.authors.length > 0
+          ? blog.authors
+          : blog.author
+            ? [blog.author]
+            : [];
+        setSelectedAuthors(authorKeys);
+
+        const avatarMap: Record<string, string> = {};
+        if (Array.isArray(blog.author_avatars)) {
+          blog.author_avatars.forEach((av: string, i: number) => {
+            if (av && authorKeys[i]) avatarMap[authorKeys[i]] = av;
+          });
+        }
+        setAuthorAvatars(avatarMap);
+
+        // Parse date — handle both publish_date and date fields
+        const rawDate = blog.publish_date || blog.date || "";
+        if (rawDate) {
+          // Ensure it's in YYYY-MM-DD format for the date input
+          const parsed = new Date(rawDate);
+          if (!isNaN(parsed.getTime())) {
+            setPublishDate(parsed.toISOString().split("T")[0]);
+          } else {
+            setPublishDate(rawDate);
+          }
+        }
+
+        setSelectedTopics(Array.isArray(blog.tags) ? blog.tags : []);
+        setFeaturedImage(blog.featured_image || "");
+        setExcerpt(blog.excerpt || "");
+        setKeyTakeaways(Array.isArray(blog.key_takeaways) ? blog.key_takeaways : []);
+
+        if (blog.related_episode) {
+          setRelatedEpisode(blog.related_episode);
+          setShowEpisodeCallout(blog.show_episode_callout !== "false" && blog.show_episode_callout !== false);
+        }
+
+        // Load HTML content first (from companion .html.json), fall back to markdown
+        const contentBody = blog._content || blog.content || "";
+        if (blog.html_content) {
+          setHtmlContent(blog.html_content);
+          setMarkdownContent(contentBody);
+          setEditorMode("rich");
+        } else if (contentBody) {
+          const md = contentBody;
+          const basicHtml = md
+            .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+            .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+            .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+            .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+            .replace(/\*(.+?)\*/g, "<em>$1</em>")
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+            .replace(/^- (.+)$/gm, "<li>$1</li>")
+            .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
+            .replace(/^(?!<[hulo])((?!<).+)$/gm, "<p>$1</p>")
+            .replace(/\n{2,}/g, "");
+          setHtmlContent(basicHtml);
+          setMarkdownContent(md);
+          setEditorMode("rich");
+        }
+
+        toast({ title: `Editing: ${blog.title || editSlug}` });
+      } catch (err) {
+        console.error("Failed to load blog for editing:", err);
+        toast({ title: "Failed to load blog data", variant: "destructive" });
+      }
+    };
+
+    loadBlog();
   }, [searchParams]);
 
   // Derive plain text content for word count, auto-gen etc.
@@ -290,7 +341,7 @@ const PublishBlog = () => {
     const result = await saveBlog({
       title,
       slug,
-      author: selectedAuthors[0] || "sarah",
+      author: selectedAuthors[0] || "",
       authors: selectedAuthors,
       author_avatars: selectedAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
         ? selectedAuthors.map((k) => authorAvatars[k] || "")

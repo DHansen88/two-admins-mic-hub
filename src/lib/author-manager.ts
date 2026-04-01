@@ -23,27 +23,8 @@ function isPhpSourceResponse(text: string): boolean {
   return trimmed.startsWith('<?php') || trimmed.includes("require_once __DIR__ . '/config.php'");
 }
 
-// Default authors (used when API is unavailable)
-const DEFAULT_AUTHORS: Record<string, AuthorProfile> = {
-  sarah: {
-    id: 'sarah',
-    name: 'Sarah Mitchell',
-    role: 'Co-Host & Leadership Coach',
-    bio: 'Sarah brings 15 years of administrative leadership experience and is passionate about empowering others to reach their full potential.',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face',
-    linkedin: '',
-    website: '',
-  },
-  marcus: {
-    id: 'marcus',
-    name: 'Marcus Chen',
-    role: 'Co-Host & Operations Expert',
-    bio: 'Marcus has spent two decades in administrative roles across Fortune 500 companies and loves sharing practical strategies that work.',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-    linkedin: '',
-    website: '',
-  },
-};
+// Default authors — empty; real authors come from the API or authors.json
+const DEFAULT_AUTHORS: Record<string, AuthorProfile> = {};
 
 function getLocal(): Record<string, AuthorProfile> {
   try {
