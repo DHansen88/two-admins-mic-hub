@@ -133,7 +133,7 @@ function handleUpdate(): void {
         $fields[] = 'name = ?';
         $params[] = trim($body['name']);
     }
-    if (isset($body['role']) && in_array($body['role'], ['admin', 'manager'])) {
+    if (isset($body['role']) && in_array($body['role'], ['admin', 'manager', 'intern'])) {
         $fields[] = 'role = ?';
         $params[] = $body['role'];
     }
