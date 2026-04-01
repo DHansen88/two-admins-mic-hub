@@ -64,7 +64,7 @@ const ManageUsers = () => {
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [newRole, setNewRole] = useState<"admin" | "manager">("manager");
+  const [newRole, setNewRole] = useState<"admin" | "manager" | "intern">("manager");
   const [newPermissions, setNewPermissions] = useState<UserPermissions>({ ...DEFAULT_PERMISSIONS });
 
   // Edit dialog
