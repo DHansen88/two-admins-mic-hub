@@ -7,9 +7,10 @@ import {
   deletePopup,
   type PopupConfig,
 } from "@/data/popupData";
+import { type PopupContentBlock } from "@/data/popupBlockTypes";
+import PopupBlockEditor from "@/components/PopupBlockEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Pencil, Trash2, Megaphone } from "lucide-react";
 
@@ -31,6 +32,7 @@ const blankPopup = (): Omit<PopupConfig, "id"> => ({
   active: true,
   delaySeconds: 2,
   content: "",
+  contentBlocks: [],
   displayPages: "homepage",
   cooldownDays: 7,
 });
@@ -51,6 +53,7 @@ const ManagePopups = () => {
       active: p.active,
       delaySeconds: p.delaySeconds,
       content: p.content,
+      contentBlocks: p.contentBlocks || [],
       displayPages: p.displayPages,
       cooldownDays: p.cooldownDays,
     });
@@ -137,16 +140,10 @@ const ManagePopups = () => {
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Content (HTML / Embed Code)</label>
-            <Textarea
-              value={form.content}
-              onChange={(e) => setForm({ ...form, content: e.target.value })}
-              rows={6}
-              placeholder="Paste embed code or HTML here..."
-              className="font-mono text-xs"
-            />
-          </div>
+          <PopupBlockEditor
+            blocks={form.contentBlocks || []}
+            onChange={(blocks) => setForm({ ...form, contentBlocks: blocks })}
+          />
 
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 text-sm">

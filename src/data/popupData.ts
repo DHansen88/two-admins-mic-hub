@@ -1,11 +1,14 @@
+import { type PopupContentBlock } from "./popupBlockTypes";
+
 export interface PopupConfig {
   id: string;
   title: string;
   active: boolean;
   delaySeconds: number;
-  content: string; // HTML / embed code
-  displayPages: "homepage" | "all" | string; // "homepage", "all", or a specific path like "/merch"
-  cooldownDays: number; // show once every N days (0 = once per session)
+  content: string; // legacy HTML / embed code
+  contentBlocks?: PopupContentBlock[]; // rich block-based content (preferred)
+  displayPages: "homepage" | "all" | string;
+  cooldownDays: number;
 }
 
 const LS_KEY = "tam_popups";
