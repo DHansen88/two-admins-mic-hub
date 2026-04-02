@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { X, CheckCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,7 +8,9 @@ import {
   markPopupSeen,
   type PopupConfig,
 } from "@/data/popupData";
+import { type PopupContentBlock, getVideoEmbedUrl } from "@/data/popupBlockTypes";
 
+/* ── Newsletter Form (used by legacy beehiiv popups) ── */
 const PopupNewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -19,15 +21,12 @@ const PopupNewsletterForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
-
     const trimmed = email.trim();
     if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
       setErrorMsg("Please enter a valid email address.");
       return;
     }
-
     setStatus("submitting");
-
     try {
       const res = await fetch("/api/subscribe.php", {
         method: "POST",
@@ -38,9 +37,7 @@ const PopupNewsletterForm = () => {
           last_name: lastName.trim() || undefined,
         }),
       });
-
       const data = await res.json().catch(() => null);
-
       if (res.ok && data?.success) {
         setStatus("success");
         setEmail("");
@@ -77,57 +74,114 @@ const PopupNewsletterForm = () => {
       <p className="text-muted-foreground mb-6 text-sm sm:text-base max-w-md mx-auto">
         The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.
       </p>
-
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-0">
         <div className="border border-border rounded-lg overflow-hidden">
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder="First Name"
-            className="w-full px-4 py-3 text-foreground placeholder:text-muted-foreground/50 bg-background border-b border-border focus:outline-none text-base"
-          />
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder="Last Name"
-            className="w-full px-4 py-3 text-foreground placeholder:text-muted-foreground/50 bg-background border-b border-border focus:outline-none text-base"
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            required
-            className="w-full px-4 py-3 text-foreground placeholder:text-muted-foreground/50 bg-background focus:outline-none text-base"
-          />
-          <Button
-            type="submit"
-            disabled={status === "submitting"}
-            className="w-full rounded-none h-12 bg-coral hover:bg-coral/90 text-white font-semibold text-base"
-          >
+          <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" className="w-full px-4 py-3 text-foreground placeholder:text-muted-foreground/50 bg-background border-b border-border focus:outline-none text-base" />
+          <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" className="w-full px-4 py-3 text-foreground placeholder:text-muted-foreground/50 bg-background border-b border-border focus:outline-none text-base" />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" required className="w-full px-4 py-3 text-foreground placeholder:text-muted-foreground/50 bg-background focus:outline-none text-base" />
+          <Button type="submit" disabled={status === "submitting"} className="w-full rounded-none h-12 bg-coral hover:bg-coral/90 text-white font-semibold text-base">
             {status === "submitting" ? (
-              <span className="flex items-center gap-2">
-                <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Subscribing…
-              </span>
+              <span className="flex items-center gap-2"><span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Subscribing…</span>
             ) : (
-              <span className="flex items-center gap-2">
-                <Send className="h-4 w-4" />
-                Subscribe
-              </span>
+              <span className="flex items-center gap-2"><Send className="h-4 w-4" />Subscribe</span>
             )}
           </Button>
         </div>
-        {errorMsg && (
-          <p className="text-destructive text-sm mt-3">{errorMsg}</p>
-        )}
+        {errorMsg && <p className="text-destructive text-sm mt-3">{errorMsg}</p>}
       </form>
     </div>
   );
 };
 
+/* ── Block Renderer ── */
+function PopupBlockRenderer({ blocks }: { blocks: PopupContentBlock[] }) {
+  return (
+    <div className="px-5 py-6 space-y-4">
+      {blocks.map((block) => (
+        <PopupBlock key={block.id} block={block} />
+      ))}
+    </div>
+  );
+}
+
+function PopupBlock({ block }: { block: PopupContentBlock }) {
+  switch (block.type) {
+    case "richtext":
+      return (
+        <div
+          className="prose prose-sm max-w-none text-foreground [&_a]:text-primary [&_a]:underline"
+          dangerouslySetInnerHTML={{ __html: block.html }}
+        />
+      );
+
+    case "image": {
+      const img = (
+        <img
+          src={block.src}
+          alt={block.caption || ""}
+          className="rounded-lg object-cover w-full"
+          style={{ maxWidth: `${block.width || 100}%` }}
+        />
+      );
+      return (
+        <div className="flex flex-col items-center">
+          {block.linkUrl ? (
+            block.linkUrl.startsWith("/") ? (
+              <Link to={block.linkUrl}>{img}</Link>
+            ) : (
+              <a href={block.linkUrl} target="_blank" rel="noopener noreferrer">{img}</a>
+            )
+          ) : img}
+          {block.caption && <p className="text-xs text-muted-foreground mt-1.5">{block.caption}</p>}
+        </div>
+      );
+    }
+
+    case "video": {
+      const embedUrl = getVideoEmbedUrl(block.url);
+      if (!embedUrl) return null;
+      return (
+        <div className="aspect-video rounded-lg overflow-hidden">
+          <iframe src={embedUrl} className="w-full h-full" allowFullScreen allow="autoplay; encrypted-media" />
+        </div>
+      );
+    }
+
+    case "button": {
+      const isInternal = block.url.startsWith("/");
+      const cls = `inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-sm transition-colors w-full sm:w-auto ${
+        block.style === "primary"
+          ? "bg-primary text-primary-foreground hover:bg-primary/90"
+          : "border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80"
+      }`;
+      return (
+        <div className="flex justify-center">
+          {isInternal ? (
+            <Link to={block.url} className={cls}>{block.text}</Link>
+          ) : (
+            <a href={block.url} target={block.openNewTab ? "_blank" : undefined} rel="noopener noreferrer" className={cls}>{block.text}</a>
+          )}
+        </div>
+      );
+    }
+
+    case "divider":
+      return <hr className="border-border" />;
+
+    case "html":
+      return (
+        <div
+          className="popup-html-embed [&_iframe]:w-full [&_form]:max-w-full"
+          dangerouslySetInnerHTML={{ __html: block.code }}
+        />
+      );
+
+    default:
+      return null;
+  }
+}
+
+/* ── Popup Modal ── */
 const PopupModal = () => {
   const { pathname } = useLocation();
   const [popup, setPopup] = useState<PopupConfig | null>(null);
@@ -140,12 +194,10 @@ const PopupModal = () => {
       setVisible(false);
       return;
     }
-
     const timer = setTimeout(() => {
       setPopup(match);
       setVisible(true);
     }, match.delaySeconds * 1000);
-
     return () => clearTimeout(timer);
   }, [pathname]);
 
@@ -156,32 +208,27 @@ const PopupModal = () => {
 
   if (!visible || !popup) return null;
 
-  const isBeehiivEmbed = popup.content.includes("beehiiv");
+  const hasBlocks = popup.contentBlocks && popup.contentBlocks.length > 0;
+  const isBeehiivEmbed = !hasBlocks && popup.content.includes("beehiiv");
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
-      onClick={close}
-    >
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={close}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-
       <div
         className="relative z-10 w-full sm:max-w-[500px] max-h-[85vh] sm:max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-card border border-border shadow-2xl animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={close}
-          className="sticky top-2 right-2 z-20 rounded-full bg-muted/80 hover:bg-muted p-1.5 transition-colors ml-auto mr-2 mt-2"
-          aria-label="Close popup"
-        >
+        <button onClick={close} className="sticky top-2 right-2 z-20 rounded-full bg-muted/80 hover:bg-muted p-1.5 transition-colors ml-auto mr-2 mt-2" aria-label="Close popup">
           <X className="h-5 w-5 text-foreground" />
         </button>
 
-        {isBeehiivEmbed ? (
+        {hasBlocks ? (
+          <PopupBlockRenderer blocks={popup.contentBlocks!} />
+        ) : isBeehiivEmbed ? (
           <PopupNewsletterForm />
         ) : (
           <div
-            className="popup-content w-full px-4 pb-6 sm:px-0 sm:pb-0 [&_iframe]{w-full !important} [&_form]{max-w-full !important}"
+            className="popup-content w-full px-4 pb-6 sm:px-0 sm:pb-0 [&_iframe]:w-full [&_form]:max-w-full"
             dangerouslySetInnerHTML={{ __html: popup.content }}
           />
         )}
