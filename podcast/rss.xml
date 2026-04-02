@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" 
+  xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Two Admins and a Mic</title>
+    <link>https://twoadminsandamic.com</link>
+    <description>Leadership insights, career growth strategies, and real talk for administrative professionals.</description>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 02 Apr 2026 00:37:56 GMT</lastBuildDate>
+    <itunes:author>Two Admins and a Mic</itunes:author>
+    <itunes:category text="Business" />
+    <itunes:category text="Education" />
+    <item>
+      <title>Leading Through Change: Strategies for Modern Administrators</title>
+      <description>Explore practical approaches to navigating organizational change while maintaining team morale and productivity.</description>
+      <pubDate>Fri, 28 Nov 2025 00:00:00 GMT</pubDate>
+      <itunes:duration>42 min</itunes:duration>
+      <guid>https://twoadminsandamic.com/episodes/episode-12-leading-through-change</guid>
+      <link>https://twoadminsandamic.com/episodes/episode-12-leading-through-change</link>
+      <itunes:image href="https://twoadminsandamic.com/placeholder.svg" />
+      
+    </item>
+    <item>
+      <title>The Power of Empowerment: Building Confident Teams</title>
+      <description>Discover how empowering your team members leads to better outcomes and a more engaged workplace culture.</description>
+      <pubDate>Fri, 21 Nov 2025 00:00:00 GMT</pubDate>
+      <itunes:duration>38 min</itunes:duration>
+      <guid>https://twoadminsandamic.com/episodes/episode-11-power-of-empowerment</guid>
+      <link>https://twoadminsandamic.com/episodes/episode-11-power-of-empowerment</link>
+      <itunes:image href="https://twoadminsandamic.com/placeholder.svg" />
+      
+    </item>
+    <item>
+      <title>Communication Excellence in Leadership</title>
+      <description>Master the art of clear, effective communication that inspires action and builds trust with your team.</description>
+      <pubDate>Fri, 14 Nov 2025 00:00:00 GMT</pubDate>
+      <itunes:duration>45 min</itunes:duration>
+      <guid>https://twoadminsandamic.com/episodes/episode-10-communication-excellence</guid>
+      <link>https://twoadminsandamic.com/episodes/episode-10-communication-excellence</link>
+      <itunes:image href="https://twoadminsandamic.com/placeholder.svg" />
+      
+    </item>
+    <item>
+      <title>Time Management for Busy Administrators</title>
+      <description>Learn proven time management techniques that help administrators balance competing priorities effectively.</description>
+      <pubDate>Fri, 07 Nov 2025 00:00:00 GMT</pubDate>
+      <itunes:duration>35 min</itunes:duration>
+      <guid>https://twoadminsandamic.com/episodes/episode-9-time-management</guid>
+      <link>https://twoadminsandamic.com/episodes/episode-9-time-management</link>
+      <itunes:image href="https://twoadminsandamic.com/placeholder.svg" />
+      
+    </item>
+    <item>
+      <title>Building Resilience in Leadership Roles</title>
+      <description>Develop the mental and emotional resilience needed to thrive in challenging leadership positions.</description>
+      <pubDate>Fri, 31 Oct 2025 00:00:00 GMT</pubDate>
+      <itunes:duration>40 min</itunes:duration>
+      <guid>https://twoadminsandamic.com/episodes/episode-8-building-resilience</guid>
+      <link>https://twoadminsandamic.com/episodes/episode-8-building-resilience</link>
+      <itunes:image href="https://twoadminsandamic.com/placeholder.svg" />
+      
+    </item>
+    <item>
+      <title>Data-Driven Decision Making for Administrators</title>
+      <description>Learn how to leverage data and analytics to make informed decisions that drive organizational success.</description>
+      <pubDate>Fri, 24 Oct 2025 00:00:00 GMT</pubDate>
+      <itunes:duration>43 min</itunes:duration>
+      <guid>https://twoadminsandamic.com/episodes/episode-7-data-driven-decisions</guid>
+      <link>https://twoadminsandamic.com/episodes/episode-7-data-driven-decisions</link>
+      <itunes:image href="https://twoadminsandamic.com/placeholder.svg" />
+      
+    </item>
+    <item>
+      <title>Cultivating Innovation in Your Organization</title>
+      <description>Discover strategies for fostering a culture of innovation and creative problem-solving in your team.</description>
+      <pubDate>Fri, 17 Oct 2025 00:00:00 GMT</pubDate>
+      <itunes:duration>37 min</itunes:duration>
+      <guid>https://twoadminsandamic.com/episodes/episode-6-cultivating-innovation</guid>
+      <link>https://twoadminsandamic.com/episodes/episode-6-cultivating-innovation</link>
+      <itunes:image href="https://twoadminsandamic.com/placeholder.svg" />
+      
+    </item>
+    <item>
+      <title>Conflict Resolution Strategies for Leaders</title>
+      <description>Master essential techniques for addressing and resolving workplace conflicts constructively.</description>
+      <pubDate>Fri, 10 Oct 2025 00:00:00 GMT</pubDate>
+      <itunes:duration>41 min</itunes:duration>
+      <guid>https://twoadminsandamic.com/episodes/episode-5-conflict-resolution</guid>
+      <link>https://twoadminsandamic.com/episodes/episode-5-conflict-resolution</link>
+      <itunes:image href="https://twoadminsandamic.com/placeholder.svg" />
+      
+    </item>
+  </channel>
+</rss>

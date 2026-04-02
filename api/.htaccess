@@ -1,0 +1,47 @@
+# Execute PHP files in this directory instead of exposing source
+<IfModule mod_mime.c>
+    AddType application/x-httpd-php .php .phtml
+</IfModule>
+
+<IfModule mod_actions.c>
+    AddHandler application/x-httpd-php .php .phtml
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/
+
+    # Pass Authorization header through to PHP (Hostinger strips it by default)
+    RewriteCond %{HTTP:Authorization} .+
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Allow direct access to real API files only
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Block everything else inside /api
+    RewriteRule ^ - [R=404,L]
+</IfModule>
+
+Options -Indexes
+DirectoryIndex disabled
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+</IfModule>
+
+# Deny access to config.php directly (only allow inclusion)
+<Files "config.php">
+    # Allow PHP to include it but add security note
+    # The file should check for a defined constant in production
+</Files>
+
+# Deny access to setup.php after initial setup
+# Uncomment after running setup:
+# <Files "setup.php">
+#     Deny from all
+# </Files>
