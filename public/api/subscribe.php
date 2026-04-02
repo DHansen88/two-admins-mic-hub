@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // You can also load from an environment variable:
 //   $apiKey = getenv('BEEHIIV_API_KEY');
 define('BEEHIIV_API_KEY', '');  // ← Add your Beehiiv API key here
-define('BEEHIIV_PUBLICATION_ID', 'pub_c5ba8b8c-515d-45fc-87c1-fb21106b1e0a');
+define('BEEHIIV_PUBLICATION_ID', 'pub_51840fb5-3899-45b2-9b67-dc3ddf9d604b');
 
 // ─── Input validation ───────────────────────────────────────
 $body = getRequestBody();
