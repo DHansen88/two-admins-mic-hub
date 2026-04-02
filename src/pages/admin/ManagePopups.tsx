@@ -53,6 +53,7 @@ const ManagePopups = () => {
       active: p.active,
       delaySeconds: p.delaySeconds,
       content: p.content,
+      contentBlocks: p.contentBlocks || [],
       displayPages: p.displayPages,
       cooldownDays: p.cooldownDays,
     });
