@@ -203,11 +203,46 @@ function ToolBtn({ active, onClick, label, className = "" }: { active: boolean; 
 
 /* Image */
 function ImageBlockEditor({ block, onChange }: { block: Extract<PopupContentBlock, { type: "image" }>; onChange: (b: PopupContentBlock) => void }) {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Try uploading to the PHP backend
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("directory", "blog");
+
+    try {
+      const res = await fetch("/api/content.php?action=upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json().catch(() => null);
+      if (data?.url) {
+        onChange({ ...block, src: data.url });
+        return;
+      }
+    } catch {
+      // Fallback to local blob URL for preview environment
+    }
+
+    // Fallback: use local blob URL
+    const blobUrl = URL.createObjectURL(file);
+    onChange({ ...block, src: blobUrl });
+  };
+
   return (
     <div className="space-y-3">
       <div className="space-y-1.5">
-        <label className="text-xs font-medium">Image URL</label>
-        <Input value={block.src} onChange={(e) => onChange({ ...block, src: e.target.value })} placeholder="https://example.com/image.jpg" />
+        <label className="text-xs font-medium">Image</label>
+        <div className="flex gap-2">
+          <Input value={block.src} onChange={(e) => onChange({ ...block, src: e.target.value })} placeholder="https://example.com/image.jpg" className="flex-1" />
+          <label className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md border border-border bg-background hover:bg-muted cursor-pointer transition-colors shrink-0">
+            <ImageIcon className="h-3.5 w-3.5" />
+            Upload
+            <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+          </label>
+        </div>
       </div>
       {block.src && <img src={block.src} alt={block.caption || ""} className="max-h-32 rounded border border-border object-contain" />}
       <div className="grid grid-cols-2 gap-3">
