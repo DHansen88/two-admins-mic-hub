@@ -144,7 +144,6 @@ const ManagePopups = () => {
             blocks={form.contentBlocks || []}
             onChange={(blocks) => setForm({ ...form, contentBlocks: blocks })}
           />
-          </div>
 
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 text-sm">
