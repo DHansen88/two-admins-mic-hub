@@ -22,12 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // ─── Configuration ──────────────────────────────────────────
-// IMPORTANT: Set your Beehiiv API key here on the server.
-// Never expose this in frontend code.
-// You can also load from an environment variable:
-//   $apiKey = getenv('BEEHIIV_API_KEY');
-define('BEEHIIV_API_KEY', '');  // ← Add your Beehiiv API key here
-define('BEEHIIV_PUBLICATION_ID', 'pub_51840fb5-3899-45b2-9b67-dc3ddf9d604b');
+// IMPORTANT:
+// - BEEHIIV_API_KEY must be a private Bearer token, not the publication ID.
+// - BEEHIIV_PUBLICATION_ID should be the publication's pub_... identifier.
+// Prefer environment variables on the server, with file constants as fallback.
+defined('BEEHIIV_API_KEY') || define('BEEHIIV_API_KEY', getenv('BEEHIIV_API_KEY') ?: '');
+defined('BEEHIIV_PUBLICATION_ID') || define('BEEHIIV_PUBLICATION_ID', getenv('BEEHIIV_PUBLICATION_ID') ?: 'pub_51840fb5-3899-45b2-9b67-dc3ddf9d604b');
 
 // ─── Input validation ───────────────────────────────────────
 $body = getRequestBody();
@@ -60,20 +60,17 @@ if (file_exists($rateLimitFile)) {
 file_put_contents($rateLimitFile, $now);
 
 // ─── Forward to Beehiiv ─────────────────────────────────────
-$apiKey = BEEHIIV_API_KEY;
+$apiKey = trim((string) BEEHIIV_API_KEY);
+$publicationId = trim((string) BEEHIIV_PUBLICATION_ID);
 
-if (empty($apiKey)) {
-    // If no API key configured, fall back to accepting the subscription
-    // and logging it. The admin can process these manually or add the key later.
-    error_log("SUBSCRIBE: No Beehiiv API key configured. Email: " . $email);
+if (empty($apiKey) || empty($publicationId)) {
+    error_log("SUBSCRIBE: Missing Beehiiv configuration. Email: " . $email);
     jsonResponse([
-        'success' => true,
-        'message' => 'Subscription received',
-        'fallback' => true,
-    ]);
+        'error' => 'Newsletter signup is not configured yet. Please try again later.',
+    ], 500);
 }
 
-$url = "https://api.beehiiv.com/v2/publications/" . BEEHIIV_PUBLICATION_ID . "/subscriptions";
+$url = "https://api.beehiiv.com/v2/publications/" . $publicationId . "/subscriptions";
 
 $ch = curl_init($url);
 curl_setopt_array($ch, [
@@ -86,6 +83,7 @@ curl_setopt_array($ch, [
         'email' => $email,
         'reactivate_existing' => true,
         'send_welcome_email' => true,
+        'double_opt_override' => 'on',
         'custom_fields' => array_values(array_filter([
             !empty($firstName) ? ['name' => 'First Name', 'value' => $firstName] : null,
             !empty($lastName) ? ['name' => 'Last Name', 'value' => $lastName] : null,
@@ -107,12 +105,16 @@ if ($curlError) {
 }
 
 if ($httpCode >= 200 && $httpCode < 300) {
+    $decoded = json_decode($response, true);
+    $status = $decoded['data']['status'] ?? null;
     jsonResponse([
         'success' => true,
-        'message' => 'Successfully subscribed!',
+        'message' => $status === 'validating'
+            ? 'Please check your inbox to confirm your subscription.'
+            : 'Successfully subscribed!',
+        'status' => $status,
     ]);
 } elseif ($httpCode === 409) {
-    // Already subscribed
     jsonResponse([
         'success' => true,
         'message' => 'You are already subscribed!',

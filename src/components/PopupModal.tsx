@@ -48,22 +48,12 @@ const PopupNewsletterForm = () => {
         setLastName("");
         setTimeout(() => setStatus("idle"), 5000);
       } else {
-        window.open(
-          "https://subscribe-forms.beehiiv.com/74c343d2-d107-444d-a076-41871db3af66",
-          "_blank"
-        );
-        setStatus("success");
-        setEmail("");
-        setTimeout(() => setStatus("idle"), 5000);
+        setStatus("error");
+        setErrorMsg(data?.error || "Subscription failed. Please try again.");
       }
     } catch {
-      window.open(
-        "https://subscribe-forms.beehiiv.com/74c343d2-d107-444d-a076-41871db3af66",
-        "_blank"
-      );
-      setStatus("success");
-      setEmail("");
-      setTimeout(() => setStatus("idle"), 5000);
+      setStatus("error");
+      setErrorMsg("Subscription service unavailable. Please try again.");
     }
   };
 
