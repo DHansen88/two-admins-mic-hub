@@ -32,6 +32,7 @@ const blankPopup = (): Omit<PopupConfig, "id"> => ({
   active: true,
   delaySeconds: 2,
   content: "",
+  contentBlocks: [],
   displayPages: "homepage",
   cooldownDays: 7,
 });
