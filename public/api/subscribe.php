@@ -84,12 +84,12 @@ curl_setopt_array($ch, [
     ],
     CURLOPT_POSTFIELDS => json_encode(array_filter([
         'email' => $email,
-        'reactivate_existing' => false,
+        'reactivate_existing' => true,
         'send_welcome_email' => true,
-        'custom_fields' => array_filter([
-            ['name' => 'First Name', 'value' => $firstName],
-            ['name' => 'Last Name', 'value' => $lastName],
-        ], fn($f) => !empty($f['value'])) ?: null,
+        'custom_fields' => array_values(array_filter([
+            !empty($firstName) ? ['name' => 'First Name', 'value' => $firstName] : null,
+            !empty($lastName) ? ['name' => 'Last Name', 'value' => $lastName] : null,
+        ])) ?: null,
     ], fn($v) => $v !== null)),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT => 15,
