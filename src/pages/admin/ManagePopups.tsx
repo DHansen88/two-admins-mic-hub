@@ -140,15 +140,10 @@ const ManagePopups = () => {
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Content (HTML / Embed Code)</label>
-            <Textarea
-              value={form.content}
-              onChange={(e) => setForm({ ...form, content: e.target.value })}
-              rows={6}
-              placeholder="Paste embed code or HTML here..."
-              className="font-mono text-xs"
-            />
+          <PopupBlockEditor
+            blocks={form.contentBlocks || []}
+            onChange={(blocks) => setForm({ ...form, contentBlocks: blocks })}
+          />
           </div>
 
           <div className="flex items-center gap-6">
