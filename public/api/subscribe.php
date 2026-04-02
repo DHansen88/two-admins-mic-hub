@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // You can also load from an environment variable:
 //   $apiKey = getenv('BEEHIIV_API_KEY');
 define('BEEHIIV_API_KEY', '');  // ← Add your Beehiiv API key here
-define('BEEHIIV_PUBLICATION_ID', 'pub_c5ba8b8c-515d-45fc-87c1-fb21106b1e0a');
+define('BEEHIIV_PUBLICATION_ID', 'pub_51840fb5-3899-45b2-9b67-dc3ddf9d604b');
 
 // ─── Input validation ───────────────────────────────────────
 $body = getRequestBody();
@@ -84,12 +84,12 @@ curl_setopt_array($ch, [
     ],
     CURLOPT_POSTFIELDS => json_encode(array_filter([
         'email' => $email,
-        'reactivate_existing' => false,
+        'reactivate_existing' => true,
         'send_welcome_email' => true,
-        'custom_fields' => array_filter([
-            ['name' => 'First Name', 'value' => $firstName],
-            ['name' => 'Last Name', 'value' => $lastName],
-        ], fn($f) => !empty($f['value'])) ?: null,
+        'custom_fields' => array_values(array_filter([
+            !empty($firstName) ? ['name' => 'First Name', 'value' => $firstName] : null,
+            !empty($lastName) ? ['name' => 'Last Name', 'value' => $lastName] : null,
+        ])) ?: null,
     ], fn($v) => $v !== null)),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT => 15,
