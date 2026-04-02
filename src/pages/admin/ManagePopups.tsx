@@ -7,9 +7,10 @@ import {
   deletePopup,
   type PopupConfig,
 } from "@/data/popupData";
+import { type PopupContentBlock } from "@/data/popupBlockTypes";
+import PopupBlockEditor from "@/components/PopupBlockEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Pencil, Trash2, Megaphone } from "lucide-react";
 
