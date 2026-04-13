@@ -97,7 +97,7 @@ const NewsletterForm = ({ config }: { config: NewsletterPopupBlock }) => {
               checked={conantLeadership}
               onCheckedChange={(v) => setConantLeadership(v === true)}
             />
-            <span>{config.conantLeadershipLabel}</span>
+            <span className="my-[15px]">{config.conantLeadershipLabel}</span>
           </label>
         )}
         {errorMsg && <p className="text-destructive text-sm mt-3">{errorMsg}</p>}

@@ -28,7 +28,7 @@ const SEED: PopupConfig[] = [
         description: "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.",
         buttonText: "Subscribe",
         showConantLeadership: true,
-        conantLeadershipLabel: "Also subscribe to ConantLeadership Newsletter",
+        conantLeadershipLabel: "Subscribe to the ConantLeadership Newsletter.",
       },
     ],
     displayPages: "homepage",
