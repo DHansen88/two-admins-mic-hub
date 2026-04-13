@@ -1,7 +1,7 @@
 import { NavLink } from "./NavLink";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import { Menu, X, ChevronDown, Send, CheckCircle } from "lucide-react";
+import { Menu, X, Send, CheckCircle } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import logo from "@/assets/logo.png";
 
