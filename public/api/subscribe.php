@@ -88,8 +88,8 @@ curl_setopt_array($ch, [
         'custom_fields' => array_values(array_filter([
             !empty($firstName) ? ['name' => 'First Name', 'value' => $firstName] : null,
             !empty($lastName) ? ['name' => 'Last Name', 'value' => $lastName] : null,
-            $conantLeadership ? ['name' => 'ConantLeadership', 'value' => 'yes'] : null,
         ])) ?: null,
+        'tags' => $conantLeadership ? ['conantleadership'] : null,
     ], fn($v) => $v !== null)),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT => 15,
