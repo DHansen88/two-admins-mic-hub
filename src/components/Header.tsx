@@ -7,6 +7,8 @@ import logo from "@/assets/logo.png";
 
 /* ── Inline Subscribe Form with ConantLeadership checkbox ── */
 const HeaderSubscribeForm = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [conantLeadership, setConantLeadership] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -25,7 +27,7 @@ const HeaderSubscribeForm = () => {
       const res = await fetch("/api/subscribe.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed, conant_leadership: conantLeadership }),
+        body: JSON.stringify({ email: trimmed, first_name: firstName.trim(), last_name: lastName.trim(), conant_leadership: conantLeadership }),
       });
       const data = await res.json().catch(() => null);
       if (res.ok && data?.success) {
