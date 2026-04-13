@@ -17,9 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import BlogBlockEditor from "@/components/BlogBlockEditor";
-import { type ContentBlock } from "@/lib/block-types";
-import { extractTocItems } from "@/components/TableOfContents";
+import RichTextEditor from "@/components/RichTextEditor";
 import {
   Mic,
   Wand2,
@@ -90,8 +88,6 @@ const PublishEpisode = () => {
   const [episodeNumber, setEpisodeNumber] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [descriptionBlocks, setDescriptionBlocks] = useState<ContentBlock[]>([]);
-  const [useBlockEditor, setUseBlockEditor] = useState(true);
   const [guestName, setGuestName] = useState("");
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [duration, setDuration] = useState("");
