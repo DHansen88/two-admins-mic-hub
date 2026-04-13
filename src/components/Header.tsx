@@ -129,7 +129,7 @@ const Header = () => {
     { to: "/episodes", label: "Podcast" },
     { to: "/blog", label: "Blog" },
     { to: "/steps", label: "STEPS" },
-    { to: "/contact", label: "Contact" },
+    
     { to: "/merch", label: "Merch" },
   ];
 
