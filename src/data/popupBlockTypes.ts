@@ -9,12 +9,13 @@ export type PopupBlockType =
   | "video"
   | "button"
   | "divider"
-  | "html";
+  | "html"
+  | "newsletter";
 
 export interface RichTextPopupBlock {
   type: "richtext";
   id: string;
-  html: string; // stored as HTML from TipTap
+  html: string;
 }
 
 export interface ImagePopupBlock {
@@ -22,14 +23,14 @@ export interface ImagePopupBlock {
   id: string;
   src: string;
   caption?: string;
-  width?: number; // percentage 25-100
+  width?: number;
   linkUrl?: string;
 }
 
 export interface VideoPopupBlock {
   type: "video";
   id: string;
-  url: string; // YouTube or Vimeo URL
+  url: string;
 }
 
 export interface ButtonPopupBlock {
@@ -52,13 +53,24 @@ export interface HtmlEmbedPopupBlock {
   code: string;
 }
 
+export interface NewsletterPopupBlock {
+  type: "newsletter";
+  id: string;
+  heading: string;
+  description: string;
+  buttonText: string;
+  showConantLeadership: boolean;
+  conantLeadershipLabel: string;
+}
+
 export type PopupContentBlock =
   | RichTextPopupBlock
   | ImagePopupBlock
   | VideoPopupBlock
   | ButtonPopupBlock
   | DividerPopupBlock
-  | HtmlEmbedPopupBlock;
+  | HtmlEmbedPopupBlock
+  | NewsletterPopupBlock;
 
 export function createPopupBlockId(): string {
   return `pb-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -79,16 +91,24 @@ export function createEmptyPopupBlock(type: PopupBlockType): PopupContentBlock {
       return { type: "divider", id };
     case "html":
       return { type: "html", id, code: "" };
+    case "newsletter":
+      return {
+        type: "newsletter",
+        id,
+        heading: "Two Admins And A Mic",
+        description: "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.",
+        buttonText: "Subscribe",
+        showConantLeadership: true,
+        conantLeadershipLabel: "Also subscribe to ConantLeadership Newsletter",
+      };
   }
 }
 
 /** Convert a YouTube/Vimeo URL to an embed URL */
 export function getVideoEmbedUrl(url: string): string | null {
-  // YouTube
   const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
   if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
 
-  // Vimeo
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
 

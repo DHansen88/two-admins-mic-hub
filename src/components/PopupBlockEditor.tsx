@@ -16,6 +16,7 @@ import {
   MousePointerClick,
   Minus,
   Code,
+  Mail,
   Trash2,
   GripVertical,
   ChevronUp,
@@ -33,6 +34,7 @@ const BLOCK_TYPES: { type: PopupBlockType; label: string; icon: React.ElementTyp
   { type: "image", label: "Image", icon: ImageIcon },
   { type: "video", label: "Video", icon: Video },
   { type: "button", label: "Button", icon: MousePointerClick },
+  { type: "newsletter", label: "Newsletter", icon: Mail },
   { type: "divider", label: "Divider", icon: Minus },
   { type: "html", label: "HTML Embed", icon: Code },
 ];
@@ -131,6 +133,8 @@ function BlockBody({ block, onChange }: { block: PopupContentBlock; onChange: (b
       return <p className="text-xs text-muted-foreground italic">Horizontal divider — no settings.</p>;
     case "html":
       return <HtmlBlockEditor block={block} onChange={onChange} />;
+    case "newsletter":
+      return <NewsletterBlockEditor block={block} onChange={onChange} />;
     default:
       return null;
   }
@@ -327,6 +331,36 @@ function HtmlBlockEditor({ block, onChange }: { block: Extract<PopupContentBlock
         placeholder="Paste embed code, iframe, or HTML here..."
         className="font-mono text-xs"
       />
+    </div>
+  );
+}
+
+/* Newsletter */
+function NewsletterBlockEditor({ block, onChange }: { block: Extract<PopupContentBlock, { type: "newsletter" }>; onChange: (b: PopupContentBlock) => void }) {
+  return (
+    <div className="space-y-3">
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium">Heading</label>
+        <Input value={block.heading} onChange={(e) => onChange({ ...block, heading: e.target.value })} placeholder="Newsletter heading" />
+      </div>
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium">Description</label>
+        <Textarea value={block.description} onChange={(e) => onChange({ ...block, description: e.target.value })} rows={3} placeholder="Short description..." />
+      </div>
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium">Button Text</label>
+        <Input value={block.buttonText} onChange={(e) => onChange({ ...block, buttonText: e.target.value })} placeholder="Subscribe" />
+      </div>
+      <label className="flex items-center gap-2 text-xs">
+        <Switch checked={block.showConantLeadership} onCheckedChange={(v) => onChange({ ...block, showConantLeadership: v })} />
+        Show ConantLeadership Newsletter checkbox
+      </label>
+      {block.showConantLeadership && (
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium">Checkbox Label</label>
+          <Input value={block.conantLeadershipLabel} onChange={(e) => onChange({ ...block, conantLeadershipLabel: e.target.value })} placeholder="Also subscribe to ConantLeadership Newsletter" />
+        </div>
+      )}
     </div>
   );
 }
