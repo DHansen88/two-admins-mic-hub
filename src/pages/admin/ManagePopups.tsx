@@ -7,8 +7,7 @@ import {
   deletePopup,
   type PopupConfig,
 } from "@/data/popupData";
-import { type PopupContentBlock } from "@/data/popupBlockTypes";
-import PopupBlockEditor from "@/components/PopupBlockEditor";
+import RichTextEditor from "@/components/RichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -140,10 +139,13 @@ const ManagePopups = () => {
             </div>
           </div>
 
-          <PopupBlockEditor
-            blocks={form.contentBlocks || []}
-            onChange={(blocks) => setForm({ ...form, contentBlocks: blocks })}
-          />
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">Popup Content</label>
+            <RichTextEditor
+              content={form.content || ""}
+              onChange={(html) => setForm({ ...form, content: html })}
+            />
+          </div>
 
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 text-sm">
