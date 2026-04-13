@@ -123,21 +123,14 @@ const HeaderSubscribeForm = () => {
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const [isMobileMoreOpen, setIsMobileMoreOpen] = useState(false);
-  const moreRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navItems = [
     { to: "/about", label: "About" },
     { to: "/episodes", label: "Podcast" },
     { to: "/blog", label: "Blog" },
     { to: "/steps", label: "STEPS" },
-  ];
-
-  const moreItems = [
-    { to: "/merch", label: "Merch" },
     { to: "/contact", label: "Contact" },
+    { to: "/merch", label: "Merch" },
   ];
 
   useEffect(() => {
