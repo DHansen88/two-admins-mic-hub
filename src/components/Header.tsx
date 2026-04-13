@@ -133,6 +133,27 @@ const Header = () => {
     { to: "/merch", label: "Merch" },
   ];
 
+  return (
+    <header className="bg-navy shadow-lg sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <a href="/" className="flex items-center gap-2 text-xl font-display font-bold text-background no-underline">
+            <img src={logo} alt="Two Admins and a Mic logo" className="h-10 w-auto" />
+          </a>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-2 lg:gap-6">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className="text-background hover:text-accent transition-colors duration-300 font-medium"
+                activeClassName="text-accent"
+              >
+                {item.label}
+              </NavLink>
+            ))}
 
             <Dialog>
               <DialogTrigger asChild>
