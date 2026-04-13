@@ -7,6 +7,8 @@ import logo from "@/assets/logo.png";
 
 /* ── Inline Subscribe Form with ConantLeadership checkbox ── */
 const HeaderSubscribeForm = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [conantLeadership, setConantLeadership] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -25,7 +27,7 @@ const HeaderSubscribeForm = () => {
       const res = await fetch("/api/subscribe.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed, conant_leadership: conantLeadership }),
+        body: JSON.stringify({ email: trimmed, first_name: firstName.trim(), last_name: lastName.trim(), conant_leadership: conantLeadership }),
       });
       const data = await res.json().catch(() => null);
       if (res.ok && data?.success) {
@@ -47,6 +49,26 @@ const HeaderSubscribeForm = () => {
       <h3 className="text-lg font-display font-bold text-foreground mb-1">Stay in the Loop</h3>
       <p className="text-sm text-muted-foreground mb-4">Get episode drops, blog highlights, and admin-life tips.</p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="First Name"
+            maxLength={100}
+            disabled={status === "submitting" || status === "success"}
+            className="h-10 px-3 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-coral/40 focus:border-coral transition-all disabled:opacity-50 text-sm w-full"
+          />
+          <input
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            placeholder="Last Name"
+            maxLength={100}
+            disabled={status === "submitting" || status === "success"}
+            className="h-10 px-3 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-coral/40 focus:border-coral transition-all disabled:opacity-50 text-sm w-full"
+          />
+        </div>
         <input
           type="email"
           value={email}
