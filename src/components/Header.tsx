@@ -1,9 +1,103 @@
 import { NavLink } from "./NavLink";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Send, CheckCircle } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import logo from "@/assets/logo.png";
+
+/* ── Inline Subscribe Form with ConantLeadership checkbox ── */
+const HeaderSubscribeForm = () => {
+  const [email, setEmail] = useState("");
+  const [conantLeadership, setConantLeadership] = useState(false);
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+    const trimmed = email.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setErrorMsg("Please enter a valid email address.");
+      return;
+    }
+    setStatus("submitting");
+    try {
+      const res = await fetch("/api/subscribe.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmed, conant_leadership: conantLeadership }),
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.success) {
+        setStatus("success");
+        setEmail("");
+        setTimeout(() => setStatus("idle"), 5000);
+      } else {
+        setStatus("error");
+        setErrorMsg(data?.error || "Subscription failed. Please try again.");
+      }
+    } catch {
+      setStatus("error");
+      setErrorMsg("Subscription service unavailable. Please try again.");
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <h3 className="text-lg font-display font-bold text-foreground mb-1">Stay in the Loop</h3>
+      <p className="text-sm text-muted-foreground mb-4">Get episode drops, blog highlights, and admin-life tips.</p>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          maxLength={255}
+          disabled={status === "submitting" || status === "success"}
+          className="h-10 px-3 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-coral/40 focus:border-coral transition-all disabled:opacity-50 text-sm w-full"
+        />
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={conantLeadership}
+            onChange={(e) => setConantLeadership(e.target.checked)}
+            disabled={status === "submitting" || status === "success"}
+            className="h-4 w-4 rounded border-border text-coral focus:ring-coral/40 accent-coral"
+          />
+          <span className="text-sm text-muted-foreground">Subscribe to the ConantLeadership Newsletter.</span>
+        </label>
+        <Button
+          type="submit"
+          disabled={status === "submitting" || status === "success"}
+          className="h-10 rounded-lg bg-coral hover:bg-coral/90 text-white font-semibold text-sm transition-all disabled:opacity-70 w-full"
+        >
+          {status === "submitting" ? (
+            <span className="flex items-center gap-2">
+              <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Subscribing…
+            </span>
+          ) : status === "success" ? (
+            <span className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4" />
+              Subscribed!
+            </span>
+          ) : (
+            <span className="flex items-center gap-2">
+              <Send className="h-4 w-4" />
+              Subscribe
+            </span>
+          )}
+        </Button>
+        {status === "success" && (
+          <p className="text-teal text-xs flex items-center gap-1 animate-fade-in">
+            <CheckCircle className="h-3 w-3" /> Check your email to confirm.
+          </p>
+        )}
+        {errorMsg && <p className="text-destructive text-xs">{errorMsg}</p>}
+      </form>
+    </div>
+  );
+};
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,15 +138,15 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-slate/95 backdrop-blur-sm border-b border-navy">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
-          <NavLink to="/" className="flex items-center space-x-3">
-            <img src={logo} alt="Two Admins & a Mic" className="h-12 md:h-14 w-auto" />
-          </NavLink>
+    <header className="bg-navy shadow-lg sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <a href="/" className="flex items-center gap-2 text-xl font-display font-bold text-background no-underline">
+            <img src={logo} alt="Two Admins and a Mic logo" className="h-10 w-auto" />
+          </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center gap-2 lg:gap-6">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -65,14 +159,39 @@ const Header = () => {
               </NavLink>
             ))}
 
-            {/* Merch Link */}
-            <NavLink
-              to="/merch"
-              className="text-background hover:text-accent transition-colors duration-300 font-medium"
-              activeClassName="text-accent"
+            {/* More Dropdown */}
+            <div
+              ref={moreRef}
+              className="relative"
+              onMouseEnter={handleMoreEnter}
+              onMouseLeave={handleMoreLeave}
             >
-              Merch
-            </NavLink>
+              <button
+                className="flex items-center gap-1 text-background hover:text-accent transition-colors duration-300 font-medium"
+                onClick={() => setIsMoreOpen(!isMoreOpen)}
+              >
+                More
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform duration-200 ${isMoreOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+              {isMoreOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-navy/95 backdrop-blur-sm rounded-lg shadow-xl border border-navy py-2 z-50">
+                  {moreItems.map((item) => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      className="block px-4 py-2 text-background hover:text-accent hover:bg-navy/80 transition-colors duration-200 font-medium"
+                      activeClassName="text-accent"
+                      onClick={() => setIsMoreOpen(false)}
+                    >
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <Dialog>
               <DialogTrigger asChild>
@@ -80,14 +199,8 @@ const Header = () => {
                   Subscribe
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] p-0 border-none bg-transparent shadow-none [&>button]:text-white [&>button]:hover:text-accent">
-                <iframe
-                  src="https://subscribe-forms.beehiiv.com/74c343d2-d107-444d-a076-41871db3af66"
-                  className="w-full border-none rounded-lg"
-                  style={{ height: 532, maxWidth: '100%' }}
-                  scrolling="no"
-                  title="Subscribe"
-                />
+              <DialogContent className="sm:max-w-[420px] p-0 border border-border rounded-xl overflow-hidden">
+                <HeaderSubscribeForm />
               </DialogContent>
             </Dialog>
           </nav>
@@ -154,14 +267,8 @@ const Header = () => {
                     Subscribe
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px] p-0 border-none bg-transparent shadow-none [&>button]:text-white [&>button]:hover:text-accent">
-                  <iframe
-                    src="https://subscribe-forms.beehiiv.com/74c343d2-d107-444d-a076-41871db3af66"
-                    className="w-full border-none rounded-lg"
-                    style={{ height: 532, maxWidth: '100%' }}
-                    scrolling="no"
-                    title="Subscribe"
-                  />
+                <DialogContent className="sm:max-w-[420px] p-0 border border-border rounded-xl overflow-hidden">
+                  <HeaderSubscribeForm />
                 </DialogContent>
               </Dialog>
             </div>
