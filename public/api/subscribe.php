@@ -34,6 +34,7 @@ $body = getRequestBody();
 $email = isset($body['email']) ? trim($body['email']) : '';
 $firstName = isset($body['first_name']) ? trim(substr($body['first_name'], 0, 100)) : '';
 $lastName = isset($body['last_name']) ? trim(substr($body['last_name'], 0, 100)) : '';
+$conantLeadership = !empty($body['conant_leadership']);
 
 if (empty($email)) {
     jsonResponse(['error' => 'Email is required'], 400);
@@ -87,6 +88,7 @@ curl_setopt_array($ch, [
         'custom_fields' => array_values(array_filter([
             !empty($firstName) ? ['name' => 'First Name', 'value' => $firstName] : null,
             !empty($lastName) ? ['name' => 'Last Name', 'value' => $lastName] : null,
+            $conantLeadership ? ['name' => 'ConantLeadership', 'value' => 'yes'] : null,
         ])) ?: null,
     ], fn($v) => $v !== null)),
     CURLOPT_RETURNTRANSFER => true,

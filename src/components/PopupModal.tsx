@@ -2,19 +2,21 @@ import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { X, CheckCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   getActivePopupForPath,
   hasSeenPopup,
   markPopupSeen,
   type PopupConfig,
 } from "@/data/popupData";
-import { type PopupContentBlock, getVideoEmbedUrl } from "@/data/popupBlockTypes";
+import { type PopupContentBlock, type NewsletterPopupBlock, getVideoEmbedUrl } from "@/data/popupBlockTypes";
 
-/* ── Newsletter Form (used by legacy beehiiv popups) ── */
-const PopupNewsletterForm = () => {
+/* ── Newsletter Form (reusable for newsletter blocks) ── */
+const NewsletterForm = ({ config }: { config: NewsletterPopupBlock }) => {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [conantLeadership, setConantLeadership] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -35,6 +37,7 @@ const PopupNewsletterForm = () => {
           email: trimmed,
           first_name: firstName.trim() || undefined,
           last_name: lastName.trim() || undefined,
+          conant_leadership: conantLeadership || undefined,
         }),
       });
       const data = await res.json().catch(() => null);
@@ -43,6 +46,7 @@ const PopupNewsletterForm = () => {
         setEmail("");
         setFirstName("");
         setLastName("");
+        setConantLeadership(false);
         setTimeout(() => setStatus("idle"), 5000);
       } else {
         setStatus("error");
@@ -69,10 +73,10 @@ const PopupNewsletterForm = () => {
   return (
     <div className="px-6 sm:px-10 py-8 text-center">
       <h2 className="text-2xl sm:text-3xl font-display font-bold text-slate mb-3">
-        Two Admins And A Mic
+        {config.heading}
       </h2>
       <p className="text-muted-foreground mb-6 text-sm sm:text-base max-w-md mx-auto">
-        The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.
+        {config.description}
       </p>
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-0">
         <div className="border border-border rounded-lg overflow-hidden">
@@ -83,10 +87,19 @@ const PopupNewsletterForm = () => {
             {status === "submitting" ? (
               <span className="flex items-center gap-2"><span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Subscribing…</span>
             ) : (
-              <span className="flex items-center gap-2"><Send className="h-4 w-4" />Subscribe</span>
+              <span className="flex items-center gap-2"><Send className="h-4 w-4" />{config.buttonText}</span>
             )}
           </Button>
         </div>
+        {config.showConantLeadership && (
+          <label className="flex items-center gap-2 mt-4 text-sm text-muted-foreground cursor-pointer justify-center">
+            <Checkbox
+              checked={conantLeadership}
+              onCheckedChange={(v) => setConantLeadership(v === true)}
+            />
+            <span>{config.conantLeadershipLabel}</span>
+          </label>
+        )}
         {errorMsg && <p className="text-destructive text-sm mt-3">{errorMsg}</p>}
       </form>
     </div>
@@ -176,6 +189,9 @@ function PopupBlock({ block }: { block: PopupContentBlock }) {
         />
       );
 
+    case "newsletter":
+      return <NewsletterForm config={block} />;
+
     default:
       return null;
   }
@@ -209,7 +225,6 @@ const PopupModal = () => {
   if (!visible || !popup) return null;
 
   const hasBlocks = popup.contentBlocks && popup.contentBlocks.length > 0;
-  const isBeehiivEmbed = !hasBlocks && popup.content.includes("beehiiv");
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={close}>
@@ -224,8 +239,6 @@ const PopupModal = () => {
 
         {hasBlocks ? (
           <PopupBlockRenderer blocks={popup.contentBlocks!} />
-        ) : isBeehiivEmbed ? (
-          <PopupNewsletterForm />
         ) : (
           <div
             className="popup-content w-full px-4 pb-6 sm:px-0 sm:pb-0 [&_iframe]:w-full [&_form]:max-w-full"
