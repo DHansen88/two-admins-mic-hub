@@ -188,10 +188,7 @@ const PublishEpisode = () => {
     number: parseInt(episodeNumber) || 0,
     title,
     slug: `episode-${episodeNumber}-${generateSlug(title)}`,
-    description: useBlockEditor
-      ? descriptionBlocks.map(b => ('text' in b ? b.text : '')).filter(Boolean).join(' ')
-      : description,
-    descriptionBlocks: useBlockEditor && descriptionBlocks.length > 0 ? descriptionBlocks : undefined,
+    description,
     duration,
     date: publishDate,
     topics: selectedTopics,
@@ -327,52 +324,12 @@ const PublishEpisode = () => {
             <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Leading Through Change: Strategies for Modern Administrators" />
           </div>
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-foreground">Episode Description *</label>
-              <div className="flex rounded-lg overflow-hidden border border-border">
-                <button
-                  type="button"
-                  onClick={() => setUseBlockEditor(true)}
-                  className={`px-3 py-1 text-xs font-medium transition-colors ${useBlockEditor ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
-                >
-                  Block Editor
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setUseBlockEditor(false)}
-                  className={`px-3 py-1 text-xs font-medium transition-colors ${!useBlockEditor ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
-                >
-                  Plain Text
-                </button>
-              </div>
-            </div>
-            {useBlockEditor ? (
-              <BlogBlockEditor blocks={descriptionBlocks} onChange={setDescriptionBlocks} />
-            ) : (
-              <Textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Episode description..." />
-            )}
+            <label className="text-sm font-medium text-foreground">Episode Description *</label>
+            <RichTextEditor
+              content={description}
+              onChange={setDescription}
+            />
           </div>
-
-          {/* Auto-generated TOC Preview */}
-          {useBlockEditor && descriptionBlocks.filter(b => b.type === "heading" && (b as any).level <= 3).length > 0 && (
-            <div className="rounded-lg border border-border bg-muted/30 p-4">
-              <p className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                <List className="h-3.5 w-3.5" />
-                Auto-Generated Table of Contents
-              </p>
-              <ul className="space-y-1">
-                {extractTocItems(descriptionBlocks).map((item) => (
-                  <li
-                    key={item.id}
-                    className={`text-sm text-foreground/70 border-l-2 border-border ${item.level === 3 ? "pl-5" : "pl-3"} py-1`}
-                  >
-                    {item.text}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Guest Name</label>
