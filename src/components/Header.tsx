@@ -46,8 +46,8 @@ const HeaderSubscribeForm = () => {
 
   return (
     <div className="p-6">
-      <h3 className="text-lg font-display font-bold text-foreground mb-1">Stay in the Loop</h3>
-      <p className="text-sm text-muted-foreground mb-4">Get episode drops, blog highlights, and admin-life tips.</p>
+      <h3 className="text-lg font-display font-bold text-foreground mb-1">Join the Community</h3>
+      <p className="text-sm text-muted-foreground mb-4">Get episode drops, blog highlights, and admin life insights.</p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="flex gap-2">
           <input
