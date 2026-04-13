@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 
 const NewsletterCTA = () => {
   const [email, setEmail] = useState("");
+  const [conantLeadership, setConantLeadership] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -24,7 +25,7 @@ const NewsletterCTA = () => {
       const res = await fetch("/api/subscribe.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed })
+        body: JSON.stringify({ email: trimmed, conant_leadership: conantLeadership })
       });
 
       const data = await res.json().catch(() => null);
@@ -100,6 +101,17 @@ No spam — just the good stuff.
                     }
                   </Button>
                 </div>
+
+                <label className="flex items-center gap-2 mt-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={conantLeadership}
+                    onChange={(e) => setConantLeadership(e.target.checked)}
+                    disabled={status === "submitting" || status === "success"}
+                    className="h-4 w-4 rounded border-border text-coral focus:ring-coral/40 accent-coral"
+                  />
+                  <span className="text-sm text-muted-foreground">Subscribe to the ConantLeadership Newsletter.</span>
+                </label>
 
                 {status === "success" &&
                 <p className="text-teal text-sm mt-2 flex items-center justify-center gap-1.5 animate-fade-in transition-opacity duration-500">
