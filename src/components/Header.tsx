@@ -142,13 +142,13 @@ const Header = () => {
           </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-2 lg:gap-6">
+          <nav className="hidden md:flex items-center gap-4 lg:gap-8">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === "/"}
-                className="text-background hover:text-accent transition-colors duration-300 font-medium"
+                className="text-background hover:text-accent transition-colors duration-300 font-medium px-2 py-2 min-w-[44px] text-center"
                 activeClassName="text-accent"
               >
                 {item.label}
@@ -157,7 +157,7 @@ const Header = () => {
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="default" className="bg-coral-accent hover:bg-coral-accent/90">
+                <Button variant="default" className="bg-coral-accent hover:bg-coral-accent/90 ml-2 min-w-[44px]">
                   Subscribe
                 </Button>
               </DialogTrigger>
