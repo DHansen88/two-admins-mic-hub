@@ -1,8 +1,8 @@
 import { NavLink } from "./NavLink";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import { Menu, X, ChevronDown, Send, CheckCircle } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { Menu, X, Send, CheckCircle } from "lucide-react";
+import { useState } from "react";
 import logo from "@/assets/logo.png";
 
 /* ── Inline Subscribe Form with ConantLeadership checkbox ── */
@@ -123,41 +123,15 @@ const HeaderSubscribeForm = () => {
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const [isMobileMoreOpen, setIsMobileMoreOpen] = useState(false);
-  const moreRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navItems = [
     { to: "/about", label: "About" },
     { to: "/episodes", label: "Podcast" },
     { to: "/blog", label: "Blog" },
     { to: "/steps", label: "STEPS" },
-  ];
-
-  const moreItems = [
-    { to: "/merch", label: "Merch" },
     { to: "/contact", label: "Contact" },
+    { to: "/merch", label: "Merch" },
   ];
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
-        setIsMoreOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleMoreEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setIsMoreOpen(true);
-  };
-
-  const handleMoreLeave = () => {
-    timeoutRef.current = setTimeout(() => setIsMoreOpen(false), 200);
-  };
 
   return (
     <header className="bg-navy shadow-lg sticky top-0 z-50">
@@ -180,40 +154,6 @@ const Header = () => {
                 {item.label}
               </NavLink>
             ))}
-
-            {/* More Dropdown */}
-            <div
-              ref={moreRef}
-              className="relative"
-              onMouseEnter={handleMoreEnter}
-              onMouseLeave={handleMoreLeave}
-            >
-              <button
-                className="flex items-center gap-1 text-background hover:text-accent transition-colors duration-300 font-medium"
-                onClick={() => setIsMoreOpen(!isMoreOpen)}
-              >
-                More
-                <ChevronDown
-                  size={16}
-                  className={`transition-transform duration-200 ${isMoreOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-              {isMoreOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-navy/95 backdrop-blur-sm rounded-lg shadow-xl border border-navy py-2 z-50">
-                  {moreItems.map((item) => (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      className="block px-4 py-2 text-background hover:text-accent hover:bg-navy/80 transition-colors duration-200 font-medium"
-                      activeClassName="text-accent"
-                      onClick={() => setIsMoreOpen(false)}
-                    >
-                      {item.label}
-                    </NavLink>
-                  ))}
-                </div>
-              )}
-            </div>
 
             <Dialog>
               <DialogTrigger asChild>
@@ -253,35 +193,7 @@ const Header = () => {
                 </NavLink>
               ))}
 
-              {/* Mobile More Section */}
-              <button
-                onClick={() => setIsMobileMoreOpen(!isMobileMoreOpen)}
-                className="flex items-center gap-1 text-background hover:text-accent transition-colors duration-300 font-medium py-2 text-left"
-              >
-                More
-                <ChevronDown
-                  size={16}
-                  className={`transition-transform duration-200 ${isMobileMoreOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-              {isMobileMoreOpen && (
-                <div className="flex flex-col space-y-2 pl-4 border-l-2 border-navy">
-                  {moreItems.map((item) => (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      className="text-background hover:text-accent transition-colors duration-300 font-medium py-2"
-                      activeClassName="text-accent"
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        setIsMobileMoreOpen(false);
-                      }}
-                    >
-                      {item.label}
-                    </NavLink>
-                  ))}
-                </div>
-              )}
+
 
               <Dialog>
                 <DialogTrigger asChild>
