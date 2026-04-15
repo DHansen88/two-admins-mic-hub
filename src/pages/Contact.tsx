@@ -46,7 +46,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-20">
+      <main>
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-br from-slate via-navy to-deep-blue relative overflow-hidden">
           {/* Paper airplane animation */}
