@@ -67,9 +67,6 @@ const Footer = () => {
                   <NavLink to="/steps" className="text-background/70 hover:text-teal transition-colors">
                     STEPS
                   </NavLink>
-                  <NavLink to="/merch" className="text-background/70 hover:text-teal transition-colors">
-                    Merch
-                  </NavLink>
                   <NavLink to="/contact" className="text-background/70 hover:text-teal transition-colors">
                     Contact
                   </NavLink>
