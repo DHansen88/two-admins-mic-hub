@@ -129,8 +129,6 @@ const Header = () => {
     { to: "/episodes", label: "Podcast" },
     { to: "/blog", label: "Blog" },
     { to: "/steps", label: "STEPS" },
-    
-    { to: "/merch", label: "Merch" },
   ];
 
   return (
