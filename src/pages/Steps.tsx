@@ -563,7 +563,7 @@ const Steps = () => {
   };
   return <div className="min-h-screen">
       <Header />
-      <main className="pt-20">
+      <main>
         {/* ─── 1. HERO ─── */}
         <section className="relative py-16 md:py-24 min-h-[280px] md:min-h-[320px] bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden flex items-center justify-center">
           {/* Subtle background motif — ascending steps */}

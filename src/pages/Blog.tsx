@@ -74,7 +74,7 @@ const Blog = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-20">
+      <main>
         {/* Banner */}
         <section className="relative py-20 min-h-[280px] md:min-h-[320px] bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden flex items-center justify-center">
           <QuillAnimation />
