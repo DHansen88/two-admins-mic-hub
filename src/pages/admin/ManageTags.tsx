@@ -192,14 +192,16 @@ const ManageTags = () => {
       toast({ title: "A tag with this name already exists", variant: "destructive" });
       return;
     }
-    const updated = addTag({
+    const newTag: Tag = {
       name,
       slug,
       color: "0 0% 0%", // legacy field
       bgColor: newBgColor,
       textColor: newTextColor,
       borderColor: newBorderColor || undefined,
-    });
+    };
+    const updated = addTag(newTag);
+    syncTagToApi('POST', newTag);
     setTags(updated);
     setNewName("");
     setNewBgColor(PRESET_BG_COLORS[0]);
