@@ -436,7 +436,7 @@ const ManagePopups = () => {
             {form.newsletterConfig?.enabled && (
               <div className="px-6 pb-6 text-center">
                 {form.newsletterConfig.heading && (
-                  <h2 className="text-2xl sm:text-3xl font-display font-bold text-slate mb-3">
+                  <h2 className="text-2xl font-display font-bold text-slate mb-3 sm:text-2xl">
                     {form.newsletterConfig.heading}
                   </h2>
                 )}
