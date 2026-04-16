@@ -29,6 +29,85 @@ switch ($action) {
         jsonResponse(['error' => 'Invalid action'], 400);
 }
 
+function logAdminAuthActivity(?int $userId, string $email, string $action, ?string $details = null): void {
+    try {
+        $db = getDB();
+        $columns = getTableColumns('admin_activity_log');
+        if (empty($columns)) {
+            return;
+        }
+
+        $data = [];
+        if ($userId !== null && in_array('user_id', $columns, true)) {
+            $data['user_id'] = $userId;
+        }
+        if (in_array('user_email', $columns, true)) {
+            $data['user_email'] = $email;
+        } elseif (in_array('user_name', $columns, true)) {
+            $data['user_name'] = $email;
+        }
+        if (in_array('action', $columns, true)) {
+            $data['action'] = $action;
+        }
+        if ($details !== null && in_array('details', $columns, true)) {
+            $data['details'] = $details;
+        }
+        if (in_array('ip_address', $columns, true)) {
+            $data['ip_address'] = $_SERVER['REMOTE_ADDR'] ?? '';
+        }
+        if (empty($data)) {
+            return;
+        }
+
+        $fields = array_keys($data);
+        $placeholders = implode(', ', array_fill(0, count($fields), '?'));
+        $sql = 'INSERT INTO admin_activity_log (' . implode(', ', $fields) . ') VALUES (' . $placeholders . ')';
+        $stmt = $db->prepare($sql);
+        $stmt->execute(array_values($data));
+    } catch (Throwable $e) {
+        error_log('Admin auth log failed: ' . $e->getMessage());
+    }
+}
+
+function fetchAdminUserForLogin(string $email): ?array {
+    $db = getDB();
+    $columns = getTableColumns('admin_users');
+    if (empty($columns) || !in_array('email', $columns, true)) {
+        return null;
+    }
+
+    $select = ['id', 'name', 'email'];
+    foreach (['password_hash', 'password', 'role', 'status', 'permissions'] as $column) {
+        if (in_array($column, $columns, true)) {
+            $select[] = $column;
+        }
+    }
+
+    $stmt = $db->prepare('SELECT ' . implode(', ', $select) . ' FROM admin_users WHERE email = ? LIMIT 1');
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+
+    return $user ?: null;
+}
+
+function verifyAdminPassword(string $password, array $user): bool {
+    $storedHash = (string) ($user['password_hash'] ?? '');
+    if ($storedHash !== '') {
+        return password_verify($password, $storedHash);
+    }
+
+    $storedPassword = (string) ($user['password'] ?? '');
+    if ($storedPassword === '') {
+        return false;
+    }
+
+    if (password_get_info($storedPassword)['algo'] !== null) {
+        return password_verify($password, $storedPassword);
+    }
+
+    return hash_equals($storedPassword, $password);
+}
+
 function handleLogin(): void {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         jsonResponse(['error' => 'Method not allowed'], 405);
@@ -47,20 +126,14 @@ function handleLogin(): void {
         jsonResponse(['error' => 'Invalid email format'], 400);
     }
     
-    $db = getDB();
-    $stmt = $db->prepare('SELECT id, name, email, password_hash, role, status, permissions FROM admin_users WHERE email = ?');
-    $stmt->execute([$email]);
-    $user = $stmt->fetch();
+    $user = fetchAdminUserForLogin($email);
     
-    if (!$user || !password_verify($password, $user['password_hash'])) {
-        // Log failed attempt
-        $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_email, action, details, ip_address) VALUES (?, ?, ?, ?)');
-        $logStmt->execute([$email, 'login_failed', 'Invalid credentials', $_SERVER['REMOTE_ADDR'] ?? '']);
-        
+    if (!$user || !verifyAdminPassword($password, $user)) {
+        logAdminAuthActivity(null, $email, 'login_failed', 'Invalid credentials');
         jsonResponse(['error' => 'Invalid email or password'], 401);
     }
     
-    if ($user['status'] !== 'active') {
+    if (($user['status'] ?? 'active') !== 'active') {
         jsonResponse(['error' => 'Account is disabled. Contact an administrator.'], 403);
     }
     
@@ -69,16 +142,14 @@ function handleLogin(): void {
     session_regenerate_id(true);
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['user_email'] = $user['email'];
-    $_SESSION['user_role'] = $user['role'];
+    $_SESSION['user_role'] = $user['role'] ?? 'admin';
     $_SESSION['user_name'] = $user['name'];
     $_SESSION['expires_at'] = time() + SESSION_LIFETIME;
     session_write_close();
     
-    // Log successful login
-    $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_id, user_email, action, ip_address) VALUES (?, ?, ?, ?)');
-    $logStmt->execute([$user['id'], $user['email'], 'login_success', $_SERVER['REMOTE_ADDR'] ?? '']);
+    logAdminAuthActivity((int) $user['id'], $user['email'], 'login_success');
     
-    $permissions = $user['permissions'] ? json_decode($user['permissions'], true) : null;
+    $permissions = !empty($user['permissions']) ? json_decode((string) $user['permissions'], true) : null;
     $token = issueAdminToken($user);
     
     jsonResponse([
@@ -88,7 +159,7 @@ function handleLogin(): void {
             'id' => $user['id'],
             'name' => $user['name'],
             'email' => $user['email'],
-            'role' => $user['role'],
+            'role' => $user['role'] ?? 'admin',
             'permissions' => $permissions,
         ],
     ]);
@@ -99,9 +170,7 @@ function handleLogout(): void {
     revokeAdminToken(getAdminBearerToken());
     
     if (!empty($_SESSION['user_id'])) {
-        $db = getDB();
-        $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_id, user_email, action, ip_address) VALUES (?, ?, ?, ?)');
-        $logStmt->execute([$_SESSION['user_id'], $_SESSION['user_email'], 'logout', $_SERVER['REMOTE_ADDR'] ?? '']);
+        logAdminAuthActivity((int) $_SESSION['user_id'], (string) ($_SESSION['user_email'] ?? ''), 'logout');
     }
     
     session_destroy();
@@ -112,17 +181,32 @@ function handleSession(): void {
     $sessionUser = requireAuth();
 
     $db = getDB();
-    $stmt = $db->prepare('SELECT permissions, role, status FROM admin_users WHERE id = ?');
+    $columns = getTableColumns('admin_users');
+    if (empty($columns)) {
+        jsonResponse(['authenticated' => false], 401);
+    }
+
+    $select = [];
+    foreach (['permissions', 'role', 'status'] as $column) {
+        if (in_array($column, $columns, true)) {
+            $select[] = $column;
+        }
+    }
+    if (empty($select)) {
+        $select[] = 'id';
+    }
+
+    $stmt = $db->prepare('SELECT ' . implode(', ', $select) . ' FROM admin_users WHERE id = ?');
     $stmt->execute([$sessionUser['id']]);
     $user = $stmt->fetch();
     
-    if (!$user || $user['status'] !== 'active') {
+    if (!$user || ($user['status'] ?? 'active') !== 'active') {
         revokeAdminToken(getAdminBearerToken());
         session_destroy();
         jsonResponse(['authenticated' => false], 401);
     }
     
-    $permissions = $user['permissions'] ? json_decode($user['permissions'], true) : null;
+    $permissions = !empty($user['permissions']) ? json_decode((string) $user['permissions'], true) : null;
     
     jsonResponse([
         'authenticated' => true,
@@ -130,7 +214,7 @@ function handleSession(): void {
             'id' => $sessionUser['id'],
             'name' => $sessionUser['name'],
             'email' => $sessionUser['email'],
-            'role' => $user['role'],
+            'role' => $user['role'] ?? $sessionUser['role'] ?? 'admin',
             'permissions' => $permissions,
         ],
     ]);
