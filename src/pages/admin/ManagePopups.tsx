@@ -205,7 +205,7 @@ const ManagePopups = () => {
                   setForm({
                     ...form,
                     newsletterConfig: {
-                      enabled: v || !!(form.newsletterConfig?.enabled),
+                      enabled: true,
                       heading: form.newsletterConfig?.heading || "Two Admins And A Mic",
                       description:
                         form.newsletterConfig?.description ||
@@ -370,6 +370,12 @@ const ManagePopups = () => {
                     {form.newsletterConfig.buttonText}
                   </div>
                 </div>
+                {form.newsletterConfig.showConantLeadership && (
+                  <label className="flex items-center gap-2 mt-4 text-sm text-muted-foreground justify-center cursor-pointer">
+                    <input type="checkbox" disabled className="h-4 w-4 rounded border-border" />
+                    <span>{form.newsletterConfig.conantLeadershipLabel}</span>
+                  </label>
+                )}
               </div>
             )}
 
