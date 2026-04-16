@@ -32,6 +32,7 @@ import {
 interface RichTextEditorProps {
   content: string;
   onChange: (html: string) => void;
+  minHeight?: string;
 }
 
 const ToolBtn = ({
@@ -61,7 +62,7 @@ const ToolBtn = ({
   </Button>
 );
 
-const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
+const RichTextEditor = ({ content, onChange, minHeight = "400px" }: RichTextEditorProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
@@ -90,8 +91,8 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
     },
     editorProps: {
       attributes: {
-        class:
-          "prose prose-sm sm:prose dark:prose-invert max-w-none min-h-[400px] focus:outline-none px-4 py-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1",
+        class: "prose prose-sm sm:prose dark:prose-invert max-w-none focus:outline-none px-4 py-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1",
+        style: `min-height: ${minHeight}`,
       },
       handleDrop: (view, event) => {
         const files = event.dataTransfer?.files;
