@@ -241,14 +241,24 @@ const PublishEpisode = () => {
     toast({ title: "Newsletter draft exported!" });
   };
 
-  const handleSaveDraft = () => {
+  const setStatusViaApi = async (id: string, status: string) => {
+    const apiBase = getAdminApiBase();
+    await fetch(`${apiBase}/content.php?action=set-status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders({}) },
+      credentials: 'include',
+      body: JSON.stringify({ type: 'episode', id, status }),
+    });
+  };
+
+  const handleSaveDraft = async () => {
     saveDraft(`episode-${episodeNumber || "new"}`, {
       episodeNumber, title, description, guestName, publishDate,
       duration, selectedTopics, riversideUrl, spotifyUrl, appleUrl,
       youtubeUrl, transcript, thumbnailName, keyTakeaways, summary,
       seoDescription, generatedBlog, generatedNewsletter,
     });
-    setContentStatus("episode", episodeNumber || "new", "draft");
+    await setStatusViaApi(episodeNumber || "new", "draft");
     toast({ title: "Draft saved" });
     navigate("/admin/episodes");
   };
@@ -261,7 +271,7 @@ const PublishEpisode = () => {
     const data = buildEpisodeData();
     const result = await saveEpisode(data);
     if (result.success) {
-      setContentStatus("episode", episodeNumber, "published");
+      await setStatusViaApi(episodeNumber, "published");
       saveToHistory("episode", data);
       toast({ title: "Episode published!" });
       navigate("/admin/episodes");

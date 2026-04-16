@@ -477,7 +477,17 @@ setAuthorAvatars(avatarMap);
     toast({ title: "Newsletter draft exported!" });
   };
 
-  const handleSaveDraft = () => {
+  const setStatusViaApi = async (slug: string, status: string) => {
+    const apiBase = getAdminApiBase();
+    await fetch(`${apiBase}/content.php?action=set-status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders({}) },
+      credentials: 'include',
+      body: JSON.stringify({ type: 'blog', id: slug, status }),
+    });
+  };
+
+  const handleSaveDraft = async () => {
     const slug = customSlug || generateSlug(title) || "new";
     saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
@@ -485,19 +495,19 @@ setAuthorAvatars(avatarMap);
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
     });
-    setContentStatus("blog", slug, "draft");
+    await setStatusViaApi(slug, "draft");
     toast({ title: "Draft saved" });
     navigate("/admin/blog-posts");
   };
 
   const handlePublishNow = async () => {
-  const success = await handlePublishToServer();
-  if (!success) return;
+    const success = await handlePublishToServer();
+    if (!success) return;
 
-  const slug = customSlug || generateSlug(title);
-  setContentStatus("blog", slug, "published");
-  navigate("/admin/blog-posts");
-};
+    const slug = customSlug || generateSlug(title);
+    await setStatusViaApi(slug, "published");
+    navigate("/admin/blog-posts");
+  };
 
   const handlePublishToServer = async (): Promise<boolean> => {
   const validAuthors = selectedAuthors.filter(Boolean);
