@@ -212,7 +212,38 @@ const PublishEpisode = () => {
     }
   };
 
-  const handleAutoGenerate = () => {
+  const handleGuestImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please choose an image file", variant: "destructive" });
+      return;
+    }
+    setGuestImageUploading(true);
+    try {
+      const result = await uploadPodcastCover(file);
+      if (result.success && result.url) {
+        setGuestImage(result.url);
+        toast({ title: `Guest image uploaded` });
+      } else {
+        const localUrl = URL.createObjectURL(file);
+        setGuestImage(localUrl);
+        toast({
+          title: "Using local preview URL",
+          description: result.error || "Upload API unavailable; the image will work in preview only.",
+        });
+      }
+    } catch (err: any) {
+      const localUrl = URL.createObjectURL(file);
+      setGuestImage(localUrl);
+      toast({
+        title: "Using local preview URL",
+        description: err?.message || "Upload failed; the image will work in preview only.",
+      });
+    } finally {
+      setGuestImageUploading(false);
+    }
+  };
     const sourceText = transcript || description;
     if (!sourceText) {
       toast({ title: "Add a description or transcript first", variant: "destructive" });
