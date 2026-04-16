@@ -137,10 +137,10 @@ const ManagePopups = () => {
             {editing === "new" ? "New Popup" : "Edit Popup"}
           </h2>
 
-          {/* Settings Grid */}
+          {/* Row 1: Title + Delay */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Popup Title *</label>
+              <label className="text-sm font-medium text-primary">Popup Title *</label>
               <Input
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
@@ -148,7 +148,7 @@ const ManagePopups = () => {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Delay (seconds)</label>
+              <label className="text-sm font-medium text-primary">Delay (seconds)</label>
               <Input
                 type="number"
                 min={0}
@@ -156,8 +156,12 @@ const ManagePopups = () => {
                 onChange={(e) => setForm({ ...form, delaySeconds: Number(e.target.value) })}
               />
             </div>
+          </div>
+
+          {/* Row 2: Display On + Cooldown */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Display On</label>
+              <label className="text-sm font-medium text-primary">Display On</label>
               <select
                 value={form.displayPages}
                 onChange={(e) => setForm({ ...form, displayPages: e.target.value })}
@@ -169,21 +173,21 @@ const ManagePopups = () => {
               </select>
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Cooldown (days)</label>
+              <label className="text-sm font-medium text-primary">Cooldown (days)</label>
               <Input
                 type="number"
                 min={0}
                 value={form.cooldownDays}
                 onChange={(e) => setForm({ ...form, cooldownDays: Number(e.target.value) })}
               />
-              <p className="text-xs text-muted-foreground">0 = once per session</p>
+              <p className="text-xs text-primary/70">0 = once per session</p>
             </div>
           </div>
 
           {/* Rich Text Content Editor */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Popup Content</label>
-            <p className="text-xs text-muted-foreground">
+            <label className="text-sm font-medium text-primary">Popup Content</label>
+            <p className="text-xs text-primary/70">
               Write your popup content below. Use the toolbar for headings, lists, links, images, and formatting.
             </p>
             <RichTextEditor
@@ -192,7 +196,48 @@ const ManagePopups = () => {
             />
           </div>
 
-          {/* Button Configuration */}
+          {/* Newsletter: ConantLeadership toggle + label inline */}
+          <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
+            <label className="flex items-center gap-2 text-sm">
+              <Switch
+                checked={form.newsletterConfig?.showConantLeadership ?? false}
+                onCheckedChange={(v) =>
+                  setForm({
+                    ...form,
+                    newsletterConfig: {
+                      enabled: v || !!(form.newsletterConfig?.enabled),
+                      heading: form.newsletterConfig?.heading || "Two Admins And A Mic",
+                      description:
+                        form.newsletterConfig?.description ||
+                        "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.",
+                      buttonText: form.newsletterConfig?.buttonText || "Subscribe",
+                      showConantLeadership: v,
+                      conantLeadershipLabel:
+                        form.newsletterConfig?.conantLeadershipLabel || "Subscribe to the ConantLeadership Newsletter.",
+                    },
+                  })
+                }
+              />
+              Show ConantLeadership checkbox
+            </label>
+            {form.newsletterConfig?.showConantLeadership && (
+              <div className="space-y-1.5 flex-1 min-w-[200px]">
+                <label className="text-xs font-medium text-primary">Checkbox Label</label>
+                <Input
+                  value={form.newsletterConfig.conantLeadershipLabel}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      newsletterConfig: { ...form.newsletterConfig!, conantLeadershipLabel: e.target.value },
+                    })
+                  }
+                  placeholder="Subscribe to the ConantLeadership Newsletter."
+                />
+              </div>
+            )}
+          </div>
+
+          {/* CTA Button toggle */}
           <div className="border border-border rounded-lg p-4 space-y-4">
             <label className="flex items-center gap-2 text-sm font-medium">
               <Switch
@@ -263,108 +308,8 @@ const ManagePopups = () => {
             )}
           </div>
 
-          {/* Newsletter Configuration */}
-          <div className="border border-border rounded-lg p-4 space-y-4">
-            <label className="flex items-center gap-2 text-sm font-medium">
-              <Switch
-                checked={!!form.newsletterConfig?.enabled}
-                onCheckedChange={(v) =>
-                  setForm({
-                    ...form,
-                    newsletterConfig: {
-                      enabled: v,
-                      heading: form.newsletterConfig?.heading || "Two Admins And A Mic",
-                      description:
-                        form.newsletterConfig?.description ||
-                        "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.",
-                      buttonText: form.newsletterConfig?.buttonText || "Subscribe",
-                      showConantLeadership: form.newsletterConfig?.showConantLeadership ?? true,
-                      conantLeadershipLabel:
-                        form.newsletterConfig?.conantLeadershipLabel || "Subscribe to the ConantLeadership Newsletter.",
-                    },
-                  })
-                }
-              />
-              Include Newsletter Signup
-            </label>
-            {form.newsletterConfig?.enabled && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium">Heading</label>
-                  <Input
-                    value={form.newsletterConfig.heading}
-                    onChange={(e) =>
-                      setForm({ ...form, newsletterConfig: { ...form.newsletterConfig!, heading: e.target.value } })
-                    }
-                    placeholder="Newsletter heading"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium">Button Text</label>
-                  <Input
-                    value={form.newsletterConfig.buttonText}
-                    onChange={(e) =>
-                      setForm({ ...form, newsletterConfig: { ...form.newsletterConfig!, buttonText: e.target.value } })
-                    }
-                    placeholder="Subscribe"
-                  />
-                </div>
-                <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-xs font-medium">Description</label>
-                  <textarea
-                    value={form.newsletterConfig.description}
-                    onChange={(e) =>
-                      setForm({ ...form, newsletterConfig: { ...form.newsletterConfig!, description: e.target.value } })
-                    }
-                    rows={3}
-                    className="w-full px-3 py-2 text-sm rounded-md border border-border bg-background"
-                    placeholder="Short description..."
-                  />
-                </div>
-                <label className="flex items-center gap-2 text-xs">
-                  <Switch
-                    checked={form.newsletterConfig.showConantLeadership}
-                    onCheckedChange={(v) =>
-                      setForm({
-                        ...form,
-                        newsletterConfig: { ...form.newsletterConfig!, showConantLeadership: v },
-                      })
-                    }
-                  />
-                  Show ConantLeadership checkbox
-                </label>
-                {form.newsletterConfig.showConantLeadership && (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium">Checkbox Label</label>
-                    <Input
-                      value={form.newsletterConfig.conantLeadershipLabel}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          newsletterConfig: { ...form.newsletterConfig!, conantLeadershipLabel: e.target.value },
-                        })
-                      }
-                      placeholder="Also subscribe to ConantLeadership Newsletter"
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Active Toggle */}
-          <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2 text-sm">
-              <Switch
-                checked={form.active}
-                onCheckedChange={(v) => setForm({ ...form, active: v })}
-              />
-              Active
-            </label>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
+          {/* Action Buttons — right-aligned */}
+          <div className="flex justify-end gap-3 pt-2">
             <Button onClick={handleSave}>Save Popup</Button>
             <Button variant="outline" onClick={() => setShowPreview(true)} className="gap-2">
               <Eye className="h-4 w-4" /> Preview
