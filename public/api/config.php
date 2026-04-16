@@ -50,31 +50,41 @@ function getDB(): PDO {
     return $pdo;
 }
 
-function getTableColumns(string $table): array {
-    static $cache = [];
+if (!function_exists('getTableColumns')) {
+    function getTableColumns(string $table): array {
+        static $cache = [];
 
-    if (isset($cache[$table])) {
+        if (isset($cache[$table])) {
+            return $cache[$table];
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+            return [];
+        }
+
+        try {
+            $db = getDB();
+            $stmt = $db->query("SHOW COLUMNS FROM `{$table}`");
+            $rows = $stmt->fetchAll();
+            $columns = [];
+            foreach ($rows as $row) {
+                if (!empty($row['Field'])) {
+                    $columns[] = (string) $row['Field'];
+                }
+            }
+            $cache[$table] = $columns;
+        } catch (Throwable $e) {
+            $cache[$table] = [];
+        }
+
         return $cache[$table];
     }
-
-    if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
-        return [];
-    }
-
-    try {
-        $db = getDB();
-        $stmt = $db->query("SHOW COLUMNS FROM `{$table}`");
-        $rows = $stmt->fetchAll();
-        $cache[$table] = array_values(array_map(static fn($row) => (string) ($row['Field'] ?? ''), $rows));
-    } catch (Throwable $e) {
-        $cache[$table] = [];
-    }
-
-    return $cache[$table];
 }
 
-function tableHasColumn(string $table, string $column): bool {
-    return in_array($column, getTableColumns($table), true);
+if (!function_exists('tableHasColumn')) {
+    function tableHasColumn(string $table, string $column): bool {
+        return in_array($column, getTableColumns($table), true);
+    }
 }
 
 function isHttpsRequest(): bool {
