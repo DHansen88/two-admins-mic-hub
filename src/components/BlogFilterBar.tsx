@@ -33,7 +33,7 @@ const BlogFilterBar = ({
   filteredCount,
   hideHostFilter = false,
 }: BlogFilterBarProps) => {
-  const topics = getTagNames();
+  const { tagNames: topics } = useApiTags();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const toggleTopic = (topic: string) => {
