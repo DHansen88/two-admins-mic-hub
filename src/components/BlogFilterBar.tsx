@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { getTagNames } from "@/data/tags";
+import { useApiTags } from "@/hooks/useApiTags";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import authorsData from "@/content/authors.json";
 import dianaBlogIcon from "@/assets/images/authors/diana-blog.png";
