@@ -212,6 +212,55 @@ All colors MUST be HSL.
   line-height: 1.6;
 }
 
+/* Popup rich text prose — lists, spacing, headings */
+.popup-prose {
+  line-height: 1.7;
+  font-size: 0.9375rem;
+}
+.popup-prose h1 { font-size: 1.5rem; font-weight: 700; margin: 0.75em 0 0.5em; }
+.popup-prose h2 { font-size: 1.25rem; font-weight: 700; margin: 0.75em 0 0.4em; }
+.popup-prose h3 { font-size: 1.1rem; font-weight: 600; margin: 0.6em 0 0.3em; }
+.popup-prose p { margin: 0.5em 0; }
+.popup-prose ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+.popup-prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+.popup-prose li {
+  margin: 0.25em 0;
+  padding-left: 0.25em;
+}
+.popup-prose li > ul,
+.popup-prose li > ol {
+  margin: 0.15em 0;
+}
+.popup-prose blockquote {
+  border-left: 3px solid hsl(var(--border));
+  padding-left: 1em;
+  margin: 0.75em 0;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+}
+.popup-prose a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+}
+.popup-prose hr {
+  border-color: hsl(var(--border));
+  margin: 1em 0;
+}
+.popup-prose img {
+  max-width: 100%;
+  border-radius: 0.5rem;
+  margin: 0.75em auto;
+  display: block;
+}
+
 @media (max-width: 640px) {
   .popup-content iframe {
     min-height: 500px;
