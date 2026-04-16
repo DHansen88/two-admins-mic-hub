@@ -206,6 +206,12 @@ All colors MUST be HSL.
   min-height: 400px;
 }
 
+/* Popup description text — respect line breaks, readable spacing */
+.popup-description {
+  white-space: pre-line;
+  line-height: 1.6;
+}
+
 @media (max-width: 640px) {
   .popup-content iframe {
     min-height: 500px;

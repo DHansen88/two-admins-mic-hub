@@ -75,7 +75,7 @@ const NewsletterForm = ({ config }: { config: NewsletterPopupBlock }) => {
       <h2 className="text-2xl sm:text-3xl font-display font-bold text-slate mb-3">
         {config.heading}
       </h2>
-      <p className="text-muted-foreground mb-6 text-sm sm:text-base max-w-md mx-auto">
+      <p className="popup-description text-muted-foreground mb-6 text-sm sm:text-base max-w-md mx-auto">
         {config.description}
       </p>
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-0">
