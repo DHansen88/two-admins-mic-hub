@@ -173,7 +173,7 @@ const ManageEpisodes = () => {
     forceUpdate((n) => n + 1);
   };
 
-  const handleDuplicate = (ep: typeof episodes[0]) => {
+  const handleDuplicate = async (ep: typeof episodes[0]) => {
     const newNum = String(Math.max(...episodes.map((e) => e.number), 0) + 1);
     const draftData = {
       episodeNumber: newNum,
@@ -184,6 +184,7 @@ const ManageEpisodes = () => {
       description: "",
     };
     localStorage.setItem(`draft_episode-${newNum}`, JSON.stringify(draftData));
+    await apiCall("content.php?action=set-status", { type: "episode", id: newNum, status: "draft" });
     setContentStatusFn("episode", newNum, "draft");
     toast({ title: `Episode duplicated as draft #${newNum}` });
     navigate(`/admin/publish-episode?edit=${newNum}`);
