@@ -56,30 +56,28 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
               }
             }}
           />
-          {/* Play overlay — clicking it triggers onPlay (inline expand) without navigating */}
-          <button
-            type="button"
-            aria-label={isAudioOnly ? "Play audio" : "Play episode"}
-            className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors sm:rounded-lg"
-            onClick={(e) => {
-              if (episode.onPlay) {
-                e.stopPropagation();
-                episode.onPlay(episode);
-              }
-            }}
-          >
-            <span className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
-              {isAudioOnly ? (
-                <Headphones className="h-4 w-4 text-foreground" />
-              ) : (
+          {/* Hover overlay (video only) — for AUDIO we keep the image clean and let the tile navigate */}
+          {!isAudioOnly && (
+            <button
+              type="button"
+              aria-label="Play episode"
+              className="absolute inset-0 flex items-center justify-center bg-foreground/0 group-hover:bg-foreground/20 transition-colors sm:rounded-lg opacity-0 group-hover:opacity-100"
+              onClick={(e) => {
+                if (episode.onPlay) {
+                  e.stopPropagation();
+                  episode.onPlay(episode);
+                }
+              }}
+            >
+              <span className="w-10 h-10 rounded-full bg-background/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
                 <Play className="h-4 w-4 text-foreground ml-0.5" />
-              )}
-            </span>
-          </button>
+              </span>
+            </button>
+          )}
 
-          {/* Audio badge */}
+          {/* Audio badge — bottom-left for audio episodes */}
           {isAudioOnly && (
-            <span className="absolute top-2 left-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-background/90 text-foreground px-2 py-0.5 rounded-full">
+            <span className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-background/95 text-foreground px-2.5 py-1 rounded-full shadow-sm backdrop-blur-sm">
               <Headphones className="h-3 w-3" /> Audio
             </span>
           )}
