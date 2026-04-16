@@ -224,13 +224,15 @@ const ManageTags = () => {
   const saveEdit = () => {
     if (!editingSlug || !editName.trim()) return;
     const newSlug = generateTagSlug(editName.trim());
-    const updated = updateTag(editingSlug, {
+    const updatedFields = {
       name: editName.trim(),
       slug: newSlug,
       bgColor: editBgColor,
       textColor: editTextColor,
       borderColor: editBorderColor || undefined,
-    });
+    };
+    const updated = updateTag(editingSlug, updatedFields);
+    syncTagToApi('PUT', { ...updatedFields, slug: editingSlug });
     setTags(updated);
     setEditingSlug(null);
     toast({ title: "Tag updated" });
