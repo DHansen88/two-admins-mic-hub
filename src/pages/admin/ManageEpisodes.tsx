@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
 import { getAllContentMeta, getEffectiveStatus, removeContentMeta, processScheduledContent, setContentStatus as setContentStatusFn, type ContentStatus } from "@/lib/content-status";
+import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -93,7 +94,23 @@ const ManageEpisodes = () => {
 
   const isTrashView = filter === "trashed";
 
-  const handleMoveToTrash = (id: string) => {
+  const apiBase = getAdminApiBase();
+
+  const apiCall = async (endpoint: string, body: Record<string, unknown>) => {
+    try {
+      const res = await fetch(`${apiBase}/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAdminAuthHeaders() },
+        body: JSON.stringify(body),
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleMoveToTrash = async (id: string) => {
+    await apiCall("content.php?action=delete", { type: "episode", id });
     setContentStatusFn("episode", id, "trashed");
     setDeleteTarget(null);
     setSelected((s) => { const n = new Set(s); n.delete(id); return n; });
@@ -101,14 +118,16 @@ const ManageEpisodes = () => {
     forceUpdate((n) => n + 1);
   };
 
-  const handleRestore = (id: string) => {
+  const handleRestore = async (id: string) => {
+    await apiCall("content.php?action=restore", { type: "episode", id });
     setContentStatusFn("episode", id, "draft");
     setSelected((s) => { const n = new Set(s); n.delete(id); return n; });
     toast({ title: "Episode restored as draft" });
     forceUpdate((n) => n + 1);
   };
 
-  const handlePermanentDelete = (id: string) => {
+  const handlePermanentDelete = async (id: string) => {
+    await apiCall("content.php?action=permanent-delete", { type: "episode", id });
     const existsInStatic = allEpisodesUnfiltered.some((ep) => String(ep.number) === id);
     if (existsInStatic) {
       setContentStatusFn("episode", id, "deleted");
@@ -122,16 +141,23 @@ const ManageEpisodes = () => {
     forceUpdate((n) => n + 1);
   };
 
-  const handleBulkConfirm = () => {
+  const handleBulkConfirm = async () => {
     const ids = Array.from(selected);
     if (bulkAction === "trash") {
-      ids.forEach((id) => setContentStatusFn("episode", id, "trashed"));
+      for (const id of ids) {
+        await apiCall("content.php?action=delete", { type: "episode", id });
+        setContentStatusFn("episode", id, "trashed");
+      }
       toast({ title: `${ids.length} episode(s) moved to trash` });
     } else if (bulkAction === "restore") {
-      ids.forEach((id) => setContentStatusFn("episode", id, "draft"));
+      for (const id of ids) {
+        await apiCall("content.php?action=restore", { type: "episode", id });
+        setContentStatusFn("episode", id, "draft");
+      }
       toast({ title: `${ids.length} episode(s) restored` });
     } else if (bulkAction === "permanent-delete") {
-      ids.forEach((id) => {
+      for (const id of ids) {
+        await apiCall("content.php?action=permanent-delete", { type: "episode", id });
         const existsInStatic = allEpisodesUnfiltered.some((ep) => String(ep.number) === id);
         if (existsInStatic) {
           setContentStatusFn("episode", id, "deleted");
@@ -139,7 +165,7 @@ const ManageEpisodes = () => {
           removeContentMeta("episode", id);
         }
         localStorage.removeItem(`draft_episode-${id}`);
-      });
+      }
       toast({ title: `${ids.length} episode(s) permanently deleted` });
     }
     setSelected(new Set());
