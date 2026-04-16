@@ -75,7 +75,7 @@ const NewsletterForm = ({ config }: { config: NewsletterPopupBlock }) => {
       <h2 className="text-2xl sm:text-3xl font-display font-bold text-slate mb-3">
         {config.heading}
       </h2>
-      <p className="text-muted-foreground mb-6 text-sm sm:text-base max-w-md mx-auto">
+      <p className="popup-description text-muted-foreground mb-6 text-sm sm:text-base max-w-md mx-auto">
         {config.description}
       </p>
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-0">
@@ -122,7 +122,7 @@ function PopupBlock({ block }: { block: PopupContentBlock }) {
     case "richtext":
       return (
         <div
-          className="prose prose-sm max-w-none text-foreground [&_a]:text-primary [&_a]:underline"
+          className="popup-description prose prose-sm max-w-none text-foreground [&_a]:text-primary [&_a]:underline"
           dangerouslySetInnerHTML={{ __html: block.html }}
         />
       );
@@ -244,7 +244,7 @@ const PopupModal = () => {
           <PopupBlockRenderer blocks={popup.contentBlocks!} />
         ) : (
           <div
-            className="popup-content w-full px-4 pb-6 sm:px-0 sm:pb-0 [&_iframe]:w-full [&_form]:max-w-full"
+            className="popup-content popup-description w-full px-4 pb-6 sm:px-0 sm:pb-0 [&_iframe]:w-full [&_form]:max-w-full"
             dangerouslySetInnerHTML={{ __html: popup.content }}
           />
         )}
