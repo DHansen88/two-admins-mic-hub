@@ -29,10 +29,39 @@ switch ($action) {
         jsonResponse(['error' => 'Invalid action'], 400);
 }
 
+function getAdminTableColumns(string $table): array {
+    static $cache = [];
+
+    if (isset($cache[$table])) {
+        return $cache[$table];
+    }
+
+    if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+        return [];
+    }
+
+    try {
+        $db = getDB();
+        $stmt = $db->query("SHOW COLUMNS FROM `{$table}`");
+        $rows = $stmt->fetchAll();
+        $columns = [];
+        foreach ($rows as $row) {
+            if (!empty($row['Field'])) {
+                $columns[] = (string) $row['Field'];
+            }
+        }
+        $cache[$table] = $columns;
+    } catch (Throwable $e) {
+        $cache[$table] = [];
+    }
+
+    return $cache[$table];
+}
+
 function logAdminAuthActivity(?int $userId, string $email, string $action, ?string $details = null): void {
     try {
         $db = getDB();
-        $columns = getTableColumns('admin_activity_log');
+        $columns = getAdminTableColumns('admin_activity_log');
         if (empty($columns)) {
             return;
         }
@@ -71,7 +100,7 @@ function logAdminAuthActivity(?int $userId, string $email, string $action, ?stri
 
 function fetchAdminUserForLogin(string $email): ?array {
     $db = getDB();
-    $columns = getTableColumns('admin_users');
+    $columns = getAdminTableColumns('admin_users');
     if (empty($columns) || !in_array('email', $columns, true)) {
         return null;
     }
@@ -181,7 +210,7 @@ function handleSession(): void {
     $sessionUser = requireAuth();
 
     $db = getDB();
-    $columns = getTableColumns('admin_users');
+    $columns = getAdminTableColumns('admin_users');
     if (empty($columns)) {
         jsonResponse(['authenticated' => false], 401);
     }

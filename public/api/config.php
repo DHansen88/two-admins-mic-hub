@@ -50,43 +50,6 @@ function getDB(): PDO {
     return $pdo;
 }
 
-if (!function_exists('getTableColumns')) {
-    function getTableColumns(string $table): array {
-        static $cache = [];
-
-        if (isset($cache[$table])) {
-            return $cache[$table];
-        }
-
-        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
-            return [];
-        }
-
-        try {
-            $db = getDB();
-            $stmt = $db->query("SHOW COLUMNS FROM `{$table}`");
-            $rows = $stmt->fetchAll();
-            $columns = [];
-            foreach ($rows as $row) {
-                if (!empty($row['Field'])) {
-                    $columns[] = (string) $row['Field'];
-                }
-            }
-            $cache[$table] = $columns;
-        } catch (Throwable $e) {
-            $cache[$table] = [];
-        }
-
-        return $cache[$table];
-    }
-}
-
-if (!function_exists('tableHasColumn')) {
-    function tableHasColumn(string $table, string $column): bool {
-        return in_array($column, getTableColumns($table), true);
-    }
-}
-
 function isHttpsRequest(): bool {
     if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
         return true;
@@ -258,35 +221,18 @@ function revokeAdminToken(?string $plainToken): void {
 
 function getAuthenticatedUserById(int $userId): ?array {
     $db = getDB();
-    $columns = getTableColumns('admin_users');
-    if (empty($columns)) {
-        return null;
-    }
-
-    $select = ['id', 'name', 'email'];
-    if (in_array('role', $columns, true)) {
-        $select[] = 'role';
-    }
-    if (in_array('status', $columns, true)) {
-        $select[] = 'status';
-    }
-
-    $stmt = $db->prepare('SELECT ' . implode(', ', $select) . ' FROM admin_users WHERE id = ?');
+    $stmt = $db->prepare('SELECT id, name, email, role, status FROM admin_users WHERE id = ?');
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
 
-    if (!$user) {
-        return null;
-    }
-
-    if (($user['status'] ?? 'active') !== 'active') {
+    if (!$user || $user['status'] !== 'active') {
         return null;
     }
 
     return [
         'id' => (int) $user['id'],
         'email' => $user['email'],
-        'role' => $user['role'] ?? 'admin',
+        'role' => $user['role'],
         'name' => $user['name'],
     ];
 }
