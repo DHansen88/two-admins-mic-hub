@@ -503,6 +503,20 @@ const PublishEpisode = () => {
               {thumbnailName && <p className="text-xs text-muted-foreground">Path: {thumbnailName}</p>}
             </div>
             <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Audio File (.mp3)</label>
+              <Input type="file" accept=".mp3,audio/mpeg" onChange={handleAudioUpload} disabled={audioUploading} />
+              {audioUploading && <p className="text-xs text-muted-foreground">Uploading…</p>}
+              {!audioUploading && audioUrl && (
+                <>
+                  <p className="text-xs text-teal break-all">✓ {audioFileName || audioUrl}</p>
+                  <audio src={audioUrl} controls className="w-full mt-1 h-9" />
+                </>
+              )}
+              <p className="text-xs text-muted-foreground">
+                If a Riverside Embed URL is also set, the video player takes priority.
+              </p>
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
               <label className="text-sm font-medium text-foreground">Transcript File</label>
               <Input type="file" accept=".txt,.md" onChange={handleTranscriptUpload} />
               {transcript && <p className="text-xs text-teal">✓ Transcript loaded ({transcript.split(/\s+/).length} words)</p>}
