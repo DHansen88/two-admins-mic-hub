@@ -4,7 +4,9 @@ import { Clock, Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Episode } from "@/data/episodeData";
 
-interface EpisodeCardProps extends Episode {}
+interface EpisodeCardProps extends Episode {
+  onPlay?: (episode: Episode) => void;
+}
 
 const hostNames: Record<string, string> = {
   diana: "Diana",
@@ -37,7 +39,15 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
             className="w-full h-full object-cover block sm:rounded-lg"
             loading="lazy"
           />
-          <div className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors sm:rounded-lg">
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors sm:rounded-lg"
+            onClick={(e) => {
+              if (episode.onPlay) {
+                e.stopPropagation();
+                episode.onPlay(episode);
+              }
+            }}
+          >
             <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Play className="h-4 w-4 text-foreground ml-0.5" />
             </div>
