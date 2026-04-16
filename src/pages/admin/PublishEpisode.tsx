@@ -28,6 +28,7 @@ import {
   Plus,
   Lightbulb,
   List,
+  User,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAllTags, addTag, generateTagSlug, suggestTags, type Tag } from "@/data/tags";
@@ -47,7 +48,7 @@ import {
   saveDraft,
   saveToHistory,
 } from "@/lib/file-export";
-import { saveEpisode, saveBlog, uploadPodcastAudio } from "@/lib/content-manager";
+import { saveEpisode, saveBlog, uploadPodcastAudio, uploadPodcastCover } from "@/lib/content-manager";
 import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 import { useAdminEpisodes } from "@/hooks/useApiEpisodes";
 import PublishModal from "@/components/PublishModal";
