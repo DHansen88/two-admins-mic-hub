@@ -181,6 +181,9 @@ function PopupBlock({ block }: { block: PopupContentBlock }) {
     case "divider":
       return <hr className="border-border" />;
 
+    case "spacer":
+      return <div style={{ height: `${block.height}px` }} />;
+
     case "html":
       return (
         <div
