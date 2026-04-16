@@ -1,14 +1,17 @@
-name: Build & Deploy to Hostinger
+name: CI & Deploy
 
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +25,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install --no-package-lock --no-audit --no-fund
+        run: npm ci
 
       - name: Build project
         run: npm run build
@@ -31,6 +34,25 @@ jobs:
         run: |
           cp public/.htaccess dist/.htaccess
           cp public/robots.txt dist/robots.txt
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+          if-no-files-found: error
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site-dist
+          path: dist
 
       - name: Deploy to deploy branch
         run: |
