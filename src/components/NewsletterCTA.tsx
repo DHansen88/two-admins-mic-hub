@@ -102,7 +102,7 @@ No spam — just the good stuff.
                   </Button>
                 </div>
 
-                <label className="flex items-center gap-2 mt-3 cursor-pointer select-none">
+                <label className="flex items-center gap-2 mt-3 cursor-pointer select-none self-start">
                   <input
                     type="checkbox"
                     checked={conantLeadership}
