@@ -1,5 +1,5 @@
 import { type PopupContentBlock } from "./popupBlockTypes";
-import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
+import { canUseAdminFallback, getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 
 export interface PopupButtonConfig {
   enabled: boolean;
@@ -66,6 +66,10 @@ export function subscribePopups(fn: Listener) {
 }
 
 function loadLocal(): PopupConfig[] {
+  if (!canUseAdminFallback()) {
+    return [];
+  }
+
   try {
     const raw = localStorage.getItem(LS_KEY);
     if (raw) return normalizePopups(JSON.parse(raw));
@@ -74,7 +78,15 @@ function loadLocal(): PopupConfig[] {
 }
 
 function saveLocal(data: PopupConfig[]) {
-  localStorage.setItem(LS_KEY, JSON.stringify(data));
+  if (!canUseAdminFallback()) {
+    return;
+  }
+
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  } catch (error) {
+    console.warn("[popupData] Failed to cache popups locally", error);
+  }
 }
 
 let _popups = loadLocal();
@@ -132,9 +144,9 @@ export async function loadPopupsFromApi(requireAuth = false): Promise<void> {
   const apiPopups = await fetchPopupsFromApi(requireAuth);
   if (apiPopups) {
     _popups = normalizePopups(apiPopups);
-    saveLocal(_popups);
     _apiLoaded = true;
     notify();
+    saveLocal(_popups);
   }
 }
 
@@ -152,8 +164,8 @@ export function getActivePopupForPath(path: string): PopupConfig | undefined {
 export async function addPopup(popup: Omit<PopupConfig, "id">) {
   const newP: PopupConfig = { ...popup, id: `popup-${Date.now()}` };
   _popups = [..._popups, newP];
-  saveLocal(_popups);
   notify();
+  saveLocal(_popups);
 
   await apiCall("popups.php?action=save", {
     method: "POST",
@@ -165,8 +177,8 @@ export async function addPopup(popup: Omit<PopupConfig, "id">) {
 
 export async function updatePopup(id: string, updates: Partial<PopupConfig>) {
   _popups = _popups.map((p) => (p.id === id ? { ...p, ...updates } : p));
-  saveLocal(_popups);
   notify();
+  saveLocal(_popups);
 
   const updated = _popups.find((p) => p.id === id);
   if (updated) {
@@ -179,8 +191,8 @@ export async function updatePopup(id: string, updates: Partial<PopupConfig>) {
 
 export async function deletePopup(id: string) {
   _popups = _popups.filter((p) => p.id !== id);
-  saveLocal(_popups);
   notify();
+  saveLocal(_popups);
 
   await apiCall("popups.php?action=delete", {
     method: "POST",
