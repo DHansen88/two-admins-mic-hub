@@ -1,45 +1,52 @@
 import { Card } from "./ui/card";
-
-import { Clock, Play } from "lucide-react";
+import { Clock, Play, Headphones } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Episode } from "@/data/episodeData";
+import { stripHtml } from "@/lib/html-utils";
 
 interface EpisodeCardProps extends Episode {
   onPlay?: (episode: Episode) => void;
 }
 
-const hostNames: Record<string, string> = {
-  diana: "Diana",
-  mel: "Mel",
-};
-
 const EpisodeCard = (episode: EpisodeCardProps) => {
   const navigate = useNavigate();
   const hostKey = episode.host || "";
-  const hostName = hostNames[hostKey] || "";
-  const isDiana = hostKey === "diana";
-  const isMel = hostKey === "mel";
+
+  const isAudioOnly = !episode.riversideEmbedUrl && !!episode.audioUrl;
+
+  // Image fallback chain: thumbnail → guest image → placeholder
+  const tileImage =
+    episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg"
+      ? episode.thumbnailUrl
+      : episode.guest?.image || "/placeholder.svg";
+
+  const plainDescription = stripHtml(episode.description);
+
+  const goToDetail = () => {
+    navigate(`/episodes/${episode.slug}`);
+    window.scrollTo(0, 0);
+  };
 
   return (
     <Card
       className="group hover:shadow-xl transition-all duration-300 overflow-hidden border-border hover:border-accent cursor-pointer"
-      onClick={() => {
-        navigate(`/episodes/${episode.slug}`);
-        window.scrollTo(0, 0);
-      }}
+      onClick={goToDetail}
       data-host={hostKey}
       data-topic={episode.topics.map((t) => t.toLowerCase().replace(/\s+/g, "-")).join(" ")}
     >
       <div className="flex flex-col sm:flex-row sm:items-center h-full">
-        {/* Thumbnail — full width on mobile, fixed size on sm+ */}
+        {/* Thumbnail */}
         <div className="relative w-full aspect-video sm:w-40 sm:h-28 sm:aspect-auto md:w-48 md:h-32 lg:w-56 lg:h-36 shrink-0 overflow-hidden sm:rounded-lg sm:m-4 sm:order-2">
           <img
-            src={episode.thumbnailUrl || "/placeholder.svg"}
+            src={tileImage}
             alt={episode.title}
             className="w-full h-full object-cover block sm:rounded-lg"
             loading="lazy"
           />
-          <div
+          {/* Play overlay — clicking it triggers onPlay (inline expand) without navigating */}
+          <button
+            type="button"
+            aria-label={isAudioOnly ? "Play audio" : "Play episode"}
             className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors sm:rounded-lg"
             onClick={(e) => {
               if (episode.onPlay) {
@@ -48,10 +55,21 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
               }
             }}
           >
-            <div className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Play className="h-4 w-4 text-foreground ml-0.5" />
-            </div>
-          </div>
+            <span className="w-10 h-10 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
+              {isAudioOnly ? (
+                <Headphones className="h-4 w-4 text-foreground" />
+              ) : (
+                <Play className="h-4 w-4 text-foreground ml-0.5" />
+              )}
+            </span>
+          </button>
+
+          {/* Audio badge */}
+          {isAudioOnly && (
+            <span className="absolute top-2 left-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-background/90 text-foreground px-2 py-0.5 rounded-full">
+              <Headphones className="h-3 w-3" /> Audio
+            </span>
+          )}
         </div>
 
         {/* Episode Info */}
@@ -75,11 +93,9 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
           </div>
 
           <p className="text-sm text-muted-foreground line-clamp-2">
-            {episode.description}
+            {plainDescription}
           </p>
         </div>
-
-
       </div>
     </Card>
   );

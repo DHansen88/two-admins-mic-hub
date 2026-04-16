@@ -1,6 +1,9 @@
-import { Clock, Play } from "lucide-react";
+import { Clock, Play, Headphones } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import type { Episode } from "@/data/episodeData";
+import { stripHtml } from "@/lib/html-utils";
+import EpisodeAudioHero from "./EpisodeAudioHero";
 
 interface FeaturedEpisodeProps {
   episode: Episode;
@@ -8,6 +11,21 @@ interface FeaturedEpisodeProps {
 
 const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
   const navigate = useNavigate();
+  const [audioActive, setAudioActive] = useState(false);
+
+  const hasVideo = !!episode.riversideEmbedUrl;
+  const hasAudio = !!episode.audioUrl;
+  const isAudioOnly = !hasVideo && hasAudio;
+
+  // Image fallback chain
+  const heroImage =
+    episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg"
+      ? episode.thumbnailUrl
+      : episode.guest?.image || "/placeholder.svg";
+
+  const plainDescription = stripHtml(episode.description);
+
+  const goToDetail = () => navigate(`/episodes/${episode.slug}`);
 
   return (
     <section className="bg-muted/40 border-b border-border">
@@ -16,26 +34,56 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
           Latest Episode
         </p>
 
-        <div
-          className="group flex flex-col md:flex-row gap-8 cursor-pointer"
-          onClick={() => navigate(`/episodes/${episode.slug}`)}
-        >
-          {/* Thumbnail */}
-          <div className="relative w-full md:w-[320px] lg:w-[440px] xl:w-[520px] shrink-0 aspect-video rounded-lg overflow-hidden bg-muted">
-            <img
-              src={episode.thumbnailUrl || "/placeholder.svg"}
-              alt={episode.title}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors">
-              <div className="w-16 h-16 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Play className="h-7 w-7 text-foreground ml-1" />
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Image / Player visual */}
+          <div className="w-full md:w-[320px] lg:w-[440px] xl:w-[520px] shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                if (isAudioOnly) {
+                  setAudioActive(true);
+                } else {
+                  goToDetail();
+                }
+              }}
+              aria-label={isAudioOnly ? "Play audio episode" : "Open episode"}
+              className="group relative w-full aspect-video rounded-lg overflow-hidden bg-muted block"
+            >
+              <img
+                src={heroImage}
+                alt={episode.title}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <span className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors">
+                <span className="w-16 h-16 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  {isAudioOnly ? (
+                    <Headphones className="h-7 w-7 text-foreground" />
+                  ) : (
+                    <Play className="h-7 w-7 text-foreground ml-1" />
+                  )}
+                </span>
+              </span>
+              {isAudioOnly && (
+                <span className="absolute top-3 left-3 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider bg-background/90 text-foreground px-2.5 py-1 rounded-full">
+                  <Headphones className="h-3 w-3" /> Audio
+                </span>
+              )}
+            </button>
+
+            {/* Inline audio player appears below image when activated */}
+            {isAudioOnly && audioActive && episode.audioUrl && (
+              <div className="mt-3">
+                <EpisodeAudioHero
+                  audioUrl={episode.audioUrl}
+                  title={episode.title}
+                  autoPlay
+                />
               </div>
-            </div>
+            )}
           </div>
 
-          {/* Info */}
+          {/* Info — clicking title still navigates to detail page */}
           <div className="flex-1 space-y-4">
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <span className="font-bold bg-accent text-accent-foreground px-3 py-0.5 rounded-full text-xs">
@@ -48,12 +96,15 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
               <span>{episode.date}</span>
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground leading-tight group-hover:text-accent transition-colors">
+            <h2
+              className="text-3xl md:text-4xl font-display font-bold text-foreground leading-tight hover:text-accent transition-colors cursor-pointer"
+              onClick={goToDetail}
+            >
               {episode.title}
             </h2>
 
             <p className="text-lg text-muted-foreground leading-relaxed line-clamp-2">
-              {episode.description}
+              {plainDescription}
             </p>
 
             {episode.topics.length > 0 && (
