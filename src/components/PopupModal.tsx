@@ -122,7 +122,7 @@ function PopupBlock({ block }: { block: PopupContentBlock }) {
     case "richtext":
       return (
         <div
-          className="prose prose-sm max-w-none text-foreground [&_a]:text-primary [&_a]:underline"
+          className="popup-description prose prose-sm max-w-none text-foreground [&_a]:text-primary [&_a]:underline"
           dangerouslySetInnerHTML={{ __html: block.html }}
         />
       );
@@ -244,7 +244,7 @@ const PopupModal = () => {
           <PopupBlockRenderer blocks={popup.contentBlocks!} />
         ) : (
           <div
-            className="popup-content w-full px-4 pb-6 sm:px-0 sm:pb-0 [&_iframe]:w-full [&_form]:max-w-full"
+            className="popup-content popup-description w-full px-4 pb-6 sm:px-0 sm:pb-0 [&_iframe]:w-full [&_form]:max-w-full"
             dangerouslySetInnerHTML={{ __html: popup.content }}
           />
         )}
