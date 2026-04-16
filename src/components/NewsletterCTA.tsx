@@ -68,50 +68,52 @@ No spam — just the good stuff.
 
               {/* Right — form */}
               <form onSubmit={handleSubmit} className="w-full lg:w-auto flex flex-col items-center lg:items-end">
-                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    maxLength={255}
-                    disabled={status === "submitting" || status === "success"}
-                    className="h-12 px-4 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-coral/40 focus:border-coral transition-all disabled:opacity-50 text-base w-full sm:w-[320px] lg:w-[400px] max-w-full" />
-                  
-                  <Button
-                    type="submit"
-                    disabled={status === "submitting" || status === "success"}
-                    className="h-12 px-6 rounded-xl bg-coral hover:bg-coral/90 text-white font-semibold text-base transition-all disabled:opacity-70 shadow-md shadow-coral/20 hover:shadow-lg hover:shadow-coral/30 shrink-0 w-full sm:w-auto">
+                <div className="flex flex-col items-center lg:items-end w-full lg:w-auto">
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      maxLength={255}
+                      disabled={status === "submitting" || status === "success"}
+                      className="h-12 px-4 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-coral/40 focus:border-coral transition-all disabled:opacity-50 text-base w-full sm:w-[320px] lg:w-[400px] max-w-full" />
                     
-                    {status === "submitting" ?
-                    <span className="flex items-center gap-2">
-                        <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Subscribing…
-                      </span> :
-                    status === "success" ?
-                    <span className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" />
-                        Subscribed!
-                      </span> :
+                    <Button
+                      type="submit"
+                      disabled={status === "submitting" || status === "success"}
+                      className="h-12 px-6 rounded-xl bg-coral hover:bg-coral/90 text-white font-semibold text-base transition-all disabled:opacity-70 shadow-md shadow-coral/20 hover:shadow-lg hover:shadow-coral/30 shrink-0 w-full sm:w-auto">
+                      
+                      {status === "submitting" ?
+                      <span className="flex items-center gap-2">
+                          <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Subscribing…
+                        </span> :
+                      status === "success" ?
+                      <span className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4" />
+                          Subscribed!
+                        </span> :
 
-                    <span className="flex items-center gap-2">
-                        <Send className="h-4 w-4" />
-                        Subscribe
-                      </span>
-                    }
-                  </Button>
+                      <span className="flex items-center gap-2">
+                          <Send className="h-4 w-4" />
+                          Subscribe
+                        </span>
+                      }
+                    </Button>
+                  </div>
+
+                  <label className="flex items-center gap-2 mt-3 cursor-pointer select-none self-start">
+                    <input
+                      type="checkbox"
+                      checked={conantLeadership}
+                      onChange={(e) => setConantLeadership(e.target.checked)}
+                      disabled={status === "submitting" || status === "success"}
+                      className="h-4 w-4 rounded border-border text-coral focus:ring-coral/40 accent-coral"
+                    />
+                    <span className="text-sm text-muted-foreground">Subscribe to the ConantLeadership Newsletter.</span>
+                  </label>
                 </div>
-
-                <label className="flex items-center gap-2 mt-3 cursor-pointer select-none self-start">
-                  <input
-                    type="checkbox"
-                    checked={conantLeadership}
-                    onChange={(e) => setConantLeadership(e.target.checked)}
-                    disabled={status === "submitting" || status === "success"}
-                    className="h-4 w-4 rounded border-border text-coral focus:ring-coral/40 accent-coral"
-                  />
-                  <span className="text-sm text-muted-foreground">Subscribe to the ConantLeadership Newsletter.</span>
-                </label>
 
                 {status === "success" &&
                 <p className="text-teal text-sm mt-2 flex items-center justify-center gap-1.5 animate-fade-in transition-opacity duration-500">
