@@ -38,7 +38,6 @@ const Episodes = () => {
       setVideoModalOpen(false);
     }
   }, []);
-  const latestEpisode = allEpisodes[0];
 
   const hasActiveFilters = selectedTopics.length > 0;
 
