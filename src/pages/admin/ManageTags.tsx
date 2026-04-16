@@ -22,6 +22,29 @@ import {
   getContrastTextColor,
   type Tag,
 } from "@/data/tags";
+import { getAdminToken } from "@/lib/admin-auth";
+
+const API_BASE = (import.meta.env.VITE_ADMIN_API_URL || '').trim() || '/api';
+
+async function syncTagToApi(method: 'POST' | 'PUT' | 'DELETE', tag: Partial<Tag> & { slug: string }) {
+  try {
+    const token = getAdminToken();
+    const url = method === 'POST'
+      ? `${API_BASE}/tags.php`
+      : `${API_BASE}/tags.php?slug=${encodeURIComponent(tag.slug)}`;
+    await fetch(url, {
+      method,
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+      body: method !== 'DELETE' ? JSON.stringify(tag) : undefined,
+    });
+  } catch {
+    // API sync failed silently — localStorage is primary in admin
+  }
+}
 import {
   Dialog,
   DialogContent,
