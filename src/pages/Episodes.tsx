@@ -235,7 +235,17 @@ const Episodes = () => {
                           className="animate-fade-in mb-5"
                           style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
                         >
-                          <EpisodeCard {...episode} />
+                          <EpisodeCard {...episode} onPlay={handlePlay} />
+                          {playingEpisode?.number === episode.number && episode.audioUrl && !videoModalOpen && (
+                            <div className="mt-2">
+                              <EpisodeAudioPlayer
+                                audioUrl={episode.audioUrl}
+                                title={episode.title}
+                                thumbnailUrl={episode.thumbnailUrl}
+                                onClose={() => setPlayingEpisode(null)}
+                              />
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -282,6 +292,17 @@ const Episodes = () => {
           </div>
         </section>
       </main>
+      {playingEpisode?.riversideEmbedUrl && (
+        <EpisodeVideoModal
+          open={videoModalOpen}
+          onOpenChange={(open) => {
+            setVideoModalOpen(open);
+            if (!open) setPlayingEpisode(null);
+          }}
+          videoUrl={playingEpisode.riversideEmbedUrl}
+          title={playingEpisode.title}
+        />
+      )}
       <Footer />
     </div>
   );
