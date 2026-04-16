@@ -168,7 +168,18 @@ const ManageTags = () => {
   const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
-    setTags(getAllTags());
+    // Try loading from API first, fall back to localStorage
+    fetch(`${API_BASE}/tags.php`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data.tags) && data.tags.length > 0) {
+          setTags(data.tags);
+          localStorage.setItem('taam_tags', JSON.stringify(data.tags));
+        } else {
+          setTags(getAllTags());
+        }
+      })
+      .catch(() => setTags(getAllTags()));
   }, []);
 
   // Auto-contrast for new tag
