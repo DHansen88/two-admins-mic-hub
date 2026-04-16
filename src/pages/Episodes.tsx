@@ -77,7 +77,7 @@ const Episodes = () => {
     );
 
     return episodes;
-  }, [search, selectedHost, selectedTopics, sortOrder]);
+  }, [allEpisodes, search, selectedHost, selectedTopics, sortOrder]);
 
   // Reset to page 1 when filters change
   const resetKey = `${search}-${selectedHost}-${selectedTopics.join()}-${sortOrder}`;
