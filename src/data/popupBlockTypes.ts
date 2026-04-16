@@ -9,6 +9,7 @@ export type PopupBlockType =
   | "video"
   | "button"
   | "divider"
+  | "spacer"
   | "html"
   | "newsletter";
 
