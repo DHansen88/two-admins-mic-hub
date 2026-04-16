@@ -153,7 +153,7 @@ const Episodes = () => {
         </section>
 
         {/* Featured Latest Episode */}
-        <FeaturedEpisode episode={latestEpisode} />
+        {latestEpisode && <FeaturedEpisode episode={latestEpisode} />}
 
         {/* Browse Episodes */}
         <section className="py-16 bg-background">
