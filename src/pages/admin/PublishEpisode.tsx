@@ -244,6 +244,8 @@ const PublishEpisode = () => {
       setGuestImageUploading(false);
     }
   };
+
+  const handleAutoGenerate = () => {
     const sourceText = transcript || description;
     if (!sourceText) {
       toast({ title: "Add a description or transcript first", variant: "destructive" });
