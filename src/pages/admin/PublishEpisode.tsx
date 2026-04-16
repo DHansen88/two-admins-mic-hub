@@ -86,6 +86,17 @@ const PublishEpisode = () => {
     setGuestName("");
     setThumbnailName(ep.thumbnailUrl || "");
     setAudioUrl(ep.audioUrl || "");
+    // Guest fields
+    const g = (ep as any).guest;
+    setGuestFullName(g?.name || "");
+    setGuestTitle(g?.title || "");
+    setGuestImage(g?.image || "");
+    setGuestBio(g?.bio || "");
+    setGuestWebsite(g?.websiteUrl || "");
+    setGuestLinkedin(g?.linkedinUrl || "");
+    setGuestInstagram(g?.instagramUrl || "");
+    setGuestX(g?.xUrl || "");
+    setGuestFacebook(g?.facebookUrl || "");
     toast({ title: `Editing: Ep. ${ep.number} — ${ep.title}` });
   }, [searchParams, adminEpisodes, toast]);
 
@@ -105,6 +116,18 @@ const PublishEpisode = () => {
   const [audioUrl, setAudioUrl] = useState("");
   const [audioFileName, setAudioFileName] = useState("");
   const [audioUploading, setAudioUploading] = useState(false);
+
+  // Guest fields
+  const [guestFullName, setGuestFullName] = useState("");
+  const [guestTitle, setGuestTitle] = useState("");
+  const [guestImage, setGuestImage] = useState("");
+  const [guestImageUploading, setGuestImageUploading] = useState(false);
+  const [guestBio, setGuestBio] = useState("");
+  const [guestWebsite, setGuestWebsite] = useState("");
+  const [guestLinkedin, setGuestLinkedin] = useState("");
+  const [guestInstagram, setGuestInstagram] = useState("");
+  const [guestX, setGuestX] = useState("");
+  const [guestFacebook, setGuestFacebook] = useState("");
 
   // Auto-generated content
   const [keyTakeaways, setKeyTakeaways] = useState<string[]>([]);
@@ -226,26 +249,43 @@ const PublishEpisode = () => {
     toast({ title: "Content auto-generated successfully!" });
   };
 
-  const buildEpisodeData = () => ({
-    number: parseInt(episodeNumber) || 0,
-    title,
-    slug: `episode-${episodeNumber}-${generateSlug(title)}`,
-    description,
-    duration,
-    date: publishDate,
-    topics: selectedTopics,
-    guestName: guestName || undefined,
-    riversideEmbedUrl: riversideUrl || undefined,
-    audioUrl: audioUrl || undefined,
-    thumbnailUrl: thumbnailName || "/placeholder.svg",
-    platformLinks: {
-      spotify: spotifyUrl || undefined,
-      apple: appleUrl || undefined,
-      youtube: youtubeUrl || undefined,
-    },
-    transcript: transcript || undefined,
-    showNotes: keyTakeaways.length > 0 ? keyTakeaways : undefined,
-  });
+  const buildEpisodeData = () => {
+    const guest = guestFullName
+      ? {
+          name: guestFullName,
+          title: guestTitle || undefined,
+          image: guestImage || undefined,
+          bio: guestBio || undefined,
+          websiteUrl: guestWebsite || undefined,
+          linkedinUrl: guestLinkedin || undefined,
+          instagramUrl: guestInstagram || undefined,
+          xUrl: guestX || undefined,
+          facebookUrl: guestFacebook || undefined,
+        }
+      : undefined;
+
+    return {
+      number: parseInt(episodeNumber) || 0,
+      title,
+      slug: `episode-${episodeNumber}-${generateSlug(title)}`,
+      description,
+      duration,
+      date: publishDate,
+      topics: selectedTopics,
+      guestName: guestFullName || guestName || undefined,
+      riversideEmbedUrl: riversideUrl || undefined,
+      audioUrl: audioUrl || undefined,
+      thumbnailUrl: thumbnailName || "/placeholder.svg",
+      platformLinks: {
+        spotify: spotifyUrl || undefined,
+        apple: appleUrl || undefined,
+        youtube: youtubeUrl || undefined,
+      },
+      transcript: transcript || undefined,
+      showNotes: keyTakeaways.length > 0 ? keyTakeaways : undefined,
+      guest,
+    };
+  };
 
   const handleExportEpisode = () => {
     if (!title || !episodeNumber) {
