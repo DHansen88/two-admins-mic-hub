@@ -76,6 +76,7 @@ export type PopupContentBlock =
   | VideoPopupBlock
   | ButtonPopupBlock
   | DividerPopupBlock
+  | SpacerPopupBlock
   | HtmlEmbedPopupBlock
   | NewsletterPopupBlock;
 
