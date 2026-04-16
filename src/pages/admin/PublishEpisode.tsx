@@ -28,6 +28,7 @@ import {
   Plus,
   Lightbulb,
   List,
+  User,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAllTags, addTag, generateTagSlug, suggestTags, type Tag } from "@/data/tags";
@@ -47,7 +48,7 @@ import {
   saveDraft,
   saveToHistory,
 } from "@/lib/file-export";
-import { saveEpisode, saveBlog, uploadPodcastAudio } from "@/lib/content-manager";
+import { saveEpisode, saveBlog, uploadPodcastAudio, uploadPodcastCover } from "@/lib/content-manager";
 import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 import { useAdminEpisodes } from "@/hooks/useApiEpisodes";
 import PublishModal from "@/components/PublishModal";
@@ -86,6 +87,17 @@ const PublishEpisode = () => {
     setGuestName("");
     setThumbnailName(ep.thumbnailUrl || "");
     setAudioUrl(ep.audioUrl || "");
+    // Guest fields
+    const g = (ep as any).guest;
+    setGuestFullName(g?.name || "");
+    setGuestTitle(g?.title || "");
+    setGuestImage(g?.image || "");
+    setGuestBio(g?.bio || "");
+    setGuestWebsite(g?.websiteUrl || "");
+    setGuestLinkedin(g?.linkedinUrl || "");
+    setGuestInstagram(g?.instagramUrl || "");
+    setGuestX(g?.xUrl || "");
+    setGuestFacebook(g?.facebookUrl || "");
     toast({ title: `Editing: Ep. ${ep.number} — ${ep.title}` });
   }, [searchParams, adminEpisodes, toast]);
 
@@ -105,6 +117,18 @@ const PublishEpisode = () => {
   const [audioUrl, setAudioUrl] = useState("");
   const [audioFileName, setAudioFileName] = useState("");
   const [audioUploading, setAudioUploading] = useState(false);
+
+  // Guest fields
+  const [guestFullName, setGuestFullName] = useState("");
+  const [guestTitle, setGuestTitle] = useState("");
+  const [guestImage, setGuestImage] = useState("");
+  const [guestImageUploading, setGuestImageUploading] = useState(false);
+  const [guestBio, setGuestBio] = useState("");
+  const [guestWebsite, setGuestWebsite] = useState("");
+  const [guestLinkedin, setGuestLinkedin] = useState("");
+  const [guestInstagram, setGuestInstagram] = useState("");
+  const [guestX, setGuestX] = useState("");
+  const [guestFacebook, setGuestFacebook] = useState("");
 
   // Auto-generated content
   const [keyTakeaways, setKeyTakeaways] = useState<string[]>([]);
@@ -188,6 +212,39 @@ const PublishEpisode = () => {
     }
   };
 
+  const handleGuestImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please choose an image file", variant: "destructive" });
+      return;
+    }
+    setGuestImageUploading(true);
+    try {
+      const result = await uploadPodcastCover(file);
+      if (result.success && result.url) {
+        setGuestImage(result.url);
+        toast({ title: `Guest image uploaded` });
+      } else {
+        const localUrl = URL.createObjectURL(file);
+        setGuestImage(localUrl);
+        toast({
+          title: "Using local preview URL",
+          description: result.error || "Upload API unavailable; the image will work in preview only.",
+        });
+      }
+    } catch (err: any) {
+      const localUrl = URL.createObjectURL(file);
+      setGuestImage(localUrl);
+      toast({
+        title: "Using local preview URL",
+        description: err?.message || "Upload failed; the image will work in preview only.",
+      });
+    } finally {
+      setGuestImageUploading(false);
+    }
+  };
+
   const handleAutoGenerate = () => {
     const sourceText = transcript || description;
     if (!sourceText) {
@@ -226,26 +283,43 @@ const PublishEpisode = () => {
     toast({ title: "Content auto-generated successfully!" });
   };
 
-  const buildEpisodeData = () => ({
-    number: parseInt(episodeNumber) || 0,
-    title,
-    slug: `episode-${episodeNumber}-${generateSlug(title)}`,
-    description,
-    duration,
-    date: publishDate,
-    topics: selectedTopics,
-    guestName: guestName || undefined,
-    riversideEmbedUrl: riversideUrl || undefined,
-    audioUrl: audioUrl || undefined,
-    thumbnailUrl: thumbnailName || "/placeholder.svg",
-    platformLinks: {
-      spotify: spotifyUrl || undefined,
-      apple: appleUrl || undefined,
-      youtube: youtubeUrl || undefined,
-    },
-    transcript: transcript || undefined,
-    showNotes: keyTakeaways.length > 0 ? keyTakeaways : undefined,
-  });
+  const buildEpisodeData = () => {
+    const guest = guestFullName
+      ? {
+          name: guestFullName,
+          title: guestTitle || undefined,
+          image: guestImage || undefined,
+          bio: guestBio || undefined,
+          websiteUrl: guestWebsite || undefined,
+          linkedinUrl: guestLinkedin || undefined,
+          instagramUrl: guestInstagram || undefined,
+          xUrl: guestX || undefined,
+          facebookUrl: guestFacebook || undefined,
+        }
+      : undefined;
+
+    return {
+      number: parseInt(episodeNumber) || 0,
+      title,
+      slug: `episode-${episodeNumber}-${generateSlug(title)}`,
+      description,
+      duration,
+      date: publishDate,
+      topics: selectedTopics,
+      guestName: guestFullName || guestName || undefined,
+      riversideEmbedUrl: riversideUrl || undefined,
+      audioUrl: audioUrl || undefined,
+      thumbnailUrl: thumbnailName || "/placeholder.svg",
+      platformLinks: {
+        spotify: spotifyUrl || undefined,
+        apple: appleUrl || undefined,
+        youtube: youtubeUrl || undefined,
+      },
+      transcript: transcript || undefined,
+      showNotes: keyTakeaways.length > 0 ? keyTakeaways : undefined,
+      guest,
+    };
+  };
 
   const handleExportEpisode = () => {
     if (!title || !episodeNumber) {
@@ -546,7 +620,110 @@ const PublishEpisode = () => {
         </CardContent>
       </Card>
 
-      {/* Transcript preview */}
+      {/* Guest Information */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <User className="h-5 w-5 text-primary" />
+            Guest Information
+          </CardTitle>
+          <p className="text-xs text-muted-foreground mt-1">
+            Optional. If a guest name is provided, the public page will show a "Meet the Guest" section.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Guest Name</label>
+              <Input
+                value={guestFullName}
+                onChange={(e) => setGuestFullName(e.target.value)}
+                placeholder="Jane Doe"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Guest Title</label>
+              <Input
+                value={guestTitle}
+                onChange={(e) => setGuestTitle(e.target.value)}
+                placeholder="Director of Operations, Acme Co."
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground">Guest Image</label>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleGuestImageUpload}
+              disabled={guestImageUploading}
+            />
+            {guestImageUploading && (
+              <p className="text-xs text-muted-foreground">Uploading…</p>
+            )}
+            {!guestImageUploading && guestImage && (
+              <div className="flex items-center gap-3 mt-1">
+                <img
+                  src={guestImage}
+                  alt="Guest preview"
+                  className="w-16 h-16 rounded-full object-cover border border-border"
+                />
+                <p className="text-xs text-muted-foreground break-all">{guestImage}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground">Short Bio</label>
+            <RichTextEditor content={guestBio} onChange={setGuestBio} />
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Website URL</label>
+              <Input
+                value={guestWebsite}
+                onChange={(e) => setGuestWebsite(e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">LinkedIn URL</label>
+              <Input
+                value={guestLinkedin}
+                onChange={(e) => setGuestLinkedin(e.target.value)}
+                placeholder="https://linkedin.com/in/..."
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Instagram URL</label>
+              <Input
+                value={guestInstagram}
+                onChange={(e) => setGuestInstagram(e.target.value)}
+                placeholder="https://instagram.com/..."
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">X (Twitter) URL</label>
+              <Input
+                value={guestX}
+                onChange={(e) => setGuestX(e.target.value)}
+                placeholder="https://x.com/..."
+              />
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <label className="text-sm font-medium text-foreground">Facebook URL</label>
+              <Input
+                value={guestFacebook}
+                onChange={(e) => setGuestFacebook(e.target.value)}
+                placeholder="https://facebook.com/..."
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {transcript && (
         <Card className="bg-card border-border">
           <CardHeader>

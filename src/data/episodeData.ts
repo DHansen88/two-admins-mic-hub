@@ -21,7 +21,7 @@ import { isContentVisible } from '@/lib/content-manager';
 export const TOPICS = SHARED_TOPICS;
 export type Topic = SharedTopic;
 
-export type { PlatformLinks, ShareableClip };
+export type { PlatformLinks, ShareableClip, EpisodeGuest } from '@/lib/content-loader';
 export type Episode = LoadedEpisode;
 
 /** All episodes, loaded from src/content/podcasts/ files */

@@ -4,8 +4,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RelatedContentCarousel, { buildRelatedItems } from "@/components/RelatedContentCarousel";
 import TopicTag from "@/components/TopicTag";
+import GuestSection from "@/components/GuestSection";
+import EpisodeAudioHero from "@/components/EpisodeAudioHero";
 import { Button } from "@/components/ui/button";
-import { useVisibleEpisodeBySlug, useVisibleRelatedEpisodes, useVisibleRelatedBlogsForEpisode } from "@/hooks/useVisibleContent";
+import {
+  useVisibleEpisodeBySlug,
+  useVisibleRelatedEpisodes,
+  useVisibleRelatedBlogsForEpisode,
+} from "@/hooks/useVisibleContent";
 import {
   Play,
   Clock,
@@ -13,21 +19,17 @@ import {
   Link as LinkIcon,
   Linkedin,
   Mail,
-  ChevronDown,
-  ChevronUp,
   ExternalLink,
-  Search,
   Share2,
   ArrowLeft,
   Lightbulb,
+  Headphones,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 
 const EpisodeDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const episode = useVisibleEpisodeBySlug(slug || "");
-  const [transcriptExpanded, setTranscriptExpanded] = useState(false);
-  const [transcriptSearch, setTranscriptSearch] = useState("");
+  const [audioActive, setAudioActive] = useState(false);
 
   if (!episode) {
     return (
@@ -54,53 +56,87 @@ const EpisodeDetail = () => {
   const relatedEpisodes = useVisibleRelatedEpisodes(episode);
   const relatedBlogs = useVisibleRelatedBlogsForEpisode(slug || "", 3);
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-  };
-
-  const shareLinkedIn = () => {
+  const copyLink = () => navigator.clipboard.writeText(window.location.href);
+  const shareLinkedIn = () =>
     window.open(
       `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`,
       "_blank"
     );
-  };
-
-  const shareEmail = () => {
+  const shareEmail = () =>
     window.open(
       `mailto:?subject=${encodeURIComponent(episode.title)}&body=${encodeURIComponent(window.location.href)}`,
       "_blank"
     );
-  };
-
-  const transcriptText = episode.transcript || "";
-  const transcriptPreviewLength = 600;
-  const hasLongTranscript = transcriptText.length > transcriptPreviewLength;
-
-  const highlightSearch = (text: string, query: string) => {
-    if (!query.trim()) return text;
-    const regex = new RegExp(
-      `(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
-      "gi"
-    );
-    return text.replace(
-      regex,
-      '<mark class="bg-accent/30 rounded px-0.5">$1</mark>'
-    );
-  };
-
-  const displayedTranscript = transcriptExpanded
-    ? transcriptText
-    : transcriptText.slice(0, transcriptPreviewLength) +
-      (hasLongTranscript ? "..." : "");
 
   const hasVideo = !!episode.riversideEmbedUrl;
   const hasAudio = !!episode.audioUrl;
+  const isAudioOnly = !hasVideo && hasAudio;
+
+  // Image fallback: guest → thumbnail → placeholder (audio prefers guest)
+  const heroImage = isAudioOnly
+    ? episode.guest?.image ||
+      (episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg"
+        ? episode.thumbnailUrl
+        : "/placeholder.svg")
+    : (episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg"
+        ? episode.thumbnailUrl
+        : episode.guest?.image || "/placeholder.svg");
+
+  const ShareRow = (
+    <div className="flex items-center gap-2 mt-2">
+      <span className="text-background/60 text-sm flex items-center gap-1.5">
+        <Share2 size={14} /> Share
+      </span>
+      <button
+        onClick={copyLink}
+        className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
+        title="Copy link"
+      >
+        <LinkIcon className="h-4 w-4" />
+      </button>
+      <button
+        onClick={shareLinkedIn}
+        className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
+        title="Share on LinkedIn"
+      >
+        <Linkedin className="h-4 w-4" />
+      </button>
+      <button
+        onClick={shareEmail}
+        className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
+        title="Share via email"
+      >
+        <Mail className="h-4 w-4" />
+      </button>
+    </div>
+  );
+
+  const MetaRow = (
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-background/70">
+      <span className="font-bold bg-accent text-accent-foreground px-3 py-1 rounded-full text-xs">
+        Episode {episode.number}
+      </span>
+      <span className="flex items-center space-x-2">
+        <Calendar size={16} />
+        <span>{episode.date}</span>
+      </span>
+      <span className="flex items-center space-x-2">
+        <Clock size={16} />
+        <span>{episode.duration}</span>
+      </span>
+      {isAudioOnly && (
+        <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider bg-background/15 text-background px-2.5 py-1 rounded-full">
+          <Headphones className="h-3 w-3" /> Audio
+        </span>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen">
       <Header />
       <main className="pt-20">
-        {/* Hero Section — aligned structure with BlogPost */}
+        {/* Hero Section */}
         <section className="bg-gradient-to-b from-slate to-navy">
           <div className="container mx-auto px-4 py-12 md:py-16">
             <div className="max-w-6xl mx-auto space-y-8">
@@ -113,168 +149,196 @@ const EpisodeDetail = () => {
                 <span>Back to Episodes</span>
               </Link>
 
-              {/* Riverside Video Embed — primary hero element */}
               {hasVideo ? (
-                <div className="w-full aspect-video rounded-lg overflow-hidden bg-foreground/10">
-                  <iframe
-                    src={episode.riversideEmbedUrl}
-                    title={episode.title}
-                    className="w-full h-full border-0"
-                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
-              ) : hasAudio ? (
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-foreground/10">
-                  <img
-                    src={episode.thumbnailUrl || "/placeholder.svg"}
-                    alt={episode.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-foreground/80 to-transparent">
-                    <audio
-                      src={episode.audioUrl}
-                      controls
-                      className="w-full"
+                /* ───── Video Hero (unchanged behavior) ───── */
+                <>
+                  <div className="w-full aspect-video rounded-lg overflow-hidden bg-foreground/10">
+                    <iframe
+                      src={episode.riversideEmbedUrl}
+                      title={episode.title}
+                      className="w-full h-full border-0"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
                     />
+                  </div>
+
+                  <div className="space-y-4 text-background">
+                    <div className="flex flex-wrap gap-2">
+                      {episode.topics.map((topic) => (
+                        <TopicTag key={topic} topic={topic} variant="light" />
+                      ))}
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-display font-bold leading-tight">
+                      {episode.title}
+                    </h1>
+                    <div
+                      className="prose prose-invert max-w-3xl text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
+                      dangerouslySetInnerHTML={{ __html: episode.description }}
+                    />
+                    {MetaRow}
+                    {ShareRow}
+                  </div>
+                </>
+              ) : isAudioOnly ? (
+                /* ───── Audio Hero: image left, meta + player right ───── */
+                <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-8 items-center">
+                  {/* Image */}
+                  <div className="relative aspect-square rounded-2xl overflow-hidden bg-foreground/10 shadow-xl max-w-md w-full mx-auto md:mx-0">
+                    <img
+                      src={heroImage}
+                      alt={episode.title}
+                      className="w-full h-full object-cover"
+                    />
+                    {!audioActive && (
+                      <button
+                        type="button"
+                        onClick={() => setAudioActive(true)}
+                        aria-label="Listen to episode"
+                        className="absolute inset-0 flex items-center justify-center bg-foreground/10 hover:bg-foreground/25 transition-colors group"
+                      >
+                        <span className="w-20 h-20 rounded-full bg-background/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                          <Headphones className="h-9 w-9 text-foreground" />
+                        </span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Meta + Player */}
+                  <div className="space-y-5 text-background">
+                    <div className="flex flex-wrap gap-2">
+                      {episode.topics.map((topic) => (
+                        <TopicTag key={topic} topic={topic} variant="light" />
+                      ))}
+                    </div>
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold leading-tight">
+                      {episode.title}
+                    </h1>
+                    <div
+                      className="prose prose-invert max-w-none text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
+                      dangerouslySetInnerHTML={{ __html: episode.description }}
+                    />
+                    {MetaRow}
+
+                    {/* Audio player — always rendered, autoPlay only when activated */}
+                    {audioActive ? (
+                      <EpisodeAudioHero
+                        audioUrl={episode.audioUrl!}
+                        title={episode.title}
+                        autoPlay
+                      />
+                    ) : (
+                      <Button
+                        size="lg"
+                        className="gap-2"
+                        onClick={() => setAudioActive(true)}
+                      >
+                        <Headphones className="h-5 w-5" /> Listen now
+                      </Button>
+                    )}
+
+                    {ShareRow}
                   </div>
                 </div>
               ) : (
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-foreground/10">
-                  <img
-                    src={episode.thumbnailUrl || "/placeholder.svg"}
-                    alt={episode.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-foreground/20">
-                    <div className="w-20 h-20 rounded-full bg-background/80 flex items-center justify-center">
-                      <Play className="h-8 w-8 text-foreground ml-1" />
+                /* ───── No media fallback ───── */
+                <>
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-foreground/10">
+                    <img
+                      src={heroImage}
+                      alt={episode.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-foreground/20">
+                      <div className="w-20 h-20 rounded-full bg-background/80 flex items-center justify-center">
+                        <Play className="h-8 w-8 text-foreground ml-1" />
+                      </div>
                     </div>
                   </div>
-                </div>
+
+                  <div className="space-y-4 text-background">
+                    <div className="flex flex-wrap gap-2">
+                      {episode.topics.map((topic) => (
+                        <TopicTag key={topic} topic={topic} variant="light" />
+                      ))}
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-display font-bold leading-tight">
+                      {episode.title}
+                    </h1>
+                    <div
+                      className="prose prose-invert max-w-3xl text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
+                      dangerouslySetInnerHTML={{ __html: episode.description }}
+                    />
+                    {MetaRow}
+                    {ShareRow}
+                  </div>
+                </>
               )}
-
-              {/* Episode Info — aligned with BlogPost header structure */}
-              <div className="space-y-4 text-background">
-                {/* Topic Tags (clickable) */}
-                <div className="flex flex-wrap gap-2">
-                  {episode.topics.map((topic) => (
-                    <TopicTag key={topic} topic={topic} variant="light" />
-                  ))}
-                </div>
-
-                {/* Title (H1) */}
-                <h1 className="text-4xl md:text-5xl font-display font-bold leading-tight">
-                  {episode.title}
-                </h1>
-
-                {/* Description / intro */}
-                <p className="text-lg text-background/70 leading-relaxed max-w-3xl">
-                  {episode.description}
-                </p>
-
-                {/* Meta info — matching blog layout */}
-                <div className="flex flex-wrap items-center gap-6 text-background/70">
-                  <span className="font-bold bg-accent text-accent-foreground px-3 py-1 rounded-full text-xs">
-                    Episode {episode.number}
-                  </span>
-                  <span className="flex items-center space-x-2">
-                    <Calendar size={16} />
-                    <span>{episode.date}</span>
-                  </span>
-                  <span className="flex items-center space-x-2">
-                    <Clock size={16} />
-                    <span>{episode.duration}</span>
-                  </span>
-                </div>
-
-                {/* Share Actions — matching blog layout */}
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-background/60 text-sm flex items-center gap-1.5">
-                    <Share2 size={14} /> Share
-                  </span>
-                  <button
-                    onClick={copyLink}
-                    className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
-                    title="Copy link"
-                  >
-                    <LinkIcon className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={shareLinkedIn}
-                    className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
-                    title="Share on LinkedIn"
-                  >
-                    <Linkedin className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={shareEmail}
-                    className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
-                    title="Share via email"
-                  >
-                    <Mail className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </section>
 
         {/* Listen On Platforms */}
-        {episode.platformLinks && (
-          <section className="border-b border-border bg-muted/40">
-            <div className="container mx-auto px-4 py-6">
-              <div className="max-w-6xl mx-auto flex flex-wrap items-center gap-4">
-                <span className="text-sm font-semibold text-foreground">
-                  Listen on:
-                </span>
-                {episode.platformLinks.apple && (
-                  <a
-                    href={episode.platformLinks.apple}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
-                  >
-                    🎧 Apple Podcasts
-                  </a>
-                )}
-                {episode.platformLinks.spotify && (
-                  <a
-                    href={episode.platformLinks.spotify}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
-                  >
-                    🎵 Spotify
-                  </a>
-                )}
-                {episode.platformLinks.youtube && (
-                  <a
-                    href={episode.platformLinks.youtube}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
-                  >
-                    ▶️ YouTube
-                  </a>
-                )}
-                {episode.platformLinks.other?.map((platform) => (
-                  <a
-                    key={platform.name}
-                    href={platform.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
-                  >
-                    {platform.name}
-                  </a>
-                ))}
+        {episode.platformLinks &&
+          (episode.platformLinks.apple ||
+            episode.platformLinks.spotify ||
+            episode.platformLinks.youtube ||
+            (episode.platformLinks.other && episode.platformLinks.other.length > 0)) && (
+            <section className="border-b border-border bg-muted/40">
+              <div className="container mx-auto px-4 py-6">
+                <div className="max-w-6xl mx-auto flex flex-wrap items-center gap-4">
+                  <span className="text-sm font-semibold text-foreground">
+                    Listen on:
+                  </span>
+                  {episode.platformLinks.apple && (
+                    <a
+                      href={episode.platformLinks.apple}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
+                    >
+                      🎧 Apple Podcasts
+                    </a>
+                  )}
+                  {episode.platformLinks.spotify && (
+                    <a
+                      href={episode.platformLinks.spotify}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
+                    >
+                      🎵 Spotify
+                    </a>
+                  )}
+                  {episode.platformLinks.youtube && (
+                    <a
+                      href={episode.platformLinks.youtube}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
+                    >
+                      ▶️ YouTube
+                    </a>
+                  )}
+                  {episode.platformLinks.other?.map((platform) => (
+                    <a
+                      key={platform.name}
+                      href={platform.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
+                    >
+                      {platform.name}
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
-        )}
+            </section>
+          )}
 
-        {/* Content Body — consistent spacing with blog */}
+        {/* Meet the Guest */}
+        {episode.guest && <GuestSection guest={episode.guest} />}
+
+        {/* Content Body */}
         <div className="container mx-auto px-4 py-12 md:py-16">
           <div className="max-w-4xl mx-auto space-y-16">
             {/* Shareable Clips */}
@@ -340,71 +404,7 @@ const EpisodeDetail = () => {
               </section>
             )}
 
-            {/* Transcript */}
-            {transcriptText && (
-              <section>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-display font-bold text-foreground">
-                    Transcript
-                  </h2>
-                  <button
-                    onClick={() =>
-                      navigator.clipboard.writeText(transcriptText)
-                    }
-                    className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
-                  >
-                    Copy transcript
-                  </button>
-                </div>
-
-                <div className="relative mb-4">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search in transcript..."
-                    value={transcriptSearch}
-                    onChange={(e) => {
-                      setTranscriptSearch(e.target.value);
-                      if (e.target.value) setTranscriptExpanded(true);
-                    }}
-                    className="pl-10 h-10"
-                  />
-                </div>
-
-                <div className="bg-muted/40 rounded-lg p-6 border border-border">
-                  <div
-                    className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line"
-                    dangerouslySetInnerHTML={{
-                      __html: highlightSearch(
-                        displayedTranscript,
-                        transcriptSearch
-                      ),
-                    }}
-                  />
-                  {hasLongTranscript && (
-                    <button
-                      onClick={() =>
-                        setTranscriptExpanded(!transcriptExpanded)
-                      }
-                      className="mt-4 flex items-center gap-1 text-sm font-medium text-accent hover:text-accent/80 transition-colors"
-                    >
-                      {transcriptExpanded ? (
-                        <>
-                          Show less <ChevronUp className="h-4 w-4" />
-                        </>
-                      ) : (
-                        <>
-                          Read full transcript{" "}
-                          <ChevronDown className="h-4 w-4" />
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
-              </section>
-            )}
-
-            {/* Key Takeaways / Show Notes — styled same as blog key takeaways */}
+            {/* Key Takeaways / Show Notes */}
             {episode.showNotes && episode.showNotes.length > 0 && (
               <section>
                 <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
@@ -427,7 +427,7 @@ const EpisodeDetail = () => {
           </div>
         </div>
 
-        {/* Topic Tags at bottom — matching blog */}
+        {/* Topic Tags at bottom */}
         <div className="bg-background py-8 border-t border-border">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">

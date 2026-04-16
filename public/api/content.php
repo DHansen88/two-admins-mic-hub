@@ -412,8 +412,11 @@ function handleSaveEpisode(): void {
         'transcript' => $body['transcript'] ?? null,
         'showNotes' => $body['showNotes'] ?? null,
         'clips' => $body['clips'] ?? null,
+        'guest' => (isset($body['guest']) && is_array($body['guest']) && !empty($body['guest']['name']))
+            ? $body['guest']
+            : null,
     ];
-    
+
     // Remove null values
     $data = array_filter($data, fn($v) => $v !== null);
     
