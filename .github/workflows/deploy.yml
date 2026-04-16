@@ -10,6 +10,9 @@ on:
 permissions:
   contents: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -71,12 +74,23 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.HOSTINGER_SSH_KEY }}" > ~/.ssh/id_hostinger
           chmod 600 ~/.ssh/id_hostinger
-          ssh-keyscan -p 65002 82.29.86.190 >> ~/.ssh/known_hosts
+          touch ~/.ssh/known_hosts
+          ssh-keyscan -p 65002 82.29.86.190 >> ~/.ssh/known_hosts || true
+          cat <<'EOF' > ~/.ssh/config
+          Host hostinger-deploy
+            HostName 82.29.86.190
+            Port 65002
+            User u808275895
+            IdentityFile ~/.ssh/id_hostinger
+            StrictHostKeyChecking accept-new
+            UserKnownHostsFile ~/.ssh/known_hosts
+          EOF
+          chmod 600 ~/.ssh/config
 
       - name: Upload dist to Hostinger
         run: |
           tar -C dist -czf /tmp/site-dist.tgz .
-          scp -i ~/.ssh/id_hostinger -P 65002 /tmp/site-dist.tgz \
-            u808275895@82.29.86.190:/home/u808275895/domains/twoadminsandamic.com/public_html/site-dist.tgz
-          ssh -i ~/.ssh/id_hostinger -p 65002 u808275895@82.29.86.190 \
+          scp /tmp/site-dist.tgz \
+            hostinger-deploy:/home/u808275895/domains/twoadminsandamic.com/public_html/site-dist.tgz
+          ssh hostinger-deploy \
             "cd /home/u808275895/domains/twoadminsandamic.com/public_html && tar -xzf site-dist.tgz && rm -f site-dist.tgz"
