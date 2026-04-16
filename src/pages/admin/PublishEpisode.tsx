@@ -620,7 +620,110 @@ const PublishEpisode = () => {
         </CardContent>
       </Card>
 
-      {/* Transcript preview */}
+      {/* Guest Information */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <User className="h-5 w-5 text-primary" />
+            Guest Information
+          </CardTitle>
+          <p className="text-xs text-muted-foreground mt-1">
+            Optional. If a guest name is provided, the public page will show a "Meet the Guest" section.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Guest Name</label>
+              <Input
+                value={guestFullName}
+                onChange={(e) => setGuestFullName(e.target.value)}
+                placeholder="Jane Doe"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Guest Title</label>
+              <Input
+                value={guestTitle}
+                onChange={(e) => setGuestTitle(e.target.value)}
+                placeholder="Director of Operations, Acme Co."
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground">Guest Image</label>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleGuestImageUpload}
+              disabled={guestImageUploading}
+            />
+            {guestImageUploading && (
+              <p className="text-xs text-muted-foreground">Uploading…</p>
+            )}
+            {!guestImageUploading && guestImage && (
+              <div className="flex items-center gap-3 mt-1">
+                <img
+                  src={guestImage}
+                  alt="Guest preview"
+                  className="w-16 h-16 rounded-full object-cover border border-border"
+                />
+                <p className="text-xs text-muted-foreground break-all">{guestImage}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground">Short Bio</label>
+            <RichTextEditor content={guestBio} onChange={setGuestBio} />
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Website URL</label>
+              <Input
+                value={guestWebsite}
+                onChange={(e) => setGuestWebsite(e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">LinkedIn URL</label>
+              <Input
+                value={guestLinkedin}
+                onChange={(e) => setGuestLinkedin(e.target.value)}
+                placeholder="https://linkedin.com/in/..."
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Instagram URL</label>
+              <Input
+                value={guestInstagram}
+                onChange={(e) => setGuestInstagram(e.target.value)}
+                placeholder="https://instagram.com/..."
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">X (Twitter) URL</label>
+              <Input
+                value={guestX}
+                onChange={(e) => setGuestX(e.target.value)}
+                placeholder="https://x.com/..."
+              />
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <label className="text-sm font-medium text-foreground">Facebook URL</label>
+              <Input
+                value={guestFacebook}
+                onChange={(e) => setGuestFacebook(e.target.value)}
+                placeholder="https://facebook.com/..."
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {transcript && (
         <Card className="bg-card border-border">
           <CardHeader>
