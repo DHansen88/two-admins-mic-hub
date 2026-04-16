@@ -339,6 +339,28 @@ function HtmlBlockEditor({ block, onChange }: { block: Extract<PopupContentBlock
   );
 }
 
+/* Spacer */
+function SpacerBlockEditor({ block, onChange }: { block: Extract<PopupContentBlock, { type: "spacer" }>; onChange: (b: PopupContentBlock) => void }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        <label className="text-xs font-medium">Height (px)</label>
+        <Input
+          type="number"
+          min={8}
+          max={200}
+          value={block.height}
+          onChange={(e) => onChange({ ...block, height: Number(e.target.value) })}
+          className="w-24"
+        />
+      </div>
+      <div className="flex items-center justify-center border border-dashed border-border rounded" style={{ height: `${Math.min(block.height, 80)}px` }}>
+        <span className="text-[10px] text-muted-foreground">{block.height}px</span>
+      </div>
+    </div>
+  );
+}
+
 /* Newsletter */
 function NewsletterBlockEditor({ block, onChange }: { block: Extract<PopupContentBlock, { type: "newsletter" }>; onChange: (b: PopupContentBlock) => void }) {
   return (
