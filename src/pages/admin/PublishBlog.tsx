@@ -37,7 +37,7 @@ import {
   saveToHistory,
 } from "@/lib/file-export";
 import { saveBlog } from "@/lib/content-manager";
-import { setContentStatus } from "@/lib/content-status";
+import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 import PublishModal from "@/components/PublishModal";
 import RichTextEditor from "@/components/RichTextEditor";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
@@ -477,7 +477,17 @@ setAuthorAvatars(avatarMap);
     toast({ title: "Newsletter draft exported!" });
   };
 
-  const handleSaveDraft = () => {
+  const setStatusViaApi = async (slug: string, status: string) => {
+    const apiBase = getAdminApiBase();
+    await fetch(`${apiBase}/content.php?action=set-status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders({}) },
+      credentials: 'include',
+      body: JSON.stringify({ type: 'blog', id: slug, status }),
+    });
+  };
+
+  const handleSaveDraft = async () => {
     const slug = customSlug || generateSlug(title) || "new";
     saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
@@ -485,19 +495,19 @@ setAuthorAvatars(avatarMap);
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
     });
-    setContentStatus("blog", slug, "draft");
+    await setStatusViaApi(slug, "draft");
     toast({ title: "Draft saved" });
     navigate("/admin/blog-posts");
   };
 
   const handlePublishNow = async () => {
-  const success = await handlePublishToServer();
-  if (!success) return;
+    const success = await handlePublishToServer();
+    if (!success) return;
 
-  const slug = customSlug || generateSlug(title);
-  setContentStatus("blog", slug, "published");
-  navigate("/admin/blog-posts");
-};
+    const slug = customSlug || generateSlug(title);
+    await setStatusViaApi(slug, "published");
+    navigate("/admin/blog-posts");
+  };
 
   const handlePublishToServer = async (): Promise<boolean> => {
   const validAuthors = selectedAuthors.filter(Boolean);
@@ -558,16 +568,26 @@ setAuthorAvatars(avatarMap);
   return false;
 };
 
-  const handleSchedulePublish = (date: string, time: string) => {
+  const handleSchedulePublish = async (date: string, time: string) => {
     if (!title || !currentPlainText) {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
     const slug = customSlug || generateSlug(title);
     handleSaveDraftSilent();
-    setContentStatus("blog", slug, "scheduled", date, time);
-    toast({ title: `Blog scheduled for ${date} at ${time}` });
-    navigate("/admin/blog-posts");
+    try {
+      const apiBase = getAdminApiBase();
+      await fetch(`${apiBase}/content.php?action=set-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders({}) },
+        credentials: 'include',
+        body: JSON.stringify({ type: 'blog', id: slug, status: 'scheduled', scheduledDate: date, scheduledTime: time }),
+      });
+      toast({ title: `Blog scheduled for ${date} at ${time}` });
+      navigate("/admin/blog-posts");
+    } catch (e: any) {
+      toast({ title: "Failed to schedule", description: e.message, variant: "destructive" });
+    }
   };
 
   const handleSaveDraftSilent = () => {

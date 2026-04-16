@@ -81,6 +81,9 @@ switch ($action) {
     case 'upload-podcast-asset':
         handleUploadPodcastAsset();
         break;
+    case 'set-status':
+        handleSetStatus();
+        break;
     case 'hidden-ids':
         handleHiddenIds();
         break;
@@ -723,18 +726,64 @@ function getContentStatuses(): array {
     return [];
 }
 
-function setContentStatus(string $type, string $id, string $status): void {
+function setContentStatus(string $type, string $id, string $status, ?string $scheduledDate = null, ?string $scheduledTime = null): void {
     $statuses = getContentStatuses();
-    $statuses["{$type}:{$id}"] = [
+    $entry = [
         'status' => $status,
         'updatedAt' => date('c'),
     ];
+    if ($status === 'scheduled' && $scheduledDate) {
+        $entry['scheduledDate'] = $scheduledDate;
+        $entry['scheduledTime'] = $scheduledTime ?? '00:00';
+    }
+    $statuses["{$type}:{$id}"] = $entry;
     file_put_contents(getContentStatusFile(), json_encode($statuses, JSON_PRETTY_PRINT));
 }
 
 function getContentStatus(string $type, string $id): string {
     $statuses = getContentStatuses();
-    return $statuses["{$type}:{$id}"]['status'] ?? 'published';
+    $entry = $statuses["{$type}:{$id}"] ?? null;
+    if (!$entry) return 'published';
+
+    // Auto-publish scheduled content whose time has passed
+    if ($entry['status'] === 'scheduled' && !empty($entry['scheduledDate'])) {
+        $scheduledAt = strtotime($entry['scheduledDate'] . 'T' . ($entry['scheduledTime'] ?? '00:00'));
+        if ($scheduledAt !== false && $scheduledAt <= time()) {
+            setContentStatus($type, $id, 'published');
+            return 'published';
+        }
+    }
+
+    return $entry['status'];
+}
+
+function handleSetStatus(): void {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        jsonResponse(['error' => 'Method not allowed'], 405);
+    }
+
+    $user = requireAuth();
+    $body = getRequestBody();
+
+    $type = $body['type'] ?? '';
+    $id = $body['id'] ?? '';
+    $status = $body['status'] ?? '';
+
+    if (!in_array($type, ['blog', 'episode'])) {
+        jsonResponse(['error' => 'Invalid type'], 400);
+    }
+    if (!$id) jsonResponse(['error' => 'ID required'], 400);
+    if (!in_array($status, ['draft', 'scheduled', 'published', 'trashed', 'deleted'])) {
+        jsonResponse(['error' => 'Invalid status'], 400);
+    }
+
+    $scheduledDate = $body['scheduledDate'] ?? null;
+    $scheduledTime = $body['scheduledTime'] ?? null;
+
+    setContentStatus($type, $id, $status, $scheduledDate, $scheduledTime);
+    logContentAction($user, 'status_changed', "Set {$type} '{$id}' to {$status}");
+
+    jsonResponse(['success' => true]);
 }
 
 function checkPermission(array $user, string $permission): void {
