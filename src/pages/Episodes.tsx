@@ -1,7 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import EpisodeCard from "@/components/EpisodeCard";
+import EpisodeAudioPlayer from "@/components/EpisodeAudioPlayer";
+import EpisodeVideoModal from "@/components/EpisodeVideoModal";
 import FeaturedEpisode from "@/components/FeaturedEpisode";
 import BlogFilterBar from "@/components/BlogFilterBar";
 import { Input } from "@/components/ui/input";
@@ -9,6 +11,7 @@ import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useVisibleEpisodes } from "@/hooks/useVisibleContent";
 import { Button } from "@/components/ui/button";
+import type { Episode } from "@/data/episodeData";
 
 const EPISODES_PER_PAGE = 5;
 
@@ -19,7 +22,22 @@ const Episodes = () => {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [currentPage, setCurrentPage] = useState(1);
+  const [playingEpisode, setPlayingEpisode] = useState<Episode | null>(null);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
   const latestEpisode = allEpisodes[0];
+
+  const handlePlay = useCallback((episode: Episode) => {
+    const hasVideo = !!episode.riversideEmbedUrl;
+    const hasAudio = !!episode.audioUrl;
+
+    if (hasVideo) {
+      setPlayingEpisode(episode);
+      setVideoModalOpen(true);
+    } else if (hasAudio) {
+      setPlayingEpisode((prev) => (prev?.number === episode.number ? null : episode));
+      setVideoModalOpen(false);
+    }
+  }, []);
 
   const hasActiveFilters = selectedTopics.length > 0;
 
@@ -217,7 +235,17 @@ const Episodes = () => {
                           className="animate-fade-in mb-5"
                           style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
                         >
-                          <EpisodeCard {...episode} />
+                          <EpisodeCard {...episode} onPlay={handlePlay} />
+                          {playingEpisode?.number === episode.number && episode.audioUrl && !videoModalOpen && (
+                            <div className="mt-2">
+                              <EpisodeAudioPlayer
+                                audioUrl={episode.audioUrl}
+                                title={episode.title}
+                                thumbnailUrl={episode.thumbnailUrl}
+                                onClose={() => setPlayingEpisode(null)}
+                              />
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -264,6 +292,17 @@ const Episodes = () => {
           </div>
         </section>
       </main>
+      {playingEpisode?.riversideEmbedUrl && (
+        <EpisodeVideoModal
+          open={videoModalOpen}
+          onOpenChange={(open) => {
+            setVideoModalOpen(open);
+            if (!open) setPlayingEpisode(null);
+          }}
+          videoUrl={playingEpisode.riversideEmbedUrl}
+          title={playingEpisode.title}
+        />
+      )}
       <Footer />
     </div>
   );
