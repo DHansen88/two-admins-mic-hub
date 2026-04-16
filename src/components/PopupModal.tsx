@@ -125,7 +125,7 @@ const NewsletterForm = ({
           </Button>
         </div>
         {config.showConantLeadership && (
-          <label className="flex items-start sm:items-center gap-2 mt-4 text-sm text-muted-foreground cursor-pointer justify-start sm:justify-center text-left">
+          <label className="flex items-start sm:items-center gap-2 mt-6 text-sm text-muted-foreground cursor-pointer justify-start sm:justify-center text-left">
             <Checkbox checked={conantLeadership} onCheckedChange={(v) => setConantLeadership(v === true)} />
             <span className="leading-5">{config.conantLeadershipLabel}</span>
           </label>
