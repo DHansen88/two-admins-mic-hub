@@ -15,6 +15,7 @@ import {
   Video,
   MousePointerClick,
   Minus,
+  MoveVertical,
   Code,
   Mail,
   Trash2,
@@ -35,6 +36,7 @@ const BLOCK_TYPES: { type: PopupBlockType; label: string; icon: React.ElementTyp
   { type: "video", label: "Video", icon: Video },
   { type: "button", label: "Button", icon: MousePointerClick },
   { type: "newsletter", label: "Newsletter", icon: Mail },
+  { type: "spacer", label: "Spacer", icon: MoveVertical },
   { type: "divider", label: "Divider", icon: Minus },
   { type: "html", label: "HTML Embed", icon: Code },
 ];
@@ -131,6 +133,8 @@ function BlockBody({ block, onChange }: { block: PopupContentBlock; onChange: (b
       return <ButtonBlockEditor block={block} onChange={onChange} />;
     case "divider":
       return <p className="text-xs text-muted-foreground italic">Horizontal divider — no settings.</p>;
+    case "spacer":
+      return <SpacerBlockEditor block={block} onChange={onChange} />;
     case "html":
       return <HtmlBlockEditor block={block} onChange={onChange} />;
     case "newsletter":
@@ -331,6 +335,28 @@ function HtmlBlockEditor({ block, onChange }: { block: Extract<PopupContentBlock
         placeholder="Paste embed code, iframe, or HTML here..."
         className="font-mono text-xs"
       />
+    </div>
+  );
+}
+
+/* Spacer */
+function SpacerBlockEditor({ block, onChange }: { block: Extract<PopupContentBlock, { type: "spacer" }>; onChange: (b: PopupContentBlock) => void }) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        <label className="text-xs font-medium">Height (px)</label>
+        <Input
+          type="number"
+          min={8}
+          max={200}
+          value={block.height}
+          onChange={(e) => onChange({ ...block, height: Number(e.target.value) })}
+          className="w-24"
+        />
+      </div>
+      <div className="flex items-center justify-center border border-dashed border-border rounded" style={{ height: `${Math.min(block.height, 80)}px` }}>
+        <span className="text-[10px] text-muted-foreground">{block.height}px</span>
+      </div>
     </div>
   );
 }

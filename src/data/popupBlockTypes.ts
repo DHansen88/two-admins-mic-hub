@@ -9,6 +9,7 @@ export type PopupBlockType =
   | "video"
   | "button"
   | "divider"
+  | "spacer"
   | "html"
   | "newsletter";
 
@@ -47,6 +48,12 @@ export interface DividerPopupBlock {
   id: string;
 }
 
+export interface SpacerPopupBlock {
+  type: "spacer";
+  id: string;
+  height: number; // pixels
+}
+
 export interface HtmlEmbedPopupBlock {
   type: "html";
   id: string;
@@ -69,6 +76,7 @@ export type PopupContentBlock =
   | VideoPopupBlock
   | ButtonPopupBlock
   | DividerPopupBlock
+  | SpacerPopupBlock
   | HtmlEmbedPopupBlock
   | NewsletterPopupBlock;
 
@@ -89,6 +97,8 @@ export function createEmptyPopupBlock(type: PopupBlockType): PopupContentBlock {
       return { type: "button", id, text: "Click Here", url: "", openNewTab: true, style: "primary" };
     case "divider":
       return { type: "divider", id };
+    case "spacer":
+      return { type: "spacer", id, height: 24 };
     case "html":
       return { type: "html", id, code: "" };
     case "newsletter":
