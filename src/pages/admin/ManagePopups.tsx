@@ -1,10 +1,11 @@
-import { useState, useSyncExternalStore } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import {
   getPopups,
   subscribePopups,
   addPopup,
   updatePopup,
   deletePopup,
+  loadPopupsFromApi,
   type PopupConfig,
 } from "@/data/popupData";
 import PopupBlockEditor from "@/components/PopupBlockEditor";
