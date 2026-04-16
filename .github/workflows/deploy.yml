@@ -44,13 +44,17 @@ jobs:
           git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push --force origin deploy
 
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.HOSTINGER_SSH_KEY }}" > ~/.ssh/id_hostinger
+          chmod 600 ~/.ssh/id_hostinger
+          ssh-keyscan -p 65002 82.29.86.190 >> ~/.ssh/known_hosts
+
       - name: Upload dist to Hostinger
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: 82.29.86.190
-          username: u808275895
-          key: ${{ secrets.HOSTINGER_SSH_KEY }}
-          port: 65002
-          source: "dist/*"
-          target: "/home/u808275895/domains/twoadminsandamic.com/public_html"
-          strip_components: 1
+        run: |
+          tar -C dist -czf /tmp/site-dist.tgz .
+          scp -i ~/.ssh/id_hostinger -P 65002 /tmp/site-dist.tgz \
+            u808275895@82.29.86.190:/home/u808275895/domains/twoadminsandamic.com/public_html/site-dist.tgz
+          ssh -i ~/.ssh/id_hostinger -p 65002 u808275895@82.29.86.190 \
+            "cd /home/u808275895/domains/twoadminsandamic.com/public_html && tar -xzf site-dist.tgz && rm -f site-dist.tgz"
