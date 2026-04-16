@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { Episode } from "@/data/episodeData";
 import { stripHtml } from "@/lib/html-utils";
-import EpisodeAudioHero from "./EpisodeAudioHero";
 
 interface FeaturedEpisodeProps {
   episode: Episode;
@@ -11,7 +10,6 @@ interface FeaturedEpisodeProps {
 
 const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
   const navigate = useNavigate();
-  const [audioActive, setAudioActive] = useState(false);
 
   const hasVideo = !!episode.riversideEmbedUrl;
   const hasAudio = !!episode.audioUrl;
