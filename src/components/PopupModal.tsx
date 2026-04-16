@@ -206,6 +206,13 @@ const PopupModal = () => {
           <X className="h-5 w-5 text-foreground" />
         </button>
 
+        {/* Popup Title */}
+        {popup.title && (
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-foreground px-6 pt-4 pb-1 text-center">
+            {popup.title}
+          </h2>
+        )}
+
         {/* Rich text content */}
         {hasRichContent && (
           <div
