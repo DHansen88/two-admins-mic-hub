@@ -25,9 +25,39 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // IMPORTANT:
 // - BEEHIIV_API_KEY must be a private Bearer token, not the publication ID.
 // - BEEHIIV_PUBLICATION_ID should be the publication's pub_... identifier.
-// Prefer environment variables on the server, with file constants as fallback.
-defined('BEEHIIV_API_KEY') || define('BEEHIIV_API_KEY', getenv('BEEHIIV_API_KEY') ?: '');
-defined('BEEHIIV_PUBLICATION_ID') || define('BEEHIIV_PUBLICATION_ID', getenv('BEEHIIV_PUBLICATION_ID') ?: 'pub_51840fb5-3899-45b2-9b67-dc3ddf9d604b');
+// Prefer config.local.php constants first, then fall back to common PHP env sources.
+function resolveConfigValue(array $keys, string $default = ''): string {
+    foreach ($keys as $key) {
+        if (defined($key)) {
+            $value = trim((string) constant($key));
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        $env = getenv($key);
+        if ($env !== false && trim((string) $env) !== '') {
+            return trim((string) $env);
+        }
+
+        if (!empty($_ENV[$key])) {
+            return trim((string) $_ENV[$key]);
+        }
+
+        if (!empty($_SERVER[$key])) {
+            return trim((string) $_SERVER[$key]);
+        }
+
+        if (function_exists('apache_getenv')) {
+            $apacheEnv = apache_getenv($key, true);
+            if ($apacheEnv !== false && trim((string) $apacheEnv) !== '') {
+                return trim((string) $apacheEnv);
+            }
+        }
+    }
+
+    return $default;
+}
 
 // ─── Input validation ───────────────────────────────────────
 $body = getRequestBody();
@@ -61,8 +91,17 @@ if (file_exists($rateLimitFile)) {
 file_put_contents($rateLimitFile, $now);
 
 // ─── Forward to Beehiiv ─────────────────────────────────────
-$apiKey = trim((string) BEEHIIV_API_KEY);
-$publicationId = trim((string) BEEHIIV_PUBLICATION_ID);
+$apiKey = resolveConfigValue([
+    'BEEHIIV_API_KEY',
+    'BEEHIIV_API_TOKEN',
+    'BEEHIIV_TOKEN',
+    'BEEHIIV_PRIVATE_KEY',
+]);
+$publicationId = resolveConfigValue([
+    'BEEHIIV_PUBLICATION_ID',
+    'BEEHIIV_PUBLICATION',
+    'BEEHIIV_PUB_ID',
+], 'pub_51840fb5-3899-45b2-9b67-dc3ddf9d604b');
 
 if (empty($apiKey) || empty($publicationId)) {
     error_log("SUBSCRIBE: Missing Beehiiv configuration. Email: " . $email);
