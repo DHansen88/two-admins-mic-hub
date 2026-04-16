@@ -49,7 +49,7 @@ function loadPopups(): array {
                 'title' => 'This Website is currently under construction.',
                 'active' => true,
                 'delaySeconds' => 2,
-                'content' => '',
+                'content' => '<p>The admins are behind the scenes, fixing the formatting, organizing the tabs, and making it look easy.</p><p>Subscribe below, and we’ll send the update when everything goes live.</p>',
                 'contentBlocks' => [],
                 'newsletterConfig' => [
                     'enabled' => true,
