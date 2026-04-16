@@ -300,6 +300,18 @@ export interface ShareableClip {
   mp4Url?: string;
 }
 
+export interface EpisodeGuest {
+  name: string;
+  title?: string;
+  image?: string;
+  bio?: string;
+  websiteUrl?: string;
+  linkedinUrl?: string;
+  instagramUrl?: string;
+  xUrl?: string;
+  facebookUrl?: string;
+}
+
 export interface Episode {
   number: number;
   title: string;
@@ -316,6 +328,7 @@ export interface Episode {
   clips?: ShareableClip[];
   transcript?: string;
   showNotes?: string[];
+  guest?: EpisodeGuest;
 }
 
 // Load all .json files from src/content/podcasts/
@@ -325,6 +338,22 @@ const podcastModules = import.meta.glob('../content/podcasts/*.json', {
 
 function parsePodcastJson(mod: Record<string, unknown>): Episode {
   const data = (mod.default ?? mod) as Record<string, unknown>;
+
+  const rawGuest = data.guest as Record<string, unknown> | undefined;
+  const guest: EpisodeGuest | undefined =
+    rawGuest && typeof rawGuest === 'object' && rawGuest.name
+      ? {
+          name: String(rawGuest.name),
+          title: rawGuest.title ? String(rawGuest.title) : undefined,
+          image: rawGuest.image ? String(rawGuest.image) : undefined,
+          bio: rawGuest.bio ? String(rawGuest.bio) : undefined,
+          websiteUrl: rawGuest.websiteUrl ? String(rawGuest.websiteUrl) : undefined,
+          linkedinUrl: rawGuest.linkedinUrl ? String(rawGuest.linkedinUrl) : undefined,
+          instagramUrl: rawGuest.instagramUrl ? String(rawGuest.instagramUrl) : undefined,
+          xUrl: rawGuest.xUrl ? String(rawGuest.xUrl) : undefined,
+          facebookUrl: rawGuest.facebookUrl ? String(rawGuest.facebookUrl) : undefined,
+        }
+      : undefined;
 
   return {
     number: (data.number as number) || 0,
@@ -342,6 +371,7 @@ function parsePodcastJson(mod: Record<string, unknown>): Episode {
     clips: data.clips as ShareableClip[] | undefined,
     transcript: data.transcript as string | undefined,
     showNotes: data.showNotes as string[] | undefined,
+    guest,
   };
 }
 
