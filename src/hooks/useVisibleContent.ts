@@ -1,12 +1,12 @@
 /**
  * Hooks that return only visible (non-hidden) blogs and episodes.
- * Blogs: fetched live from the PHP API only so admin changes apply instantly.
- * Episodes: still use static data + hidden-IDs filter.
+ * Blogs and episodes: fetched live from the PHP API so admin changes apply instantly.
  */
 
 import { useMemo } from "react";
 import { useHiddenContent } from "./useHiddenContent";
 import { useApiBlogs, useApiBlogBySlug } from "./useApiBlogs";
+import { useApiEpisodes, useApiEpisodeBySlug } from "./useApiEpisodes";
 import { allEpisodes as staticEpisodes, getEpisodeBySlug as staticGetEpisodeBySlug } from "@/data/episodeData";
 import type { BlogPost } from "@/lib/content-loader";
 import type { Episode } from "@/data/episodeData";
@@ -21,12 +21,14 @@ export function useVisibleBlogs() {
 
 export function useVisibleEpisodes() {
   const { data: hidden } = useHiddenContent();
+  const { data: apiEpisodes } = useApiEpisodes();
   return useMemo(() => {
-    if (!hidden || hidden.episodes.length === 0) return staticEpisodes;
-    return staticEpisodes.filter(
+    const baseEpisodes = (apiEpisodes && apiEpisodes.length > 0) ? apiEpisodes : staticEpisodes;
+    if (!hidden || hidden.episodes.length === 0) return baseEpisodes;
+    return baseEpisodes.filter(
       (ep) => !hidden.episodes.includes(String(ep.number)) && !hidden.episodes.includes(ep.slug)
     );
-  }, [hidden]);
+  }, [apiEpisodes, hidden]);
 }
 
 export function useVisibleBlogBySlug(slug: string): { post: BlogPost | undefined; isLoading: boolean } {
@@ -41,7 +43,8 @@ export function useVisibleBlogBySlug(slug: string): { post: BlogPost | undefined
 
 export function useVisibleEpisodeBySlug(slug: string): Episode | undefined {
   const { data: hidden } = useHiddenContent();
-  const ep = staticGetEpisodeBySlug(slug);
+  const { data: apiEpisode } = useApiEpisodeBySlug(slug);
+  const ep = apiEpisode ?? staticGetEpisodeBySlug(slug);
   if (!ep) return undefined;
   if (hidden?.episodes.includes(String(ep.number)) || hidden?.episodes.includes(ep.slug)) return undefined;
   return ep;

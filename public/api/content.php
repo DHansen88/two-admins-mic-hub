@@ -93,6 +93,12 @@ switch ($action) {
     case 'public-get-blog':
         handlePublicGetBlog();
         break;
+    case 'public-list-episodes':
+        handlePublicListEpisodes();
+        break;
+    case 'public-get-episode':
+        handlePublicGetEpisode();
+        break;
     default:
         jsonResponse(['error' => 'Invalid action'], 400);
 }
@@ -144,7 +150,11 @@ function handleListEpisodes(): void {
     
     if (is_dir(PODCAST_DIR)) {
         foreach (glob(PODCAST_DIR . '/*.json') as $file) {
-            $data = json_decode(file_get_contents($file), true);
+            $data = decodeJsonFile($file);
+            if (!$data) {
+                error_log("Skipping invalid episode JSON file in admin list: {$file}");
+                continue;
+            }
             $data['filename'] = basename($file);
             $data['status'] = getContentStatus('episode', (string)($data['number'] ?? basename($file, '.json')));
             $episodes[] = $data;
@@ -1025,6 +1035,66 @@ function handlePublicGetBlog(): void {
     } else {
         jsonResponse(['error' => 'Blog not found'], 404);
     }
+}
+
+function handlePublicListEpisodes(): void {
+    $episodes = [];
+    $statuses = getContentStatuses();
+
+    if (is_dir(PODCAST_DIR)) {
+        foreach (glob(PODCAST_DIR . '/*.json') as $file) {
+            $data = decodeJsonFile($file);
+            if (!$data) {
+                error_log("Skipping invalid public episode JSON file: {$file}");
+                continue;
+            }
+
+            $episodeId = (string)($data['number'] ?? basename($file, '.json'));
+            $st = $statuses["episode:{$episodeId}"]['status'] ?? 'published';
+            if ($st !== 'published') {
+                continue;
+            }
+
+            $data['status'] = $st;
+            $episodes[] = $data;
+        }
+    }
+
+    usort($episodes, function($a, $b) {
+        return ($b['number'] ?? 0) - ($a['number'] ?? 0);
+    });
+
+    jsonResponse(['episodes' => $episodes]);
+}
+
+function handlePublicGetEpisode(): void {
+    $slug = sanitizeFilename($_GET['slug'] ?? '');
+    if (!$slug) jsonResponse(['error' => 'Slug required'], 400);
+
+    $statuses = getContentStatuses();
+
+    if (is_dir(PODCAST_DIR)) {
+        foreach (glob(PODCAST_DIR . '/*.json') as $file) {
+            $data = decodeJsonFile($file);
+            if (!$data) {
+                error_log("Skipping invalid public episode JSON file while resolving slug: {$file}");
+                continue;
+            }
+
+            $episodeId = (string)($data['number'] ?? basename($file, '.json'));
+            $st = $statuses["episode:{$episodeId}"]['status'] ?? 'published';
+            if ($st !== 'published') {
+                continue;
+            }
+
+            if (($data['slug'] ?? '') === $slug) {
+                $data['status'] = $st;
+                jsonResponse(['episode' => $data]);
+            }
+        }
+    }
+
+    jsonResponse(['error' => 'Episode not found'], 404);
 }
 
 // ─── Public: Hidden Content IDs ───

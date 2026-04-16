@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
 import { getAllContentMeta, getEffectiveStatus, removeContentMeta, processScheduledContent, setContentStatus as setContentStatusFn, type ContentStatus } from "@/lib/content-status";
 import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
+import { useAdminEpisodes } from "@/hooks/useApiEpisodes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -38,26 +39,34 @@ const ManageEpisodes = () => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkAction, setBulkAction] = useState<"trash" | "restore" | "permanent-delete" | null>(null);
   const [, forceUpdate] = useState(0);
+  const { data: adminEpisodes } = useAdminEpisodes();
 
   useEffect(() => {
     processScheduledContent();
   }, []);
 
+  const baseEpisodes = (adminEpisodes && adminEpisodes.length > 0)
+    ? adminEpisodes
+    : allEpisodesUnfiltered.map((ep) => ({
+        ...ep,
+        status: getEffectiveStatus("episode", String(ep.number), true),
+      }));
+
   const drafts = getAllContentMeta("episode").filter(
-    (m) => m.status === "draft" && !allEpisodesUnfiltered.some((ep) => String(ep.number) === m.id)
+    (m) => m.status === "draft" && !baseEpisodes.some((ep) => String(ep.number) === m.id)
   );
 
   const trashedMeta = getAllContentMeta("episode").filter((m) => m.status === "trashed");
 
   const episodes = [
-    ...allEpisodesUnfiltered.map((ep) => ({
+    ...baseEpisodes.map((ep) => ({
       id: String(ep.number),
       number: ep.number,
       title: ep.title,
       date: ep.date || "",
       duration: ep.duration || "",
       topics: ep.topics || [],
-      status: getEffectiveStatus("episode", String(ep.number), true),
+      status: (ep.status as ContentStatus | undefined) || getEffectiveStatus("episode", String(ep.number), true),
     })),
     ...drafts.map((d) => {
       const raw = localStorage.getItem(`draft_episode-${d.id}`);
@@ -75,7 +84,7 @@ const ManageEpisodes = () => {
     ...trashedMeta.map((d) => {
       const raw = localStorage.getItem(`draft_episode-${d.id}`);
       const data = raw ? JSON.parse(raw) : {};
-      const existing = allEpisodesUnfiltered.find((ep) => String(ep.number) === d.id);
+      const existing = baseEpisodes.find((ep) => String(ep.number) === d.id);
       return {
         id: d.id,
         number: existing?.number || parseInt(d.id) || 0,
@@ -128,7 +137,7 @@ const ManageEpisodes = () => {
 
   const handlePermanentDelete = async (id: string) => {
     await apiCall("content.php?action=permanent-delete", { type: "episode", id });
-    const existsInStatic = allEpisodesUnfiltered.some((ep) => String(ep.number) === id);
+    const existsInStatic = baseEpisodes.some((ep) => String(ep.number) === id);
     if (existsInStatic) {
       setContentStatusFn("episode", id, "deleted");
     } else {
@@ -158,7 +167,7 @@ const ManageEpisodes = () => {
     } else if (bulkAction === "permanent-delete") {
       for (const id of ids) {
         await apiCall("content.php?action=permanent-delete", { type: "episode", id });
-        const existsInStatic = allEpisodesUnfiltered.some((ep) => String(ep.number) === id);
+        const existsInStatic = baseEpisodes.some((ep) => String(ep.number) === id);
         if (existsInStatic) {
           setContentStatusFn("episode", id, "deleted");
         } else {

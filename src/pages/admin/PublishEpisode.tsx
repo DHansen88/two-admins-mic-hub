@@ -49,6 +49,7 @@ import {
 } from "@/lib/file-export";
 import { saveEpisode, saveBlog, uploadPodcastAudio } from "@/lib/content-manager";
 import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
+import { useAdminEpisodes } from "@/hooks/useApiEpisodes";
 import PublishModal from "@/components/PublishModal";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
 
@@ -56,6 +57,7 @@ const PublishEpisode = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { data: adminEpisodes } = useAdminEpisodes();
   const [tags, setTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState("");
   const [suggestedTags, setSuggestedTags] = useState<Tag[]>([]);
@@ -68,7 +70,8 @@ const PublishEpisode = () => {
   useEffect(() => {
     const editId = searchParams.get("edit");
     if (!editId) return;
-    const ep = allEpisodesUnfiltered.find((e) => String(e.number) === editId);
+    const baseEpisodes = (adminEpisodes && adminEpisodes.length > 0) ? adminEpisodes : allEpisodesUnfiltered;
+    const ep = baseEpisodes.find((e) => String(e.number) === editId);
     if (!ep) return;
     setEpisodeNumber(String(ep.number));
     setTitle(ep.title);
@@ -84,7 +87,7 @@ const PublishEpisode = () => {
     setThumbnailName(ep.thumbnailUrl || "");
     setAudioUrl(ep.audioUrl || "");
     toast({ title: `Editing: Ep. ${ep.number} — ${ep.title}` });
-  }, [searchParams]);
+  }, [searchParams, adminEpisodes, toast]);
 
   const [episodeNumber, setEpisodeNumber] = useState("");
   const [title, setTitle] = useState("");
