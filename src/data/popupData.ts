@@ -1,4 +1,5 @@
 import { type PopupContentBlock } from "./popupBlockTypes";
+import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 
 export interface PopupConfig {
   id: string;
@@ -46,7 +47,7 @@ export function subscribePopups(fn: Listener) {
   return () => { listeners.delete(fn); };
 }
 
-function load(): PopupConfig[] {
+function loadLocal(): PopupConfig[] {
   try {
     const raw = localStorage.getItem(LS_KEY);
     if (raw) return JSON.parse(raw);
@@ -54,11 +55,49 @@ function load(): PopupConfig[] {
   return SEED;
 }
 
-function save(data: PopupConfig[]) {
+function saveLocal(data: PopupConfig[]) {
   localStorage.setItem(LS_KEY, JSON.stringify(data));
 }
 
-let _popups = load();
+let _popups = loadLocal();
+let _apiLoaded = false;
+
+/* ── API helpers ── */
+const apiBase = getAdminApiBase();
+
+async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any> {
+  try {
+    const res = await fetch(`${apiBase}/${endpoint}`, {
+      ...options,
+      headers: { "Content-Type": "application/json", ...getAdminAuthHeaders(), ...options.headers },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+/** Fetch popups from API — used by admin and public frontend */
+export async function fetchPopupsFromApi(requireAuth = false): Promise<PopupConfig[] | null> {
+  const action = requireAuth ? "list" : "public-list";
+  const data = await apiCall(`popups.php?action=${action}`);
+  if (data?.popups && Array.isArray(data.popups)) {
+    return data.popups;
+  }
+  return null;
+}
+
+/** Load popups from API and update local cache */
+export async function loadPopupsFromApi(requireAuth = false): Promise<void> {
+  const apiPopups = await fetchPopupsFromApi(requireAuth);
+  if (apiPopups) {
+    _popups = apiPopups;
+    saveLocal(apiPopups);
+    _apiLoaded = true;
+    notify();
+  }
+}
 
 export function getPopups(): PopupConfig[] { return _popups; }
 
@@ -71,24 +110,46 @@ export function getActivePopupForPath(path: string): PopupConfig | undefined {
   });
 }
 
-export function addPopup(popup: Omit<PopupConfig, "id">) {
+export async function addPopup(popup: Omit<PopupConfig, "id">) {
   const newP: PopupConfig = { ...popup, id: `popup-${Date.now()}` };
   _popups = [..._popups, newP];
-  save(_popups);
+  saveLocal(_popups);
   notify();
+
+  // Sync to API
+  await apiCall("popups.php?action=save", {
+    method: "POST",
+    body: JSON.stringify(newP),
+  });
+
   return newP;
 }
 
-export function updatePopup(id: string, updates: Partial<PopupConfig>) {
+export async function updatePopup(id: string, updates: Partial<PopupConfig>) {
   _popups = _popups.map((p) => (p.id === id ? { ...p, ...updates } : p));
-  save(_popups);
+  saveLocal(_popups);
   notify();
+
+  // Sync to API
+  const updated = _popups.find((p) => p.id === id);
+  if (updated) {
+    await apiCall("popups.php?action=save", {
+      method: "POST",
+      body: JSON.stringify(updated),
+    });
+  }
 }
 
-export function deletePopup(id: string) {
+export async function deletePopup(id: string) {
   _popups = _popups.filter((p) => p.id !== id);
-  save(_popups);
+  saveLocal(_popups);
   notify();
+
+  // Sync to API
+  await apiCall("popups.php?action=delete", {
+    method: "POST",
+    body: JSON.stringify({ id }),
+  });
 }
 
 /* ── Cooldown helpers ── */
@@ -104,7 +165,6 @@ function getSeenMap(): Record<string, number> {
 
 export function hasSeenPopup(id: string, cooldownDays: number): boolean {
   if (cooldownDays === 0) {
-    // session-only: use sessionStorage
     return sessionStorage.getItem(`popup_seen_${id}`) === "1";
   }
   const seen = getSeenMap();
@@ -123,3 +183,6 @@ export function markPopupSeen(id: string, cooldownDays: number) {
   seen[id] = Date.now();
   localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
 }
+
+// Auto-load from API on startup (public, no auth required)
+loadPopupsFromApi(false);
