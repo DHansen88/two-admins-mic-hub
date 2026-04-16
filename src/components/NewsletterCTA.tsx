@@ -68,7 +68,7 @@ No spam — just the good stuff.
 
               {/* Right — form */}
               <form onSubmit={handleSubmit} className="w-full lg:w-auto flex flex-col items-center lg:items-end">
-                <div className="flex flex-col items-center lg:items-end w-full lg:w-auto">
+                <div className="inline-flex flex-col items-start w-full sm:w-auto">
                   <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     <input
                       type="email"
