@@ -42,14 +42,8 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
           <div className="w-full md:w-[320px] lg:w-[440px] xl:w-[520px] shrink-0">
             <button
               type="button"
-              onClick={() => {
-                if (isAudioOnly) {
-                  setAudioActive(true);
-                } else {
-                  goToDetail();
-                }
-              }}
-              aria-label={isAudioOnly ? "Play audio episode" : "Open episode"}
+              onClick={goToDetail}
+              aria-label={isAudioOnly ? "Open audio episode" : "Open episode"}
               className="group relative w-full aspect-video rounded-lg overflow-hidden bg-muted block"
             >
               <img
@@ -75,22 +69,11 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
                 </span>
               </span>
               {isAudioOnly && (
-                <span className="absolute top-3 left-3 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider bg-background/90 text-foreground px-2.5 py-1 rounded-full">
+                <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-background/95 text-foreground px-2.5 py-1 rounded-full shadow-sm backdrop-blur-sm">
                   <Headphones className="h-3 w-3" /> Audio
                 </span>
               )}
             </button>
-
-            {/* Inline audio player appears below image when activated */}
-            {isAudioOnly && audioActive && episode.audioUrl && (
-              <div className="mt-3">
-                <EpisodeAudioHero
-                  audioUrl={episode.audioUrl}
-                  title={episode.title}
-                  autoPlay
-                />
-              </div>
-            )}
           </div>
 
           {/* Info — clicking title still navigates to detail page */}
