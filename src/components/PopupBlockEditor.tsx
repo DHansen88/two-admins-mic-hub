@@ -15,6 +15,7 @@ import {
   Video,
   MousePointerClick,
   Minus,
+  MoveVertical,
   Code,
   Mail,
   Trash2,
@@ -35,6 +36,7 @@ const BLOCK_TYPES: { type: PopupBlockType; label: string; icon: React.ElementTyp
   { type: "video", label: "Video", icon: Video },
   { type: "button", label: "Button", icon: MousePointerClick },
   { type: "newsletter", label: "Newsletter", icon: Mail },
+  { type: "spacer", label: "Spacer", icon: MoveVertical },
   { type: "divider", label: "Divider", icon: Minus },
   { type: "html", label: "HTML Embed", icon: Code },
 ];
@@ -131,6 +133,8 @@ function BlockBody({ block, onChange }: { block: PopupContentBlock; onChange: (b
       return <ButtonBlockEditor block={block} onChange={onChange} />;
     case "divider":
       return <p className="text-xs text-muted-foreground italic">Horizontal divider — no settings.</p>;
+    case "spacer":
+      return <SpacerBlockEditor block={block} onChange={onChange} />;
     case "html":
       return <HtmlBlockEditor block={block} onChange={onChange} />;
     case "newsletter":
