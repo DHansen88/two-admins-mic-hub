@@ -305,7 +305,7 @@ const PopupModal = () => {
         </button>
 
         {popup.title && (
-          <h2 className="text-[2.05rem] sm:text-[2.5rem] leading-tight font-display font-bold text-foreground text-center max-w-[340px] mx-auto px-6 pt-4 pb-3">
+          <h2 className="text-xl sm:text-lg leading-tight font-display font-bold text-foreground text-center max-w-[340px] mx-auto pt-4 pb-3 px-[10px] font-sans">
             {popup.title}
           </h2>
         )}
