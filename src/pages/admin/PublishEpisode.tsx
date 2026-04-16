@@ -47,7 +47,7 @@ import {
   saveDraft,
   saveToHistory,
 } from "@/lib/file-export";
-import { saveEpisode, saveBlog } from "@/lib/content-manager";
+import { saveEpisode, saveBlog, uploadPodcastAudio } from "@/lib/content-manager";
 import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 import PublishModal from "@/components/PublishModal";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
@@ -82,6 +82,7 @@ const PublishEpisode = () => {
     setYoutubeUrl(ep.platformLinks?.youtube || "");
     setGuestName("");
     setThumbnailName(ep.thumbnailUrl || "");
+    setAudioUrl(ep.audioUrl || "");
     toast({ title: `Editing: Ep. ${ep.number} — ${ep.title}` });
   }, [searchParams]);
 
@@ -98,6 +99,9 @@ const PublishEpisode = () => {
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [transcript, setTranscript] = useState("");
   const [thumbnailName, setThumbnailName] = useState("");
+  const [audioUrl, setAudioUrl] = useState("");
+  const [audioFileName, setAudioFileName] = useState("");
+  const [audioUploading, setAudioUploading] = useState(false);
 
   // Auto-generated content
   const [keyTakeaways, setKeyTakeaways] = useState<string[]>([]);
@@ -143,6 +147,41 @@ const PublishEpisode = () => {
     if (file) {
       setThumbnailName(`/assets/images/${file.name}`);
       toast({ title: `Thumbnail selected: ${file.name}. Remember to upload the image to /assets/images/ on your server.` });
+    }
+  };
+
+  const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".mp3")) {
+      toast({ title: "Only .mp3 files are accepted", variant: "destructive" });
+      return;
+    }
+    setAudioFileName(file.name);
+    setAudioUploading(true);
+    try {
+      const result = await uploadPodcastAudio(file);
+      if (result.success && result.url) {
+        setAudioUrl(result.url);
+        toast({ title: `Audio uploaded: ${file.name}` });
+      } else {
+        // Preview/fallback: use a local object URL so the player still works in preview
+        const localUrl = URL.createObjectURL(file);
+        setAudioUrl(localUrl);
+        toast({
+          title: "Using local preview URL",
+          description: result.error || "Upload API unavailable; the audio will work in preview only.",
+        });
+      }
+    } catch (err: any) {
+      const localUrl = URL.createObjectURL(file);
+      setAudioUrl(localUrl);
+      toast({
+        title: "Using local preview URL",
+        description: err?.message || "Upload failed; the audio will work in preview only.",
+      });
+    } finally {
+      setAudioUploading(false);
     }
   };
 
@@ -194,6 +233,7 @@ const PublishEpisode = () => {
     topics: selectedTopics,
     guestName: guestName || undefined,
     riversideEmbedUrl: riversideUrl || undefined,
+    audioUrl: audioUrl || undefined,
     thumbnailUrl: thumbnailName || "/placeholder.svg",
     platformLinks: {
       spotify: spotifyUrl || undefined,
