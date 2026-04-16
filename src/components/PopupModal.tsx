@@ -74,7 +74,7 @@ const NewsletterForm = ({
   }
 
   return (
-    <div className="px-6 sm:px-10 py-8 text-center">
+    <div className="px-4 sm:px-10 py-6 sm:py-8 text-center">
       {!compact && config.heading && (
         <h2 className="text-2xl sm:text-3xl font-display font-bold text-slate text-center mb-3">
           {config.heading}
@@ -125,9 +125,9 @@ const NewsletterForm = ({
           </Button>
         </div>
         {config.showConantLeadership && (
-          <label className="flex items-center gap-2 mt-4 text-sm text-muted-foreground cursor-pointer justify-center">
+          <label className="flex items-start sm:items-center gap-2 mt-4 text-sm text-muted-foreground cursor-pointer justify-start sm:justify-center text-left">
             <Checkbox checked={conantLeadership} onCheckedChange={(v) => setConantLeadership(v === true)} />
-            <span className="my-[15px]">{config.conantLeadershipLabel}</span>
+            <span className="leading-5">{config.conantLeadershipLabel}</span>
           </label>
         )}
         {errorMsg && <p className="text-destructive text-sm mt-3">{errorMsg}</p>}
@@ -138,7 +138,7 @@ const NewsletterForm = ({
 
 function PopupBlockRenderer({ blocks }: { blocks: PopupContentBlock[] }) {
   return (
-    <div className="px-5 py-6 space-y-4">
+    <div className="px-4 sm:px-5 py-4 sm:py-6 space-y-4">
       {blocks.map((block, index) => (
         <PopupBlock key={block.id} block={block} index={index} totalBlocks={blocks.length} />
       ))}
@@ -297,25 +297,29 @@ const PopupModal = () => {
   const hasNewsletter = popup.newsletterConfig?.enabled;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={close}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4" onClick={close}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div
-        className="relative z-10 w-full sm:max-w-[500px] max-h-[85vh] sm:max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-card border border-border shadow-2xl animate-fade-in"
+        className="relative z-10 w-full max-w-[min(500px,calc(100vw-1.5rem))] max-h-[92dvh] overflow-y-auto rounded-2xl bg-card border border-border shadow-2xl animate-fade-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={close} className="sticky top-2 right-2 z-20 rounded-full bg-muted/80 hover:bg-muted p-1.5 transition-colors ml-auto mr-2 mt-2" aria-label="Close popup">
+        <button
+          onClick={close}
+          className="absolute right-3 top-3 z-20 rounded-full bg-background/95 shadow-sm ring-1 ring-border hover:bg-muted p-1.5 transition-colors"
+          aria-label="Close popup"
+        >
           <X className="h-5 w-5 text-foreground" />
         </button>
 
         {popup.title && (
-          <h2 className="text-lg sm:text-2xl leading-snug font-display font-bold text-foreground text-center max-w-[420px] mx-auto pt-5 pb-3 px-4 font-sans tracking-tight">
+          <h2 className="text-[1.95rem] sm:text-2xl leading-tight font-display font-bold text-foreground text-center max-w-[420px] mx-auto px-6 pt-12 pb-4 tracking-tight">
             {popup.title}
           </h2>
         )}
 
         {hasRichContent && (
           <div
-            className="popup-prose px-6 py-4"
+            className="popup-prose px-4 sm:px-6 py-3 sm:py-4"
             dangerouslySetInnerHTML={{ __html: popup.content }}
           />
         )}

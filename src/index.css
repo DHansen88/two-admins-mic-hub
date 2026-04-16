@@ -262,6 +262,16 @@ All colors MUST be HSL.
 }
 
 @media (max-width: 640px) {
+  .popup-prose {
+    line-height: 1.6;
+    font-size: 0.9rem;
+  }
+
+  .popup-prose img {
+    margin: 0.5em auto;
+    border-radius: 0.75rem;
+  }
+
   .popup-content iframe {
     min-height: 500px;
   }
