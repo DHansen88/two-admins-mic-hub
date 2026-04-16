@@ -43,6 +43,11 @@ const ManagePopups = () => {
   const [editing, setEditing] = useState<string | null>(null);
   const [form, setForm] = useState(blankPopup());
 
+  // Load popups from API on mount (admin, with auth)
+  useEffect(() => {
+    loadPopupsFromApi(true);
+  }, []);
+
   const startNew = () => {
     setForm(blankPopup());
     setEditing("new");
