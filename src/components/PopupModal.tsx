@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { X, CheckCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   getActivePopupForPath,
+  getPopups,
   hasSeenPopup,
   markPopupSeen,
+  subscribePopups,
   type PopupConfig,
 } from "@/data/popupData";
 import { type PopupContentBlock, type NewsletterPopupBlock, getVideoEmbedUrl } from "@/data/popupBlockTypes";
@@ -264,6 +266,7 @@ function PopupButton({ config }: { config: NonNullable<PopupConfig["buttonConfig
 
 const PopupModal = () => {
   const { pathname } = useLocation();
+  const popups = useSyncExternalStore(subscribePopups, getPopups, getPopups);
   const [popup, setPopup] = useState<PopupConfig | null>(null);
   const [visible, setVisible] = useState(false);
 
@@ -279,7 +282,7 @@ const PopupModal = () => {
       setVisible(true);
     }, match.delaySeconds * 1000);
     return () => clearTimeout(timer);
-  }, [pathname]);
+  }, [pathname, popups]);
 
   const close = () => {
     if (popup) markPopupSeen(popup.id, popup.cooldownDays);

@@ -12,6 +12,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import { useCallback, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { uploadBlogImage } from "@/lib/content-manager";
 import {
   Bold,
   Italic,
@@ -65,6 +66,23 @@ const ToolBtn = ({
 const RichTextEditor = ({ content, onChange, minHeight = "400px" }: RichTextEditorProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const uploadImageAndInsert = useCallback(
+    async (file: File, insert: (src: string) => void) => {
+      const result = await uploadBlogImage(file);
+      if (result.success && result.url) {
+        insert(result.url);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        insert(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    },
+    [],
+  );
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -100,15 +118,13 @@ const RichTextEditor = ({ content, onChange, minHeight = "400px" }: RichTextEdit
         const file = files[0];
         if (!file.type.startsWith("image/")) return false;
         event.preventDefault();
-        const reader = new FileReader();
-        reader.onload = () => {
+        void uploadImageAndInsert(file, (src) => {
           const { state } = view;
           const pos = view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos ?? state.selection.from;
-          const node = state.schema.nodes.image.create({ src: reader.result as string });
+          const node = state.schema.nodes.image.create({ src });
           const tr = state.tr.insert(pos, node);
           view.dispatch(tr);
-        };
-        reader.readAsDataURL(file);
+        });
         return true;
       },
       handlePaste: (view, event) => {
@@ -119,14 +135,12 @@ const RichTextEditor = ({ content, onChange, minHeight = "400px" }: RichTextEdit
             event.preventDefault();
             const file = item.getAsFile();
             if (!file) return false;
-            const reader = new FileReader();
-            reader.onload = () => {
+            void uploadImageAndInsert(file, (src) => {
               const { state } = view;
-              const node = state.schema.nodes.image.create({ src: reader.result as string });
+              const node = state.schema.nodes.image.create({ src });
               const tr = state.tr.replaceSelectionWith(node);
               view.dispatch(tr);
-            };
-            reader.readAsDataURL(file);
+            });
             return true;
           }
         }
@@ -155,21 +169,18 @@ const RichTextEditor = ({ content, onChange, minHeight = "400px" }: RichTextEdit
   }, [editor]);
 
   const handleImageUpload = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file || !editor) return;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = reader.result as string;
-        editor.chain().focus().setImage({ src: dataUrl }).run();
-      };
-      reader.readAsDataURL(file);
+      await uploadImageAndInsert(file, (src) => {
+        editor.chain().focus().setImage({ src }).run();
+      });
 
       // Reset so the same file can be re-selected
       e.target.value = "";
     },
-    [editor],
+    [editor, uploadImageAndInsert],
   );
 
   if (!editor) return null;
