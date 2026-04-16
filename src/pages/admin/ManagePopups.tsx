@@ -262,6 +262,7 @@ const ManagePopups = () => {
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-primary">Newsletter Description</label>
                   <RichTextEditor
+                    minHeight="200px"
                     content={form.newsletterConfig.description}
                     onChange={(html) =>
                       setForm({
