@@ -17,6 +17,7 @@ export interface RichTextPopupBlock {
   type: "richtext";
   id: string;
   html: string;
+  textAlign?: "left" | "center" | "right";
 }
 
 export interface ImagePopupBlock {
@@ -88,7 +89,7 @@ export function createEmptyPopupBlock(type: PopupBlockType): PopupContentBlock {
   const id = createPopupBlockId();
   switch (type) {
     case "richtext":
-      return { type: "richtext", id, html: "" };
+      return { type: "richtext", id, html: "", textAlign: "left" };
     case "image":
       return { type: "image", id, src: "", width: 100 };
     case "video":

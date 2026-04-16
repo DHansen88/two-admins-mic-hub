@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { Menu, X, Send, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
+import { submitNewsletterSubscription } from "@/lib/newsletter-subscribe";
 
 /* ── Inline Subscribe Form with ConantLeadership checkbox ── */
 const HeaderSubscribeForm = () => {
@@ -23,24 +24,20 @@ const HeaderSubscribeForm = () => {
       return;
     }
     setStatus("submitting");
-    try {
-      const res = await fetch("/api/subscribe.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed, first_name: firstName.trim(), last_name: lastName.trim(), conant_leadership: conantLeadership }),
-      });
-      const data = await res.json().catch(() => null);
-      if (res.ok && data?.success) {
-        setStatus("success");
-        setEmail("");
-        setTimeout(() => setStatus("idle"), 5000);
-      } else {
-        setStatus("error");
-        setErrorMsg(data?.error || "Subscription failed. Please try again.");
-      }
-    } catch {
+    const result = await submitNewsletterSubscription({
+      email: trimmed,
+      first_name: firstName.trim(),
+      last_name: lastName.trim(),
+      conant_leadership: conantLeadership,
+    });
+
+    if (result.success) {
+      setStatus("success");
+      setEmail("");
+      setTimeout(() => setStatus("idle"), 5000);
+    } else {
       setStatus("error");
-      setErrorMsg("Subscription service unavailable. Please try again.");
+      setErrorMsg(result.error || "Subscription failed. Please try again.");
     }
   };
 

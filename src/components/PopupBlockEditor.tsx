@@ -28,7 +28,6 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
-import TextAlign from "@tiptap/extension-text-align";
 
 const BLOCK_TYPES: { type: PopupBlockType; label: string; icon: React.ElementType }[] = [
   { type: "richtext", label: "Text", icon: Type },
@@ -151,7 +150,6 @@ function RichTextBlockEditor({ block, onChange }: { block: Extract<PopupContentB
       StarterKit.configure({ heading: { levels: [1, 2, 3, 4] } }),
       Underline,
       Link.configure({ openOnClick: false }),
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
     content: block.html,
     onUpdate: ({ editor: e }) => {
@@ -176,7 +174,12 @@ function RichTextBlockEditor({ block, onChange }: { block: Extract<PopupContentB
         <ToolBtn active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()} label="1." />
         <span className="w-px bg-border mx-1" />
         {(["left", "center", "right"] as const).map((a) => (
-          <ToolBtn key={a} active={editor.isActive({ textAlign: a })} onClick={() => editor.chain().focus().setTextAlign(a).run()} label={a === "left" ? "⬅" : a === "center" ? "⬌" : "➡"} />
+          <ToolBtn
+            key={a}
+            active={(block.textAlign || "left") === a}
+            onClick={() => onChange({ ...block, textAlign: a })}
+            label={a === "left" ? "⬅" : a === "center" ? "⬌" : "➡"}
+          />
         ))}
         <span className="w-px bg-border mx-1" />
         <ToolBtn
@@ -192,7 +195,11 @@ function RichTextBlockEditor({ block, onChange }: { block: Extract<PopupContentB
           label="🔗"
         />
       </div>
-      <EditorContent editor={editor} className="prose prose-sm max-w-none min-h-[80px] border border-border rounded-md p-3 bg-background focus-within:ring-2 focus-within:ring-ring [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[60px]" />
+      <EditorContent
+        editor={editor}
+        className="prose prose-sm max-w-none min-h-[80px] border border-border rounded-md p-3 bg-background focus-within:ring-2 focus-within:ring-ring [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[60px]"
+        style={{ textAlign: block.textAlign || "left" }}
+      />
     </div>
   );
 }
