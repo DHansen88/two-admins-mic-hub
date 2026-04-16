@@ -97,6 +97,8 @@ export function createEmptyPopupBlock(type: PopupBlockType): PopupContentBlock {
       return { type: "button", id, text: "Click Here", url: "", openNewTab: true, style: "primary" };
     case "divider":
       return { type: "divider", id };
+    case "spacer":
+      return { type: "spacer", id, height: 24 };
     case "html":
       return { type: "html", id, code: "" };
     case "newsletter":
