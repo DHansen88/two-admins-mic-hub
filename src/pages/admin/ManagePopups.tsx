@@ -404,7 +404,7 @@ const ManagePopups = () => {
             </button>
 
             {form.title && (
-              <h2 className="text-xl leading-tight font-display font-bold text-foreground text-center max-w-[340px] mx-auto pt-4 pb-3 px-[10px] font-sans sm:text-2xl">
+              <h2 className="text-xl leading-tight font-display font-bold text-foreground text-center max-w-[340px] mx-auto pt-4 pb-3 px-[10px] font-sans sm:text-2xl py-[10px]">
                 {form.title}
               </h2>
             )}
