@@ -8,6 +8,7 @@ import { getAdminApiBase } from "@/lib/admin-auth";
 import type { BlogPost, Author } from "@/lib/content-loader";
 import { fetchPublicAuthors, type AuthorProfile } from "@/lib/author-manager";
 import authorsJson from "@/content/authors.json";
+import { findAuthorProfile, normalizeAuthorValue } from "@/lib/author-utils";
 
 const API_BASE = getAdminApiBase();
 
@@ -74,9 +75,7 @@ async function loadAuthorProfiles(): Promise<AuthorProfile[]> {
 }
 
 function resolveAuthor(key: string, profiles: AuthorProfile[]): Author {
-  const k = (key || "").trim().toLowerCase();
-  const profile = profiles.find((p) => p.id.toLowerCase() === k) ||
-    profiles.find((p) => p.name.toLowerCase() === k);
+  const profile = findAuthorProfile(key, profiles);
   if (profile) {
     return {
       id: profile.id,
@@ -88,7 +87,13 @@ function resolveAuthor(key: string, profiles: AuthorProfile[]): Author {
       website: profile.website,
     };
   }
-  return { id: k, name: key.charAt(0).toUpperCase() + key.slice(1), role: "", bio: "", avatar: "" };
+  return {
+    id: normalizeAuthorValue(key).replace(/\s+/g, "-"),
+    name: key.charAt(0).toUpperCase() + key.slice(1),
+    role: "",
+    bio: "",
+    avatar: "",
+  };
 }
 
 function rawToBlogPost(raw: ApiBlogRaw, profiles: AuthorProfile[]): BlogPost {

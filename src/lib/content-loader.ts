@@ -19,6 +19,7 @@ import { parseFrontMatter } from './frontmatter';
 import { blocksToMarkdown } from './block-types';
 import authorsData from '@/content/authors.json';
 import type { SharedTopic } from '@/data/topics';
+import { getHostAuthorId, normalizeAuthorValue } from './author-utils';
 
 // --------------- Authors ---------------
 
@@ -35,8 +36,20 @@ export interface Author {
 const authors: Record<string, Author> = authorsData;
 
 export function getAuthor(key: string): Author {
-  const a = authors[key];
-  if (a) return { ...a, id: key };
+  const directMatch = authors[key];
+  if (directMatch) return { ...directMatch, id: key };
+
+  const normalizedKey = normalizeAuthorValue(key);
+  const hostId = getHostAuthorId(key);
+  const aliasedKey = Object.keys(authors).find((candidate) => {
+    if (normalizeAuthorValue(candidate) === normalizedKey) return true;
+    if (normalizeAuthorValue(authors[candidate].name) === normalizedKey) return true;
+    return hostId !== null
+      && (getHostAuthorId(candidate) === hostId || getHostAuthorId(authors[candidate].name) === hostId);
+  });
+
+  const a = aliasedKey ? authors[aliasedKey] : undefined;
+  if (a) return { ...a, id: aliasedKey || key };
   return {
     id: key.toLowerCase(),
     name: key,

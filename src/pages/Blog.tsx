@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useVisibleBlogs } from "@/hooks/useVisibleContent";
+import { authorMatchesHost } from "@/lib/author-utils";
 
 const POSTS_PER_PAGE = 9;
 
@@ -33,18 +34,11 @@ const Blog = () => {
     let blogs = [...allBlogs];
 
     if (selectedHost !== "all") {
-      const authorFullNames: Record<string, string[]> = {
-        diana: ["diana", "diana hansen"],
-        mel: ["mel", "melinda vail-goodnight"],
-      };
-      const matchNames = authorFullNames[selectedHost.toLowerCase()] || [selectedHost.toLowerCase()];
-      blogs = blogs.filter(b => {
-        const authorId = (b.author?.id || "").toLowerCase();
-        const authorName = (b.author?.name || "").toLowerCase();
-        // Check author id, name, and authorIds array
-        if (matchNames.includes(authorId) || matchNames.includes(authorName)) return true;
-        if (b.authorIds?.some(id => matchNames.includes(id.toLowerCase()))) return true;
-        return false;
+      blogs = blogs.filter((blog) => {
+        const postAuthors = blog.authors?.length ? blog.authors : blog.author ? [blog.author] : [];
+        const matchesResolvedAuthor = postAuthors.some((author) => authorMatchesHost(author, selectedHost));
+        const matchesAuthorId = blog.authorIds?.some((id) => authorMatchesHost({ id, name: id }, selectedHost));
+        return matchesResolvedAuthor || !!matchesAuthorId;
       });
     }
 
