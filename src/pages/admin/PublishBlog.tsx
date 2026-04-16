@@ -37,7 +37,7 @@ import {
   saveToHistory,
 } from "@/lib/file-export";
 import { saveBlog } from "@/lib/content-manager";
-import { setContentStatus } from "@/lib/content-status";
+import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 import PublishModal from "@/components/PublishModal";
 import RichTextEditor from "@/components/RichTextEditor";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
@@ -558,16 +558,26 @@ setAuthorAvatars(avatarMap);
   return false;
 };
 
-  const handleSchedulePublish = (date: string, time: string) => {
+  const handleSchedulePublish = async (date: string, time: string) => {
     if (!title || !currentPlainText) {
       toast({ title: "Title and content are required", variant: "destructive" });
       return;
     }
     const slug = customSlug || generateSlug(title);
     handleSaveDraftSilent();
-    setContentStatus("blog", slug, "scheduled", date, time);
-    toast({ title: `Blog scheduled for ${date} at ${time}` });
-    navigate("/admin/blog-posts");
+    try {
+      const apiBase = getAdminApiBase();
+      await fetch(`${apiBase}/content.php?action=set-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders({}) },
+        credentials: 'include',
+        body: JSON.stringify({ type: 'blog', id: slug, status: 'scheduled', scheduledDate: date, scheduledTime: time }),
+      });
+      toast({ title: `Blog scheduled for ${date} at ${time}` });
+      navigate("/admin/blog-posts");
+    } catch (e: any) {
+      toast({ title: "Failed to schedule", description: e.message, variant: "destructive" });
+    }
   };
 
   const handleSaveDraftSilent = () => {

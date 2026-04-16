@@ -48,7 +48,7 @@ import {
   saveToHistory,
 } from "@/lib/file-export";
 import { saveEpisode, saveBlog } from "@/lib/content-manager";
-import { setContentStatus } from "@/lib/content-status";
+import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 import PublishModal from "@/components/PublishModal";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
 
@@ -270,7 +270,7 @@ const PublishEpisode = () => {
     }
   };
 
-  const handleSchedulePublish = (date: string, time: string) => {
+  const handleSchedulePublish = async (date: string, time: string) => {
     if (!title || !episodeNumber) {
       toast({ title: "Episode number and title are required", variant: "destructive" });
       return;
@@ -281,9 +281,19 @@ const PublishEpisode = () => {
       youtubeUrl, transcript, thumbnailName, keyTakeaways, summary,
       seoDescription, generatedBlog, generatedNewsletter,
     });
-    setContentStatus("episode", episodeNumber, "scheduled", date, time);
-    toast({ title: `Episode scheduled for ${date} at ${time}` });
-    navigate("/admin/episodes");
+    try {
+      const apiBase = getAdminApiBase();
+      await fetch(`${apiBase}/content.php?action=set-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders({}) },
+        credentials: 'include',
+        body: JSON.stringify({ type: 'episode', id: episodeNumber, status: 'scheduled', scheduledDate: date, scheduledTime: time }),
+      });
+      toast({ title: `Episode scheduled for ${date} at ${time}` });
+      navigate("/admin/episodes");
+    } catch (e: any) {
+      toast({ title: "Failed to schedule", description: e.message, variant: "destructive" });
+    }
   };
 
   return (
