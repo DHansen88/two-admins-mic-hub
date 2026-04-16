@@ -5,6 +5,7 @@
  */
 
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Mic, Play, Headphones, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Episode } from "@/lib/content-loader";
@@ -16,6 +17,16 @@ interface EpisodeCalloutProps {
 const EpisodeCallout = ({ episode }: EpisodeCalloutProps) => {
   const hasRiverside = !!episode.riversideEmbedUrl;
   const platformLinks = episode.platformLinks || {};
+  const imageCandidates = [
+    episode.guest?.image,
+    episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg" ? episode.thumbnailUrl : undefined,
+    "/placeholder.svg",
+  ].filter(Boolean) as string[];
+  const [calloutImage, setCalloutImage] = useState(imageCandidates[0] || "/placeholder.svg");
+
+  useEffect(() => {
+    setCalloutImage(imageCandidates[0] || "/placeholder.svg");
+  }, [episode.guest?.image, episode.thumbnailUrl]);
 
   return (
     <div className="mb-10 rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 overflow-hidden animate-fade-in">
@@ -48,10 +59,17 @@ const EpisodeCallout = ({ episode }: EpisodeCalloutProps) => {
               className="block rounded-lg overflow-hidden aspect-video bg-muted relative group"
             >
               <img
-                src={episode.thumbnailUrl || "/placeholder.svg"}
+                src={calloutImage}
                 alt={episode.title}
                 className="w-full h-full object-cover"
                 loading="lazy"
+                onError={() => {
+                  const currentIndex = imageCandidates.indexOf(calloutImage);
+                  const nextImage = imageCandidates[currentIndex + 1];
+                  if (nextImage && nextImage !== calloutImage) {
+                    setCalloutImage(nextImage);
+                  }
+                }}
               />
               <div className="absolute inset-0 bg-primary/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <Play className="h-10 w-10 text-primary-foreground" fill="currentColor" />

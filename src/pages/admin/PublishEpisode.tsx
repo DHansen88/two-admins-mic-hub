@@ -123,6 +123,7 @@ const PublishEpisode = () => {
   const [guestTitle, setGuestTitle] = useState("");
   const [guestImage, setGuestImage] = useState("");
   const [guestImageUploading, setGuestImageUploading] = useState(false);
+  const [thumbnailUploading, setThumbnailUploading] = useState(false);
   const [guestBio, setGuestBio] = useState("");
   const [guestWebsite, setGuestWebsite] = useState("");
   const [guestLinkedin, setGuestLinkedin] = useState("");
@@ -171,10 +172,39 @@ const PublishEpisode = () => {
 
   const handleThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setThumbnailName(`/assets/images/${file.name}`);
-      toast({ title: `Thumbnail selected: ${file.name}. Remember to upload the image to /assets/images/ on your server.` });
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please choose an image file", variant: "destructive" });
+      return;
     }
+
+    setThumbnailUploading(true);
+    uploadPodcastCover(file)
+      .then((result) => {
+        if (result.success && result.url) {
+          setThumbnailName(result.url);
+          toast({ title: `Thumbnail uploaded` });
+          return;
+        }
+
+        const localUrl = URL.createObjectURL(file);
+        setThumbnailName(localUrl);
+        toast({
+          title: "Using local preview URL",
+          description: result.error || "Upload API unavailable; the image will work in preview only.",
+        });
+      })
+      .catch((err: any) => {
+        const localUrl = URL.createObjectURL(file);
+        setThumbnailName(localUrl);
+        toast({
+          title: "Using local preview URL",
+          description: err?.message || "Upload failed; the image will work in preview only.",
+        });
+      })
+      .finally(() => {
+        setThumbnailUploading(false);
+      });
   };
 
   const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -576,8 +606,9 @@ const PublishEpisode = () => {
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Thumbnail Image</label>
-              <Input type="file" accept="image/*" onChange={handleThumbnailUpload} />
-              {thumbnailName && <p className="text-xs text-muted-foreground">Path: {thumbnailName}</p>}
+              <Input type="file" accept="image/*" onChange={handleThumbnailUpload} disabled={thumbnailUploading} />
+              {thumbnailUploading && <p className="text-xs text-muted-foreground">Uploading…</p>}
+              {!thumbnailUploading && thumbnailName && <p className="text-xs text-muted-foreground">Path: {thumbnailName}</p>}
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Audio File (.mp3)</label>

@@ -1,6 +1,6 @@
 import { Clock, Play, Headphones } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Episode } from "@/data/episodeData";
 import { stripHtml } from "@/lib/html-utils";
 import EpisodeAudioHero from "./EpisodeAudioHero";
@@ -17,11 +17,16 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
   const hasAudio = !!episode.audioUrl;
   const isAudioOnly = !hasVideo && hasAudio;
 
-  // Image fallback chain
-  const heroImage =
-    episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg"
-      ? episode.thumbnailUrl
-      : episode.guest?.image || "/placeholder.svg";
+  const imageCandidates = [
+    episode.guest?.image,
+    episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg" ? episode.thumbnailUrl : undefined,
+    "/placeholder.svg",
+  ].filter(Boolean) as string[];
+  const [heroImage, setHeroImage] = useState(imageCandidates[0] || "/placeholder.svg");
+
+  useEffect(() => {
+    setHeroImage(imageCandidates[0] || "/placeholder.svg");
+  }, [episode.guest?.image, episode.thumbnailUrl]);
 
   const plainDescription = stripHtml(episode.description);
 
@@ -54,6 +59,13 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
                 alt={episode.title}
                 className="w-full h-full object-cover"
                 loading="lazy"
+                onError={() => {
+                  const currentIndex = imageCandidates.indexOf(heroImage);
+                  const nextImage = imageCandidates[currentIndex + 1];
+                  if (nextImage && nextImage !== heroImage) {
+                    setHeroImage(nextImage);
+                  }
+                }}
               />
               <span className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors">
                 <span className="w-16 h-16 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">

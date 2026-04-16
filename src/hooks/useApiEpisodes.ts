@@ -20,6 +20,7 @@ interface ApiEpisodeRaw {
   clips?: Episode["clips"];
   transcript?: string;
   showNotes?: string[];
+  guest?: Episode["guest"];
   status?: string;
 }
 
@@ -37,6 +38,26 @@ function formatDate(dateStr: string): string {
 }
 
 function rawToEpisode(raw: ApiEpisodeRaw): Episode {
+  const platformLinks =
+    raw.platformLinks && !Array.isArray(raw.platformLinks) && Object.keys(raw.platformLinks).length > 0
+      ? raw.platformLinks
+      : undefined;
+
+  const guest =
+    raw.guest && typeof raw.guest === "object" && raw.guest.name
+      ? {
+          name: raw.guest.name,
+          title: raw.guest.title || undefined,
+          image: raw.guest.image || undefined,
+          bio: raw.guest.bio || undefined,
+          websiteUrl: raw.guest.websiteUrl || undefined,
+          linkedinUrl: raw.guest.linkedinUrl || undefined,
+          instagramUrl: raw.guest.instagramUrl || undefined,
+          xUrl: raw.guest.xUrl || undefined,
+          facebookUrl: raw.guest.facebookUrl || undefined,
+        }
+      : undefined;
+
   return {
     number: Number(raw.number) || 0,
     title: raw.title?.trim() || "Untitled",
@@ -49,10 +70,11 @@ function rawToEpisode(raw: ApiEpisodeRaw): Episode {
     riversideEmbedUrl: raw.riversideEmbedUrl || undefined,
     thumbnailUrl: raw.thumbnailUrl || "/placeholder.svg",
     audioUrl: raw.audioUrl || undefined,
-    platformLinks: raw.platformLinks || undefined,
+    platformLinks,
     clips: raw.clips || undefined,
     transcript: raw.transcript || undefined,
     showNotes: raw.showNotes || undefined,
+    guest,
   };
 }
 

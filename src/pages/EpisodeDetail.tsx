@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -73,14 +73,24 @@ const EpisodeDetail = () => {
   const isAudioOnly = !hasVideo && hasAudio;
 
   // Image fallback: guest → thumbnail → placeholder (audio prefers guest)
-  const heroImage = isAudioOnly
-    ? episode.guest?.image ||
-      (episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg"
-        ? episode.thumbnailUrl
-        : "/placeholder.svg")
-    : (episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg"
-        ? episode.thumbnailUrl
-        : episode.guest?.image || "/placeholder.svg");
+  const heroImageCandidates = (
+    isAudioOnly
+      ? [
+          episode.guest?.image,
+          episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg" ? episode.thumbnailUrl : undefined,
+          "/placeholder.svg",
+        ]
+      : [
+          episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg" ? episode.thumbnailUrl : undefined,
+          episode.guest?.image,
+          "/placeholder.svg",
+        ]
+  ).filter(Boolean) as string[];
+  const [heroImage, setHeroImage] = useState(heroImageCandidates[0] || "/placeholder.svg");
+
+  useEffect(() => {
+    setHeroImage(heroImageCandidates[0] || "/placeholder.svg");
+  }, [episode.thumbnailUrl, episode.guest?.image, isAudioOnly]);
 
   const ShareRow = (
     <div className="flex items-center gap-2 mt-2">
@@ -188,6 +198,13 @@ const EpisodeDetail = () => {
                       src={heroImage}
                       alt={episode.title}
                       className="w-full h-full object-cover"
+                      onError={() => {
+                        const currentIndex = heroImageCandidates.indexOf(heroImage);
+                        const nextImage = heroImageCandidates[currentIndex + 1];
+                        if (nextImage && nextImage !== heroImage) {
+                          setHeroImage(nextImage);
+                        }
+                      }}
                     />
                     {!audioActive && (
                       <button
@@ -247,6 +264,13 @@ const EpisodeDetail = () => {
                       src={heroImage}
                       alt={episode.title}
                       className="w-full h-full object-cover"
+                      onError={() => {
+                        const currentIndex = heroImageCandidates.indexOf(heroImage);
+                        const nextImage = heroImageCandidates[currentIndex + 1];
+                        if (nextImage && nextImage !== heroImage) {
+                          setHeroImage(nextImage);
+                        }
+                      }}
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-foreground/20">
                       <div className="w-20 h-20 rounded-full bg-background/80 flex items-center justify-center">

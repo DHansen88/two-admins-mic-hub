@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Card } from "./ui/card";
 import { Clock, Play, Headphones } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -14,11 +15,16 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
 
   const isAudioOnly = !episode.riversideEmbedUrl && !!episode.audioUrl;
 
-  // Image fallback chain: thumbnail → guest image → placeholder
-  const tileImage =
-    episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg"
-      ? episode.thumbnailUrl
-      : episode.guest?.image || "/placeholder.svg";
+  const imageCandidates = [
+    episode.guest?.image,
+    episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg" ? episode.thumbnailUrl : undefined,
+    "/placeholder.svg",
+  ].filter(Boolean) as string[];
+  const [tileImage, setTileImage] = useState(imageCandidates[0] || "/placeholder.svg");
+
+  useEffect(() => {
+    setTileImage(imageCandidates[0] || "/placeholder.svg");
+  }, [episode.guest?.image, episode.thumbnailUrl]);
 
   const plainDescription = stripHtml(episode.description);
 
@@ -42,6 +48,13 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
             alt={episode.title}
             className="w-full h-full object-cover block sm:rounded-lg"
             loading="lazy"
+            onError={() => {
+              const currentIndex = imageCandidates.indexOf(tileImage);
+              const nextImage = imageCandidates[currentIndex + 1];
+              if (nextImage && nextImage !== tileImage) {
+                setTileImage(nextImage);
+              }
+            }}
           />
           {/* Play overlay — clicking it triggers onPlay (inline expand) without navigating */}
           <button
