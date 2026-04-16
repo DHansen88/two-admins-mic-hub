@@ -35,7 +35,14 @@ const blankPopup = (): Omit<PopupConfig, "id"> => ({
   displayPages: "homepage",
   cooldownDays: 7,
   buttonConfig: undefined,
-  newsletterConfig: undefined,
+  newsletterConfig: {
+    enabled: true,
+    heading: "Join our Community",
+    description: "",
+    buttonText: "Subscribe",
+    showConantLeadership: true,
+    conantLeadershipLabel: "Subscribe to the ConantLeadership Newsletter.",
+  },
 });
 
 const ManagePopups = () => {
@@ -75,7 +82,7 @@ const ManagePopups = () => {
       if (nlBlock) {
         newsletterConfig = {
           enabled: true,
-          heading: nlBlock.heading || "Two Admins And A Mic",
+          heading: nlBlock.heading || "Join our Community",
           description: nlBlock.description || "",
           buttonText: nlBlock.buttonText || "Subscribe",
           showConantLeadership: nlBlock.showConantLeadership ?? true,
@@ -197,43 +204,106 @@ const ManagePopups = () => {
           </div>
 
           {/* Newsletter: ConantLeadership toggle + label inline */}
-          <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
+          <div className="border border-border rounded-lg p-4 space-y-4">
             <label className="flex items-center gap-2 text-sm">
               <Switch
-                checked={form.newsletterConfig?.showConantLeadership ?? false}
+                checked={!!form.newsletterConfig?.enabled}
                 onCheckedChange={(v) =>
                   setForm({
                     ...form,
-                    newsletterConfig: {
-                      enabled: true,
-                      heading: form.newsletterConfig?.heading || "Two Admins And A Mic",
-                      description:
-                        form.newsletterConfig?.description ||
-                        "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.",
-                      buttonText: form.newsletterConfig?.buttonText || "Subscribe",
-                      showConantLeadership: v,
-                      conantLeadershipLabel:
-                        form.newsletterConfig?.conantLeadershipLabel || "Subscribe to the ConantLeadership Newsletter.",
-                    },
+                    newsletterConfig: v
+                      ? {
+                          enabled: true,
+                          heading: form.newsletterConfig?.heading || "Join our Community",
+                          description: form.newsletterConfig?.description || "",
+                          buttonText: form.newsletterConfig?.buttonText || "Subscribe",
+                          showConantLeadership: form.newsletterConfig?.showConantLeadership ?? true,
+                          conantLeadershipLabel:
+                            form.newsletterConfig?.conantLeadershipLabel || "Subscribe to the ConantLeadership Newsletter.",
+                        }
+                      : undefined,
                   })
                 }
               />
-              Show ConantLeadership checkbox
+              Show newsletter signup form
             </label>
-            {form.newsletterConfig?.showConantLeadership && (
-              <div className="space-y-1.5 flex-1 min-w-[200px]">
-                <label className="text-xs font-medium text-primary">Checkbox Label</label>
-                <Input
-                  value={form.newsletterConfig.conantLeadershipLabel}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      newsletterConfig: { ...form.newsletterConfig!, conantLeadershipLabel: e.target.value },
-                    })
-                  }
-                  placeholder="Subscribe to the ConantLeadership Newsletter."
-                />
-              </div>
+
+            {form.newsletterConfig?.enabled && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-primary">Newsletter Heading</label>
+                    <Input
+                      value={form.newsletterConfig.heading}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          newsletterConfig: { ...form.newsletterConfig!, heading: e.target.value },
+                        })
+                      }
+                      placeholder="Join our Community"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-primary">Button Text</label>
+                    <Input
+                      value={form.newsletterConfig.buttonText}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          newsletterConfig: { ...form.newsletterConfig!, buttonText: e.target.value },
+                        })
+                      }
+                      placeholder="Subscribe"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-primary">Newsletter Description</label>
+                  <RichTextEditor
+                    content={form.newsletterConfig.description}
+                    onChange={(html) =>
+                      setForm({
+                        ...form,
+                        newsletterConfig: { ...form.newsletterConfig!, description: html },
+                      })
+                    }
+                  />
+                  <p className="text-xs text-primary/70">
+                    Leave this blank if you only want the heading above the signup form.
+                  </p>
+                </div>
+
+                <label className="flex items-center gap-2 text-sm">
+                  <Switch
+                    checked={form.newsletterConfig.showConantLeadership}
+                    onCheckedChange={(v) =>
+                      setForm({
+                        ...form,
+                        newsletterConfig: { ...form.newsletterConfig!, showConantLeadership: v },
+                      })
+                    }
+                  />
+                  Show ConantLeadership checkbox
+                </label>
+
+                {form.newsletterConfig.showConantLeadership && (
+                  <div className="space-y-1.5 flex-1 min-w-[200px]">
+                    <label className="text-xs font-medium text-primary">Checkbox Label</label>
+                    <Input
+                      value={form.newsletterConfig.conantLeadershipLabel}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          newsletterConfig: { ...form.newsletterConfig!, conantLeadershipLabel: e.target.value },
+                        })
+                      }
+                      placeholder="Subscribe to the ConantLeadership Newsletter."
+                    />
+                  </div>
+                )}
+              </>
             )}
           </div>
 
@@ -332,6 +402,12 @@ const ManagePopups = () => {
               <X className="h-5 w-5 text-foreground" />
             </button>
 
+            {form.title && (
+              <h2 className="text-[2.05rem] sm:text-[2.5rem] leading-tight font-display font-bold text-foreground text-center max-w-[340px] mx-auto px-6 pt-4 pb-3">
+                {form.title}
+              </h2>
+            )}
+
             {/* Rich text content */}
             {form.content && (
               <div
@@ -358,10 +434,17 @@ const ManagePopups = () => {
             {/* Newsletter preview */}
             {form.newsletterConfig?.enabled && (
               <div className="px-6 pb-6 text-center">
-                <h2 className="text-2xl font-display font-bold text-slate mb-3">{form.newsletterConfig.heading}</h2>
-                <p className="popup-description text-muted-foreground mb-4 text-sm max-w-md mx-auto">
-                  {form.newsletterConfig.description}
-                </p>
+                {form.newsletterConfig.heading && (
+                  <h2 className="text-2xl sm:text-3xl font-display font-bold text-slate mb-3">
+                    {form.newsletterConfig.heading}
+                  </h2>
+                )}
+                {form.newsletterConfig.description && (
+                  <div
+                    className="popup-description text-muted-foreground mb-4 text-sm max-w-md mx-auto"
+                    dangerouslySetInnerHTML={{ __html: form.newsletterConfig.description }}
+                  />
+                )}
                 <div className="max-w-sm mx-auto border border-border rounded-lg overflow-hidden">
                   <div className="px-4 py-3 text-muted-foreground/50 text-sm text-left border-b border-border">First Name</div>
                   <div className="px-4 py-3 text-muted-foreground/50 text-sm text-left border-b border-border">Last Name</div>

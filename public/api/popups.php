@@ -16,6 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 define('POPUPS_DIR', dirname(__DIR__, 2) . '/content');
 define('POPUPS_FILE', POPUPS_DIR . '/popups.json');
+define('LEGACY_NEWSLETTER_HEADING', 'Two Admins And A Mic');
+define('LEGACY_NEWSLETTER_DESCRIPTION', 'The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.');
 
 if (!is_dir(POPUPS_DIR)) mkdir(POPUPS_DIR, 0755, true);
 
@@ -44,21 +46,20 @@ function loadPopups(): array {
         $seed = [
             [
                 'id' => 'popup-001',
-                'title' => 'Newsletter Signup',
+                'title' => 'This Website is currently under construction.',
                 'active' => true,
                 'delaySeconds' => 2,
                 'content' => '',
-                'contentBlocks' => [
-                    [
-                        'type' => 'newsletter',
-                        'id' => 'pb-seed-newsletter',
-                        'heading' => 'Two Admins And A Mic',
-                        'description' => 'The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.',
-                        'buttonText' => 'Subscribe',
-                        'showConantLeadership' => true,
-                        'conantLeadershipLabel' => 'Subscribe to the ConantLeadership Newsletter.',
-                    ],
+                'contentBlocks' => [],
+                'newsletterConfig' => [
+                    'enabled' => true,
+                    'heading' => 'Join our Community',
+                    'description' => '',
+                    'buttonText' => 'Subscribe',
+                    'showConantLeadership' => true,
+                    'conantLeadershipLabel' => 'Subscribe to the ConantLeadership Newsletter.',
                 ],
+                'buttonConfig' => null,
                 'displayPages' => 'homepage',
                 'cooldownDays' => 7,
             ],
@@ -66,11 +67,65 @@ function loadPopups(): array {
         file_put_contents(POPUPS_FILE, json_encode($seed, JSON_PRETTY_PRINT));
         return $seed;
     }
-    return json_decode(file_get_contents(POPUPS_FILE), true) ?? [];
+    $popups = json_decode(file_get_contents(POPUPS_FILE), true) ?? [];
+
+    // Migrate older popup records that only stored legacy content blocks.
+    foreach ($popups as &$popup) {
+        if (!array_key_exists('buttonConfig', $popup)) {
+            $popup['buttonConfig'] = null;
+        }
+
+        if (!array_key_exists('newsletterConfig', $popup) || $popup['newsletterConfig'] === null) {
+            $popup['newsletterConfig'] = null;
+        }
+
+        if (
+            empty($popup['newsletterConfig'])
+            && !empty($popup['contentBlocks'])
+            && is_array($popup['contentBlocks'])
+        ) {
+            foreach ($popup['contentBlocks'] as $block) {
+                if (($block['type'] ?? '') !== 'newsletter') {
+                    continue;
+                }
+
+                $popup['newsletterConfig'] = [
+                    'enabled' => true,
+                    'heading' => $block['heading'] ?? 'Join our Community',
+                    'description' => $block['description'] ?? '',
+                    'buttonText' => $block['buttonText'] ?? 'Subscribe',
+                    'showConantLeadership' => $block['showConantLeadership'] ?? true,
+                    'conantLeadershipLabel' => $block['conantLeadershipLabel'] ?? 'Subscribe to the ConantLeadership Newsletter.',
+                ];
+                break;
+            }
+        }
+
+        $popup['newsletterConfig'] = normalizeNewsletterConfig($popup['newsletterConfig']);
+    }
+    unset($popup);
+
+    return $popups;
 }
 
 function savePopups(array $popups): void {
     file_put_contents(POPUPS_FILE, json_encode($popups, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+}
+
+function normalizeNewsletterConfig(?array $newsletterConfig): ?array {
+    if ($newsletterConfig === null) {
+        return null;
+    }
+
+    if (($newsletterConfig['heading'] ?? '') === LEGACY_NEWSLETTER_HEADING) {
+        $newsletterConfig['heading'] = 'Join our Community';
+    }
+
+    if (($newsletterConfig['description'] ?? '') === LEGACY_NEWSLETTER_DESCRIPTION) {
+        $newsletterConfig['description'] = '';
+    }
+
+    return $newsletterConfig;
 }
 
 function handleListPopups(): void {
@@ -103,9 +158,12 @@ function handleSavePopup(): void {
         'delaySeconds' => (int)($body['delaySeconds'] ?? 2),
         'content' => $body['content'] ?? '',
         'contentBlocks' => $body['contentBlocks'] ?? [],
+        'buttonConfig' => $body['buttonConfig'] ?? null,
+        'newsletterConfig' => $body['newsletterConfig'] ?? null,
         'displayPages' => $body['displayPages'] ?? 'homepage',
         'cooldownDays' => (int)($body['cooldownDays'] ?? 7),
     ];
+    $popup['newsletterConfig'] = normalizeNewsletterConfig($popup['newsletterConfig']);
 
     // Update existing or add new
     $found = false;

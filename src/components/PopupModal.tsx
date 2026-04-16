@@ -79,9 +79,10 @@ const NewsletterForm = ({
         </h2>
       )}
       {!compact && config.description && (
-        <p className="popup-description text-muted-foreground mb-6 text-sm sm:text-base max-w-md mx-auto">
-          {config.description}
-        </p>
+        <div
+          className="popup-description text-muted-foreground mb-6 text-sm sm:text-base max-w-md mx-auto"
+          dangerouslySetInnerHTML={{ __html: config.description }}
+        />
       )}
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-0">
         <div className="border border-border rounded-lg overflow-hidden">
@@ -304,7 +305,7 @@ const PopupModal = () => {
         </button>
 
         {popup.title && (
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-foreground px-6 pt-4 pb-1 text-center">
+          <h2 className="text-[2.05rem] sm:text-[2.5rem] leading-tight font-display font-bold text-foreground text-center max-w-[340px] mx-auto px-6 pt-4 pb-3">
             {popup.title}
           </h2>
         )}

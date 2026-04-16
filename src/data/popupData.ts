@@ -32,11 +32,13 @@ export interface PopupConfig {
 }
 
 const LS_KEY = "tam_popups";
+const LEGACY_NEWSLETTER_HEADING = "Two Admins And A Mic";
+const LEGACY_NEWSLETTER_DESCRIPTION = "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.";
 
 const SEED: PopupConfig[] = [
   {
     id: "popup-001",
-    title: "Newsletter Signup",
+    title: "This Website is currently under construction.",
     active: true,
     delaySeconds: 2,
     content: "",
@@ -44,8 +46,8 @@ const SEED: PopupConfig[] = [
     cooldownDays: 7,
     newsletterConfig: {
       enabled: true,
-      heading: "Two Admins And A Mic",
-      description: "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.",
+      heading: "Join our Community",
+      description: "",
       buttonText: "Subscribe",
       showConantLeadership: true,
       conantLeadershipLabel: "Subscribe to the ConantLeadership Newsletter.",
@@ -66,7 +68,7 @@ export function subscribePopups(fn: Listener) {
 function loadLocal(): PopupConfig[] {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return normalizePopups(JSON.parse(raw));
   } catch {}
   return SEED;
 }
@@ -77,6 +79,27 @@ function saveLocal(data: PopupConfig[]) {
 
 let _popups = loadLocal();
 let _apiLoaded = false;
+
+function normalizeNewsletterConfig(newsletterConfig?: PopupNewsletterConfig) {
+  if (!newsletterConfig) return newsletterConfig;
+
+  return {
+    ...newsletterConfig,
+    heading: newsletterConfig.heading === LEGACY_NEWSLETTER_HEADING
+      ? "Join our Community"
+      : newsletterConfig.heading,
+    description: newsletterConfig.description === LEGACY_NEWSLETTER_DESCRIPTION
+      ? ""
+      : newsletterConfig.description,
+  };
+}
+
+function normalizePopups(popups: PopupConfig[]): PopupConfig[] {
+  return popups.map((popup) => ({
+    ...popup,
+    newsletterConfig: normalizeNewsletterConfig(popup.newsletterConfig),
+  }));
+}
 
 /* ── API helpers ── */
 const apiBase = getAdminApiBase();
@@ -108,8 +131,8 @@ export async function fetchPopupsFromApi(requireAuth = false): Promise<PopupConf
 export async function loadPopupsFromApi(requireAuth = false): Promise<void> {
   const apiPopups = await fetchPopupsFromApi(requireAuth);
   if (apiPopups) {
-    _popups = apiPopups;
-    saveLocal(apiPopups);
+    _popups = normalizePopups(apiPopups);
+    saveLocal(_popups);
     _apiLoaded = true;
     notify();
   }
