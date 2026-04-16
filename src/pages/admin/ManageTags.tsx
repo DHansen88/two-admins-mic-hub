@@ -240,6 +240,7 @@ const ManageTags = () => {
 
   const handleDelete = (slug: string) => {
     const updated = deleteTag(slug);
+    syncTagToApi('DELETE', { slug });
     setTags(updated);
     setDeleteConfirm(null);
     toast({ title: "Tag deleted" });
