@@ -77,7 +77,7 @@ const Episodes = () => {
     );
 
     return episodes;
-  }, [search, selectedHost, selectedTopics, sortOrder]);
+  }, [allEpisodes, search, selectedHost, selectedTopics, sortOrder]);
 
   // Reset to page 1 when filters change
   const resetKey = `${search}-${selectedHost}-${selectedTopics.join()}-${sortOrder}`;
@@ -153,7 +153,7 @@ const Episodes = () => {
         </section>
 
         {/* Featured Latest Episode */}
-        <FeaturedEpisode episode={latestEpisode} />
+        {latestEpisode && <FeaturedEpisode episode={latestEpisode} />}
 
         {/* Browse Episodes */}
         <section className="py-16 bg-background">
