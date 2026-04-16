@@ -9,10 +9,13 @@ import {
   markPopupSeen,
   type PopupConfig,
 } from "@/data/popupData";
-import { type PopupContentBlock, type NewsletterPopupBlock, getVideoEmbedUrl } from "@/data/popupBlockTypes";
 
-/* ── Newsletter Form (reusable for newsletter blocks) ── */
-const NewsletterForm = ({ config }: { config: NewsletterPopupBlock }) => {
+/* ── Newsletter Form ── */
+const NewsletterForm = ({
+  config,
+}: {
+  config: NonNullable<PopupConfig["newsletterConfig"]>;
+}) => {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -93,10 +96,7 @@ const NewsletterForm = ({ config }: { config: NewsletterPopupBlock }) => {
         </div>
         {config.showConantLeadership && (
           <label className="flex items-center gap-2 mt-4 text-sm text-muted-foreground cursor-pointer justify-center">
-            <Checkbox
-              checked={conantLeadership}
-              onCheckedChange={(v) => setConantLeadership(v === true)}
-            />
+            <Checkbox checked={conantLeadership} onCheckedChange={(v) => setConantLeadership(v === true)} />
             <span className="my-[15px]">{config.conantLeadershipLabel}</span>
           </label>
         )}
@@ -106,98 +106,61 @@ const NewsletterForm = ({ config }: { config: NewsletterPopupBlock }) => {
   );
 };
 
-/* ── Block Renderer ── */
-function PopupBlockRenderer({ blocks }: { blocks: PopupContentBlock[] }) {
+/* ── CTA Button Renderer ── */
+function PopupButton({ config }: { config: NonNullable<PopupConfig["buttonConfig"]> }) {
+  const isInternal = config.url.startsWith("/");
+  const cls = `inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-sm transition-colors w-full sm:w-auto ${
+    config.style === "primary"
+      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+      : "border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80"
+  }`;
+
   return (
-    <div className="px-5 py-6 space-y-4">
-      {blocks.map((block) => (
-        <PopupBlock key={block.id} block={block} />
-      ))}
+    <div className="flex justify-center px-6 pb-4">
+      {isInternal ? (
+        <Link to={config.url} className={cls}>{config.text}</Link>
+      ) : (
+        <a href={config.url} target={config.openNewTab ? "_blank" : undefined} rel="noopener noreferrer" className={cls}>
+          {config.text}
+        </a>
+      )}
     </div>
   );
 }
 
-function PopupBlock({ block }: { block: PopupContentBlock }) {
-  switch (block.type) {
-    case "richtext":
-      return (
-        <div
-          className="popup-description prose prose-sm max-w-none text-foreground [&_a]:text-primary [&_a]:underline"
-          dangerouslySetInnerHTML={{ __html: block.html }}
-        />
-      );
-
-    case "image": {
-      const img = (
-        <img
-          src={block.src}
-          alt={block.caption || ""}
-          className="rounded-lg object-cover w-full"
-          style={{ maxWidth: `${block.width || 100}%` }}
-        />
-      );
-      return (
-        <div className="flex flex-col items-center">
-          {block.linkUrl ? (
-            block.linkUrl.startsWith("/") ? (
-              <Link to={block.linkUrl}>{img}</Link>
-            ) : (
-              <a href={block.linkUrl} target="_blank" rel="noopener noreferrer">{img}</a>
-            )
-          ) : img}
-          {block.caption && <p className="text-xs text-muted-foreground mt-1.5">{block.caption}</p>}
-        </div>
-      );
-    }
-
-    case "video": {
-      const embedUrl = getVideoEmbedUrl(block.url);
-      if (!embedUrl) return null;
-      return (
-        <div className="aspect-video rounded-lg overflow-hidden">
-          <iframe src={embedUrl} className="w-full h-full" allowFullScreen allow="autoplay; encrypted-media" />
-        </div>
-      );
-    }
-
-    case "button": {
-      const isInternal = block.url.startsWith("/");
-      const cls = `inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-sm transition-colors w-full sm:w-auto ${
-        block.style === "primary"
-          ? "bg-primary text-primary-foreground hover:bg-primary/90"
-          : "border border-border bg-secondary text-secondary-foreground hover:bg-secondary/80"
-      }`;
-      return (
-        <div className="flex justify-center">
-          {isInternal ? (
-            <Link to={block.url} className={cls}>{block.text}</Link>
-          ) : (
-            <a href={block.url} target={block.openNewTab ? "_blank" : undefined} rel="noopener noreferrer" className={cls}>{block.text}</a>
-          )}
-        </div>
-      );
-    }
-
-    case "divider":
-      return <hr className="border-border" />;
-
-    case "spacer":
-      return <div style={{ height: `${block.height}px` }} />;
-
-    case "html":
-      return (
-        <div
-          className="popup-html-embed [&_iframe]:w-full [&_form]:max-w-full"
-          dangerouslySetInnerHTML={{ __html: block.code }}
-        />
-      );
-
-    case "newsletter":
-      return <NewsletterForm config={block} />;
-
-    default:
-      return null;
-  }
+/* ── Legacy block renderer for backward compat ── */
+function LegacyBlockRenderer({ blocks }: { blocks: any[] }) {
+  return (
+    <div className="popup-prose px-5 py-6 space-y-4">
+      {blocks.map((block: any) => {
+        if (block.type === "richtext") {
+          return <div key={block.id} dangerouslySetInnerHTML={{ __html: block.html }} />;
+        }
+        if (block.type === "newsletter") {
+          return (
+            <NewsletterForm
+              key={block.id}
+              config={{
+                enabled: true,
+                heading: block.heading,
+                description: block.description,
+                buttonText: block.buttonText,
+                showConantLeadership: block.showConantLeadership,
+                conantLeadershipLabel: block.conantLeadershipLabel,
+              }}
+            />
+          );
+        }
+        if (block.type === "spacer") {
+          return <div key={block.id} style={{ height: `${block.height}px` }} />;
+        }
+        if (block.type === "divider") {
+          return <hr key={block.id} className="border-border" />;
+        }
+        return null;
+      })}
+    </div>
+  );
 }
 
 /* ── Popup Modal ── */
@@ -227,7 +190,10 @@ const PopupModal = () => {
 
   if (!visible || !popup) return null;
 
-  const hasBlocks = popup.contentBlocks && popup.contentBlocks.length > 0;
+  const hasRichContent = !!popup.content;
+  const hasLegacyBlocks = !hasRichContent && popup.contentBlocks && popup.contentBlocks.length > 0;
+  const hasButton = popup.buttonConfig?.enabled;
+  const hasNewsletter = popup.newsletterConfig?.enabled;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={close}>
@@ -240,13 +206,28 @@ const PopupModal = () => {
           <X className="h-5 w-5 text-foreground" />
         </button>
 
-        {hasBlocks ? (
-          <PopupBlockRenderer blocks={popup.contentBlocks!} />
-        ) : (
+        {/* Rich text content */}
+        {hasRichContent && (
           <div
-            className="popup-content popup-description w-full px-4 pb-6 sm:px-0 sm:pb-0 [&_iframe]:w-full [&_form]:max-w-full"
+            className="popup-prose px-6 py-4"
             dangerouslySetInnerHTML={{ __html: popup.content }}
           />
+        )}
+
+        {/* Legacy block-based content (backward compat) */}
+        {hasLegacyBlocks && <LegacyBlockRenderer blocks={popup.contentBlocks!} />}
+
+        {/* CTA Button */}
+        {hasButton && <PopupButton config={popup.buttonConfig!} />}
+
+        {/* Newsletter signup */}
+        {hasNewsletter && <NewsletterForm config={popup.newsletterConfig!} />}
+
+        {/* Fallback if nothing */}
+        {!hasRichContent && !hasLegacyBlocks && !hasButton && !hasNewsletter && (
+          <div className="px-6 py-12 text-center text-muted-foreground text-sm italic">
+            This popup has no content configured.
+          </div>
         )}
       </div>
     </div>

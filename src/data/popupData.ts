@@ -1,15 +1,34 @@
 import { type PopupContentBlock } from "./popupBlockTypes";
 import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 
+export interface PopupButtonConfig {
+  enabled: boolean;
+  text: string;
+  url: string;
+  openNewTab: boolean;
+  style: "primary" | "secondary";
+}
+
+export interface PopupNewsletterConfig {
+  enabled: boolean;
+  heading: string;
+  description: string;
+  buttonText: string;
+  showConantLeadership: boolean;
+  conantLeadershipLabel: string;
+}
+
 export interface PopupConfig {
   id: string;
   title: string;
   active: boolean;
   delaySeconds: number;
-  content: string; // legacy HTML / embed code
-  contentBlocks?: PopupContentBlock[]; // rich block-based content (preferred)
+  content: string; // rich HTML from TipTap editor
+  contentBlocks?: PopupContentBlock[]; // legacy block-based content (backward compat)
   displayPages: "homepage" | "all" | string;
   cooldownDays: number;
+  buttonConfig?: PopupButtonConfig;
+  newsletterConfig?: PopupNewsletterConfig;
 }
 
 const LS_KEY = "tam_popups";
@@ -21,19 +40,16 @@ const SEED: PopupConfig[] = [
     active: true,
     delaySeconds: 2,
     content: "",
-    contentBlocks: [
-      {
-        type: "newsletter" as const,
-        id: "pb-seed-newsletter",
-        heading: "Two Admins And A Mic",
-        description: "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.",
-        buttonText: "Subscribe",
-        showConantLeadership: true,
-        conantLeadershipLabel: "Subscribe to the ConantLeadership Newsletter.",
-      },
-    ],
     displayPages: "homepage",
     cooldownDays: 7,
+    newsletterConfig: {
+      enabled: true,
+      heading: "Two Admins And A Mic",
+      description: "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.",
+      buttonText: "Subscribe",
+      showConantLeadership: true,
+      conantLeadershipLabel: "Subscribe to the ConantLeadership Newsletter.",
+    },
   },
 ];
 
@@ -78,7 +94,7 @@ async function apiCall(endpoint: string, options: RequestInit = {}): Promise<any
   }
 }
 
-/** Fetch popups from API — used by admin and public frontend */
+/** Fetch popups from API */
 export async function fetchPopupsFromApi(requireAuth = false): Promise<PopupConfig[] | null> {
   const action = requireAuth ? "list" : "public-list";
   const data = await apiCall(`popups.php?action=${action}`);
@@ -116,7 +132,6 @@ export async function addPopup(popup: Omit<PopupConfig, "id">) {
   saveLocal(_popups);
   notify();
 
-  // Sync to API
   await apiCall("popups.php?action=save", {
     method: "POST",
     body: JSON.stringify(newP),
@@ -130,7 +145,6 @@ export async function updatePopup(id: string, updates: Partial<PopupConfig>) {
   saveLocal(_popups);
   notify();
 
-  // Sync to API
   const updated = _popups.find((p) => p.id === id);
   if (updated) {
     await apiCall("popups.php?action=save", {
@@ -145,7 +159,6 @@ export async function deletePopup(id: string) {
   saveLocal(_popups);
   notify();
 
-  // Sync to API
   await apiCall("popups.php?action=delete", {
     method: "POST",
     body: JSON.stringify({ id }),
