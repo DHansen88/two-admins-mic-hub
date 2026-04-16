@@ -22,13 +22,12 @@ import {
   getContrastTextColor,
   type Tag,
 } from "@/data/tags";
-import { getAdminToken } from "@/lib/admin-auth";
+import { getAdminAuthHeaders } from "@/lib/admin-auth";
 
 const API_BASE = (import.meta.env.VITE_ADMIN_API_URL || '').trim() || '/api';
 
 async function syncTagToApi(method: 'POST' | 'PUT' | 'DELETE', tag: Partial<Tag> & { slug: string }) {
   try {
-    const token = getAdminToken();
     const url = method === 'POST'
       ? `${API_BASE}/tags.php`
       : `${API_BASE}/tags.php?slug=${encodeURIComponent(tag.slug)}`;
@@ -36,8 +35,7 @@ async function syncTagToApi(method: 'POST' | 'PUT' | 'DELETE', tag: Partial<Tag>
       method,
       credentials: 'include',
       headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...Object.fromEntries(new Headers(getAdminAuthHeaders({ 'Content-Type': 'application/json' })).entries()),
       },
       body: method !== 'DELETE' ? JSON.stringify(tag) : undefined,
     });
