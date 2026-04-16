@@ -48,6 +48,12 @@ export interface DividerPopupBlock {
   id: string;
 }
 
+export interface SpacerPopupBlock {
+  type: "spacer";
+  id: string;
+  height: number; // pixels
+}
+
 export interface HtmlEmbedPopupBlock {
   type: "html";
   id: string;
