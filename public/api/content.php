@@ -112,15 +112,20 @@ function handleListBlogs(): void {
             $blogs[] = $meta;
         }
         foreach (glob(BLOG_DIR . '/*.json') as $file) {
-    if (str_ends_with($file, '.html.json')) {
-        continue;
-    }
+            if (str_ends_with($file, '.html.json')) {
+                continue;
+            }
 
-    $data = json_decode(file_get_contents($file), true);
-    $data['filename'] = basename($file);
-    $data['status'] = getContentStatus('blog', basename($file, '.json'));
-    $blogs[] = $data;
-}
+            $data = decodeJsonFile($file);
+            if (!$data) {
+                error_log("Skipping invalid blog JSON file in admin list: {$file}");
+                continue;
+            }
+
+            $data['filename'] = basename($file);
+            $data['status'] = getContentStatus('blog', basename($file, '.json'));
+            $blogs[] = $data;
+        }
     }
     
     // Sort by date, newest first
@@ -714,16 +719,45 @@ function parseFrontMatter(string $raw): array {
     return $data;
 }
 
+function decodeJsonFile(string $file): ?array {
+    $raw = @file_get_contents($file);
+    if ($raw === false) {
+        return null;
+    }
+
+    $raw = trim($raw);
+    if ($raw === '') {
+        return null;
+    }
+
+    $data = json_decode($raw, true);
+    return is_array($data) ? $data : null;
+}
+
 function getContentStatusFile(): string {
     return CONTENT_ROOT . '/content-status.json';
 }
 
 function getContentStatuses(): array {
     $file = getContentStatusFile();
-    if (file_exists($file)) {
-        return json_decode(file_get_contents($file), true) ?? [];
+    if (!file_exists($file)) {
+        return [];
     }
-    return [];
+
+    $decoded = decodeJsonFile($file);
+    if (!$decoded) {
+        return [];
+    }
+
+    $statuses = [];
+    foreach ($decoded as $key => $entry) {
+        if (!is_string($key) || !is_array($entry)) {
+            continue;
+        }
+        $statuses[$key] = $entry;
+    }
+
+    return $statuses;
 }
 
 function setContentStatus(string $type, string $id, string $status, ?string $scheduledDate = null, ?string $scheduledTime = null): void {
@@ -912,7 +946,7 @@ function handlePublicListBlogs(): void {
             // Attach html_content if companion file exists
             $htmlJsonFile = BLOG_DIR . "/{$slug}.html.json";
             if (file_exists($htmlJsonFile)) {
-                $htmlData = json_decode(file_get_contents($htmlJsonFile), true);
+                $htmlData = decodeJsonFile($htmlJsonFile);
                 if ($htmlData && !empty($htmlData['html_content'])) {
                     $meta['html_content'] = $htmlData['html_content'];
                 }
@@ -923,18 +957,23 @@ function handlePublicListBlogs(): void {
             $blogs[] = $meta;
         }
         foreach (glob(BLOG_DIR . '/*.json') as $file) {
-    if (str_ends_with($file, '.html.json')) {
-        continue;
-    }
+            if (str_ends_with($file, '.html.json')) {
+                continue;
+            }
 
-    $slug = basename($file, '.json');
-    $st = $statuses["blog:{$slug}"]['status'] ?? 'published';
-    if ($st !== 'published') continue;
+            $slug = basename($file, '.json');
+            $st = $statuses["blog:{$slug}"]['status'] ?? 'published';
+            if ($st !== 'published') continue;
 
-    $data = json_decode(file_get_contents($file), true);
-    $data['slug'] = $data['slug'] ?? $slug;
-    $blogs[] = $data;
-}
+            $data = decodeJsonFile($file);
+            if (!$data) {
+                error_log("Skipping invalid public blog JSON file: {$file}");
+                continue;
+            }
+
+            $data['slug'] = $data['slug'] ?? $slug;
+            $blogs[] = $data;
+        }
     }
 
     usort($blogs, function($a, $b) {
@@ -966,7 +1005,7 @@ function handlePublicGetBlog(): void {
         // Attach html_content if companion file exists
         $htmlJsonFile = BLOG_DIR . "/{$slug}.html.json";
         if (file_exists($htmlJsonFile)) {
-            $htmlData = json_decode(file_get_contents($htmlJsonFile), true);
+            $htmlData = decodeJsonFile($htmlJsonFile);
             if ($htmlData && !empty($htmlData['html_content'])) {
                 $meta['html_content'] = $htmlData['html_content'];
             }
@@ -976,7 +1015,11 @@ function handlePublicGetBlog(): void {
         }
         jsonResponse(['blog' => $meta]);
     } elseif (file_exists($jsonFile)) {
-        $data = json_decode(file_get_contents($jsonFile), true);
+        $data = decodeJsonFile($jsonFile);
+        if (!$data) {
+            error_log("Invalid blog JSON requested: {$jsonFile}");
+            jsonResponse(['error' => 'Blog not found'], 404);
+        }
         $data['slug'] = $data['slug'] ?? $slug;
         jsonResponse(['blog' => $data]);
     } else {
