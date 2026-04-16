@@ -29,6 +29,8 @@ import {
 const EpisodeDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const episode = useVisibleEpisodeBySlug(slug || "");
+  const relatedEpisodes = useVisibleRelatedEpisodes(episode);
+  const relatedBlogs = useVisibleRelatedBlogsForEpisode(slug || "", 3);
   const [audioActive, setAudioActive] = useState(false);
 
   if (!episode) {
@@ -52,9 +54,6 @@ const EpisodeDetail = () => {
       </div>
     );
   }
-
-  const relatedEpisodes = useVisibleRelatedEpisodes(episode);
-  const relatedBlogs = useVisibleRelatedBlogsForEpisode(slug || "", 3);
 
   const copyLink = () => navigator.clipboard.writeText(window.location.href);
   const shareLinkedIn = () =>
