@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,27 @@ import {
   getContrastTextColor,
   type Tag,
 } from "@/data/tags";
+import { getAdminAuthHeaders } from "@/lib/admin-auth";
+
+const API_BASE = (import.meta.env.VITE_ADMIN_API_URL || '').trim() || '/api';
+
+async function syncTagToApi(method: 'POST' | 'PUT' | 'DELETE', tag: Partial<Tag> & { slug: string }) {
+  try {
+    const url = method === 'POST'
+      ? `${API_BASE}/tags.php`
+      : `${API_BASE}/tags.php?slug=${encodeURIComponent(tag.slug)}`;
+    await fetch(url, {
+      method,
+      credentials: 'include',
+      headers: {
+        ...Object.fromEntries(new Headers(getAdminAuthHeaders({ 'Content-Type': 'application/json' })).entries()),
+      },
+      body: method !== 'DELETE' ? JSON.stringify(tag) : undefined,
+    });
+  } catch {
+    // API sync failed silently — localStorage is primary in admin
+  }
+}
 import {
   Dialog,
   DialogContent,
@@ -147,7 +168,18 @@ const ManageTags = () => {
   const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
-    setTags(getAllTags());
+    // Try loading from API first, fall back to localStorage
+    fetch(`${API_BASE}/tags.php`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data.tags) && data.tags.length > 0) {
+          setTags(data.tags);
+          localStorage.setItem('taam_tags', JSON.stringify(data.tags));
+        } else {
+          setTags(getAllTags());
+        }
+      })
+      .catch(() => setTags(getAllTags()));
   }, []);
 
   // Auto-contrast for new tag
@@ -171,14 +203,16 @@ const ManageTags = () => {
       toast({ title: "A tag with this name already exists", variant: "destructive" });
       return;
     }
-    const updated = addTag({
+    const newTag: Tag = {
       name,
       slug,
       color: "0 0% 0%", // legacy field
       bgColor: newBgColor,
       textColor: newTextColor,
       borderColor: newBorderColor || undefined,
-    });
+    };
+    const updated = addTag(newTag);
+    syncTagToApi('POST', newTag);
     setTags(updated);
     setNewName("");
     setNewBgColor(PRESET_BG_COLORS[0]);
@@ -201,13 +235,15 @@ const ManageTags = () => {
   const saveEdit = () => {
     if (!editingSlug || !editName.trim()) return;
     const newSlug = generateTagSlug(editName.trim());
-    const updated = updateTag(editingSlug, {
+    const updatedFields = {
       name: editName.trim(),
       slug: newSlug,
       bgColor: editBgColor,
       textColor: editTextColor,
       borderColor: editBorderColor || undefined,
-    });
+    };
+    const updated = updateTag(editingSlug, updatedFields);
+    syncTagToApi('PUT', { ...updatedFields, slug: editingSlug });
     setTags(updated);
     setEditingSlug(null);
     toast({ title: "Tag updated" });
@@ -215,6 +251,7 @@ const ManageTags = () => {
 
   const handleDelete = (slug: string) => {
     const updated = deleteTag(slug);
+    syncTagToApi('DELETE', { slug });
     setTags(updated);
     setDeleteConfirm(null);
     toast({ title: "Tag deleted" });
