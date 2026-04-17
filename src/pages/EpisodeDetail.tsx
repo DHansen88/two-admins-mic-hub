@@ -88,27 +88,27 @@ const EpisodeDetail = () => {
     );
 
   const ShareRow = (
-    <div className="flex items-center gap-2 mt-2">
-      <span className="text-background/60 text-sm flex items-center gap-1.5">
+    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1 sm:mt-2">
+      <span className="text-background/60 text-xs sm:text-sm flex items-center gap-1.5">
         <Share2 size={14} /> Share
       </span>
       <button
         onClick={copyLink}
-        className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
+        className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center"
         title="Copy link"
       >
         <LinkIcon className="h-4 w-4" />
       </button>
       <button
         onClick={shareLinkedIn}
-        className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
+        className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center"
         title="Share on LinkedIn"
       >
         <Linkedin className="h-4 w-4" />
       </button>
       <button
         onClick={shareEmail}
-        className="p-2.5 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[44px] min-h-[44px] flex items-center justify-center"
+        className="p-2 rounded-full hover:bg-background/15 transition-colors text-background/70 hover:text-background min-w-[40px] min-h-[40px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center"
         title="Share via email"
       >
         <Mail className="h-4 w-4" />
@@ -117,7 +117,7 @@ const EpisodeDetail = () => {
   );
 
   const MetaRow = (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-background/70">
+    <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 text-sm text-background/70">
       <span className="font-bold bg-accent text-accent-foreground px-3 py-1 rounded-full text-xs">
         Episode {episode.number}
       </span>
@@ -138,8 +138,8 @@ const EpisodeDetail = () => {
   );
 
   const TopicsSection = (
-    <div className="bg-muted/20 border-y border-border">
-      <div className="container mx-auto px-4 py-8">
+    <div className="bg-muted/20 border-y border-border overflow-x-hidden">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
         <div className="max-w-6xl mx-auto">
           <h3 className="text-sm font-display font-bold uppercase tracking-widest text-foreground/80 mb-3">
             Topics
@@ -158,17 +158,17 @@ const EpisodeDetail = () => {
     || Boolean(episode.showNotes && episode.showNotes.length > 0);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden bg-background">
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="bg-gradient-to-b from-slate to-navy">
-          <div className="container mx-auto px-4 py-10 md:py-12">
-            <div className="max-w-6xl mx-auto space-y-6">
+        <section className="bg-gradient-to-b from-slate to-navy overflow-x-hidden">
+          <div className="container mx-auto px-4 sm:px-5 lg:px-6 py-8 sm:py-10 md:py-12">
+            <div className="max-w-6xl mx-auto space-y-5 sm:space-y-6">
               {/* Back link */}
               <Link
                 to="/episodes"
-                className="inline-flex items-center space-x-2 text-background/70 hover:text-background transition-colors"
+                className="inline-flex items-center space-x-2 text-sm text-background/70 hover:text-background transition-colors"
               >
                 <ArrowLeft size={18} />
                 <span>Back to Episodes</span>
@@ -187,12 +187,12 @@ const EpisodeDetail = () => {
                     />
                   </div>
 
-                  <div className="space-y-4 text-background">
-                    <h1 className="text-4xl md:text-5xl font-display font-bold leading-tight">
+                  <div className="space-y-4 text-background min-w-0">
+                    <h1 className="text-[2.15rem] sm:text-4xl md:text-5xl font-display font-bold leading-[0.95] tracking-tight">
                       {episode.title}
                     </h1>
                     <div
-                      className="prose prose-invert max-w-3xl text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
+                      className="prose prose-invert prose-sm sm:prose-base max-w-3xl text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
                       dangerouslySetInnerHTML={{ __html: episode.description }}
                     />
                     {MetaRow}
@@ -201,9 +201,9 @@ const EpisodeDetail = () => {
                 </>
               ) : isAudioOnly ? (
                 /* ───── Audio Hero: image left, meta + player right ───── */
-                <div className="grid md:grid-cols-[minmax(280px,0.95fr)_minmax(0,1.1fr)] gap-8 lg:gap-12 items-center">
+                <div className="grid grid-cols-1 md:grid-cols-[minmax(260px,0.95fr)_minmax(0,1.1fr)] gap-5 sm:gap-6 md:gap-8 lg:gap-12 items-start">
                   {/* Image */}
-                  <div className="aspect-square rounded-2xl overflow-hidden bg-foreground/10 shadow-xl max-w-md w-full mx-auto md:mx-0">
+                  <div className="aspect-square rounded-2xl overflow-hidden bg-foreground/10 shadow-xl max-w-[320px] sm:max-w-md w-full mx-auto md:mx-0">
                     <img
                       src={heroImage}
                       alt={episode.title}
@@ -219,12 +219,12 @@ const EpisodeDetail = () => {
                   </div>
 
                   {/* Meta + Player */}
-                  <div className="space-y-5 text-background">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[0.95] tracking-tight">
+                  <div className="space-y-4 sm:space-y-5 text-background min-w-0">
+                    <h1 className="text-[2.2rem] sm:text-5xl lg:text-6xl font-display font-bold leading-[0.95] tracking-tight">
                       {episode.title}
                     </h1>
                     <div
-                      className="prose prose-invert max-w-none text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline [&_strong]:text-background [&_strong]:font-semibold"
+                      className="prose prose-invert prose-sm sm:prose-base max-w-none text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline [&_strong]:text-background [&_strong]:font-semibold"
                       dangerouslySetInnerHTML={{ __html: episode.description }}
                     />
                     {MetaRow}
@@ -258,12 +258,12 @@ const EpisodeDetail = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-4 text-background">
-                    <h1 className="text-4xl md:text-5xl font-display font-bold leading-tight">
+                  <div className="space-y-4 text-background min-w-0">
+                    <h1 className="text-[2.15rem] sm:text-4xl md:text-5xl font-display font-bold leading-[0.95] tracking-tight">
                       {episode.title}
                     </h1>
                     <div
-                      className="prose prose-invert max-w-3xl text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
+                      className="prose prose-invert prose-sm sm:prose-base max-w-3xl text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
                       dangerouslySetInnerHTML={{ __html: episode.description }}
                     />
                     {MetaRow}

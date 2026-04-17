@@ -67,20 +67,20 @@ const GuestSection = ({ guest, topics }: GuestSectionProps) => {
   const quoteAttribution = guest.name ? `- ${guest.name}` : "";
 
   return (
-    <section aria-labelledby="meet-the-guest" className="bg-muted/20 border-y border-border">
-      <div className="container mx-auto px-4 py-10 md:py-12">
+    <section aria-labelledby="meet-the-guest" className="bg-muted/20 border-y border-border overflow-x-hidden">
+      <div className="container mx-auto px-4 py-8 sm:py-10 md:py-12">
         <div className="max-w-6xl mx-auto">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-accent mb-5">
             Meet the Guest
           </p>
 
-          <div className="grid gap-6 md:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1.1fr)_minmax(280px,0.8fr)] xl:items-start">
+          <div className="grid gap-5 sm:gap-6 md:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1.1fr)_minmax(280px,0.8fr)] xl:items-start">
             {guest.image && (
               <img
                 src={guest.image}
                 alt={guest.name}
                 loading="lazy"
-                className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover shrink-0 ring-4 ring-background shadow-md"
+                className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover shrink-0 ring-4 ring-background shadow-md mx-auto md:mx-0"
               />
             )}
 
@@ -118,11 +118,11 @@ const GuestSection = ({ guest, topics }: GuestSectionProps) => {
             </div>
 
             {quoteText && (
-              <aside className="xl:pl-6 self-center xl:self-start">
-                <blockquote className="text-2xl md:text-[2rem] leading-tight font-semibold italic text-[#74d6ad]">
+              <aside className="md:col-span-2 xl:col-span-1 xl:pl-6 self-start max-w-2xl xl:max-w-none">
+                <blockquote className="text-xl sm:text-2xl md:text-[2rem] leading-tight font-semibold italic text-[#74d6ad]">
                   <p className="whitespace-pre-line">"{quoteText}"</p>
                   {quoteAttribution && (
-                    <footer className="mt-2 text-right text-xl md:text-2xl">
+                    <footer className="mt-2 text-right text-lg sm:text-xl md:text-2xl">
                       {quoteAttribution}
                     </footer>
                   )}

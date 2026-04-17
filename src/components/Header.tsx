@@ -129,11 +129,14 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-navy shadow-lg sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
+    <header className="bg-navy shadow-lg sticky top-0 z-50 w-full">
+      <div className="container mx-auto px-4 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 text-xl font-display font-bold text-background no-underline">
-            <img src={logo} alt="Two Admins and a Mic logo" className="h-10 w-auto" />
+          <a
+            href="/"
+            className="flex items-center gap-2 text-xl font-display font-bold text-background no-underline shrink-0 max-w-[140px] sm:max-w-none"
+          >
+            <img src={logo} alt="Two Admins and a Mic logo" className="h-8 sm:h-10 w-auto max-w-full" />
           </a>
 
           {/* Desktop Navigation */}
@@ -165,7 +168,7 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-background hover:text-accent transition-colors"
+            className="md:hidden text-background hover:text-accent transition-colors p-2 -mr-2"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>

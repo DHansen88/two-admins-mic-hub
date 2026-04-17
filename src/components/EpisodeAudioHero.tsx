@@ -86,15 +86,15 @@ const EpisodeAudioHero = ({ audioUrl, title, autoPlay = false }: EpisodeAudioHer
   };
 
   return (
-    <div className="bg-card border border-border rounded-2xl shadow-sm p-4 sm:p-5">
+    <div className="w-full max-w-full overflow-hidden bg-card border border-border rounded-2xl shadow-sm p-4 sm:p-5">
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
         {/* Play / Pause */}
         <button
           onClick={togglePlay}
           aria-label={playing ? "Pause" : "Play"}
-          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-accent text-accent-foreground flex items-center justify-center shrink-0 hover:scale-105 active:scale-95 transition-transform shadow-md"
+          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-accent text-accent-foreground flex items-center justify-center shrink-0 self-start sm:self-auto hover:scale-105 active:scale-95 transition-transform shadow-md"
         >
           {playing ? (
             <Pause className="h-6 w-6" />
@@ -104,12 +104,12 @@ const EpisodeAudioHero = ({ audioUrl, title, autoPlay = false }: EpisodeAudioHer
         </button>
 
         {/* Scrubber + meta */}
-        <div className="flex-1 min-w-0 space-y-1.5">
-          <p className="text-xs sm:text-sm text-muted-foreground truncate">
+        <div className="w-full flex-1 min-w-0 space-y-1.5">
+          <p className="text-[11px] sm:text-sm text-muted-foreground truncate">
             {playing ? "Now playing" : "Audio episode"} · {title}
           </p>
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-[11px] sm:text-xs text-muted-foreground tabular-nums w-10 shrink-0">
+            <span className="text-[11px] sm:text-xs text-muted-foreground tabular-nums w-9 sm:w-10 shrink-0">
               {formatTime(currentTime)}
             </span>
             <Slider
@@ -120,14 +120,14 @@ const EpisodeAudioHero = ({ audioUrl, title, autoPlay = false }: EpisodeAudioHer
               className="flex-1"
               aria-label="Seek"
             />
-            <span className="text-[11px] sm:text-xs text-muted-foreground tabular-nums w-10 shrink-0 text-right">
+            <span className="text-[11px] sm:text-xs text-muted-foreground tabular-nums w-9 sm:w-10 shrink-0 text-right">
               {formatTime(duration)}
             </span>
           </div>
         </div>
 
         {/* Volume — hidden on small screens to save space */}
-        <div className="hidden md:flex items-center gap-2 w-32 shrink-0">
+        <div className="hidden lg:flex items-center gap-2 w-32 shrink-0">
           <button
             onClick={() => setMuted((m) => !m)}
             aria-label={muted ? "Unmute" : "Mute"}
