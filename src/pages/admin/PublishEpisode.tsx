@@ -87,6 +87,7 @@ const PublishEpisode = () => {
     setGuestName("");
     setThumbnailName(ep.thumbnailUrl || "");
     setAudioUrl(ep.audioUrl || "");
+    setCustomSlug(ep.slug || "");
     // Guest fields
     const g = (ep as any).guest;
     setGuestFullName(g?.name || "");
@@ -117,6 +118,7 @@ const PublishEpisode = () => {
   const [audioUrl, setAudioUrl] = useState("");
   const [audioFileName, setAudioFileName] = useState("");
   const [audioUploading, setAudioUploading] = useState(false);
+  const [customSlug, setCustomSlug] = useState("");
 
   // Guest fields
   const [guestFullName, setGuestFullName] = useState("");
@@ -331,7 +333,7 @@ const PublishEpisode = () => {
     return {
       number: parseInt(episodeNumber) || 0,
       title,
-      slug: `episode-${episodeNumber}-${generateSlug(title)}`,
+      slug: (customSlug.trim() ? generateSlug(customSlug.trim()) : `episode-${episodeNumber}-${generateSlug(title)}`),
       description,
       duration,
       date: publishDate,
@@ -489,6 +491,17 @@ const PublishEpisode = () => {
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Episode Title *</label>
             <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Leading Through Change: Strategies for Modern Administrators" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground">URL Slug</label>
+            <Input
+              value={customSlug}
+              onChange={(e) => setCustomSlug(e.target.value)}
+              placeholder={title ? `episode-${episodeNumber || "#"}-${generateSlug(title)}` : "auto-generated-from-title"}
+            />
+            <p className="text-xs text-muted-foreground">
+              Leave blank to auto-generate. URL: /episodes/{customSlug.trim() ? generateSlug(customSlug.trim()) : (title ? `episode-${episodeNumber || "#"}-${generateSlug(title)}` : "...")}
+            </p>
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Episode Description *</label>
