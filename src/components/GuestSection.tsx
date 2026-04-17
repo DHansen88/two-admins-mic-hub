@@ -62,56 +62,74 @@ const GuestSection = ({ guest }: GuestSectionProps) => {
     },
   ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode }[];
 
+  const hasQuote = Boolean(guest.quote && guest.quote.trim().length > 0);
+
   return (
     <section aria-labelledby="meet-the-guest" className="bg-muted/30 border-y border-border">
       <div className="container mx-auto px-4 py-12 md:py-16">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-xs font-bold uppercase tracking-widest text-accent mb-4">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-xs font-bold uppercase tracking-widest text-accent mb-6">
             Meet the Guest
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
-            {guest.image && (
-              <img
-                src={guest.image}
-                alt={guest.name}
-                loading="lazy"
-                className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover shrink-0 ring-4 ring-background shadow-md"
-              />
-            )}
-
-            <div className="flex-1 min-w-0 space-y-3">
-              <div>
-                <h2
-                  id="meet-the-guest"
-                  className="text-2xl md:text-3xl font-display font-bold text-foreground leading-tight"
-                >
-                  {guest.name}
-                </h2>
-                {guest.title && (
-                  <p className="text-sm md:text-base text-muted-foreground mt-1">
-                    {guest.title}
-                  </p>
-                )}
-              </div>
-
-              {guest.bio && (
-                <div
-                  className="prose prose-sm md:prose-base max-w-none text-foreground/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
-                  dangerouslySetInnerHTML={{ __html: guest.bio }}
+          <div
+            className={`grid gap-8 md:gap-12 items-start ${
+              hasQuote ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : "lg:grid-cols-1"
+            }`}
+          >
+            {/* Left: guest profile */}
+            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
+              {guest.image && (
+                <img
+                  src={guest.image}
+                  alt={guest.name}
+                  loading="lazy"
+                  className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover shrink-0 ring-4 ring-background shadow-md"
                 />
               )}
 
-              {socials.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 pt-2">
-                  {socials.map((s) => (
-                    <SocialIcon key={s.label} href={s.href} label={s.label}>
-                      {s.icon}
-                    </SocialIcon>
-                  ))}
+              <div className="flex-1 min-w-0 space-y-3">
+                <div>
+                  <h2
+                    id="meet-the-guest"
+                    className="text-2xl md:text-3xl font-display font-bold text-foreground leading-tight"
+                  >
+                    {guest.name}
+                  </h2>
+                  {guest.title && (
+                    <p className="text-sm md:text-base text-muted-foreground mt-1">
+                      {guest.title}
+                    </p>
+                  )}
                 </div>
-              )}
+
+                {guest.bio && (
+                  <div
+                    className="prose prose-sm md:prose-base max-w-none text-foreground/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
+                    dangerouslySetInnerHTML={{ __html: guest.bio }}
+                  />
+                )}
+
+                {socials.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 pt-2">
+                    {socials.map((s) => (
+                      <SocialIcon key={s.label} href={s.href} label={s.label}>
+                        {s.icon}
+                      </SocialIcon>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* Right: featured quote */}
+            {hasQuote && (
+              <figure className="lg:pl-8 lg:border-l lg:border-border flex items-center">
+                <blockquote className="font-display italic text-accent text-xl md:text-2xl lg:text-3xl leading-snug whitespace-pre-line">
+                  {guest.quote}
+                </blockquote>
+              </figure>
+            )}
           </div>
         </div>
       </div>
