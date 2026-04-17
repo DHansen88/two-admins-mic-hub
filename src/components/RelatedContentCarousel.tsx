@@ -86,7 +86,7 @@ const RelatedContentCarousel = ({ items }: Props) => {
   if (items.length === 0) return null;
 
   return (
-    <section className="py-14 bg-muted/40 border-t border-border">
+    <section className="pt-6 pb-14 bg-muted/40 border-t border-border">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header with arrows */}
