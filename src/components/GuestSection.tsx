@@ -68,19 +68,19 @@ const GuestSection = ({ guest, topics }: GuestSectionProps) => {
 
   return (
     <section aria-labelledby="meet-the-guest" className="bg-muted/20 border-y border-border overflow-x-hidden">
-      <div className="container mx-auto px-4 py-8 sm:py-10 md:py-12">
+      <div className="container mx-auto px-4 py-8 sm:py-10 lg:py-12">
         <div className="max-w-6xl mx-auto">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-accent mb-5">
             Meet the Guest
           </p>
 
-          <div className="grid gap-5 sm:gap-6 md:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1.1fr)_minmax(280px,0.8fr)] xl:items-start">
+          <div className="grid gap-5 sm:gap-6 lg:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1.1fr)_minmax(280px,0.8fr)] xl:items-start">
             {guest.image && (
               <img
                 src={guest.image}
                 alt={guest.name}
                 loading="lazy"
-                className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover shrink-0 ring-4 ring-background shadow-md mx-auto md:mx-0"
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shrink-0 ring-4 ring-background shadow-md mx-auto lg:mx-0"
               />
             )}
 
@@ -88,12 +88,12 @@ const GuestSection = ({ guest, topics }: GuestSectionProps) => {
               <div>
                 <h2
                   id="meet-the-guest"
-                  className="text-3xl md:text-4xl font-display font-bold text-foreground leading-tight"
+                  className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-foreground leading-tight"
                 >
                   {guest.name}
                 </h2>
                 {guest.title && (
-                  <p className="text-base md:text-lg text-primary mt-1">
+                  <p className="text-base lg:text-lg text-primary mt-1">
                     {guest.title}
                   </p>
                 )}
@@ -101,7 +101,7 @@ const GuestSection = ({ guest, topics }: GuestSectionProps) => {
 
               {guest.bio && (
                 <div
-                  className="prose prose-sm md:prose-base max-w-none text-foreground/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
+                  className="prose prose-sm sm:prose-base max-w-none text-foreground/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
                   dangerouslySetInnerHTML={{ __html: guest.bio }}
                 />
               )}
@@ -118,7 +118,7 @@ const GuestSection = ({ guest, topics }: GuestSectionProps) => {
             </div>
 
             {quoteText && (
-              <aside className="md:col-span-2 xl:col-span-1 xl:pl-6 self-start max-w-2xl xl:max-w-none">
+              <aside className="lg:col-span-2 xl:col-span-1 xl:pl-6 self-start max-w-2xl xl:max-w-none">
                 <blockquote className="text-xl sm:text-2xl md:text-[2rem] leading-tight font-semibold italic text-[#74d6ad]">
                   <p className="whitespace-pre-line">"{quoteText}"</p>
                   {quoteAttribution && (

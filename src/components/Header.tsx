@@ -130,13 +130,13 @@ const Header = () => {
 
   return (
     <header className="bg-navy shadow-lg sticky top-0 z-50 w-full">
-      <div className="container mx-auto px-4 py-3 sm:py-4">
+      <div className="container mx-auto px-4 py-2.5 sm:py-3.5 lg:py-4">
         <div className="flex items-center justify-between">
           <a
             href="/"
-            className="flex items-center gap-2 text-xl font-display font-bold text-background no-underline shrink-0 max-w-[140px] sm:max-w-none"
+            className="flex items-center gap-2 text-xl font-display font-bold text-background no-underline shrink-0 max-w-[118px] sm:max-w-[140px] md:max-w-none"
           >
-            <img src={logo} alt="Two Admins and a Mic logo" className="h-8 sm:h-10 w-auto max-w-full" />
+            <img src={logo} alt="Two Admins and a Mic logo" className="h-7 sm:h-9 md:h-10 w-auto max-w-full" />
           </a>
 
           {/* Desktop Navigation */}
@@ -168,7 +168,7 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-background hover:text-accent transition-colors p-2 -mr-2"
+            className="md:hidden text-background hover:text-accent transition-colors p-2 -mr-2 shrink-0"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -176,7 +176,7 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="md:hidden py-4 animate-fade-in">
+          <nav className="md:hidden py-3 animate-fade-in">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
                 <NavLink

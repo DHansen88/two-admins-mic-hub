@@ -86,12 +86,12 @@ const RelatedContentCarousel = ({ items }: Props) => {
   if (items.length === 0) return null;
 
   return (
-    <section className="pt-6 pb-14 bg-muted/40 border-t border-border">
-      <div className="container mx-auto px-4">
+    <section className="pt-6 pb-12 sm:pb-14 bg-muted/40 border-t border-border overflow-x-clip">
+      <div className="container mx-auto px-4 overflow-x-clip">
         <div className="max-w-6xl mx-auto">
           {/* Header with arrows */}
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-display font-bold text-foreground">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-[2rem] font-display font-bold text-foreground">
               Related Content
             </h2>
             <div className="flex items-center gap-2">
@@ -117,8 +117,8 @@ const RelatedContentCarousel = ({ items }: Props) => {
           </div>
 
           {/* Carousel */}
-          <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex">
+          <div className="overflow-hidden max-w-full" ref={emblaRef}>
+            <div className="flex max-w-full">
               {items.map((item, idx) => (
                 <div
                   key={`${item.type}-${item.slug}-${idx}`}

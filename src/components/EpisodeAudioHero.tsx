@@ -86,7 +86,7 @@ const EpisodeAudioHero = ({ audioUrl, title, autoPlay = false }: EpisodeAudioHer
   };
 
   return (
-    <div className="w-full max-w-full overflow-hidden bg-card border border-border rounded-2xl shadow-sm p-4 sm:p-5">
+    <div className="w-full max-w-full overflow-hidden bg-card border border-border rounded-2xl shadow-sm p-3.5 sm:p-4 md:p-5">
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -94,18 +94,18 @@ const EpisodeAudioHero = ({ audioUrl, title, autoPlay = false }: EpisodeAudioHer
         <button
           onClick={togglePlay}
           aria-label={playing ? "Pause" : "Play"}
-          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-accent text-accent-foreground flex items-center justify-center shrink-0 self-start sm:self-auto hover:scale-105 active:scale-95 transition-transform shadow-md"
+          className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-accent text-accent-foreground flex items-center justify-center shrink-0 self-start sm:self-auto hover:scale-105 active:scale-95 transition-transform shadow-md"
         >
           {playing ? (
-            <Pause className="h-6 w-6" />
+            <Pause className="h-5 w-5 sm:h-6 sm:w-6" />
           ) : (
-            <Play className="h-6 w-6 ml-0.5" />
+            <Play className="h-5 w-5 sm:h-6 sm:w-6 ml-0.5" />
           )}
         </button>
 
         {/* Scrubber + meta */}
         <div className="w-full flex-1 min-w-0 space-y-1.5">
-          <p className="text-[11px] sm:text-sm text-muted-foreground truncate">
+          <p className="line-clamp-2 text-[11px] sm:text-sm leading-snug text-muted-foreground">
             {playing ? "Now playing" : "Audio episode"} · {title}
           </p>
           <div className="flex items-center gap-2 sm:gap-3">

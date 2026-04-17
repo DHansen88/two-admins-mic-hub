@@ -88,7 +88,7 @@ const EpisodeDetail = () => {
     );
 
   const ShareRow = (
-    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1 sm:mt-2">
+    <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2">
       <span className="text-background/60 text-xs sm:text-sm flex items-center gap-1.5">
         <Share2 size={14} /> Share
       </span>
@@ -158,17 +158,17 @@ const EpisodeDetail = () => {
     || Boolean(episode.showNotes && episode.showNotes.length > 0);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-background">
       <Header />
-      <main>
+      <main className="w-full max-w-full overflow-x-hidden">
         {/* Hero Section */}
         <section className="bg-gradient-to-b from-slate to-navy overflow-x-hidden">
-          <div className="container mx-auto px-4 sm:px-5 lg:px-6 py-8 sm:py-10 md:py-12">
-            <div className="max-w-6xl mx-auto space-y-5 sm:space-y-6">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+            <div className="max-w-6xl mx-auto space-y-4 sm:space-y-5">
               {/* Back link */}
               <Link
                 to="/episodes"
-                className="inline-flex items-center space-x-2 text-sm text-background/70 hover:text-background transition-colors"
+                className="inline-flex items-center space-x-2 text-xs sm:text-sm text-background/70 hover:text-background transition-colors"
               >
                 <ArrowLeft size={18} />
                 <span>Back to Episodes</span>
@@ -187,8 +187,8 @@ const EpisodeDetail = () => {
                     />
                   </div>
 
-                  <div className="space-y-4 text-background min-w-0">
-                    <h1 className="text-[2.15rem] sm:text-4xl md:text-5xl font-display font-bold leading-[0.95] tracking-tight">
+                  <div className="space-y-4 text-background min-w-0 overflow-hidden">
+                    <h1 className="text-[2rem] sm:text-[2.6rem] md:text-[3.2rem] lg:text-5xl font-display font-bold leading-[0.95] tracking-tight text-balance [overflow-wrap:anywhere]">
                       {episode.title}
                     </h1>
                     <div
@@ -201,9 +201,9 @@ const EpisodeDetail = () => {
                 </>
               ) : isAudioOnly ? (
                 /* ───── Audio Hero: image left, meta + player right ───── */
-                <div className="grid grid-cols-1 md:grid-cols-[minmax(260px,0.95fr)_minmax(0,1.1fr)] gap-5 sm:gap-6 md:gap-8 lg:gap-12 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-[minmax(260px,0.9fr)_minmax(0,1.1fr)] gap-5 sm:gap-6 lg:gap-10 xl:gap-12 items-start">
                   {/* Image */}
-                  <div className="aspect-square rounded-2xl overflow-hidden bg-foreground/10 shadow-xl max-w-[320px] sm:max-w-md w-full mx-auto md:mx-0">
+                  <div className="aspect-square rounded-2xl overflow-hidden bg-foreground/10 shadow-xl max-w-[260px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-none w-full mx-auto lg:mx-0">
                     <img
                       src={heroImage}
                       alt={episode.title}
@@ -219,8 +219,8 @@ const EpisodeDetail = () => {
                   </div>
 
                   {/* Meta + Player */}
-                  <div className="space-y-4 sm:space-y-5 text-background min-w-0">
-                    <h1 className="text-[2.2rem] sm:text-5xl lg:text-6xl font-display font-bold leading-[0.95] tracking-tight">
+                  <div className="space-y-4 sm:space-y-5 text-background min-w-0 overflow-hidden">
+                    <h1 className="text-[2rem] sm:text-[2.6rem] md:text-[3.2rem] lg:text-[3.8rem] xl:text-6xl font-display font-bold leading-[0.95] tracking-tight text-balance [overflow-wrap:anywhere]">
                       {episode.title}
                     </h1>
                     <div
@@ -258,8 +258,8 @@ const EpisodeDetail = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-4 text-background min-w-0">
-                    <h1 className="text-[2.15rem] sm:text-4xl md:text-5xl font-display font-bold leading-[0.95] tracking-tight">
+                  <div className="space-y-4 text-background min-w-0 overflow-hidden">
+                    <h1 className="text-[2rem] sm:text-[2.6rem] md:text-[3.2rem] lg:text-5xl font-display font-bold leading-[0.95] tracking-tight text-balance [overflow-wrap:anywhere]">
                       {episode.title}
                     </h1>
                     <div
@@ -281,7 +281,7 @@ const EpisodeDetail = () => {
             episode.platformLinks.spotify ||
             episode.platformLinks.youtube ||
             (episode.platformLinks.other && episode.platformLinks.other.length > 0)) && (
-            <section className="border-b border-border bg-muted/40">
+            <section className="border-b border-border bg-muted/40 overflow-x-hidden">
               <div className="container mx-auto px-4 py-6">
                 <div className="max-w-6xl mx-auto flex flex-wrap items-center gap-4">
                   <span className="text-sm font-semibold text-foreground">
@@ -339,7 +339,7 @@ const EpisodeDetail = () => {
 
         {/* Content Body */}
         {hasSupplementalContent && (
-          <div className="container mx-auto px-4 py-12 md:py-16">
+          <div className="container mx-auto px-4 py-10 sm:py-12 md:py-16">
             <div className="max-w-4xl mx-auto space-y-16">
               {/* Shareable Clips */}
               {episode.clips && episode.clips.length > 0 && (

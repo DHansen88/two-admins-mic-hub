@@ -31,15 +31,15 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
   const goToDetail = () => navigate(`/episodes/${episode.slug}`);
 
   return (
-    <section className="bg-muted/40 border-b border-border">
-      <div className="container mx-auto px-4 py-12 md:py-16">
+    <section className="bg-muted/40 border-b border-border overflow-x-hidden">
+      <div className="container mx-auto px-4 py-10 sm:py-12 lg:py-16">
         <p className="text-sm font-bold uppercase tracking-widest text-accent mb-6">
           Latest Episode
         </p>
 
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
           {/* Image visual */}
-          <div className="w-full md:w-[320px] lg:w-[440px] xl:w-[520px] shrink-0">
+          <div className="w-full lg:w-[380px] xl:w-[480px] shrink-0">
             <button
               type="button"
               onClick={goToDetail}
@@ -75,8 +75,8 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
           </div>
 
           {/* Info — clicking title still navigates to detail page */}
-          <div className="flex-1 space-y-4">
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <div className="flex-1 min-w-0 space-y-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-muted-foreground">
               <span className="font-bold bg-accent text-accent-foreground px-3 py-0.5 rounded-full text-xs">
                 Episode {episode.number}
               </span>
@@ -88,13 +88,13 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
             </div>
 
             <h2
-              className="text-3xl md:text-4xl font-display font-bold text-foreground leading-tight hover:text-accent transition-colors cursor-pointer"
+              className="text-2xl sm:text-3xl xl:text-4xl font-display font-bold text-foreground leading-tight hover:text-accent transition-colors cursor-pointer text-balance"
               onClick={goToDetail}
             >
               {episode.title}
             </h2>
 
-            <p className="text-lg text-muted-foreground leading-relaxed line-clamp-2">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed line-clamp-3">
               {plainDescription}
             </p>
 
