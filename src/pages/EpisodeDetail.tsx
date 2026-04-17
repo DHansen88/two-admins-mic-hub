@@ -153,6 +153,9 @@ const EpisodeDetail = () => {
       </div>
     </div>
   );
+  const hasSupplementalContent =
+    Boolean(episode.clips && episode.clips.length > 0)
+    || Boolean(episode.showNotes && episode.showNotes.length > 0);
 
   return (
     <div className="min-h-screen">
@@ -335,93 +338,95 @@ const EpisodeDetail = () => {
         {!episode.guest && episode.topics.length > 0 && TopicsSection}
 
         {/* Content Body */}
-        <div className="container mx-auto px-4 py-12 md:py-16">
-          <div className="max-w-4xl mx-auto space-y-16">
-            {/* Shareable Clips */}
-            {episode.clips && episode.clips.length > 0 && (
-              <section>
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">
-                  Shareable Clips
-                </h2>
-                <div className="grid grid-cols-1 gap-6">
-                  {episode.clips.map((clip, i) => (
-                    <div
-                      key={i}
-                      className="border border-border rounded-lg overflow-hidden hover:border-accent transition-colors"
-                    >
-                      {clip.embedUrl ? (
-                        <div className="aspect-video">
-                          <iframe
-                            src={clip.embedUrl}
-                            title={clip.title}
-                            className="w-full h-full border-0"
-                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        </div>
-                      ) : clip.mp4Url ? (
-                        <div className="aspect-video bg-muted">
-                          <video
-                            src={clip.mp4Url}
-                            controls
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ) : null}
-                      <div className="p-4 flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-                            <Play className="h-4 w-4 text-foreground ml-0.5" />
+        {hasSupplementalContent && (
+          <div className="container mx-auto px-4 py-12 md:py-16">
+            <div className="max-w-4xl mx-auto space-y-16">
+              {/* Shareable Clips */}
+              {episode.clips && episode.clips.length > 0 && (
+                <section>
+                  <h2 className="text-2xl font-display font-bold text-foreground mb-6">
+                    Shareable Clips
+                  </h2>
+                  <div className="grid grid-cols-1 gap-6">
+                    {episode.clips.map((clip, i) => (
+                      <div
+                        key={i}
+                        className="border border-border rounded-lg overflow-hidden hover:border-accent transition-colors"
+                      >
+                        {clip.embedUrl ? (
+                          <div className="aspect-video">
+                            <iframe
+                              src={clip.embedUrl}
+                              title={clip.title}
+                              className="w-full h-full border-0"
+                              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-foreground truncate">
-                              {clip.title}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {clip.duration}
-                            </p>
+                        ) : clip.mp4Url ? (
+                          <div className="aspect-video bg-muted">
+                            <video
+                              src={clip.mp4Url}
+                              controls
+                              className="w-full h-full object-cover"
+                            />
                           </div>
+                        ) : null}
+                        <div className="p-4 flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                              <Play className="h-4 w-4 text-foreground ml-0.5" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">
+                                {clip.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {clip.duration}
+                              </p>
+                            </div>
+                          </div>
+                          {(clip.embedUrl || clip.mp4Url) && (
+                            <a
+                              href={clip.embedUrl || clip.mp4Url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="shrink-0 p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                              title="Open clip"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          )}
                         </div>
-                        {(clip.embedUrl || clip.mp4Url) && (
-                          <a
-                            href={clip.embedUrl || clip.mp4Url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="shrink-0 p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-                            title="Open clip"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        )}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
+                    ))}
+                  </div>
+                </section>
+              )}
 
-            {/* Key Takeaways / Show Notes */}
-            {episode.showNotes && episode.showNotes.length > 0 && (
-              <section>
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                  <Lightbulb className="h-6 w-6 text-accent" />
-                  Key Takeaways
-                </h2>
-                <ul className="space-y-3">
-                  {episode.showNotes.map((note, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-3 text-foreground/80"
-                    >
-                      <span className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0" />
-                      <span className="text-sm leading-relaxed">{note}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
+              {/* Key Takeaways / Show Notes */}
+              {episode.showNotes && episode.showNotes.length > 0 && (
+                <section>
+                  <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+                    <Lightbulb className="h-6 w-6 text-accent" />
+                    Key Takeaways
+                  </h2>
+                  <ul className="space-y-3">
+                    {episode.showNotes.map((note, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-3 text-foreground/80"
+                      >
+                        <span className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0" />
+                        <span className="text-sm leading-relaxed">{note}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Related Content Carousel */}
         <RelatedContentCarousel
