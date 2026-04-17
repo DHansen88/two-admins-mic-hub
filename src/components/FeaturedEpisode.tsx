@@ -38,7 +38,7 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
         </p>
 
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Image / Player visual */}
+          {/* Image visual */}
           <div className="w-full md:w-[320px] lg:w-[440px] xl:w-[520px] shrink-0">
             <button
               type="button"
