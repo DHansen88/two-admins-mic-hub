@@ -305,6 +305,7 @@ export interface EpisodeGuest {
   title?: string;
   image?: string;
   bio?: string;
+  quote?: string;
   websiteUrl?: string;
   linkedinUrl?: string;
   instagramUrl?: string;
@@ -347,6 +348,7 @@ function parsePodcastJson(mod: Record<string, unknown>): Episode {
           title: rawGuest.title ? String(rawGuest.title) : undefined,
           image: rawGuest.image ? String(rawGuest.image) : undefined,
           bio: rawGuest.bio ? String(rawGuest.bio) : undefined,
+          quote: rawGuest.quote ? String(rawGuest.quote) : undefined,
           websiteUrl: rawGuest.websiteUrl ? String(rawGuest.websiteUrl) : undefined,
           linkedinUrl: rawGuest.linkedinUrl ? String(rawGuest.linkedinUrl) : undefined,
           instagramUrl: rawGuest.instagramUrl ? String(rawGuest.instagramUrl) : undefined,
