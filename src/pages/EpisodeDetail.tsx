@@ -32,6 +32,27 @@ const EpisodeDetail = () => {
   const relatedEpisodes = useVisibleRelatedEpisodes(episode);
   const relatedBlogs = useVisibleRelatedBlogsForEpisode(slug || "", 3);
   const [audioActive, setAudioActive] = useState(false);
+  const hasVideo = !!episode?.riversideEmbedUrl;
+  const hasAudio = !!episode?.audioUrl;
+  const isAudioOnly = !hasVideo && hasAudio;
+  const heroImageCandidates = (
+    isAudioOnly
+      ? [
+          episode?.guest?.image,
+          episode?.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg" ? episode.thumbnailUrl : undefined,
+          "/placeholder.svg",
+        ]
+      : [
+          episode?.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg" ? episode.thumbnailUrl : undefined,
+          episode?.guest?.image,
+          "/placeholder.svg",
+        ]
+  ).filter(Boolean) as string[];
+  const [heroImage, setHeroImage] = useState(heroImageCandidates[0] || "/placeholder.svg");
+
+  useEffect(() => {
+    setHeroImage(heroImageCandidates[0] || "/placeholder.svg");
+  }, [episode?.thumbnailUrl, episode?.guest?.image, isAudioOnly]);
 
   if (!episode) {
     return (
@@ -66,30 +87,6 @@ const EpisodeDetail = () => {
       `mailto:?subject=${encodeURIComponent(episode.title)}&body=${encodeURIComponent(window.location.href)}`,
       "_blank"
     );
-
-  const hasVideo = !!episode.riversideEmbedUrl;
-  const hasAudio = !!episode.audioUrl;
-  const isAudioOnly = !hasVideo && hasAudio;
-
-  // Image fallback: guest → thumbnail → placeholder (audio prefers guest)
-  const heroImageCandidates = (
-    isAudioOnly
-      ? [
-          episode.guest?.image,
-          episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg" ? episode.thumbnailUrl : undefined,
-          "/placeholder.svg",
-        ]
-      : [
-          episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg" ? episode.thumbnailUrl : undefined,
-          episode.guest?.image,
-          "/placeholder.svg",
-        ]
-  ).filter(Boolean) as string[];
-  const [heroImage, setHeroImage] = useState(heroImageCandidates[0] || "/placeholder.svg");
-
-  useEffect(() => {
-    setHeroImage(heroImageCandidates[0] || "/placeholder.svg");
-  }, [episode.thumbnailUrl, episode.guest?.image, isAudioOnly]);
 
   const ShareRow = (
     <div className="flex items-center gap-2 mt-2">
