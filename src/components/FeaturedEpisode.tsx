@@ -59,15 +59,13 @@ const FeaturedEpisode = ({ episode }: FeaturedEpisodeProps) => {
                   }
                 }}
               />
-              <span className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors">
-                <span className="w-16 h-16 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  {isAudioOnly ? (
-                    <Headphones className="h-7 w-7 text-foreground" />
-                  ) : (
+              {!isAudioOnly && (
+                <span className="absolute inset-0 flex items-center justify-center bg-foreground/10 group-hover:bg-foreground/20 transition-colors">
+                  <span className="w-16 h-16 rounded-full bg-background/80 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Play className="h-7 w-7 text-foreground ml-1" />
-                  )}
+                  </span>
                 </span>
-              </span>
+              )}
               {isAudioOnly && (
                 <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-background/95 text-foreground px-2.5 py-1 rounded-full shadow-sm backdrop-blur-sm">
                   <Headphones className="h-3 w-3" /> Audio
