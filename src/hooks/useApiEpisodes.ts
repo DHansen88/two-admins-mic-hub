@@ -45,17 +45,26 @@ function rawToEpisode(raw: ApiEpisodeRaw): Episode {
 
   const guest =
     raw.guest && typeof raw.guest === "object" && raw.guest.name
-      ? {
+      ? (() => {
+          const quoteValue =
+            raw.guest.featuredQuote
+            || (raw.guest as { quote?: string }).quote
+            || (raw.guest as { featured_quote?: string }).featured_quote
+            || undefined;
+          return {
           name: raw.guest.name,
           title: raw.guest.title || undefined,
           image: raw.guest.image || undefined,
           bio: raw.guest.bio || undefined,
+          quote: quoteValue,
+          featuredQuote: quoteValue,
           websiteUrl: raw.guest.websiteUrl || undefined,
           linkedinUrl: raw.guest.linkedinUrl || undefined,
           instagramUrl: raw.guest.instagramUrl || undefined,
           xUrl: raw.guest.xUrl || undefined,
           facebookUrl: raw.guest.facebookUrl || undefined,
-        }
+        };
+        })()
       : undefined;
 
   return {

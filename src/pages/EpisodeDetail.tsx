@@ -31,7 +31,6 @@ const EpisodeDetail = () => {
   const episode = useVisibleEpisodeBySlug(slug || "");
   const relatedEpisodes = useVisibleRelatedEpisodes(episode);
   const relatedBlogs = useVisibleRelatedBlogsForEpisode(slug || "", 3);
-  const [audioActive, setAudioActive] = useState(false);
   const hasVideo = !!episode?.riversideEmbedUrl;
   const hasAudio = !!episode?.audioUrl;
   const isAudioOnly = !hasVideo && hasAudio;
@@ -138,14 +137,31 @@ const EpisodeDetail = () => {
     </div>
   );
 
+  const TopicsSection = (
+    <div className="bg-muted/20 border-y border-border">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <h3 className="text-sm font-display font-bold uppercase tracking-widest text-foreground/80 mb-3">
+            Topics
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {episode.topics.map((topic) => (
+              <TopicTag key={topic} topic={topic} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-20">
+      <main>
         {/* Hero Section */}
         <section className="bg-gradient-to-b from-slate to-navy">
-          <div className="container mx-auto px-4 py-12 md:py-16">
-            <div className="max-w-6xl mx-auto space-y-8">
+          <div className="container mx-auto px-4 py-10 md:py-12">
+            <div className="max-w-6xl mx-auto space-y-6">
               {/* Back link */}
               <Link
                 to="/episodes"
@@ -169,11 +185,6 @@ const EpisodeDetail = () => {
                   </div>
 
                   <div className="space-y-4 text-background">
-                    <div className="flex flex-wrap gap-2">
-                      {episode.topics.map((topic) => (
-                        <TopicTag key={topic} topic={topic} variant="light" />
-                      ))}
-                    </div>
                     <h1 className="text-4xl md:text-5xl font-display font-bold leading-tight">
                       {episode.title}
                     </h1>
@@ -187,9 +198,9 @@ const EpisodeDetail = () => {
                 </>
               ) : isAudioOnly ? (
                 /* ───── Audio Hero: image left, meta + player right ───── */
-                <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-8 items-center">
+                <div className="grid md:grid-cols-[minmax(280px,0.95fr)_minmax(0,1.1fr)] gap-8 lg:gap-12 items-center">
                   {/* Image */}
-                  <div className="relative aspect-square rounded-2xl overflow-hidden bg-foreground/10 shadow-xl max-w-md w-full mx-auto md:mx-0">
+                  <div className="aspect-square rounded-2xl overflow-hidden bg-foreground/10 shadow-xl max-w-md w-full mx-auto md:mx-0">
                     <img
                       src={heroImage}
                       alt={episode.title}
@@ -202,53 +213,22 @@ const EpisodeDetail = () => {
                         }
                       }}
                     />
-                    {!audioActive && (
-                      <button
-                        type="button"
-                        onClick={() => setAudioActive(true)}
-                        aria-label="Listen to episode"
-                        className="absolute inset-0 flex items-center justify-center bg-foreground/10 hover:bg-foreground/25 transition-colors group"
-                      >
-                        <span className="w-20 h-20 rounded-full bg-background/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                          <Headphones className="h-9 w-9 text-foreground" />
-                        </span>
-                      </button>
-                    )}
                   </div>
 
                   {/* Meta + Player */}
                   <div className="space-y-5 text-background">
-                    <div className="flex flex-wrap gap-2">
-                      {episode.topics.map((topic) => (
-                        <TopicTag key={topic} topic={topic} variant="light" />
-                      ))}
-                    </div>
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold leading-tight">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[0.95] tracking-tight">
                       {episode.title}
                     </h1>
                     <div
-                      className="prose prose-invert max-w-none text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
+                      className="prose prose-invert max-w-none text-background/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline [&_strong]:text-background [&_strong]:font-semibold"
                       dangerouslySetInnerHTML={{ __html: episode.description }}
                     />
                     {MetaRow}
-
-                    {/* Audio player — always rendered, autoPlay only when activated */}
-                    {audioActive ? (
-                      <EpisodeAudioHero
-                        audioUrl={episode.audioUrl!}
-                        title={episode.title}
-                        autoPlay
-                      />
-                    ) : (
-                      <Button
-                        size="lg"
-                        className="gap-2"
-                        onClick={() => setAudioActive(true)}
-                      >
-                        <Headphones className="h-5 w-5" /> Listen now
-                      </Button>
-                    )}
-
+                    <EpisodeAudioHero
+                      audioUrl={episode.audioUrl!}
+                      title={episode.title}
+                    />
                     {ShareRow}
                   </div>
                 </div>
@@ -276,11 +256,6 @@ const EpisodeDetail = () => {
                   </div>
 
                   <div className="space-y-4 text-background">
-                    <div className="flex flex-wrap gap-2">
-                      {episode.topics.map((topic) => (
-                        <TopicTag key={topic} topic={topic} variant="light" />
-                      ))}
-                    </div>
                     <h1 className="text-4xl md:text-5xl font-display font-bold leading-tight">
                       {episode.title}
                     </h1>
@@ -356,7 +331,8 @@ const EpisodeDetail = () => {
           )}
 
         {/* Meet the Guest */}
-        {episode.guest && <GuestSection guest={episode.guest} />}
+        {episode.guest && <GuestSection guest={episode.guest} topics={episode.topics} />}
+        {!episode.guest && episode.topics.length > 0 && TopicsSection}
 
         {/* Content Body */}
         <div className="container mx-auto px-4 py-12 md:py-16">
@@ -444,22 +420,6 @@ const EpisodeDetail = () => {
                 </ul>
               </section>
             )}
-          </div>
-        </div>
-
-        {/* Topic Tags at bottom */}
-        <div className="bg-background py-8 border-t border-border">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <h3 className="text-sm font-display font-bold uppercase tracking-widest text-muted-foreground mb-3">
-                Topics
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {episode.topics.map((topic) => (
-                  <TopicTag key={topic} topic={topic} />
-                ))}
-              </div>
-            </div>
           </div>
         </div>
 

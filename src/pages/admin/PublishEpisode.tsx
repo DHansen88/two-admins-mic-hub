@@ -325,6 +325,7 @@ const PublishEpisode = () => {
           image: guestImage || undefined,
           bio: guestBio || undefined,
           quote: guestQuote || undefined,
+          featuredQuote: guestQuote || undefined,
           websiteUrl: guestWebsite || undefined,
           linkedinUrl: guestLinkedin || undefined,
           instagramUrl: guestInstagram || undefined,

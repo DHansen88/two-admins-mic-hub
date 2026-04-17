@@ -1,11 +1,12 @@
 import { Globe, Linkedin, Instagram, Facebook } from "lucide-react";
 import type { EpisodeGuest } from "@/data/episodeData";
+import TopicTag from "@/components/TopicTag";
 
 interface GuestSectionProps {
   guest: EpisodeGuest;
+  topics: string[];
 }
 
-/** Simple X / Twitter glyph (lucide doesn't ship a current X icon) */
 const XIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
     <path d="M18.244 2H21l-6.52 7.452L22 22h-6.828l-4.78-6.49L4.8 22H2.04l6.99-7.99L2 2h6.914l4.36 5.93L18.244 2Zm-2.39 18h1.59L7.21 4H5.5l10.354 16Z" />
@@ -33,7 +34,7 @@ const SocialIcon = ({
   </a>
 );
 
-const GuestSection = ({ guest }: GuestSectionProps) => {
+const GuestSection = ({ guest, topics }: GuestSectionProps) => {
   const socials = [
     guest.websiteUrl && {
       href: guest.websiteUrl,
@@ -62,75 +63,86 @@ const GuestSection = ({ guest }: GuestSectionProps) => {
     },
   ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode }[];
 
-  const hasQuote = Boolean(guest.quote && guest.quote.trim().length > 0);
+  const quoteText = guest.featuredQuote?.trim() || guest.quote?.trim();
+  const quoteAttribution = guest.name ? `- ${guest.name}` : "";
 
   return (
-    <section aria-labelledby="meet-the-guest" className="bg-muted/30 border-y border-border">
-      <div className="container mx-auto px-4 py-12 md:py-16">
+    <section aria-labelledby="meet-the-guest" className="bg-muted/20 border-y border-border">
+      <div className="container mx-auto px-4 py-10 md:py-12">
         <div className="max-w-6xl mx-auto">
-          <p className="text-xs font-bold uppercase tracking-widest text-accent mb-6">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-accent mb-5">
             Meet the Guest
           </p>
 
-          <div
-            className={`grid gap-8 md:gap-12 items-start ${
-              hasQuote ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : "lg:grid-cols-1"
-            }`}
-          >
-            {/* Left: guest profile */}
-            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
-              {guest.image && (
-                <img
-                  src={guest.image}
-                  alt={guest.name}
-                  loading="lazy"
-                  className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover shrink-0 ring-4 ring-background shadow-md"
+          <div className="grid gap-6 md:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1.1fr)_minmax(280px,0.8fr)] xl:items-start">
+            {guest.image && (
+              <img
+                src={guest.image}
+                alt={guest.name}
+                loading="lazy"
+                className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover shrink-0 ring-4 ring-background shadow-md"
+              />
+            )}
+
+            <div className="min-w-0 space-y-4">
+              <div>
+                <h2
+                  id="meet-the-guest"
+                  className="text-3xl md:text-4xl font-display font-bold text-foreground leading-tight"
+                >
+                  {guest.name}
+                </h2>
+                {guest.title && (
+                  <p className="text-base md:text-lg text-primary mt-1">
+                    {guest.title}
+                  </p>
+                )}
+              </div>
+
+              {guest.bio && (
+                <div
+                  className="prose prose-sm md:prose-base max-w-none text-foreground/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
+                  dangerouslySetInnerHTML={{ __html: guest.bio }}
                 />
               )}
 
-              <div className="flex-1 min-w-0 space-y-3">
-                <div>
-                  <h2
-                    id="meet-the-guest"
-                    className="text-2xl md:text-3xl font-display font-bold text-foreground leading-tight"
-                  >
-                    {guest.name}
-                  </h2>
-                  {guest.title && (
-                    <p className="text-sm md:text-base text-muted-foreground mt-1">
-                      {guest.title}
-                    </p>
-                  )}
+              {socials.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {socials.map((s) => (
+                    <SocialIcon key={s.label} href={s.href} label={s.label}>
+                      {s.icon}
+                    </SocialIcon>
+                  ))}
                 </div>
-
-                {guest.bio && (
-                  <div
-                    className="prose prose-sm md:prose-base max-w-none text-foreground/80 leading-relaxed [&_p]:my-2 [&_a]:text-accent [&_a]:underline"
-                    dangerouslySetInnerHTML={{ __html: guest.bio }}
-                  />
-                )}
-
-                {socials.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-2 pt-2">
-                    {socials.map((s) => (
-                      <SocialIcon key={s.label} href={s.href} label={s.label}>
-                        {s.icon}
-                      </SocialIcon>
-                    ))}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
 
-            {/* Right: featured quote */}
-            {hasQuote && (
-              <figure className="lg:pl-8 lg:border-l lg:border-border flex items-center">
-                <blockquote className="font-display italic text-accent text-xl md:text-2xl lg:text-3xl leading-snug whitespace-pre-line">
-                  {guest.quote}
+            {quoteText && (
+              <aside className="xl:pl-6 self-center xl:self-start">
+                <blockquote className="text-2xl md:text-[2rem] leading-tight font-semibold italic text-[#74d6ad]">
+                  <p className="whitespace-pre-line">"{quoteText}"</p>
+                  {quoteAttribution && (
+                    <footer className="mt-2 text-right text-xl md:text-2xl">
+                      {quoteAttribution}
+                    </footer>
+                  )}
                 </blockquote>
-              </figure>
+              </aside>
             )}
           </div>
+
+          {topics.length > 0 && (
+            <div className="mt-8 pt-6 border-t border-border">
+              <h3 className="text-sm font-display font-bold uppercase tracking-widest text-foreground/80 mb-3">
+                Topics
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {topics.map((topic) => (
+                  <TopicTag key={topic} topic={topic} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
