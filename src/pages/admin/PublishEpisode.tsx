@@ -94,6 +94,7 @@ const PublishEpisode = () => {
     setGuestTitle(g?.title || "");
     setGuestImage(g?.image || "");
     setGuestBio(g?.bio || "");
+    setGuestQuote(g?.quote || "");
     setGuestWebsite(g?.websiteUrl || "");
     setGuestLinkedin(g?.linkedinUrl || "");
     setGuestInstagram(g?.instagramUrl || "");
@@ -127,6 +128,7 @@ const PublishEpisode = () => {
   const [guestImageUploading, setGuestImageUploading] = useState(false);
   const [thumbnailUploading, setThumbnailUploading] = useState(false);
   const [guestBio, setGuestBio] = useState("");
+  const [guestQuote, setGuestQuote] = useState("");
   const [guestWebsite, setGuestWebsite] = useState("");
   const [guestLinkedin, setGuestLinkedin] = useState("");
   const [guestInstagram, setGuestInstagram] = useState("");
@@ -322,6 +324,7 @@ const PublishEpisode = () => {
           title: guestTitle || undefined,
           image: guestImage || undefined,
           bio: guestBio || undefined,
+          quote: guestQuote || undefined,
           websiteUrl: guestWebsite || undefined,
           linkedinUrl: guestLinkedin || undefined,
           instagramUrl: guestInstagram || undefined,
@@ -721,6 +724,19 @@ const PublishEpisode = () => {
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Short Bio</label>
             <RichTextEditor content={guestBio} onChange={setGuestBio} />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground">Featured Quote</label>
+            <Textarea
+              value={guestQuote}
+              onChange={(e) => setGuestQuote(e.target.value)}
+              placeholder='e.g. "Have the courage to give it a shot..." —Guest Name'
+              rows={4}
+            />
+            <p className="text-xs text-muted-foreground">
+              Pull quote from the guest. Displays beside the bio in the "Meet the Guest" section.
+            </p>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
