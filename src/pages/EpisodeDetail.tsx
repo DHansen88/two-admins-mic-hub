@@ -307,6 +307,16 @@ const EpisodeDetail = () => {
                       🎵 Spotify
                     </a>
                   )}
+                  {episode.platformLinks.iheart && (
+                    <a
+                      href={episode.platformLinks.iheart}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
+                    >
+                      📻 iHeartRadio
+                    </a>
+                  )}
                   {episode.platformLinks.youtube && (
                     <a
                       href={episode.platformLinks.youtube}
