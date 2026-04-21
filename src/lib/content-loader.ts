@@ -290,6 +290,7 @@ export interface PlatformLinks {
   apple?: string;
   spotify?: string;
   youtube?: string;
+  iheart?: string;
   other?: { name: string; url: string }[];
 }
 
