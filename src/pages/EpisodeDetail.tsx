@@ -280,6 +280,7 @@ const EpisodeDetail = () => {
           (episode.platformLinks.apple ||
             episode.platformLinks.spotify ||
             episode.platformLinks.youtube ||
+            episode.platformLinks.iheart ||
             (episode.platformLinks.other && episode.platformLinks.other.length > 0)) && (
             <section className="border-b border-border bg-muted/40 overflow-x-hidden">
               <div className="container mx-auto px-4 py-6">
