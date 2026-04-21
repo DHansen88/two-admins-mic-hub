@@ -289,6 +289,8 @@ export function loadAllBlogs(): BlogPost[] {
 export interface PlatformLinks {
   apple?: string;
   spotify?: string;
+  iheart?: string;
+  spreaker?: string;
   youtube?: string;
   iheart?: string;
   other?: { name: string; url: string }[];

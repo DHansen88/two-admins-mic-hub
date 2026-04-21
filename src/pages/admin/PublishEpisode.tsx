@@ -83,6 +83,8 @@ const PublishEpisode = () => {
     setRiversideUrl(ep.riversideEmbedUrl || "");
     setSpotifyUrl(ep.platformLinks?.spotify || "");
     setAppleUrl(ep.platformLinks?.apple || "");
+    setIheartUrl(ep.platformLinks?.iheart || "");
+    setSpreakerUrl(ep.platformLinks?.spreaker || "");
     setYoutubeUrl(ep.platformLinks?.youtube || "");
     setGuestName("");
     setThumbnailName(ep.thumbnailUrl || "");
@@ -113,6 +115,8 @@ const PublishEpisode = () => {
   const [riversideUrl, setRiversideUrl] = useState("");
   const [spotifyUrl, setSpotifyUrl] = useState("");
   const [appleUrl, setAppleUrl] = useState("");
+  const [iheartUrl, setIheartUrl] = useState("");
+  const [spreakerUrl, setSpreakerUrl] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [transcript, setTranscript] = useState("");
   const [thumbnailName, setThumbnailName] = useState("");
@@ -349,6 +353,8 @@ const PublishEpisode = () => {
       platformLinks: {
         spotify: spotifyUrl || undefined,
         apple: appleUrl || undefined,
+        iheart: iheartUrl || undefined,
+        spreaker: spreakerUrl || undefined,
         youtube: youtubeUrl || undefined,
       },
       transcript: transcript || undefined,
@@ -651,7 +657,7 @@ const PublishEpisode = () => {
             <label className="text-sm font-medium text-foreground">Riverside Embed URL</label>
             <Input value={riversideUrl} onChange={(e) => setRiversideUrl(e.target.value)} placeholder="https://riverside.fm/embed/..." />
           </div>
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 xl:grid-cols-5 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Spotify</label>
               <Input value={spotifyUrl} onChange={(e) => setSpotifyUrl(e.target.value)} placeholder="https://..." />
@@ -659,6 +665,14 @@ const PublishEpisode = () => {
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Apple Podcasts</label>
               <Input value={appleUrl} onChange={(e) => setAppleUrl(e.target.value)} placeholder="https://..." />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">iHeartRadio</label>
+              <Input value={iheartUrl} onChange={(e) => setIheartUrl(e.target.value)} placeholder="https://..." />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Spreaker</label>
+              <Input value={spreakerUrl} onChange={(e) => setSpreakerUrl(e.target.value)} placeholder="https://..." />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">YouTube</label>

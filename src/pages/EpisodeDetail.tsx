@@ -6,6 +6,7 @@ import RelatedContentCarousel, { buildRelatedItems } from "@/components/RelatedC
 import TopicTag from "@/components/TopicTag";
 import GuestSection from "@/components/GuestSection";
 import EpisodeAudioHero from "@/components/EpisodeAudioHero";
+import EpisodePlatformLinks from "@/components/EpisodePlatformLinks";
 import { Button } from "@/components/ui/button";
 import {
   useVisibleEpisodeBySlug,
@@ -196,6 +197,7 @@ const EpisodeDetail = () => {
                       dangerouslySetInnerHTML={{ __html: episode.description }}
                     />
                     {MetaRow}
+                    <EpisodePlatformLinks links={episode.platformLinks} theme="dark" />
                     {ShareRow}
                   </div>
                 </>
@@ -203,19 +205,22 @@ const EpisodeDetail = () => {
                 /* ───── Audio Hero: image left, meta + player right ───── */
                 <div className="grid grid-cols-1 lg:grid-cols-[minmax(260px,0.9fr)_minmax(0,1.1fr)] gap-5 sm:gap-6 lg:gap-10 xl:gap-12 items-start">
                   {/* Image */}
-                  <div className="aspect-square rounded-2xl overflow-hidden bg-foreground/10 shadow-xl max-w-[260px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-none w-full mx-auto lg:mx-0">
-                    <img
-                      src={heroImage}
-                      alt={episode.title}
-                      className="w-full h-full object-cover"
-                      onError={() => {
-                        const currentIndex = heroImageCandidates.indexOf(heroImage);
-                        const nextImage = heroImageCandidates[currentIndex + 1];
-                        if (nextImage && nextImage !== heroImage) {
-                          setHeroImage(nextImage);
-                        }
-                      }}
-                    />
+                  <div className="space-y-4 sm:space-y-5">
+                    <div className="aspect-square rounded-2xl overflow-hidden bg-foreground/10 shadow-xl max-w-[260px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-none w-full mx-auto lg:mx-0">
+                      <img
+                        src={heroImage}
+                        alt={episode.title}
+                        className="w-full h-full object-cover"
+                        onError={() => {
+                          const currentIndex = heroImageCandidates.indexOf(heroImage);
+                          const nextImage = heroImageCandidates[currentIndex + 1];
+                          if (nextImage && nextImage !== heroImage) {
+                            setHeroImage(nextImage);
+                          }
+                        }}
+                      />
+                    </div>
+                    <EpisodePlatformLinks links={episode.platformLinks} theme="dark" />
                   </div>
 
                   {/* Meta + Player */}
@@ -267,6 +272,7 @@ const EpisodeDetail = () => {
                       dangerouslySetInnerHTML={{ __html: episode.description }}
                     />
                     {MetaRow}
+                    <EpisodePlatformLinks links={episode.platformLinks} theme="dark" />
                     {ShareRow}
                   </div>
                 </>
@@ -274,75 +280,6 @@ const EpisodeDetail = () => {
             </div>
           </div>
         </section>
-
-        {/* Listen On Platforms */}
-        {episode.platformLinks &&
-          (episode.platformLinks.apple ||
-            episode.platformLinks.spotify ||
-            episode.platformLinks.youtube ||
-            episode.platformLinks.iheart ||
-            (episode.platformLinks.other && episode.platformLinks.other.length > 0)) && (
-            <section className="border-b border-border bg-muted/40 overflow-x-hidden">
-              <div className="container mx-auto px-4 py-6">
-                <div className="max-w-6xl mx-auto flex flex-wrap items-center gap-4">
-                  <span className="text-sm font-semibold text-foreground">
-                    Listen on:
-                  </span>
-                  {episode.platformLinks.apple && (
-                    <a
-                      href={episode.platformLinks.apple}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
-                    >
-                      🎧 Apple Podcasts
-                    </a>
-                  )}
-                  {episode.platformLinks.spotify && (
-                    <a
-                      href={episode.platformLinks.spotify}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
-                    >
-                      🎵 Spotify
-                    </a>
-                  )}
-                  {episode.platformLinks.iheart && (
-                    <a
-                      href={episode.platformLinks.iheart}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
-                    >
-                      📻 iHeartRadio
-                    </a>
-                  )}
-                  {episode.platformLinks.youtube && (
-                    <a
-                      href={episode.platformLinks.youtube}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
-                    >
-                      ▶️ YouTube
-                    </a>
-                  )}
-                  {episode.platformLinks.other?.map((platform) => (
-                    <a
-                      key={platform.name}
-                      href={platform.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:border-accent hover:text-accent transition-colors text-sm font-medium text-foreground"
-                    >
-                      {platform.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}
 
         {/* Meet the Guest */}
         {episode.guest && <GuestSection guest={episode.guest} topics={episode.topics} />}
