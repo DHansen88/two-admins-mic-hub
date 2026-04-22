@@ -51,6 +51,22 @@ function rssPublicPath(?string $url): ?string {
     return RSS_PUBLIC_ROOT . $trimmed;
 }
 
+function rssPublicUrlFromPath(string $path): ?string {
+    $normalizedRoot = rtrim(str_replace('\\', '/', RSS_PUBLIC_ROOT), '/');
+    $normalizedPath = str_replace('\\', '/', $path);
+
+    if (!str_starts_with($normalizedPath, $normalizedRoot . '/')) {
+        return null;
+    }
+
+    $relative = substr($normalizedPath, strlen($normalizedRoot));
+    if ($relative === false || $relative === '') {
+        return null;
+    }
+
+    return RSS_SITE_URL . $relative;
+}
+
 function rssDuration(?string $duration): string {
     $value = trim((string)$duration);
     if ($value === '') {
@@ -96,20 +112,118 @@ function rssEnclosureMimeType(?string $url): string {
 }
 
 function rssPreferredEpisodeImage(array $episode): string {
-    $guestImage = rssAbsoluteUrl($episode['guest']['image'] ?? null);
+    $guestImage = rssAppleArtworkUrl($episode['guest']['image'] ?? null);
     if ($guestImage) {
         return $guestImage;
     }
 
     $thumbnailUrl = $episode['thumbnailUrl'] ?? null;
     if ($thumbnailUrl && trim((string)$thumbnailUrl) !== RSS_PLACEHOLDER_IMAGE) {
-        $thumbnailImage = rssAbsoluteUrl((string)$thumbnailUrl);
+        $thumbnailImage = rssAppleArtworkUrl((string)$thumbnailUrl) ?: rssAbsoluteUrl((string)$thumbnailUrl);
         if ($thumbnailImage) {
             return $thumbnailImage;
         }
     }
 
     return RSS_SHOW_IMAGE;
+}
+
+function rssAppleArtworkUrl(?string $url): ?string {
+    $absoluteUrl = rssAbsoluteUrl($url);
+    $sourcePath = rssPublicPath($url);
+
+    if (!$absoluteUrl || !$sourcePath || !file_exists($sourcePath)) {
+        return $absoluteUrl;
+    }
+
+    $imageInfo = @getimagesize($sourcePath);
+    if (!$imageInfo || empty($imageInfo[0]) || empty($imageInfo[1])) {
+        return $absoluteUrl;
+    }
+
+    $width = (int)$imageInfo[0];
+    $height = (int)$imageInfo[1];
+
+    $sourceExtension = strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION));
+    $targetSize = 3000;
+    $filenameBase = pathinfo($sourcePath, PATHINFO_FILENAME);
+    $version = (string)(@filemtime($sourcePath) ?: time());
+    $derivedPath = dirname($sourcePath) . '/' . $filenameBase . '-apple-' . $version . '.jpg';
+
+    if (!file_exists($derivedPath)) {
+        if (!rssCreateAppleArtwork($sourcePath, $derivedPath, $targetSize)) {
+            return $absoluteUrl;
+        }
+    }
+
+    // Prefer the derived square artwork when the source image isn't already ideal
+    // or when the original format may include transparency/unsupported metadata.
+    if ($width !== $height || $width < 1400 || $height < 1400 || in_array($sourceExtension, ['png', 'gif', 'webp'], true)) {
+        return rssPublicUrlFromPath($derivedPath) ?: $absoluteUrl;
+    }
+
+    return rssPublicUrlFromPath($derivedPath) ?: $absoluteUrl;
+}
+
+function rssCreateAppleArtwork(string $sourcePath, string $targetPath, int $targetSize): bool {
+    if (!function_exists('imagecreatefromstring') || !function_exists('imagejpeg')) {
+        return false;
+    }
+
+    $binary = @file_get_contents($sourcePath);
+    if ($binary === false) {
+        return false;
+    }
+
+    $sourceImage = @imagecreatefromstring($binary);
+    if (!$sourceImage) {
+        return false;
+    }
+
+    $sourceWidth = imagesx($sourceImage);
+    $sourceHeight = imagesy($sourceImage);
+    if ($sourceWidth <= 0 || $sourceHeight <= 0) {
+        imagedestroy($sourceImage);
+        return false;
+    }
+
+    $cropSize = min($sourceWidth, $sourceHeight);
+    $srcX = (int) floor(($sourceWidth - $cropSize) / 2);
+    $srcY = (int) floor(($sourceHeight - $cropSize) / 2);
+
+    $canvas = imagecreatetruecolor($targetSize, $targetSize);
+    if (!$canvas) {
+        imagedestroy($sourceImage);
+        return false;
+    }
+
+    $white = imagecolorallocate($canvas, 255, 255, 255);
+    imagefill($canvas, 0, 0, $white);
+
+    $copied = imagecopyresampled(
+        $canvas,
+        $sourceImage,
+        0,
+        0,
+        $srcX,
+        $srcY,
+        $targetSize,
+        $targetSize,
+        $cropSize,
+        $cropSize
+    );
+
+    if (!$copied) {
+        imagedestroy($sourceImage);
+        imagedestroy($canvas);
+        return false;
+    }
+
+    $saved = imagejpeg($canvas, $targetPath, 90);
+    imagedestroy($sourceImage);
+    imagedestroy($canvas);
+
+    return $saved;
 }
 
 // Load content statuses
