@@ -9,6 +9,9 @@
     RewriteCond %{HTTP:Authorization} .+
     RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+    # Always serve the podcast RSS feed from the live PHP generator
+    RewriteRule ^podcast/rss\.xml$ api/rss.php [L,QSA]
+
     # Never route API requests through the SPA fallback
     RewriteRule ^api($|/) - [L]
 
