@@ -17,8 +17,9 @@ define('RSS_OWNER_EMAIL', 'info@twoadminsandamic.com');
 define('RSS_SHOW_DESCRIPTION', 'Honest, practical conversations about leadership, executive support, and the real work behind the administrative profession.');
 define('RSS_SHOW_SUBTITLE', 'Leadership, executive support, and the real work behind the administrative profession.');
 define('RSS_SHOW_COPYRIGHT', 'Copyright ' . date('Y') . ' Two Admins and a Mic');
-define('RSS_SHOW_EXPLICIT', true);
+define('RSS_SHOW_EXPLICIT', false);
 define('RSS_SHOW_IMAGE', RSS_SITE_URL . '/podcast-cover.png');
+define('RSS_PLACEHOLDER_IMAGE', '/placeholder.svg');
 
 function rssAbsoluteUrl(?string $url): ?string {
     if (!$url) {
@@ -94,6 +95,23 @@ function rssEnclosureMimeType(?string $url): string {
     };
 }
 
+function rssPreferredEpisodeImage(array $episode): string {
+    $guestImage = rssAbsoluteUrl($episode['guest']['image'] ?? null);
+    if ($guestImage) {
+        return $guestImage;
+    }
+
+    $thumbnailUrl = $episode['thumbnailUrl'] ?? null;
+    if ($thumbnailUrl && trim((string)$thumbnailUrl) !== RSS_PLACEHOLDER_IMAGE) {
+        $thumbnailImage = rssAbsoluteUrl((string)$thumbnailUrl);
+        if ($thumbnailImage) {
+            return $thumbnailImage;
+        }
+    }
+
+    return RSS_SHOW_IMAGE;
+}
+
 // Load content statuses
 $statuses = [];
 if (file_exists(RSS_STATUS_FILE)) {
@@ -160,7 +178,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 <?php foreach ($episodes as $ep): ?>
 <?php
     $episodeUrl = RSS_SITE_URL . '/episodes/' . rawurlencode($ep['slug'] ?? '');
-    $imageUrl = rssAbsoluteUrl($ep['thumbnailUrl'] ?? null) ?: rssAbsoluteUrl($ep['guest']['image'] ?? null) ?: RSS_SHOW_IMAGE;
+    $imageUrl = rssPreferredEpisodeImage($ep);
     $audioUrl = rssAbsoluteUrl($ep['audioUrl'] ?? null);
     $audioPath = rssPublicPath($ep['audioUrl'] ?? null);
     $audioLength = ($audioPath && file_exists($audioPath)) ? (string)filesize($audioPath) : '0';
