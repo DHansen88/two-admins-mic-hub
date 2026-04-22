@@ -1,0 +1,18 @@
+# Always serve the canonical podcast feed from the live PHP generator.
+# This protects /podcast/rss.xml even if an old static rss.xml file once
+# existed in this directory on the host.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /podcast/
+
+    RewriteRule ^rss\.xml$ ../api/rss.php [L,QSA]
+</IfModule>
+
+<IfModule mod_headers.c>
+    <Files "rss.xml">
+        Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header always set Pragma "no-cache"
+        Header always set Expires "0"
+    </Files>
+</IfModule>

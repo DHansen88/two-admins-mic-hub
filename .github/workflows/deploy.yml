@@ -101,7 +101,7 @@ jobs:
               -o ServerAliveInterval=15 \
               -o ServerAliveCountMax=4 \
               hostinger-deploy \
-              "mkdir -p ${remote_dir}" \
+              "mkdir -p ${remote_dir} ${remote_dir}/podcast && rm -f ${remote_dir}/podcast/rss.xml ${remote_dir}/rss.xml" \
             && scp \
               -o BatchMode=yes \
               -o ConnectTimeout=30 \
