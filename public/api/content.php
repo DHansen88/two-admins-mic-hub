@@ -404,6 +404,7 @@ function handleSaveEpisode(): void {
         'duration' => $body['duration'] ?? '',
         'date' => $body['date'] ?? date('Y-m-d'),
         'topics' => $body['topics'] ?? [],
+        'explicit' => !empty($body['explicit']),
         'guestName' => $body['guestName'] ?? null,
         'riversideEmbedUrl' => $body['riversideEmbedUrl'] ?? null,
         'thumbnailUrl' => $body['thumbnailUrl'] ?? '/placeholder.svg',

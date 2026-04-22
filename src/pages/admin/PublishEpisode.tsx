@@ -86,6 +86,7 @@ const PublishEpisode = () => {
     setIheartUrl(ep.platformLinks?.iheart || "");
     setSpreakerUrl(ep.platformLinks?.spreaker || "");
     setYoutubeUrl(ep.platformLinks?.youtube || "");
+    setIsExplicit(Boolean(ep.explicit));
     setGuestName("");
     setThumbnailName(ep.thumbnailUrl || "");
     setAudioUrl(ep.audioUrl || "");
@@ -112,6 +113,7 @@ const PublishEpisode = () => {
   const [publishDate, setPublishDate] = useState(formatDateISO(new Date()));
   const [duration, setDuration] = useState("");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [isExplicit, setIsExplicit] = useState(false);
   const [riversideUrl, setRiversideUrl] = useState("");
   const [spotifyUrl, setSpotifyUrl] = useState("");
   const [appleUrl, setAppleUrl] = useState("");
@@ -346,6 +348,7 @@ const PublishEpisode = () => {
       duration,
       date: publishDate,
       topics: selectedTopics,
+      explicit: isExplicit,
       guestName: guestFullName || guestName || undefined,
       riversideEmbedUrl: riversideUrl || undefined,
       audioUrl: audioUrl || undefined,
@@ -414,7 +417,7 @@ const PublishEpisode = () => {
     saveDraft(`episode-${episodeNumber || "new"}`, {
       episodeNumber, title, description, guestName, publishDate,
       duration, selectedTopics, riversideUrl, spotifyUrl, appleUrl,
-      youtubeUrl, transcript, thumbnailName, keyTakeaways, summary,
+      youtubeUrl, transcript, thumbnailName, isExplicit, keyTakeaways, summary,
       seoDescription, generatedBlog, generatedNewsletter,
     });
     await setStatusViaApi(episodeNumber || "new", "draft");
@@ -447,7 +450,7 @@ const PublishEpisode = () => {
     saveDraft(`episode-${episodeNumber}`, {
       episodeNumber, title, description, guestName, publishDate,
       duration, selectedTopics, riversideUrl, spotifyUrl, appleUrl,
-      youtubeUrl, transcript, thumbnailName, keyTakeaways, summary,
+      youtubeUrl, transcript, thumbnailName, isExplicit, keyTakeaways, summary,
       seoDescription, generatedBlog, generatedNewsletter,
     });
     try {
@@ -528,6 +531,21 @@ const PublishEpisode = () => {
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Publish Date *</label>
               <Input type="date" value={publishDate} onChange={(e) => setPublishDate(e.target.value)} />
+            </div>
+          </div>
+          <div className="flex items-start gap-3 rounded-lg border border-border p-3">
+            <Checkbox
+              checked={isExplicit}
+              onCheckedChange={(checked) => setIsExplicit(checked === true)}
+              id="episode-explicit"
+            />
+            <div className="space-y-1">
+              <label htmlFor="episode-explicit" className="text-sm font-medium text-foreground cursor-pointer">
+                Mark this episode as explicit
+              </label>
+              <p className="text-xs text-muted-foreground">
+                Use this when the episode includes profanity or other explicit content. Clean episodes can stay unchecked even though the show is marked explicit overall.
+              </p>
             </div>
           </div>
 

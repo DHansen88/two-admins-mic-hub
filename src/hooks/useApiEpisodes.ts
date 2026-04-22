@@ -12,6 +12,8 @@ interface ApiEpisodeRaw {
   duration?: string;
   date?: string;
   topics?: string[];
+  explicit?: boolean;
+  isExplicit?: boolean;
   host?: string;
   riversideEmbedUrl?: string;
   thumbnailUrl?: string;
@@ -75,6 +77,7 @@ function rawToEpisode(raw: ApiEpisodeRaw): Episode {
     duration: raw.duration || "",
     date: formatDate(raw.date || ""),
     topics: Array.isArray(raw.topics) ? raw.topics : [],
+    explicit: Boolean(raw.explicit ?? raw.isExplicit ?? false),
     host: raw.host || undefined,
     riversideEmbedUrl: raw.riversideEmbedUrl || undefined,
     thumbnailUrl: raw.thumbnailUrl || "/placeholder.svg",
