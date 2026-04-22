@@ -89,34 +89,20 @@ jobs:
 
       - name: Upload dist to Hostinger
         run: |
-          tar -C dist -czf /tmp/site-dist.tgz .
           remote_dir=/home/u808275895/domains/twoadminsandamic.com/public_html
 
           for attempt in 1 2 3; do
             echo "Deploy attempt ${attempt}/3"
 
-            ssh \
+            if tar -C dist -czf - . | ssh \
               -o BatchMode=yes \
               -o ConnectTimeout=30 \
               -o ServerAliveInterval=15 \
               -o ServerAliveCountMax=4 \
               hostinger-deploy \
-              "mkdir -p ${remote_dir} ${remote_dir}/podcast && rm -f ${remote_dir}/podcast/rss.xml ${remote_dir}/rss.xml" \
-            && scp \
-              -o BatchMode=yes \
-              -o ConnectTimeout=30 \
-              -o ServerAliveInterval=15 \
-              -o ServerAliveCountMax=4 \
-              /tmp/site-dist.tgz \
-              hostinger-deploy:${remote_dir}/site-dist.tgz \
-            && ssh \
-              -o BatchMode=yes \
-              -o ConnectTimeout=30 \
-              -o ServerAliveInterval=15 \
-              -o ServerAliveCountMax=4 \
-              hostinger-deploy \
-              "cd ${remote_dir} && tar -xzf site-dist.tgz && rm -f site-dist.tgz" \
-            && exit 0
+              "mkdir -p ${remote_dir} ${remote_dir}/podcast && rm -f ${remote_dir}/podcast/rss.xml ${remote_dir}/rss.xml && cd ${remote_dir} && tar -xzf -"; then
+              exit 0
+            fi
 
             echo "Deploy attempt ${attempt} failed"
             sleep 10
