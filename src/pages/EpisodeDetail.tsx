@@ -29,7 +29,7 @@ import {
 
 const EpisodeDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const episode = useVisibleEpisodeBySlug(slug || "");
+  const { episode, isLoading } = useVisibleEpisodeBySlug(slug || "");
   const relatedEpisodes = useVisibleRelatedEpisodes(episode);
   const relatedBlogs = useVisibleRelatedBlogsForEpisode(slug || "", 3);
   const hasVideo = !!episode?.riversideEmbedUrl;
@@ -53,6 +53,35 @@ const EpisodeDetail = () => {
   useEffect(() => {
     setHeroImage(heroImageCandidates[0] || "/placeholder.svg");
   }, [episode?.thumbnailUrl, episode?.guest?.image, isAudioOnly]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="pt-20">
+          <div className="container mx-auto px-4 py-16 sm:py-20">
+            <div className="max-w-6xl mx-auto animate-pulse space-y-8">
+              <div className="h-5 w-32 rounded bg-muted/70" />
+              <div className="grid grid-cols-1 lg:grid-cols-[minmax(260px,0.9fr)_minmax(0,1.1fr)] gap-5 sm:gap-6 lg:gap-10 xl:gap-12 items-start">
+                <div className="aspect-square rounded-2xl bg-muted/70 max-w-[260px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-none w-full mx-auto lg:mx-0" />
+                <div className="space-y-4 sm:space-y-5">
+                  <div className="h-16 sm:h-24 w-full rounded bg-muted/70" />
+                  <div className="space-y-3">
+                    <div className="h-4 w-full rounded bg-muted/60" />
+                    <div className="h-4 w-[92%] rounded bg-muted/60" />
+                    <div className="h-4 w-[85%] rounded bg-muted/60" />
+                  </div>
+                  <div className="h-8 w-72 rounded bg-muted/60" />
+                  <div className="h-28 rounded-2xl bg-background/80" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!episode) {
     return (

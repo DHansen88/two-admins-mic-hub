@@ -41,13 +41,21 @@ export function useVisibleBlogBySlug(slug: string): { post: BlogPost | undefined
   return { post, isLoading };
 }
 
-export function useVisibleEpisodeBySlug(slug: string): Episode | undefined {
-  const { data: hidden } = useHiddenContent();
-  const { data: apiEpisode } = useApiEpisodeBySlug(slug);
-  const ep = apiEpisode ?? staticGetEpisodeBySlug(slug);
-  if (!ep) return undefined;
-  if (hidden?.episodes.includes(String(ep.number)) || hidden?.episodes.includes(ep.slug)) return undefined;
-  return ep;
+export function useVisibleEpisodeBySlug(slug: string): { episode: Episode | undefined; isLoading: boolean } {
+  const { data: hidden, isLoading: hiddenLoading } = useHiddenContent();
+  const { data: apiEpisode, isLoading: apiLoading } = useApiEpisodeBySlug(slug);
+
+  const episode = useMemo(() => {
+    const ep = apiEpisode ?? staticGetEpisodeBySlug(slug);
+    if (!ep) return undefined;
+    if (hidden?.episodes.includes(String(ep.number)) || hidden?.episodes.includes(ep.slug)) return undefined;
+    return ep;
+  }, [apiEpisode, hidden, slug]);
+
+  return {
+    episode,
+    isLoading: apiLoading || hiddenLoading,
+  };
 }
 
 export function useVisibleRelatedPosts(slug: string, limit = 3): BlogPost[] {
