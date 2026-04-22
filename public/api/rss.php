@@ -14,6 +14,10 @@ define('RSS_STATUS_FILE', RSS_SITE_ROOT . '/content/content-status.json');
 define('RSS_SITE_URL', 'https://twoadminsandamic.com');
 define('RSS_OWNER_NAME', 'Two Admins and a Mic');
 define('RSS_OWNER_EMAIL', 'info@twoadminsandamic.com');
+define('RSS_SHOW_DESCRIPTION', 'Honest, practical conversations about leadership, executive support, and the real work behind the administrative profession.');
+define('RSS_SHOW_SUBTITLE', 'Leadership, executive support, and the real work behind the administrative profession.');
+define('RSS_SHOW_COPYRIGHT', 'Copyright ' . date('Y') . ' Two Admins and a Mic');
+define('RSS_SHOW_EXPLICIT', true);
 define('RSS_SHOW_IMAGE', RSS_SITE_URL . '/podcast-cover.png');
 
 function rssAbsoluteUrl(?string $url): ?string {
@@ -63,6 +67,33 @@ function rssDuration(?string $duration): string {
     return $value;
 }
 
+function rssExplicitValue(array $episode): string {
+    if (array_key_exists('explicit', $episode)) {
+        return !empty($episode['explicit']) ? 'true' : 'false';
+    }
+
+    if (array_key_exists('isExplicit', $episode)) {
+        return !empty($episode['isExplicit']) ? 'true' : 'false';
+    }
+
+    // Keep individual episodes clean by default unless an episode-level
+    // flag is added in content later. The show itself is marked explicit.
+    return 'false';
+}
+
+function rssEnclosureMimeType(?string $url): string {
+    $path = parse_url((string)$url, PHP_URL_PATH) ?: '';
+    $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+    return match ($extension) {
+        'm4a' => 'audio/mp4',
+        'aac' => 'audio/aac',
+        'wav' => 'audio/wav',
+        'ogg', 'oga' => 'audio/ogg',
+        default => 'audio/mpeg',
+    };
+}
+
 // Load content statuses
 $statuses = [];
 if (file_exists(RSS_STATUS_FILE)) {
@@ -105,20 +136,26 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
   <channel>
     <title><?= htmlspecialchars(RSS_OWNER_NAME) ?></title>
     <link><?= htmlspecialchars(RSS_SITE_URL) ?></link>
-    <description>Leadership insights, career growth strategies, and real talk for administrative professionals.</description>
+    <description><?= htmlspecialchars(RSS_SHOW_DESCRIPTION) ?></description>
+    <copyright><?= htmlspecialchars(RSS_SHOW_COPYRIGHT) ?></copyright>
     <language>en-us</language>
     <lastBuildDate><?= gmdate('D, d M Y H:i:s T') ?></lastBuildDate>
     <itunes:author><?= htmlspecialchars(RSS_OWNER_NAME) ?></itunes:author>
-    <itunes:summary>Leadership insights, career growth strategies, and real talk for administrative professionals.</itunes:summary>
+    <itunes:summary><?= htmlspecialchars(RSS_SHOW_DESCRIPTION) ?></itunes:summary>
+    <itunes:subtitle><?= htmlspecialchars(RSS_SHOW_SUBTITLE) ?></itunes:subtitle>
     <itunes:type>episodic</itunes:type>
-    <itunes:explicit>false</itunes:explicit>
+    <itunes:explicit><?= RSS_SHOW_EXPLICIT ? 'true' : 'false' ?></itunes:explicit>
     <itunes:image href="<?= htmlspecialchars(RSS_SHOW_IMAGE) ?>" />
     <itunes:owner>
       <itunes:name><?= htmlspecialchars(RSS_OWNER_NAME) ?></itunes:name>
       <itunes:email><?= htmlspecialchars(RSS_OWNER_EMAIL) ?></itunes:email>
     </itunes:owner>
-    <itunes:category text="Business" />
-    <itunes:category text="Education" />
+    <itunes:category text="Business">
+      <itunes:category text="Careers" />
+    </itunes:category>
+    <itunes:category text="Education">
+      <itunes:category text="How To" />
+    </itunes:category>
     <atom:link href="<?= htmlspecialchars(RSS_SITE_URL) ?>/podcast/rss.xml" rel="self" type="application/rss+xml" />
 <?php foreach ($episodes as $ep): ?>
 <?php
@@ -139,12 +176,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
       <itunes:duration><?= htmlspecialchars(rssDuration($ep['duration'] ?? '')) ?></itunes:duration>
       <itunes:episode><?= (int)($ep['number'] ?? 0) ?></itunes:episode>
       <itunes:episodeType>full</itunes:episodeType>
-      <itunes:explicit>false</itunes:explicit>
+      <itunes:explicit><?= rssExplicitValue($ep) ?></itunes:explicit>
       <guid isPermaLink="true"><?= htmlspecialchars($episodeUrl) ?></guid>
       <link><?= htmlspecialchars($episodeUrl) ?></link>
       <itunes:image href="<?= htmlspecialchars($imageUrl) ?>" />
 <?php if ($audioUrl): ?>
-      <enclosure url="<?= htmlspecialchars($audioUrl) ?>" length="<?= htmlspecialchars($audioLength) ?>" type="audio/mpeg" />
+      <enclosure url="<?= htmlspecialchars($audioUrl) ?>" length="<?= htmlspecialchars($audioLength) ?>" type="<?= htmlspecialchars(rssEnclosureMimeType($audioUrl)) ?>" />
 <?php endif; ?>
 <?php if (!empty($ep['topics'])): ?>
 <?php foreach ($ep['topics'] as $topic): ?>
