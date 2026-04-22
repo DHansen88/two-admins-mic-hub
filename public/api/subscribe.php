@@ -71,6 +71,96 @@ function resolveConfigList(array $keys): array {
     )));
 }
 
+function buildCustomFields(string $firstName, string $lastName): ?array {
+    $fields = array_values(array_filter([
+        $firstName !== '' ? ['name' => 'First Name', 'value' => $firstName] : null,
+        $lastName !== '' ? ['name' => 'Last Name', 'value' => $lastName] : null,
+    ]));
+
+    return !empty($fields) ? $fields : null;
+}
+
+function beehiivRequest(string $method, string $url, string $apiKey, ?array $payload = null): array {
+    $ch = curl_init($url);
+
+    $options = [
+        CURLOPT_CUSTOMREQUEST => $method,
+        CURLOPT_HTTPHEADER => [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiKey,
+        ],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 15,
+        CURLOPT_SSL_VERIFYPEER => true,
+    ];
+
+    if ($payload !== null) {
+        $options[CURLOPT_POSTFIELDS] = json_encode($payload);
+    }
+
+    curl_setopt_array($ch, $options);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    return [
+        'httpCode' => $httpCode,
+        'response' => $response,
+        'error' => $curlError,
+        'decoded' => json_decode($response ?: '', true),
+    ];
+}
+
+function syncExistingConantSubscription(
+    string $publicationId,
+    string $apiKey,
+    string $email,
+    string $firstName,
+    string $lastName,
+    array $automationIds
+): array {
+    $errors = [];
+    $encodedEmail = rawurlencode($email);
+    $customFields = buildCustomFields($firstName, $lastName);
+
+    if ($customFields !== null) {
+        $updateUrl = "https://api.beehiiv.com/v2/publications/{$publicationId}/subscriptions/by_email/{$encodedEmail}";
+        $updateResult = beehiivRequest('PUT', $updateUrl, $apiKey, [
+            'custom_fields' => $customFields,
+        ]);
+
+        if ($updateResult['error']) {
+            $errors[] = "custom-fields-curl:" . $updateResult['error'];
+        } elseif ($updateResult['httpCode'] < 200 || $updateResult['httpCode'] >= 300) {
+            $errors[] = "custom-fields-http:" . $updateResult['httpCode'];
+        }
+    }
+
+    foreach ($automationIds as $automationId) {
+        $journeyUrl = "https://api.beehiiv.com/v2/publications/{$publicationId}/automations/{$automationId}/journeys";
+        $journeyResult = beehiivRequest('POST', $journeyUrl, $apiKey, [
+            'email' => $email,
+            'double_opt_override' => 'on',
+        ]);
+
+        if ($journeyResult['error']) {
+            $errors[] = "automation-{$automationId}-curl:" . $journeyResult['error'];
+            continue;
+        }
+
+        if ($journeyResult['httpCode'] < 200 || $journeyResult['httpCode'] >= 300) {
+            $errors[] = "automation-{$automationId}-http:" . $journeyResult['httpCode'];
+        }
+    }
+
+    return [
+        'success' => empty($errors),
+        'errors' => $errors,
+    ];
+}
+
 // ─── Input validation ───────────────────────────────────────
 $body = getRequestBody();
 $email = isset($body['email']) ? trim($body['email']) : '';
@@ -135,15 +225,13 @@ if (empty($apiKey) || empty($publicationId)) {
 }
 
 $url = "https://api.beehiiv.com/v2/publications/" . $publicationId . "/subscriptions";
+$customFields = buildCustomFields($firstName, $lastName);
 $payload = array_filter([
     'email' => $email,
     'reactivate_existing' => true,
     'send_welcome_email' => true,
     'double_opt_override' => 'on',
-    'custom_fields' => array_values(array_filter([
-        !empty($firstName) ? ['name' => 'First Name', 'value' => $firstName] : null,
-        !empty($lastName) ? ['name' => 'Last Name', 'value' => $lastName] : null,
-    ])) ?: null,
+    'custom_fields' => $customFields,
     // Best-effort compatibility path for legacy behavior; Beehiiv's documented
     // routing options are automations and newsletter lists.
     'tags' => ($conantLeadership && $conantTagName !== '') ? [$conantTagName] : null,
@@ -151,23 +239,10 @@ $payload = array_filter([
     'newsletter_list_ids' => ($conantLeadership && !empty($conantNewsletterListIds)) ? $conantNewsletterListIds : null,
 ], fn($v) => $v !== null);
 
-$ch = curl_init($url);
-curl_setopt_array($ch, [
-    CURLOPT_POST => true,
-    CURLOPT_HTTPHEADER => [
-        'Content-Type: application/json',
-        'Authorization: Bearer ' . $apiKey,
-    ],
-    CURLOPT_POSTFIELDS => json_encode($payload),
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_TIMEOUT => 15,
-    CURLOPT_SSL_VERIFYPEER => true,
-]);
-
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlError = curl_error($ch);
-curl_close($ch);
+$result = beehiivRequest('POST', $url, $apiKey, $payload);
+$response = $result['response'];
+$httpCode = $result['httpCode'];
+$curlError = $result['error'];
 
 if ($curlError) {
     error_log("Beehiiv API error: " . $curlError);
@@ -185,9 +260,27 @@ if ($httpCode >= 200 && $httpCode < 300) {
         'status' => $status,
     ]);
 } elseif ($httpCode === 409) {
+    if ($conantLeadership && !empty($conantAutomationIds)) {
+        $syncResult = syncExistingConantSubscription(
+            $publicationId,
+            $apiKey,
+            $email,
+            $firstName,
+            $lastName,
+            $conantAutomationIds
+        );
+
+        if (!$syncResult['success']) {
+            error_log("Beehiiv sync for existing subscriber failed: " . implode(', ', $syncResult['errors']));
+            jsonResponse(['error' => 'Subscription update failed. Please try again.'], 500);
+        }
+    }
+
     jsonResponse([
         'success' => true,
-        'message' => 'You are already subscribed!',
+        'message' => $conantLeadership
+            ? 'You are already subscribed, and your ConantLeadership preferences have been updated.'
+            : 'You are already subscribed!',
     ]);
 } else {
     error_log("Beehiiv API returned HTTP $httpCode: $response | payload=" . json_encode($payload));
