@@ -80,7 +80,7 @@ const Footer = () => {
                   <a href="https://open.spotify.com/show/3i20XZqV1uMIglulNGNpL3" className="text-background/70 hover:text-sky-blue transition-colors">
                     Apple Podcasts
                   </a>
-                  <a href="#" className="text-background/70 hover:text-sky-blue transition-colors">
+                  <a href="https://open.spotify.com/show/3i20XZqV1uMIglulNGNpL3" className="text-background/70 hover:text-sky-blue transition-colors">
                     Spotify
                   </a>
                   <a href="#" className="text-background/70 hover:text-sky-blue transition-colors">
