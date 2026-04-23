@@ -292,7 +292,6 @@ export interface PlatformLinks {
   iheart?: string;
   spreaker?: string;
   youtube?: string;
-  iheart?: string;
   other?: { name: string; url: string }[];
 }
 
