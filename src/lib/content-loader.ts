@@ -292,6 +292,7 @@ export interface PlatformLinks {
   iheart?: string;
   spreaker?: string;
   youtube?: string;
+  amazon?: string;
   other?: { name: string; url: string }[];
 }
 
