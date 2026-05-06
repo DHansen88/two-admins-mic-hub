@@ -29,6 +29,7 @@ import {
   Lightbulb,
   List,
   User,
+  X,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAllTags, addTag, generateTagSlug, suggestTags, type Tag } from "@/data/tags";
@@ -81,11 +82,12 @@ const PublishEpisode = () => {
     setDuration(ep.duration || "");
     setSelectedTopics(ep.topics || []);
     setRiversideUrl(ep.riversideEmbedUrl || "");
-    setSpotifyUrl(ep.platformLinks?.spotify || "");
-    setAppleUrl(ep.platformLinks?.apple || "");
-    setIheartUrl(ep.platformLinks?.iheart || "");
-    setSpreakerUrl(ep.platformLinks?.spreaker || "");
-    setYoutubeUrl(ep.platformLinks?.youtube || "");
+    setSpotifyUrl(ep.platformLinks?.spotify ?? DEFAULT_PLATFORM_LINKS.spotify);
+    setAppleUrl(ep.platformLinks?.apple ?? "");
+    setIheartUrl(ep.platformLinks?.iheart ?? DEFAULT_PLATFORM_LINKS.iheart);
+    setSpreakerUrl(ep.platformLinks?.spreaker ?? DEFAULT_PLATFORM_LINKS.spreaker);
+    setYoutubeUrl(ep.platformLinks?.youtube ?? DEFAULT_PLATFORM_LINKS.youtube);
+    setAmazonUrl((ep.platformLinks as any)?.amazon ?? DEFAULT_PLATFORM_LINKS.amazon);
     setIsExplicit(Boolean(ep.explicit));
     setGuestName("");
     setThumbnailName(ep.thumbnailUrl || "");
@@ -115,11 +117,12 @@ const PublishEpisode = () => {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [isExplicit, setIsExplicit] = useState(false);
   const [riversideUrl, setRiversideUrl] = useState("");
-  const [spotifyUrl, setSpotifyUrl] = useState("");
+  const [spotifyUrl, setSpotifyUrl] = useState(DEFAULT_PLATFORM_LINKS.spotify);
   const [appleUrl, setAppleUrl] = useState("");
-  const [iheartUrl, setIheartUrl] = useState("");
-  const [spreakerUrl, setSpreakerUrl] = useState("");
-  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [iheartUrl, setIheartUrl] = useState(DEFAULT_PLATFORM_LINKS.iheart);
+  const [spreakerUrl, setSpreakerUrl] = useState(DEFAULT_PLATFORM_LINKS.spreaker);
+  const [youtubeUrl, setYoutubeUrl] = useState(DEFAULT_PLATFORM_LINKS.youtube);
+  const [amazonUrl, setAmazonUrl] = useState(DEFAULT_PLATFORM_LINKS.amazon);
   const [transcript, setTranscript] = useState("");
   const [thumbnailName, setThumbnailName] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
@@ -359,6 +362,7 @@ const PublishEpisode = () => {
         iheart: iheartUrl || undefined,
         spreaker: spreakerUrl || undefined,
         youtube: youtubeUrl || undefined,
+        amazon: amazonUrl || undefined,
       },
       transcript: transcript || undefined,
       showNotes: keyTakeaways.length > 0 ? keyTakeaways : undefined,
