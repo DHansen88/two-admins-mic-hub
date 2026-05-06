@@ -687,27 +687,37 @@ const PublishEpisode = () => {
             <label className="text-sm font-medium text-foreground">Riverside Embed URL</label>
             <Input value={riversideUrl} onChange={(e) => setRiversideUrl(e.target.value)} placeholder="https://riverside.fm/embed/..." />
           </div>
-          <div className="grid sm:grid-cols-2 xl:grid-cols-5 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Spotify</label>
-              <Input value={spotifyUrl} onChange={(e) => setSpotifyUrl(e.target.value)} placeholder="https://..." />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Apple Podcasts</label>
-              <Input value={appleUrl} onChange={(e) => setAppleUrl(e.target.value)} placeholder="https://..." />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">iHeartRadio</label>
-              <Input value={iheartUrl} onChange={(e) => setIheartUrl(e.target.value)} placeholder="https://..." />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Spreaker</label>
-              <Input value={spreakerUrl} onChange={(e) => setSpreakerUrl(e.target.value)} placeholder="https://..." />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">YouTube</label>
-              <Input value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="https://..." />
-            </div>
+          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {[
+              { label: "Spotify", value: spotifyUrl, set: setSpotifyUrl },
+              { label: "Apple Podcasts", value: appleUrl, set: setAppleUrl },
+              { label: "iHeartRadio", value: iheartUrl, set: setIheartUrl },
+              { label: "Spreaker", value: spreakerUrl, set: setSpreakerUrl },
+              { label: "YouTube", value: youtubeUrl, set: setYoutubeUrl },
+              { label: "Amazon Music", value: amazonUrl, set: setAmazonUrl },
+            ].map(({ label, value, set }) => (
+              <div key={label} className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">{label}</label>
+                <div className="relative">
+                  <Input
+                    value={value}
+                    onChange={(e) => set(e.target.value)}
+                    placeholder="https://..."
+                    className={value ? "pr-9" : ""}
+                  />
+                  {value && (
+                    <button
+                      type="button"
+                      onClick={() => set("")}
+                      aria-label={`Clear ${label} URL`}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 rounded"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
