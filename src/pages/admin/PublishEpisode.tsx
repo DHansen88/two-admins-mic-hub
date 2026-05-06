@@ -32,6 +32,14 @@ import {
   X,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const DEFAULT_PLATFORM_LINKS = {
+  spotify: "https://open.spotify.com/show/3i20XZqV1uMIglulNGNpL3",
+  spreaker: "https://www.spreaker.com/podcast/two-admins-a-mic--6975273",
+  iheart: "https://iheart.com/podcast/331205375",
+  youtube: "https://www.youtube.com/@TwoAdminsAMic",
+  amazon: "https://music.amazon.com/podcasts/790168be-bd0d-4a6f-85c6-44bf8b488d3d",
+};
 import { getAllTags, addTag, generateTagSlug, suggestTags, type Tag } from "@/data/tags";
 import {
   generateSlug,
