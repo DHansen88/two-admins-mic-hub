@@ -35,16 +35,104 @@ switch ($action) {
         jsonResponse(['error' => 'Invalid action'], 400);
 }
 
+function getAdminTableColumnsForUsers(string $table): array {
+    static $cache = [];
+
+    if (isset($cache[$table])) {
+        return $cache[$table];
+    }
+
+    if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+        return [];
+    }
+
+    try {
+        $db = getDB();
+        $stmt = $db->query("SHOW COLUMNS FROM `{$table}`");
+        $rows = $stmt->fetchAll();
+        $columns = [];
+        foreach ($rows as $row) {
+            if (!empty($row['Field'])) {
+                $columns[] = (string) $row['Field'];
+            }
+        }
+        $cache[$table] = $columns;
+    } catch (Throwable $e) {
+        $cache[$table] = [];
+    }
+
+    return $cache[$table];
+}
+
+function logUserAdminActivity(?int $userId, string $email, string $action, ?string $details = null): void {
+    try {
+        $db = getDB();
+        $columns = getAdminTableColumnsForUsers('admin_activity_log');
+        if (empty($columns)) {
+            return;
+        }
+
+        $data = [];
+        if ($userId !== null && in_array('user_id', $columns, true)) {
+            $data['user_id'] = $userId;
+        }
+        if (in_array('user_email', $columns, true)) {
+            $data['user_email'] = $email;
+        } elseif (in_array('user_name', $columns, true)) {
+            $data['user_name'] = $email;
+        }
+        if (in_array('action', $columns, true)) {
+            $data['action'] = $action;
+        }
+        if ($details !== null && in_array('details', $columns, true)) {
+            $data['details'] = $details;
+        }
+        if (in_array('ip_address', $columns, true)) {
+            $data['ip_address'] = $_SERVER['REMOTE_ADDR'] ?? '';
+        }
+        if (empty($data)) {
+            return;
+        }
+
+        $fields = array_keys($data);
+        $placeholders = implode(', ', array_fill(0, count($fields), '?'));
+        $sql = 'INSERT INTO admin_activity_log (' . implode(', ', $fields) . ') VALUES (' . $placeholders . ')';
+        $stmt = $db->prepare($sql);
+        $stmt->execute(array_values($data));
+    } catch (Throwable $e) {
+        error_log('User admin activity log failed: ' . $e->getMessage());
+    }
+}
+
 function handleList(): void {
     $admin = requireAdmin();
     $db = getDB();
-    
-    $stmt = $db->query('SELECT id, name, email, role, status, permissions, created_at FROM admin_users ORDER BY created_at DESC');
+
+    $columns = getAdminTableColumnsForUsers('admin_users');
+    if (empty($columns)) {
+        jsonResponse(['users' => []]);
+    }
+
+    $select = [];
+    foreach (['id', 'name', 'email', 'role', 'status', 'permissions', 'created_at'] as $column) {
+        if (in_array($column, $columns, true)) {
+            $select[] = $column;
+        }
+    }
+
+    if (empty($select) || !in_array('id', $select, true)) {
+        jsonResponse(['users' => []]);
+    }
+
+    $orderBy = in_array('created_at', $columns, true) ? 'created_at DESC' : 'id DESC';
+    $stmt = $db->query('SELECT ' . implode(', ', $select) . ' FROM admin_users ORDER BY ' . $orderBy);
     $users = $stmt->fetchAll();
     
     // Parse permissions JSON
     foreach ($users as &$user) {
         $user['permissions'] = $user['permissions'] ? json_decode($user['permissions'], true) : null;
+        $user['status'] = $user['status'] ?? 'active';
+        $user['role'] = $user['role'] ?? 'manager';
     }
     
     jsonResponse(['users' => $users]);
@@ -78,6 +166,10 @@ function handleCreate(): void {
     }
     
     $db = getDB();
+    $columns = getAdminTableColumnsForUsers('admin_users');
+    if (empty($columns)) {
+        jsonResponse(['error' => 'User table is unavailable'], 500);
+    }
     
     // Check duplicate email
     $stmt = $db->prepare('SELECT id FROM admin_users WHERE email = ?');
@@ -88,15 +180,42 @@ function handleCreate(): void {
     
     $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
     $permissions = isset($body['permissions']) ? json_encode($body['permissions']) : null;
-    
-    $stmt = $db->prepare('INSERT INTO admin_users (name, email, password_hash, role, status, permissions) VALUES (?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$name, $email, $hash, $role, 'active', $permissions]);
+
+    $insertData = [];
+    if (in_array('name', $columns, true)) {
+        $insertData['name'] = $name;
+    }
+    if (in_array('email', $columns, true)) {
+        $insertData['email'] = $email;
+    }
+    if (in_array('password_hash', $columns, true)) {
+        $insertData['password_hash'] = $hash;
+    } elseif (in_array('password', $columns, true)) {
+        $insertData['password'] = $hash;
+    }
+    if (in_array('role', $columns, true)) {
+        $insertData['role'] = $role;
+    }
+    if (in_array('status', $columns, true)) {
+        $insertData['status'] = 'active';
+    }
+    if (in_array('permissions', $columns, true)) {
+        $insertData['permissions'] = $permissions;
+    }
+
+    if (!isset($insertData['email']) || (!isset($insertData['password_hash']) && !isset($insertData['password']))) {
+        jsonResponse(['error' => 'User table is missing required columns'], 500);
+    }
+
+    $fields = array_keys($insertData);
+    $placeholders = implode(', ', array_fill(0, count($fields), '?'));
+    $stmt = $db->prepare('INSERT INTO admin_users (' . implode(', ', $fields) . ') VALUES (' . $placeholders . ')');
+    $stmt->execute(array_values($insertData));
     
     $userId = $db->lastInsertId();
     
     // Log action
-    $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_id, user_email, action, details, ip_address) VALUES (?, ?, ?, ?, ?)');
-    $logStmt->execute([$admin['id'], $admin['email'], 'user_created', "Created user: $email ($role)", $_SERVER['REMOTE_ADDR'] ?? '']);
+    logUserAdminActivity((int) $admin['id'], (string) $admin['email'], 'user_created', "Created user: $email ($role)");
     
     jsonResponse([
         'success' => true,
@@ -106,6 +225,7 @@ function handleCreate(): void {
             'email' => $email,
             'role' => $role,
             'status' => 'active',
+            'permissions' => isset($body['permissions']) ? $body['permissions'] : null,
         ],
     ], 201);
 }
@@ -124,24 +244,28 @@ function handleUpdate(): void {
     }
     
     $db = getDB();
+    $columns = getAdminTableColumnsForUsers('admin_users');
+    if (empty($columns)) {
+        jsonResponse(['error' => 'User table is unavailable'], 500);
+    }
     
     // Build dynamic update
     $fields = [];
     $params = [];
     
-    if (isset($body['name'])) {
+    if (isset($body['name']) && in_array('name', $columns, true)) {
         $fields[] = 'name = ?';
         $params[] = trim($body['name']);
     }
-    if (isset($body['role']) && in_array($body['role'], ['admin', 'manager', 'intern'])) {
+    if (isset($body['role']) && in_array('role', $columns, true) && in_array($body['role'], ['admin', 'manager', 'intern'])) {
         $fields[] = 'role = ?';
         $params[] = $body['role'];
     }
-    if (isset($body['status']) && in_array($body['status'], ['active', 'disabled'])) {
+    if (isset($body['status']) && in_array('status', $columns, true) && in_array($body['status'], ['active', 'disabled'])) {
         $fields[] = 'status = ?';
         $params[] = $body['status'];
     }
-    if (isset($body['permissions'])) {
+    if (isset($body['permissions']) && in_array('permissions', $columns, true)) {
         $fields[] = 'permissions = ?';
         $params[] = json_encode($body['permissions']);
     }
@@ -156,8 +280,7 @@ function handleUpdate(): void {
     $stmt->execute($params);
     
     // Log action
-    $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_id, user_email, action, details, ip_address) VALUES (?, ?, ?, ?, ?)');
-    $logStmt->execute([$admin['id'], $admin['email'], 'user_updated', "Updated user ID: $userId", $_SERVER['REMOTE_ADDR'] ?? '']);
+    logUserAdminActivity((int) $admin['id'], (string) $admin['email'], 'user_updated', "Updated user ID: $userId");
     
     jsonResponse(['success' => true]);
 }
@@ -181,6 +304,10 @@ function handleDelete(): void {
     }
     
     $db = getDB();
+    $columns = getAdminTableColumnsForUsers('admin_users');
+    if (empty($columns)) {
+        jsonResponse(['error' => 'User table is unavailable'], 500);
+    }
     
     // Get user info for logging
     $stmt = $db->prepare('SELECT email FROM admin_users WHERE id = ?');
@@ -195,8 +322,7 @@ function handleDelete(): void {
     $stmt->execute([$userId]);
     
     // Log action
-    $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_id, user_email, action, details, ip_address) VALUES (?, ?, ?, ?, ?)');
-    $logStmt->execute([$admin['id'], $admin['email'], 'user_deleted', "Deleted user: {$target['email']}", $_SERVER['REMOTE_ADDR'] ?? '']);
+    logUserAdminActivity((int) $admin['id'], (string) $admin['email'], 'user_deleted', "Deleted user: {$target['email']}");
     
     jsonResponse(['success' => true]);
 }
@@ -219,14 +345,24 @@ function handleResetPassword(): void {
     }
     
     $db = getDB();
+    $columns = getAdminTableColumnsForUsers('admin_users');
+    if (empty($columns)) {
+        jsonResponse(['error' => 'User table is unavailable'], 500);
+    }
     $hash = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 12]);
-    
-    $stmt = $db->prepare('UPDATE admin_users SET password_hash = ? WHERE id = ?');
-    $stmt->execute([$hash, $userId]);
+
+    if (in_array('password_hash', $columns, true)) {
+        $stmt = $db->prepare('UPDATE admin_users SET password_hash = ? WHERE id = ?');
+        $stmt->execute([$hash, $userId]);
+    } elseif (in_array('password', $columns, true)) {
+        $stmt = $db->prepare('UPDATE admin_users SET password = ? WHERE id = ?');
+        $stmt->execute([$hash, $userId]);
+    } else {
+        jsonResponse(['error' => 'User table is missing a password column'], 500);
+    }
     
     // Log action
-    $logStmt = $db->prepare('INSERT INTO admin_activity_log (user_id, user_email, action, details, ip_address) VALUES (?, ?, ?, ?, ?)');
-    $logStmt->execute([$admin['id'], $admin['email'], 'password_reset', "Reset password for user ID: $userId", $_SERVER['REMOTE_ADDR'] ?? '']);
+    logUserAdminActivity((int) $admin['id'], (string) $admin['email'], 'password_reset', "Reset password for user ID: $userId");
     
     jsonResponse(['success' => true]);
 }
