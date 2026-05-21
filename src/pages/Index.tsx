@@ -5,10 +5,16 @@ import LatestFromTheShow from "@/components/LatestFromTheShow";
 
 import HomeCTA from "@/components/HomeCTA";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Two Admins & a Mic — Leadership Podcast for Executive Admins"
+        description="Two Admins. One Mic. Zero Fluff. Real conversations on leadership, executive administration, and professional growth from Diana Hansen and Melinda Vail Goodnight."
+        path="/"
+      />
       <Header />
       <main>
         <Hero />
