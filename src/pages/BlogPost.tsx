@@ -1,8 +1,9 @@
 import { useParams, Link, Navigate } from "react-router-dom";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { marked } from "marked";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import RelatedContentCarousel, { buildRelatedItems } from "@/components/RelatedContentCarousel";
 import TopicTag from "@/components/TopicTag";
 import BlogBlockRenderer from "@/components/BlogBlockRenderer";
@@ -34,40 +35,6 @@ const BlogPost = () => {
     return "";
   }, [post]);
 
-  // SEO
-  useEffect(() => {
-    if (post) {
-      document.title = `${post.title} | Two Admins and a Mic`;
-      const setMeta = (name: string, content: string) => {
-        let el = document.querySelector(`meta[name="${name}"]`) || document.querySelector(`meta[property="${name}"]`);
-        if (!el) {
-          el = document.createElement('meta');
-          el.setAttribute(name.startsWith('og:') ? 'property' : 'name', name);
-          document.head.appendChild(el);
-        }
-        el.setAttribute('content', content);
-      };
-      setMeta('description', post.excerpt);
-      setMeta('og:title', post.title);
-      setMeta('og:description', post.excerpt);
-      setMeta('og:type', 'article');
-
-      const jsonLd = document.createElement('script');
-      jsonLd.type = 'application/ld+json';
-      jsonLd.textContent = JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
-        headline: post.title,
-        description: post.excerpt,
-        datePublished: post.date,
-        author: post.authors.map((a) => ({ '@type': 'Person', name: a.name })),
-        publisher: { '@type': 'Organization', name: 'Two Admins and a Mic' },
-      });
-      document.head.appendChild(jsonLd);
-      return () => { jsonLd.remove(); };
-    }
-  }, [post]);
-
   if (isLoading) {
     return (
       <div className="min-h-screen">
@@ -86,6 +53,23 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title={`${post.title} — Two Admins & a Mic`}
+        description={post.excerpt}
+        path={`/blog/${post.slug}`}
+        type="article"
+        image={(post as any).coverImage || (post as any).heroImage}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.excerpt,
+          datePublished: post.date,
+          author: post.authors.map((a) => ({ "@type": "Person", name: a.name })),
+          publisher: { "@type": "Organization", name: "Two Admins & a Mic" },
+          url: `https://twoadminsandamic.com/blog/${post.slug}`,
+        }}
+      />
       <Header />
       <main className="pt-20">
         <article className="max-w-[720px] mx-auto px-5 py-14 md:py-20">
