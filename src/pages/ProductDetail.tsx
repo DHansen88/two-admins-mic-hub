@@ -207,6 +207,39 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title={`${product.name} — Two Admins & a Mic Merch`}
+        description={product.description}
+        path={`/merch/${product.slug}`}
+        type="product"
+        image={product.images?.[0]?.src}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          description: product.description,
+          image: product.images?.map((i) => i.src) ?? [],
+          sku: product.id,
+          category: product.category,
+          brand: { "@type": "Brand", name: "Two Admins & a Mic" },
+          offers: {
+            "@type": "Offer",
+            price: product.price,
+            priceCurrency: "USD",
+            availability: product.stock > 0
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+            url: `https://twoadminsandamic.com/merch/${product.slug}`,
+          },
+          ...(ratingInfo.count > 0 && {
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: ratingInfo.avg,
+              reviewCount: ratingInfo.count,
+            },
+          }),
+        }}
+      />
       <Header />
       <main className="pt-20">
         <section className="py-12 bg-background">
