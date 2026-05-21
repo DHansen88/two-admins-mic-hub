@@ -1,15 +1,16 @@
-import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import BackToTopButton from "@/components/BackToTopButton";
 
 const CookiePolicy = () => {
-  useEffect(() => {
-    document.title = "Cookie Policy | Two Admins & a Mic";
-  }, []);
-
   return (
     <>
+      <SEO
+        title="Cookie Policy — Two Admins & a Mic"
+        description="How Two Admins & a Mic uses cookies and similar technologies on the website, and how you can control them."
+        path="/cookie-policy"
+      />
       <Header />
       <main className="min-h-screen bg-background">
         <div className="container mx-auto px-4 pt-28 pb-16 max-w-4xl">
