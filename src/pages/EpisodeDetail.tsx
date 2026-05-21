@@ -7,6 +7,7 @@ import TopicTag from "@/components/TopicTag";
 import GuestSection from "@/components/GuestSection";
 import EpisodeAudioHero from "@/components/EpisodeAudioHero";
 import EpisodePlatformLinks from "@/components/EpisodePlatformLinks";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import {
   useVisibleEpisodeBySlug,
@@ -187,8 +188,39 @@ const EpisodeDetail = () => {
     Boolean(episode.clips && episode.clips.length > 0)
     || Boolean(episode.showNotes && episode.showNotes.length > 0);
 
+  const plainDescription = (episode.description || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const episodeImage = episode.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg"
+    ? episode.thumbnailUrl
+    : episode.guest?.image;
+
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-background">
+      <SEO
+        title={`${episode.title} — Two Admins & a Mic`}
+        description={plainDescription || `Episode ${episode.number} of Two Admins & a Mic: ${episode.title}.`}
+        path={`/episodes/${episode.slug}`}
+        type="article"
+        image={episodeImage}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "PodcastEpisode",
+          name: episode.title,
+          description: plainDescription,
+          datePublished: episode.date,
+          episodeNumber: episode.number,
+          image: episodeImage,
+          url: `https://twoadminsandamic.com/episodes/${episode.slug}`,
+          partOfSeries: {
+            "@type": "PodcastSeries",
+            name: "Two Admins & a Mic",
+            url: "https://twoadminsandamic.com",
+          },
+          ...(episode.audioUrl ? { associatedMedia: { "@type": "MediaObject", contentUrl: episode.audioUrl } } : {}),
+        }}
+      />
       <Header />
       <main className="w-full max-w-full overflow-x-hidden">
         {/* Hero Section */}

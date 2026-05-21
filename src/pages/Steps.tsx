@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import useEmblaCarousel from "embla-carousel-react";
@@ -563,6 +564,11 @@ const Steps = () => {
   };
   return <div className="min-h-screen">
       <Header />
+      <SEO
+        title="STEPS — A Leadership Journey for Admins"
+        description="STEPS is a guided leadership framework for executive admins ready to grow into leaders. Envision, reflect, study, and build the next chapter of your career."
+        path="/steps"
+      />
       <main>
         {/* ─── 1. HERO ─── */}
         <section className="relative py-16 md:py-24 min-h-[280px] md:min-h-[320px] bg-gradient-to-br from-slate via-navy to-deep-blue overflow-hidden flex items-center justify-center">

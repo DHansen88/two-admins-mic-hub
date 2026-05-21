@@ -1,15 +1,16 @@
-import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import BackToTopButton from "@/components/BackToTopButton";
 
 const TermsOfService = () => {
-  useEffect(() => {
-    document.title = "Terms of Service | Two Admins & a Mic";
-  }, []);
-
   return (
     <>
+      <SEO
+        title="Terms of Service — Two Admins & a Mic"
+        description="The terms and conditions governing your use of the Two Admins & a Mic website, podcast, and merchandise."
+        path="/terms-of-service"
+      />
       <Header />
       <main className="min-h-screen bg-background">
         <div className="container mx-auto px-4 pt-28 pb-16 max-w-4xl">

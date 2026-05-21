@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { Mic, Users, Target, Heart } from "lucide-react";
 import hostDmh from "@/assets/host-dmh.jpg";
 import hostMelinda from "@/assets/host-melinda.jpg";
@@ -106,6 +107,11 @@ const About = () => {
   }, [location.hash]);
 
   return <div className="min-h-screen">
+      <SEO
+        title="About — Two Admins & a Mic"
+        description="Meet Diana Hansen and Melinda Vail Goodnight — the executive admins behind the mic. Learn their story, expertise, and the mission driving the show."
+        path="/about"
+      />
       <Header />
       <main>
         {/* Hero Section */}

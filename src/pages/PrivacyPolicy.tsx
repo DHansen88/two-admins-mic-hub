@@ -1,15 +1,16 @@
-import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import BackToTopButton from "@/components/BackToTopButton";
 
 const PrivacyPolicy = () => {
-  useEffect(() => {
-    document.title = "Privacy Policy | Two Admins & a Mic";
-  }, []);
-
   return (
     <>
+      <SEO
+        title="Privacy Policy — Two Admins & a Mic"
+        description="How Two Admins & a Mic collects, uses, and protects your personal information when you visit the site or subscribe to the show."
+        path="/privacy-policy"
+      />
       <Header />
       <main className="min-h-screen bg-background">
         <div className="container mx-auto px-4 pt-28 pb-16 max-w-4xl">

@@ -30,8 +30,20 @@ export function rssFeedPlugin(): Plugin {
         }
       }
 
+      // Read podcast episode files for sitemap
+      const episodeDir = path.resolve('src/content/podcasts');
+      const episodeSlugs: string[] = [];
+      if (fs.existsSync(episodeDir)) {
+        for (const file of fs.readdirSync(episodeDir)) {
+          episodeSlugs.push(file.replace(/\.(md|json)$/, ''));
+        }
+      }
+
       // Generate sitemap
-      const staticPages = ['', '/about', '/episodes', '/blog', '/steps', '/contact'];
+      const staticPages = [
+        '', '/about', '/episodes', '/blog', '/steps', '/merch', '/contact',
+        '/privacy-policy', '/terms-of-service', '/cookie-policy',
+      ];
       const sitemapUrls = [
         ...staticPages.map(
           (p) =>
@@ -40,6 +52,10 @@ export function rssFeedPlugin(): Plugin {
         ...blogSlugs.map(
           (slug) =>
             `  <url><loc>${SITE_URL}/blog/${slug}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`
+        ),
+        ...episodeSlugs.map(
+          (slug) =>
+            `  <url><loc>${SITE_URL}/episodes/${slug}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`
         ),
       ].join('\n');
 

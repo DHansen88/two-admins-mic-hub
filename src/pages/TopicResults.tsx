@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
 import EpisodeCard from "@/components/EpisodeCard";
 import TopicTag from "@/components/TopicTag";
+import SEO from "@/components/SEO";
 import { getTagNames } from "@/data/tags";
 import { useVisibleContentByTopic } from "@/hooks/useVisibleContent";
 import { ArrowLeft } from "lucide-react";
@@ -40,6 +41,11 @@ const TopicResults = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title={`${decodedTopic} — Two Admins & a Mic`}
+        description={`Episodes and articles tagged ${decodedTopic} from Two Admins & a Mic — leadership and executive admin content curated by topic.`}
+        path={`/topics/${encodeURIComponent(decodedTopic)}`}
+      />
       <Header />
       <main className="pt-20">
         {/* Hero */}
