@@ -2,6 +2,7 @@ import { useSyncExternalStore } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MerchCard from "@/components/MerchCard";
+import SEO from "@/components/SEO";
 import { getEnabledProducts, getAvgRating, getReviews, subscribeProducts, subscribeReviews } from "@/data/merchData";
 
 const Merch = () => {
@@ -11,6 +12,11 @@ const Merch = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Merch — Two Admins & a Mic"
+        description="Official Two Admins & a Mic merchandise — apparel, accessories, and stickers for the admins who run the show."
+        path="/merch"
+      />
       <Header />
       <main>
         {/* Banner */}

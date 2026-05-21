@@ -1,12 +1,18 @@
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ShoppingBag, Headphones } from "lucide-react";
 
 const MerchThankYou = () => {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Thank You — Two Admins & a Mic"
+        description="Your order is confirmed. Thanks for supporting Two Admins & a Mic."
+        path="/merch/thank-you"
+      />
       <Header />
       <main className="pt-20">
         <section className="py-24 bg-background">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,6 +46,11 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Contact — Two Admins & a Mic"
+        description="Get in touch with Diana and Melinda. Send a message, pitch a topic, or find every official Two Admins & a Mic channel in one place."
+        path="/contact"
+      />
       <Header />
       <main>
         {/* Hero Section */}

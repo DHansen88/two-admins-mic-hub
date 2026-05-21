@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
 import BlogFilterBar from "@/components/BlogFilterBar";
+import SEO from "@/components/SEO";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
@@ -74,6 +75,11 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Blog — Two Admins & a Mic"
+        description="Editorial articles on leadership, executive support, professional development, and the craft of administration — written by and for ambitious admins."
+        path="/blog"
+      />
       <Header />
       <main>
         {/* Banner */}

@@ -107,6 +107,11 @@ const About = () => {
   }, [location.hash]);
 
   return <div className="min-h-screen">
+      <SEO
+        title="About — Two Admins & a Mic"
+        description="Meet Diana Hansen and Melinda Vail Goodnight — the executive admins behind the mic. Learn their story, expertise, and the mission driving the show."
+        path="/about"
+      />
       <Header />
       <main>
         {/* Hero Section */}

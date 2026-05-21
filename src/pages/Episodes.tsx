@@ -6,6 +6,7 @@ import EpisodeAudioPlayer from "@/components/EpisodeAudioPlayer";
 import EpisodeVideoModal from "@/components/EpisodeVideoModal";
 import FeaturedEpisode from "@/components/FeaturedEpisode";
 import BlogFilterBar from "@/components/BlogFilterBar";
+import SEO from "@/components/SEO";
 import { Input } from "@/components/ui/input";
 import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -91,6 +92,11 @@ const Episodes = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Podcast Episodes — Two Admins & a Mic"
+        description="Browse every episode of Two Admins & a Mic. Real leadership conversations, executive admin insights, and career growth — filter by topic and listen on any platform."
+        path="/episodes"
+      />
       <Header />
       <main>
         {/* Hero Section */}
