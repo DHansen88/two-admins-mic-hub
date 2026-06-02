@@ -208,7 +208,7 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title={`${product.name} — Two Admins & a Mic Merch`}
+        title={`${product.name} — Two Admins & a Mic™ Merch`}
         description={product.description}
         path={`/merch/${product.slug}`}
         type="product"
@@ -221,7 +221,7 @@ const ProductDetail = () => {
           image: product.images?.map((i) => i.src) ?? [],
           sku: product.id,
           category: product.category,
-          brand: { "@type": "Brand", name: "Two Admins & a Mic" },
+          brand: { "@type": "Brand", name: "Two Admins & a Mic™" },
           offers: {
             "@type": "Offer",
             price: product.price,

@@ -33,7 +33,7 @@ export function generateExcerpt(content: string, maxLength = 150): string {
 
 /** Generate SEO meta description */
 export function generateSEODescription(title: string, excerpt: string): string {
-  const desc = `${excerpt} | Two Admins and a Mic`;
+  const desc = `${excerpt} | Two Admins and a Mic™`;
   return desc.length > 160 ? desc.substring(0, 157) + '...' : desc;
 }
 
@@ -107,7 +107,7 @@ ${keyTakeaways.map((t) => `- ${t}`).join('\n')}
 
 ## Conclusion
 
-This episode of Two Admins and a Mic covered essential strategies that every administrator can apply in their daily work. Whether you're just starting your career or are a seasoned professional, these insights provide practical value you can implement today.
+This episode of Two Admins and a Mic™ covered essential strategies that every administrator can apply in their daily work. Whether you're just starting your career or are a seasoned professional, these insights provide practical value you can implement today.
 `.trim();
 
   return {
@@ -140,7 +140,7 @@ export function generateNewsletterDraft(params: {
 
   const body = `Hi there,
 
-${type === 'episode' ? "We just dropped a brand-new episode of Two Admins and a Mic!" : "We just published a new article on the blog!"}
+${type === 'episode' ? "We just dropped a brand-new episode of Two Admins and a Mic™!" : "We just published a new article on the blog!"}
 
 **${title}**
 
@@ -153,7 +153,7 @@ ${takeawayList}
 
 Thanks for being part of our community!
 
-— The Two Admins and a Mic Team`;
+— The Two Admins and a Mic™ Team`;
 
   return { subject, body };
 }

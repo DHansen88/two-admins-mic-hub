@@ -76,7 +76,7 @@ const Blog = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Blog — Two Admins & a Mic"
+        title="Blog — Two Admins & a Mic™"
         description="Editorial articles on leadership, executive support, professional development, and the craft of administration — written by and for ambitious admins."
         path="/blog"
       />

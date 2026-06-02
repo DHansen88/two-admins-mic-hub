@@ -108,7 +108,7 @@ const About = () => {
 
   return <div className="min-h-screen">
       <SEO
-        title="About — Two Admins & a Mic"
+        title="About — Two Admins & a Mic™"
         description="Meet Diana Hansen and Melinda Vail Goodnight — the executive admins behind the mic. Learn their story, expertise, and the mission driving the show."
         path="/about"
       />
@@ -295,7 +295,7 @@ const About = () => {
               </h2>
               <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
                 <p>
-                  Two Admins & a Mic is a podcast celebrating the power, creativity, and leadership of administrative professionals. Hosted by Melinda Vail-Goodnight and Diana Hansen, the show explores real stories, practical strategies, and the lighter side of life behind the desk.
+                  Two Admins & a Mic™ is a podcast celebrating the power, creativity, and leadership of administrative professionals. Hosted by Melinda Vail-Goodnight and Diana Hansen, the show explores real stories, practical strategies, and the lighter side of life behind the desk.
                 </p>
                 <p className="font-semibold text-foreground">Mission Statement:</p>
                 <p>

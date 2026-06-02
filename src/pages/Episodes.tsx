@@ -93,8 +93,8 @@ const Episodes = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Podcast Episodes — Two Admins & a Mic"
-        description="Browse every episode of Two Admins & a Mic. Real leadership conversations, executive admin insights, and career growth — filter by topic and listen on any platform."
+        title="Podcast Episodes — Two Admins & a Mic™"
+        description="Browse every episode of Two Admins & a Mic™. Real leadership conversations, executive admin insights, and career growth — filter by topic and listen on any platform."
         path="/episodes"
       />
       <Header />

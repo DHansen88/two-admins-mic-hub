@@ -7,8 +7,8 @@ const PrivacyPolicy = () => {
   return (
     <>
       <SEO
-        title="Privacy Policy — Two Admins & a Mic"
-        description="How Two Admins & a Mic collects, uses, and protects your personal information when you visit the site or subscribe to the show."
+        title="Privacy Policy — Two Admins & a Mic™"
+        description="How Two Admins & a Mic™ collects, uses, and protects your personal information when you visit the site or subscribe to the show."
         path="/privacy-policy"
       />
       <Header />
@@ -20,7 +20,7 @@ const PrivacyPolicy = () => {
           <div className="prose prose-lg max-w-none text-foreground/90 space-y-8">
             <section>
               <h2 className="text-2xl font-bold text-foreground mb-4">1. Introduction</h2>
-              <p>Welcome to Two Admins &amp; a Mic ("we," "us," or "our"). We are committed to protecting your privacy and personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, subscribe to our newsletter, purchase merchandise, or interact with our podcast content.</p>
+              <p>Welcome to Two Admins &amp; a Mic&trade; ("we," "us," or "our"). We are committed to protecting your privacy and personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, subscribe to our newsletter, purchase merchandise, or interact with our podcast content.</p>
             </section>
 
             <section>
@@ -114,7 +114,7 @@ const PrivacyPolicy = () => {
               <h2 className="text-2xl font-bold text-foreground mb-4">11. Contact Us</h2>
               <p>If you have any questions about this Privacy Policy or wish to exercise your rights, please contact us:</p>
               <div className="bg-muted/50 rounded-lg p-6 mt-4">
-                <p className="font-semibold">Two Admins &amp; a Mic</p>
+                <p className="font-semibold">Two Admins &amp; a Mic&trade;</p>
                 <p>Email: <a href="mailto:info@twoadminsandamic.com" className="text-primary hover:underline">info@twoadminsandamic.com</a></p>
               </div>
             </section>

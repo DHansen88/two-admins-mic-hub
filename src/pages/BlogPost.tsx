@@ -54,7 +54,7 @@ const BlogPost = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title={`${post.title} — Two Admins & a Mic`}
+        title={`${post.title} — Two Admins & a Mic™`}
         description={post.excerpt}
         path={`/blog/${post.slug}`}
         type="article"
@@ -66,7 +66,7 @@ const BlogPost = () => {
           description: post.excerpt,
           datePublished: post.date,
           author: post.authors.map((a) => ({ "@type": "Person", name: a.name })),
-          publisher: { "@type": "Organization", name: "Two Admins & a Mic" },
+          publisher: { "@type": "Organization", name: "Two Admins & a Mic™" },
           url: `https://twoadminsandamic.com/blog/${post.slug}`,
         }}
       />

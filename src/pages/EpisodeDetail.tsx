@@ -199,8 +199,8 @@ const EpisodeDetail = () => {
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-background">
       <SEO
-        title={`${episode.title} — Two Admins & a Mic`}
-        description={plainDescription || `Episode ${episode.number} of Two Admins & a Mic: ${episode.title}.`}
+        title={`${episode.title} — Two Admins & a Mic™`}
+        description={plainDescription || `Episode ${episode.number} of Two Admins & a Mic™: ${episode.title}.`}
         path={`/episodes/${episode.slug}`}
         type="article"
         image={episodeImage}
@@ -215,7 +215,7 @@ const EpisodeDetail = () => {
           url: `https://twoadminsandamic.com/episodes/${episode.slug}`,
           partOfSeries: {
             "@type": "PodcastSeries",
-            name: "Two Admins & a Mic",
+            name: "Two Admins & a Mic™",
             url: "https://twoadminsandamic.com",
           },
           ...(episode.audioUrl ? { associatedMedia: { "@type": "MediaObject", contentUrl: episode.audioUrl } } : {}),

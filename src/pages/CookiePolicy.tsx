@@ -7,8 +7,8 @@ const CookiePolicy = () => {
   return (
     <>
       <SEO
-        title="Cookie Policy — Two Admins & a Mic"
-        description="How Two Admins & a Mic uses cookies and similar technologies on the website, and how you can control them."
+        title="Cookie Policy — Two Admins & a Mic™"
+        description="How Two Admins & a Mic™ uses cookies and similar technologies on the website, and how you can control them."
         path="/cookie-policy"
       />
       <Header />
@@ -25,7 +25,7 @@ const CookiePolicy = () => {
 
             <section>
               <h2 className="text-2xl font-bold text-foreground mb-4">2. How We Use Cookies</h2>
-              <p>Two Admins &amp; a Mic uses cookies and similar tracking technologies for the following purposes:</p>
+              <p>Two Admins &amp; a Mic&trade; uses cookies and similar tracking technologies for the following purposes:</p>
 
               <h3 className="text-xl font-semibold text-foreground mt-6 mb-2">Essential Cookies</h3>
               <p>These cookies are necessary for the website to function and cannot be disabled. They include:</p>
@@ -95,7 +95,7 @@ const CookiePolicy = () => {
               <h2 className="text-2xl font-bold text-foreground mb-4">6. Contact Us</h2>
               <p>If you have any questions about our use of cookies, please contact us:</p>
               <div className="bg-muted/50 rounded-lg p-6 mt-4">
-                <p className="font-semibold">Two Admins &amp; a Mic</p>
+                <p className="font-semibold">Two Admins &amp; a Mic&trade;</p>
                 <p>Email: <a href="mailto:info@twoadminsandamic.com" className="text-primary hover:underline">info@twoadminsandamic.com</a></p>
               </div>
             </section>

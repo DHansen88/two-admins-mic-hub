@@ -21,7 +21,7 @@ defined('SMTP_HOST') || define('SMTP_HOST', 'smtp.hostinger.com');
 defined('SMTP_PORT') || define('SMTP_PORT', 587);
 defined('SMTP_USER') || define('SMTP_USER', 'your-email@example.com');
 defined('SMTP_PASS') || define('SMTP_PASS', 'your_mailbox_password');
-defined('SMTP_FROM_NAME') || define('SMTP_FROM_NAME', 'Two Admins and a Mic');
+defined('SMTP_FROM_NAME') || define('SMTP_FROM_NAME', 'Two Admins and a Mic™');
 
 // CORS — explicit origins are required when cookies/sessions are used
 defined('ALLOWED_ORIGINS') || define('ALLOWED_ORIGINS', [

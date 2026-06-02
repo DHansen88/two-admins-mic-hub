@@ -136,7 +136,7 @@ const Header = () => {
             href="/"
             className="flex items-center gap-2 text-xl font-display font-bold text-background no-underline shrink-0 max-w-[118px] sm:max-w-[140px] md:max-w-none"
           >
-            <img src={logo} alt="Two Admins and a Mic logo" className="h-7 sm:h-9 md:h-10 w-auto max-w-full" />
+            <img src={logo} alt="Two Admins and a Mic™ logo" className="h-7 sm:h-9 md:h-10 w-auto max-w-full" />
           </a>
 
           {/* Desktop Navigation */}
