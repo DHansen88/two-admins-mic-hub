@@ -11,7 +11,6 @@
  */
 
 require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/content.php' === false ? '' : ''; // no-op (content.php would auto-handle requests)
 
 setCorsHeaders();
 
