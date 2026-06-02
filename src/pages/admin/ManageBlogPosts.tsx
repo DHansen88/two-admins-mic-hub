@@ -399,6 +399,16 @@ const ManageBlogPosts = () => {
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>
+                        {!isTrashView && blog.status === "published" && (
+                          <div className="mt-1">
+                            <SendToBeehiivButton
+                              slug={blog.id}
+                              title={blog.title}
+                              excerpt={blog.excerpt}
+                              featuredImage={blog.featuredImage}
+                            />
+                          </div>
+                        )}
                       </TableCell>
                     </TableRow>
                   );
