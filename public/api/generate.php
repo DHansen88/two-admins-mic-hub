@@ -60,7 +60,7 @@ function handleBlogFromTranscript(): void {
     $blogTitle = "Insights from \"{$title}\"";
     $takeawayList = implode("\n", array_map(fn($t) => "- {$t}", $takeaways));
     
-    $content = "## Introduction\n\n{$intro}\n\n## Main Insights\n\n{$mainInsights}\n\n## Actionable Lessons\n\n{$lessons}\n\n## Key Takeaways\n\n{$takeawayList}\n\n## Conclusion\n\nThis episode of Two Admins and a Mic covered essential strategies that every administrator can apply in their daily work.";
+    $content = "## Introduction\n\n{$intro}\n\n## Main Insights\n\n{$mainInsights}\n\n## Actionable Lessons\n\n{$lessons}\n\n## Key Takeaways\n\n{$takeawayList}\n\n## Conclusion\n\nThis episode of Two Admins and a Mic™ covered essential strategies that every administrator can apply in their daily work.";
     
     $excerpt = generateExcerpt($intro);
     
@@ -99,13 +99,13 @@ function handleNewsletter(): void {
     $subject = "{$emoji} New " . ucfirst($type) . ": {$title}";
     
     $intro = $type === 'episode'
-        ? "We just dropped a brand-new episode of Two Admins and a Mic!"
+        ? "We just dropped a brand-new episode of Two Admins and a Mic™!"
         : "We just published a new article on the blog!";
     
     $takeawayList = implode("\n", array_map(fn($t) => "  • {$t}", $takeaways));
     $cta = $type === 'episode' ? 'Listen Now' : 'Read the Full Article';
     
-    $body_text = "Hi there,\n\n{$intro}\n\n**{$title}**\n\n{$summary}\n\n**Key Takeaways:**\n{$takeawayList}\n\n👉 {$cta}: {$url}\n\nThanks for being part of our community!\n\n— The Two Admins and a Mic Team";
+    $body_text = "Hi there,\n\n{$intro}\n\n**{$title}**\n\n{$summary}\n\n**Key Takeaways:**\n{$takeawayList}\n\n👉 {$cta}: {$url}\n\nThanks for being part of our community!\n\n— The Two Admins and a Mic™ Team";
     
     jsonResponse([
         'newsletter' => [
@@ -148,7 +148,7 @@ function handleFullEpisodeGeneration(): void {
     $result['summary'] = generateExcerpt($source, 200);
     
     // SEO description
-    $seo = $result['summary'] . ' | Two Admins and a Mic';
+    $seo = $result['summary'] . ' | Two Admins and a Mic™';
     $result['seoDescription'] = strlen($seo) > 160 ? substr($seo, 0, 157) . '...' : $seo;
     
     // Blog from transcript
@@ -176,7 +176,7 @@ function handleFullEpisodeGeneration(): void {
     
     $result['newsletter'] = [
         'subject' => "{$emoji} New Episode: {$title}",
-        'body' => "Hi there,\n\nWe just dropped a brand-new episode of Two Admins and a Mic!\n\n**{$title}**\n\n{$result['summary']}\n\n**Key Takeaways:**\n{$takeawayListText}\n\n👉 Listen Now: {$url}\n\nThanks for being part of our community!\n\n— The Two Admins and a Mic Team",
+        'body' => "Hi there,\n\nWe just dropped a brand-new episode of Two Admins and a Mic™!\n\n**{$title}**\n\n{$result['summary']}\n\n**Key Takeaways:**\n{$takeawayListText}\n\n👉 Listen Now: {$url}\n\nThanks for being part of our community!\n\n— The Two Admins and a Mic™ Team",
     ];
     
     jsonResponse(['generated' => $result]);

@@ -32,7 +32,7 @@ export interface PopupConfig {
 }
 
 const LS_KEY = "tam_popups";
-const LEGACY_NEWSLETTER_HEADING = "Two Admins And A Mic";
+const LEGACY_NEWSLETTER_HEADING = "Two Admins And A Mic™";
 const LEGACY_NEWSLETTER_DESCRIPTION = "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.";
 
 const SEED: PopupConfig[] = [

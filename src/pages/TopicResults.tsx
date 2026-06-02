@@ -42,8 +42,8 @@ const TopicResults = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title={`${decodedTopic} — Two Admins & a Mic`}
-        description={`Episodes and articles tagged ${decodedTopic} from Two Admins & a Mic — leadership and executive admin content curated by topic.`}
+        title={`${decodedTopic} — Two Admins & a Mic™`}
+        description={`Episodes and articles tagged ${decodedTopic} from Two Admins & a Mic™ — leadership and executive admin content curated by topic.`}
         path={`/topics/${encodeURIComponent(decodedTopic)}`}
       />
       <Header />

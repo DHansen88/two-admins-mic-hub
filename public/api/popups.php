@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 define('POPUPS_DIR', dirname(__DIR__, 2) . '/content');
 define('POPUPS_FILE', POPUPS_DIR . '/popups.json');
-define('LEGACY_NEWSLETTER_HEADING', 'Two Admins And A Mic');
+define('LEGACY_NEWSLETTER_HEADING', 'Two Admins And A Mic™');
 define('LEGACY_NEWSLETTER_DESCRIPTION', 'The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.');
 
 if (!is_dir(POPUPS_DIR)) mkdir(POPUPS_DIR, 0755, true);

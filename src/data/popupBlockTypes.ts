@@ -106,7 +106,7 @@ export function createEmptyPopupBlock(type: PopupBlockType): PopupContentBlock {
       return {
         type: "newsletter",
         id,
-        heading: "Two Admins And A Mic",
+        heading: "Two Admins And A Mic™",
         description: "The podcast celebrating the power, creativity, and leadership of administrative professionals. One real story at a time.",
         buttonText: "Subscribe",
         showConantLeadership: true,

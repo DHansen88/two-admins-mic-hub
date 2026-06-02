@@ -9,8 +9,8 @@ const MerchThankYou = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Thank You — Two Admins & a Mic"
-        description="Your order is confirmed. Thanks for supporting Two Admins & a Mic."
+        title="Thank You — Two Admins & a Mic™"
+        description="Your order is confirmed. Thanks for supporting Two Admins & a Mic™."
         path="/merch/thank-you"
       />
       <Header />
@@ -29,7 +29,7 @@ const MerchThankYou = () => {
               </h1>
 
               <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
-                Your purchase helps support the Two Admins &amp; a Mic podcast
+                Your purchase helps support the Two Admins &amp; a Mic&trade; podcast
                 and the incredible community of administrative professionals.
               </p>
 

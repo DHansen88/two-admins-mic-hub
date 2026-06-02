@@ -157,7 +157,7 @@ const AdminLogin = ({ onSuccess }: { onSuccess?: () => void }) => {
             Admin Dashboard
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Two Admins and a Mic — Content Management
+            Two Admins and a Mic™ — Content Management
           </p>
         </CardHeader>
         <CardContent>

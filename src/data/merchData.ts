@@ -75,10 +75,10 @@ const SEED_PRODUCTS: Product[] = [
   {
     id: "prod-003",
     slug: "two-admins-hoodie",
-    name: "Two Admins & a Mic Hoodie",
+    name: "Two Admins & a Mic™ Hoodie",
     description: "Stay cozy while running the show. Premium heavyweight hoodie with the podcast logo embroidered on the chest.",
     price: 45,
-    images: [{ src: hoodieImg, alt: "Two Admins & a Mic Hoodie" }],
+    images: [{ src: hoodieImg, alt: "Two Admins & a Mic™ Hoodie" }],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
     category: "apparel",
     stock: 20,

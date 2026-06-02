@@ -13,8 +13,8 @@ const Merch = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Merch — Two Admins & a Mic"
-        description="Official Two Admins & a Mic merchandise — apparel, accessories, and stickers for the admins who run the show."
+        title="Merch — Two Admins & a Mic™"
+        description="Official Two Admins & a Mic™ merchandise — apparel, accessories, and stickers for the admins who run the show."
         path="/merch"
       />
       <Header />
@@ -69,7 +69,7 @@ const Merch = () => {
                 Gear for the Admins Who Run the World
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-background/80 max-w-2xl mx-auto leading-relaxed">
-                Show your admin pride with official Two Admins &amp; a Mic merchandise.
+                Show your admin pride with official Two Admins &amp; a Mic&trade; merchandise.
               </p>
               <p className="text-sm md:text-base text-background/60 italic">
                 Because every great leader deserves great merch.

@@ -11,7 +11,7 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Two Admins & a Mic — Leadership Podcast for Executive Admins"
+        title="Two Admins & a Mic™ — Leadership Podcast for Admins"
         description="Two Admins. One Mic. Zero Fluff. Real conversations on leadership, executive administration, and professional growth from Diana Hansen and Melinda Vail Goodnight."
         path="/"
       />

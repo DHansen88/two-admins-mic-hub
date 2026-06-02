@@ -1,8 +1,8 @@
-# Two Admins & a Mic
+# Two Admins & a Mic™
 
 > A podcast by two senior executive administrators — Diana Hansen and Melinda Vail Goodnight — sharing real conversations on leadership, executive support, and professional growth in the admin community.
 
-Two Admins & a Mic is a podcast and content hub covering leadership development, executive administration, mentorship, and professional growth for the modern administrative professional. The site publishes podcast episodes, long-form blog articles, a leadership framework called STEPS, and branded merchandise.
+Two Admins & a Mic™ is a podcast and content hub covering leadership development, executive administration, mentorship, and professional growth for the modern administrative professional. The site publishes podcast episodes, long-form blog articles, a leadership framework called STEPS, and branded merchandise.
 
 ## Pages
 
@@ -11,7 +11,7 @@ Two Admins & a Mic is a podcast and content hub covering leadership development,
 - [Episodes](/episodes): Full podcast episode library with filters by topic.
 - [Blog](/blog): Editorial articles on leadership, executive support, and admin career growth.
 - [STEPS](/steps): The STEPS leadership framework — a guided journey for admins growing into leaders.
-- [Merch](/merch): Official Two Admins & a Mic apparel, accessories, and stickers.
+- [Merch](/merch): Official Two Admins & a Mic™ apparel, accessories, and stickers.
 - [Contact](/contact): Get in touch with the hosts and find all social links.
 
 ## Optional

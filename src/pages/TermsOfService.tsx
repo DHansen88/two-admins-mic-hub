@@ -7,8 +7,8 @@ const TermsOfService = () => {
   return (
     <>
       <SEO
-        title="Terms of Service — Two Admins & a Mic"
-        description="The terms and conditions governing your use of the Two Admins & a Mic website, podcast, and merchandise."
+        title="Terms of Service — Two Admins & a Mic™"
+        description="The terms and conditions governing your use of the Two Admins & a Mic™ website, podcast, and merchandise."
         path="/terms-of-service"
       />
       <Header />
@@ -20,12 +20,12 @@ const TermsOfService = () => {
           <div className="prose prose-lg max-w-none text-foreground/90 space-y-8">
             <section>
               <h2 className="text-2xl font-bold text-foreground mb-4">1. Acceptance of Terms</h2>
-              <p>By accessing and using the Two Admins &amp; a Mic website ("Site"), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you must not use our Site.</p>
+              <p>By accessing and using the Two Admins &amp; a Mic&trade; website ("Site"), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you must not use our Site.</p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-foreground mb-4">2. Description of Service</h2>
-              <p>Two Admins &amp; a Mic is a podcast and creator platform dedicated to empowering administrative professionals. Our services include:</p>
+              <p>Two Admins &amp; a Mic&trade; is a podcast and creator platform dedicated to empowering administrative professionals. Our services include:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Podcast episodes and related media content</li>
                 <li>Blog articles and educational resources</li>
@@ -49,7 +49,7 @@ const TermsOfService = () => {
 
             <section>
               <h2 className="text-2xl font-bold text-foreground mb-4">4. Intellectual Property</h2>
-              <p>All content on this Site — including but not limited to podcast episodes, blog posts, graphics, logos, audio recordings, and text — is the property of Two Admins &amp; a Mic and is protected by U.S. and international copyright, trademark, and intellectual property laws.</p>
+              <p>All content on this Site — including but not limited to podcast episodes, blog posts, graphics, logos, audio recordings, and text — is the property of Two Admins &amp; a Mic&trade; and is protected by U.S. and international copyright, trademark, and intellectual property laws.</p>
               <p>You may not reproduce, distribute, modify, or create derivative works from our content without prior written authorization.</p>
             </section>
 
@@ -67,7 +67,7 @@ const TermsOfService = () => {
 
             <section>
               <h2 className="text-2xl font-bold text-foreground mb-4">6. Newsletter Subscriptions</h2>
-              <p>By subscribing to our newsletter, you consent to receive periodic emails from Two Admins &amp; a Mic. Our newsletters are delivered through Beehiiv. You may unsubscribe at any time using the link provided in each email.</p>
+              <p>By subscribing to our newsletter, you consent to receive periodic emails from Two Admins &amp; a Mic&trade;. Our newsletters are delivered through Beehiiv. You may unsubscribe at any time using the link provided in each email.</p>
             </section>
 
             <section>
@@ -82,12 +82,12 @@ const TermsOfService = () => {
 
             <section>
               <h2 className="text-2xl font-bold text-foreground mb-4">9. Limitation of Liability</h2>
-              <p>To the fullest extent permitted by law, Two Admins &amp; a Mic shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of your use of the Site, including but not limited to loss of data, revenue, or profits.</p>
+              <p>To the fullest extent permitted by law, Two Admins &amp; a Mic&trade; shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of your use of the Site, including but not limited to loss of data, revenue, or profits.</p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-foreground mb-4">10. Indemnification</h2>
-              <p>You agree to indemnify and hold harmless Two Admins &amp; a Mic, its owners, and affiliates from any claims, damages, losses, or expenses (including legal fees) arising from your use of the Site or violation of these Terms.</p>
+              <p>You agree to indemnify and hold harmless Two Admins &amp; a Mic&trade;, its owners, and affiliates from any claims, damages, losses, or expenses (including legal fees) arising from your use of the Site or violation of these Terms.</p>
             </section>
 
             <section>
@@ -104,7 +104,7 @@ const TermsOfService = () => {
               <h2 className="text-2xl font-bold text-foreground mb-4">13. Contact Us</h2>
               <p>If you have any questions about these Terms of Service, please contact us:</p>
               <div className="bg-muted/50 rounded-lg p-6 mt-4">
-                <p className="font-semibold">Two Admins &amp; a Mic</p>
+                <p className="font-semibold">Two Admins &amp; a Mic&trade;</p>
                 <p>Email: <a href="mailto:info@twoadminsandamic.com" className="text-primary hover:underline">info@twoadminsandamic.com</a></p>
               </div>
             </section>

@@ -47,8 +47,8 @@ const Contact = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Contact — Two Admins & a Mic"
-        description="Get in touch with Diana and Melinda. Send a message, pitch a topic, or find every official Two Admins & a Mic channel in one place."
+        title="Contact — Two Admins & a Mic™"
+        description="Get in touch with Diana and Melinda. Send a message, pitch a topic, or find every official Two Admins & a Mic™ channel in one place."
         path="/contact"
       />
       <Header />

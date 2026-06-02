@@ -128,7 +128,7 @@ const ResetPassword = () => {
             Reset Your Password
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Two Admins and a Mic — Admin Dashboard
+            Two Admins and a Mic™ — Admin Dashboard
           </p>
         </CardHeader>
         <CardContent>
