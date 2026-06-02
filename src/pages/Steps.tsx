@@ -733,8 +733,8 @@ const Steps = () => {
                 Ready to Step Into Your Leadership?
               </h2>
               <p className="text-background/70 text-lg leading-relaxed">
-                The leadership training executives pay thousands for, finally
-                built for the people who actually keep everything running.
+                The leadership training executives have always had, now built
+                specifically for administrators.
               </p>
               <Button asChild size="lg" className="bg-coral hover:bg-coral/90 text-background font-semibold px-10 py-6 text-base">
                 <a href="https://conantleadership.mykajabi.com/offers/JCoEFqw7/checkout" target="_blank" rel="noopener noreferrer">
