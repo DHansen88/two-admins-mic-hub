@@ -39,6 +39,7 @@ import {
 import { saveBlog } from "@/lib/content-manager";
 import { getAdminApiBase, getAdminAuthHeaders } from "@/lib/admin-auth";
 import PublishModal from "@/components/PublishModal";
+import SendToBeehiivButton from "@/components/SendToBeehiivButton";
 import RichTextEditor from "@/components/RichTextEditor";
 import { allEpisodesUnfiltered } from "@/data/episodeData";
 
@@ -612,9 +613,20 @@ setAuthorAvatars(avatarMap);
             {searchParams.get("edit") ? "Update your existing blog post." : "Write your blog post with the rich text editor."}
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={handleSaveDraft}>
-          <Save className="h-4 w-4 mr-1" /> Save Draft
-        </Button>
+        <div className="flex items-center gap-2">
+          {searchParams.get("edit") && (
+            <SendToBeehiivButton
+              slug={customSlug || searchParams.get("edit") || ""}
+              title={title}
+              excerpt={excerpt}
+              featuredImage={featuredImage}
+              disabled={!title || !(customSlug || searchParams.get("edit"))}
+            />
+          )}
+          <Button variant="outline" size="sm" onClick={handleSaveDraft}>
+            <Save className="h-4 w-4 mr-1" /> Save Draft
+          </Button>
+        </div>
       </div>
 
       {/* Post Details */}

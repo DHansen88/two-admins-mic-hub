@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Plus, MoreHorizontal, Pencil, Copy, Trash2, FileText, RotateCcw, XCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import SendToBeehiivButton from "@/components/SendToBeehiivButton";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -39,6 +40,8 @@ interface AdminBlog {
   date: string;
   topics: string[];
   status: ContentStatus;
+  excerpt?: string;
+  featuredImage?: string;
 }
 
 async function adminApiCall(endpoint: string, options: RequestInit = {}): Promise<any> {
@@ -81,6 +84,8 @@ async function fetchAdminBlogs(): Promise<AdminBlog[]> {
         date: b.publish_date || b.date || "",
         topics: Array.isArray(b.tags) ? b.tags : [],
         status: (b.status as ContentStatus) || "published",
+        excerpt: b.excerpt || "",
+        featuredImage: b.featured_image || "",
       };
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -394,6 +399,16 @@ const ManageBlogPosts = () => {
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>
+                        {!isTrashView && blog.status === "published" && (
+                          <div className="mt-1">
+                            <SendToBeehiivButton
+                              slug={blog.id}
+                              title={blog.title}
+                              excerpt={blog.excerpt}
+                              featuredImage={blog.featuredImage}
+                            />
+                          </div>
+                        )}
                       </TableCell>
                     </TableRow>
                   );

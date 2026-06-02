@@ -23,6 +23,14 @@ defined('SMTP_USER') || define('SMTP_USER', 'your-email@example.com');
 defined('SMTP_PASS') || define('SMTP_PASS', 'your_mailbox_password');
 defined('SMTP_FROM_NAME') || define('SMTP_FROM_NAME', 'Two Admins and a Mic™');
 
+// Beehiiv newsletter integration
+// Get these from beehiiv.com → Settings → Integrations → API.
+// Override in public/api/config.local.php on the live server — never commit real values.
+defined('BEEHIIV_API_KEY') || define('BEEHIIV_API_KEY', '');
+defined('BEEHIIV_PUBLICATION_ID') || define('BEEHIIV_PUBLICATION_ID', '');
+defined('BEEHIIV_STATE_FILE') || define('BEEHIIV_STATE_FILE', dirname(__DIR__, 2) . '/storage/beehiiv-state.json');
+defined('SITE_PUBLIC_URL') || define('SITE_PUBLIC_URL', 'https://twoadminsandamic.com');
+
 // CORS — explicit origins are required when cookies/sessions are used
 defined('ALLOWED_ORIGINS') || define('ALLOWED_ORIGINS', [
     'https://twoadminsandamic.com',
