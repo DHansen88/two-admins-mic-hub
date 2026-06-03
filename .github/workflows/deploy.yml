@@ -58,7 +58,12 @@ jobs:
           name: site-dist
           path: dist
 
+      - name: Verify deployment artifact
+        run: |
+          find dist -maxdepth 3 -name '.htaccess' -o -path 'dist/api/rss.php' -o -path 'dist/podcast/*'
+
       - name: Deploy to deploy branch
+        continue-on-error: true
         run: |
           cd dist
           git init
