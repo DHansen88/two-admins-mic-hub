@@ -34,12 +34,24 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 const DEFAULT_PLATFORM_LINKS = {
+  apple: "https://podcasts.apple.com/us/podcast/two-admins-and-a-mic/id1895164286",
   spotify: "https://open.spotify.com/show/3i20XZqV1uMIglulNGNpL3",
   spreaker: "https://www.spreaker.com/podcast/two-admins-a-mic--6975273",
   iheart: "https://iheart.com/podcast/331205375",
   youtube: "https://www.youtube.com/@TwoAdminsAMic",
   amazon: "https://music.amazon.com/podcasts/790168be-bd0d-4a6f-85c6-44bf8b488d3d",
 };
+
+function normalizeEpisodeDuration(value: string): string {
+  const trimmed = value.trim();
+
+  if (!trimmed) return "";
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(trimmed)) return trimmed;
+  if (/^\d+\s*min(ute)?s?$/i.test(trimmed)) return trimmed;
+  if (/^\d+$/.test(trimmed)) return `${trimmed} min`;
+
+  return trimmed;
+}
 import { getAllTags, addTag, generateTagSlug, suggestTags, type Tag } from "@/data/tags";
 import {
   generateSlug,
@@ -91,7 +103,7 @@ const PublishEpisode = () => {
     setSelectedTopics(ep.topics || []);
     setRiversideUrl(ep.riversideEmbedUrl || "");
     setSpotifyUrl(ep.platformLinks?.spotify ?? DEFAULT_PLATFORM_LINKS.spotify);
-    setAppleUrl(ep.platformLinks?.apple ?? "");
+    setAppleUrl(ep.platformLinks?.apple ?? DEFAULT_PLATFORM_LINKS.apple);
     setIheartUrl(ep.platformLinks?.iheart ?? DEFAULT_PLATFORM_LINKS.iheart);
     setSpreakerUrl(ep.platformLinks?.spreaker ?? DEFAULT_PLATFORM_LINKS.spreaker);
     setYoutubeUrl(ep.platformLinks?.youtube ?? DEFAULT_PLATFORM_LINKS.youtube);
@@ -126,7 +138,7 @@ const PublishEpisode = () => {
   const [isExplicit, setIsExplicit] = useState(false);
   const [riversideUrl, setRiversideUrl] = useState("");
   const [spotifyUrl, setSpotifyUrl] = useState(DEFAULT_PLATFORM_LINKS.spotify);
-  const [appleUrl, setAppleUrl] = useState("");
+  const [appleUrl, setAppleUrl] = useState(DEFAULT_PLATFORM_LINKS.apple);
   const [iheartUrl, setIheartUrl] = useState(DEFAULT_PLATFORM_LINKS.iheart);
   const [spreakerUrl, setSpreakerUrl] = useState(DEFAULT_PLATFORM_LINKS.spreaker);
   const [youtubeUrl, setYoutubeUrl] = useState(DEFAULT_PLATFORM_LINKS.youtube);
@@ -356,7 +368,7 @@ const PublishEpisode = () => {
       title,
       slug: (customSlug.trim() ? generateSlug(customSlug.trim()) : `episode-${episodeNumber}-${generateSlug(title)}`),
       description,
-      duration,
+      duration: normalizeEpisodeDuration(duration),
       date: publishDate,
       topics: selectedTopics,
       explicit: isExplicit,
@@ -425,6 +437,24 @@ const PublishEpisode = () => {
     });
   };
 
+  const validateEpisodePublish = () => {
+    if (!title || !episodeNumber) {
+      toast({ title: "Episode number and title are required", variant: "destructive" });
+      return false;
+    }
+
+    if (!audioUrl && !riversideUrl) {
+      toast({
+        title: "Add episode media before publishing",
+        description: "Upload an MP3 audio file or add a Riverside embed URL before publishing this episode.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSaveDraft = async () => {
     saveDraft(`episode-${episodeNumber || "new"}`, {
       episodeNumber, title, description, guestName, publishDate,
@@ -438,8 +468,7 @@ const PublishEpisode = () => {
   };
 
   const handlePublishNow = async () => {
-    if (!title || !episodeNumber) {
-      toast({ title: "Episode number and title are required", variant: "destructive" });
+    if (!validateEpisodePublish()) {
       return;
     }
     const data = buildEpisodeData();
@@ -455,8 +484,7 @@ const PublishEpisode = () => {
   };
 
   const handleSchedulePublish = async (date: string, time: string) => {
-    if (!title || !episodeNumber) {
-      toast({ title: "Episode number and title are required", variant: "destructive" });
+    if (!validateEpisodePublish()) {
       return;
     }
     saveDraft(`episode-${episodeNumber}`, {
@@ -510,7 +538,7 @@ const PublishEpisode = () => {
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Duration</label>
-              <Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="42 min" />
+              <Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="31:58 or 32 min" />
             </div>
           </div>
           <div className="space-y-1.5">

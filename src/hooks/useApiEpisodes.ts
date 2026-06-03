@@ -39,6 +39,17 @@ function formatDate(dateStr: string): string {
   }
 }
 
+function normalizeEpisodeDuration(duration?: string): string {
+  const value = (duration || "").trim();
+
+  if (!value) return "";
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(value)) return value;
+  if (/^\d+\s*min(ute)?s?$/i.test(value)) return value;
+  if (/^\d+$/.test(value)) return `${value} min`;
+
+  return value;
+}
+
 function rawToEpisode(raw: ApiEpisodeRaw): Episode {
   const platformLinks =
     raw.platformLinks && !Array.isArray(raw.platformLinks) && Object.keys(raw.platformLinks).length > 0
@@ -74,7 +85,7 @@ function rawToEpisode(raw: ApiEpisodeRaw): Episode {
     title: raw.title?.trim() || "Untitled",
     slug: raw.slug?.trim() || "",
     description: raw.description || "",
-    duration: raw.duration || "",
+    duration: normalizeEpisodeDuration(raw.duration),
     date: formatDate(raw.date || ""),
     topics: Array.isArray(raw.topics) ? raw.topics : [],
     explicit: Boolean(raw.explicit ?? raw.isExplicit ?? false),

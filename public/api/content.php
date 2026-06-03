@@ -33,6 +33,28 @@ foreach ([CONTENT_ROOT, BLOG_DIR, PODCAST_DIR, TRASH_DIR, BLOG_UPLOADS_DIR, PODC
     }
 }
 
+function normalizeEpisodeDuration(?string $duration): string {
+    $value = trim((string)$duration);
+
+    if ($value === '') {
+        return '';
+    }
+
+    if (preg_match('/^\d{1,2}:\d{2}(:\d{2})?$/', $value)) {
+        return $value;
+    }
+
+    if (preg_match('/^\d+\s*min(ute)?s?$/i', $value)) {
+        return $value;
+    }
+
+    if (preg_match('/^\d+$/', $value)) {
+        return $value . ' min';
+    }
+
+    return $value;
+}
+
 $action = $_GET['action'] ?? '';
 
 switch ($action) {
@@ -389,9 +411,14 @@ function handleSaveEpisode(): void {
     
     $body = getRequestBody();
     $number = (int)($body['number'] ?? 0);
+    $audioUrl = trim((string)($body['audioUrl'] ?? ''));
+    $riversideEmbedUrl = trim((string)($body['riversideEmbedUrl'] ?? ''));
     
     if (!$number) jsonResponse(['error' => 'Episode number is required'], 400);
     if (empty($body['title'])) jsonResponse(['error' => 'Title is required'], 400);
+    if ($audioUrl === '' && $riversideEmbedUrl === '') {
+        jsonResponse(['error' => 'Episodes require either an audio file or a Riverside embed URL'], 400);
+    }
     
     $slug = $body['slug'] ?? "episode-{$number}-" . slugify($body['title']);
     $filename = "episode-" . str_pad($number, 2, '0', STR_PAD_LEFT);
@@ -401,14 +428,14 @@ function handleSaveEpisode(): void {
         'title' => $body['title'],
         'slug' => $slug,
         'description' => $body['description'] ?? '',
-        'duration' => $body['duration'] ?? '',
+        'duration' => normalizeEpisodeDuration($body['duration'] ?? ''),
         'date' => $body['date'] ?? date('Y-m-d'),
         'topics' => $body['topics'] ?? [],
         'explicit' => !empty($body['explicit']),
         'guestName' => $body['guestName'] ?? null,
-        'riversideEmbedUrl' => $body['riversideEmbedUrl'] ?? null,
+        'riversideEmbedUrl' => $riversideEmbedUrl !== '' ? $riversideEmbedUrl : null,
         'thumbnailUrl' => $body['thumbnailUrl'] ?? '/placeholder.svg',
-        'audioUrl' => $body['audioUrl'] ?? null,
+        'audioUrl' => $audioUrl !== '' ? $audioUrl : null,
         'platformLinks' => $body['platformLinks'] ?? null,
         'transcript' => $body['transcript'] ?? null,
         'showNotes' => $body['showNotes'] ?? null,

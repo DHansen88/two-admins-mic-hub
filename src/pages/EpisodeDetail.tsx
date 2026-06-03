@@ -35,9 +35,9 @@ const EpisodeDetail = () => {
   const relatedBlogs = useVisibleRelatedBlogsForEpisode(slug || "", 3);
   const hasVideo = !!episode?.riversideEmbedUrl;
   const hasAudio = !!episode?.audioUrl;
-  const isAudioOnly = !hasVideo && hasAudio;
+  const usesAudioLayout = !hasVideo;
   const heroImageCandidates = (
-    isAudioOnly
+    usesAudioLayout
       ? [
           episode?.guest?.image,
           episode?.thumbnailUrl && episode.thumbnailUrl !== "/placeholder.svg" ? episode.thumbnailUrl : undefined,
@@ -53,7 +53,7 @@ const EpisodeDetail = () => {
 
   useEffect(() => {
     setHeroImage(heroImageCandidates[0] || "/placeholder.svg");
-  }, [episode?.thumbnailUrl, episode?.guest?.image, isAudioOnly]);
+  }, [episode?.thumbnailUrl, episode?.guest?.image, usesAudioLayout]);
 
   if (isLoading) {
     return (
@@ -160,7 +160,7 @@ const EpisodeDetail = () => {
         <Clock size={16} />
         <span>{episode.duration}</span>
       </span>
-      {isAudioOnly && (
+      {usesAudioLayout && (
         <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider bg-background/15 text-background px-2.5 py-1 rounded-full">
           <Headphones className="h-3 w-3" /> Audio
         </span>
@@ -262,7 +262,7 @@ const EpisodeDetail = () => {
                     {ShareRow}
                   </div>
                 </>
-              ) : isAudioOnly ? (
+              ) : usesAudioLayout ? (
                 /* ───── Audio Hero: image left, meta + player right ───── */
                 <div className="grid grid-cols-1 lg:grid-cols-[minmax(260px,0.9fr)_minmax(0,1.1fr)] gap-5 sm:gap-6 lg:gap-10 xl:gap-12 items-start">
                   {/* Image */}
@@ -294,10 +294,21 @@ const EpisodeDetail = () => {
                       dangerouslySetInnerHTML={{ __html: episode.description }}
                     />
                     {MetaRow}
-                    <EpisodeAudioHero
-                      audioUrl={episode.audioUrl!}
-                      title={episode.title}
-                    />
+                    {hasAudio ? (
+                      <EpisodeAudioHero
+                        audioUrl={episode.audioUrl!}
+                        title={episode.title}
+                      />
+                    ) : (
+                      <div className="w-full max-w-full overflow-hidden bg-card/95 border border-border rounded-2xl shadow-sm px-4 py-4 sm:px-5 sm:py-5">
+                        <p className="text-sm font-semibold text-foreground">
+                          Audio player not available yet
+                        </p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          This episode is published as an audio episode, but the MP3 file has not been attached yet.
+                        </p>
+                      </div>
+                    )}
                     {ShareRow}
                   </div>
                 </div>

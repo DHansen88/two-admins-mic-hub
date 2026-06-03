@@ -81,6 +81,10 @@ function rssDuration(?string $duration): string {
         return str_pad($matches[1], 2, '0', STR_PAD_LEFT) . ':00';
     }
 
+    if (preg_match('/^\d+$/', $value)) {
+        return str_pad($value, 2, '0', STR_PAD_LEFT) . ':00';
+    }
+
     return $value;
 }
 

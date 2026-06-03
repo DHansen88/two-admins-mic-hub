@@ -337,6 +337,17 @@ export interface Episode {
   guest?: EpisodeGuest;
 }
 
+function normalizeEpisodeDuration(duration?: string): string {
+  const value = (duration || '').trim();
+
+  if (!value) return '';
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(value)) return value;
+  if (/^\d+\s*min(ute)?s?$/i.test(value)) return value;
+  if (/^\d+$/.test(value)) return `${value} min`;
+
+  return value;
+}
+
 // Load all .json files from src/content/podcasts/
 const podcastModules = import.meta.glob('../content/podcasts/*.json', {
   eager: true,
@@ -376,7 +387,7 @@ function parsePodcastJson(mod: Record<string, unknown>): Episode {
     title: (data.title as string) || 'Untitled',
     slug: (data.slug as string) || '',
     description: (data.description as string) || '',
-    duration: (data.duration as string) || '',
+    duration: normalizeEpisodeDuration(data.duration as string | undefined),
     date: formatDate((data.date as string) || ''),
     topics: ((data.topics as string[]) || []) as SharedTopic[],
     explicit: Boolean(data.explicit ?? data.isExplicit ?? false),
