@@ -75,6 +75,7 @@ const App = () => (
             <Route path="publish-episode" element={<PublishEpisode />} />
             <Route path="blog-posts" element={<ManageBlogPosts />} />
             <Route path="publish-blog" element={<PublishBlog />} />
+            <Route path="analytics" element={<SiteAnalytics />} />
             <Route path="merchandise" element={<ManageMerch />} />
             <Route path="popups" element={<ManagePopups />} />
             <Route path="tags" element={<ManageTags />} />
