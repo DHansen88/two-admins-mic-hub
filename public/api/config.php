@@ -31,6 +31,11 @@ defined('BEEHIIV_PUBLICATION_ID') || define('BEEHIIV_PUBLICATION_ID', '');
 defined('BEEHIIV_STATE_FILE') || define('BEEHIIV_STATE_FILE', dirname(__DIR__, 2) . '/storage/beehiiv-state.json');
 defined('SITE_PUBLIC_URL') || define('SITE_PUBLIC_URL', 'https://twoadminsandamic.com');
 
+// Anonymous first-party analytics.
+// Salt used (together with the current date) to hash visitor IPs so no raw IP
+// is ever stored. Override in public/api/config.local.php with a random string.
+defined('ANALYTICS_SALT') || define('ANALYTICS_SALT', 'change-me-analytics-salt');
+
 // CORS — explicit origins are required when cookies/sessions are used
 defined('ALLOWED_ORIGINS') || define('ALLOWED_ORIGINS', [
     'https://twoadminsandamic.com',
