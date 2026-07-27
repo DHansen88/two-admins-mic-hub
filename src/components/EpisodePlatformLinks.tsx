@@ -134,6 +134,8 @@ const EpisodePlatformLinks = ({
           <a
             key={item.key}
             href={item.url}
+            data-track="podcast-platform"
+            data-track-label={`Listen on ${item.label}`}
             target="_blank"
             rel="noopener noreferrer"
             className={cn(

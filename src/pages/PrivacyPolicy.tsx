@@ -41,6 +41,16 @@ const PrivacyPolicy = () => {
                 <li><strong>IP address</strong> — collected automatically for analytics and security purposes</li>
                 <li><strong>Cookies and tracking technologies</strong> — see our <a href="/cookie-policy" className="text-primary hover:underline">Cookie Policy</a> for details</li>
               </ul>
+
+              <h3 className="text-xl font-semibold text-foreground mt-6 mb-2">First-Party Website Measurement</h3>
+              <p>
+                We also run our own anonymous measurement directly on our servers to understand which
+                pages, episodes, and links visitors find most useful. This records the page visited, the
+                link or button clicked, the referring site, device and browser type, and the date and time.
+                It sets no cookies and does not identify you: your IP address is never stored, only a
+                one-way hash that changes every day and cannot be linked back to you or reused to track
+                you over time.
+              </p>
             </section>
 
             <section>

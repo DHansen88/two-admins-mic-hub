@@ -399,7 +399,7 @@ const BlueprintStepper = () => {
       {/* CTA */}
       <div className="text-center mt-12">
         <Button asChild size="lg" className="bg-teal hover:bg-teal/90 text-background font-semibold px-8 py-6 text-base">
-          <a href="https://conantleadership.mykajabi.com/offers/JCoEFqw7/checkout" target="_blank" rel="noopener noreferrer">Start Your STEPS Leadership Program </a>
+          <a href="https://conantleadership.mykajabi.com/offers/JCoEFqw7/checkout" data-track="steps-checkout" data-track-label="STEPS checkout" target="_blank" rel="noopener noreferrer">Start Your STEPS Leadership Program </a>
         </Button>
       </div>
     </>);
@@ -737,7 +737,7 @@ const Steps = () => {
                 specifically for administrators.
               </p>
               <Button asChild size="lg" className="bg-coral hover:bg-coral/90 text-background font-semibold px-10 py-6 text-base">
-                <a href="https://conantleadership.mykajabi.com/offers/JCoEFqw7/checkout" target="_blank" rel="noopener noreferrer">
+                <a href="https://conantleadership.mykajabi.com/offers/JCoEFqw7/checkout" data-track="steps-checkout" data-track-label="STEPS checkout" target="_blank" rel="noopener noreferrer">
                   Start Your Leadership Journey
                 </a>
               </Button>

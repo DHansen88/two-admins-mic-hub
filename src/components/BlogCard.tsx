@@ -18,6 +18,7 @@ interface BlogCardProps {
 const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug, author, featuredImage, tagStyles }: BlogCardProps) => {
   return (
     <Link
+      data-track="blog-card"
       to={`/blog/${slug}`}
       className="block group"
       onClick={() => window.scrollTo(0, 0)}

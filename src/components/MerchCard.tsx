@@ -12,6 +12,7 @@ const MerchCard = ({ product, avgRating }: MerchCardProps) => {
 
   return (
     <Link
+      data-track="merch"
       to={`/merch/${product.slug}`}
       className={`group relative bg-card rounded-2xl border border-border overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-accent/40 block ${
         outOfStock ? "opacity-70" : ""

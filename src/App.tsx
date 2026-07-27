@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
 import PopupModal from "@/components/PopupModal";
+import AnalyticsProvider from "@/components/AnalyticsProvider";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Episodes from "./pages/Episodes";
@@ -35,6 +36,7 @@ import ManageUsers from "./pages/admin/ManageUsers";
 import ManageAuthors from "./pages/admin/ManageAuthors";
 import ManageEpisodes from "./pages/admin/ManageEpisodes";
 import ManageBlogPosts from "./pages/admin/ManageBlogPosts";
+import SiteAnalytics from "./pages/admin/SiteAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +47,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <AnalyticsProvider />
         <PopupModal />
         <Routes>
           <Route path="/" element={<Index />} />
@@ -72,6 +75,7 @@ const App = () => (
             <Route path="publish-episode" element={<PublishEpisode />} />
             <Route path="blog-posts" element={<ManageBlogPosts />} />
             <Route path="publish-blog" element={<PublishBlog />} />
+            <Route path="analytics" element={<SiteAnalytics />} />
             <Route path="merchandise" element={<ManageMerch />} />
             <Route path="popups" element={<ManagePopups />} />
             <Route path="tags" element={<ManageTags />} />

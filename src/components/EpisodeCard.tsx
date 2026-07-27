@@ -37,6 +37,8 @@ const EpisodeCard = (episode: EpisodeCardProps) => {
     <Card
       className="group hover:shadow-xl transition-all duration-300 overflow-hidden border-border hover:border-accent cursor-pointer"
       onClick={goToDetail}
+      data-track="episode-card"
+      data-track-label={`Episode — ${episode.title}`}
       data-host={hostKey}
       data-topic={episode.topics.map((t) => t.toLowerCase().replace(/\s+/g, "-")).join(" ")}
     >

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Mic,
   FileText,
+  BarChart3,
   ShoppingBag,
   Megaphone,
   Tags,
@@ -18,6 +19,7 @@ import {
 const allNavItems = [
   { label: "Blog Posts", path: "/admin/blog-posts", icon: FileText, minRole: "intern" as const },
   { label: "Episodes", path: "/admin/episodes", icon: Mic, minRole: "intern" as const },
+  { label: "Site Analytics", path: "/admin/analytics", icon: BarChart3, minRole: "manager" as const },
   { label: "Tag Manager", path: "/admin/tags", icon: Tags, minRole: "manager" as const },
   { label: "Author Library", path: "/admin/authors", icon: UserCircle, minRole: "manager" as const },
   { label: "Merchandise", path: "/admin/merchandise", icon: ShoppingBag, minRole: "manager" as const },

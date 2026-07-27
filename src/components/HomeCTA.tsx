@@ -16,13 +16,13 @@ const HomeCTA = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
             <Button asChild size="lg" className="bg-coral-accent hover:bg-coral-accent/90 text-lg px-8 py-6">
-              <Link to="/episodes" onClick={() => window.scrollTo(0, 0)}>
+              <Link to="/episodes" data-track="home-cta" data-track-label="Home CTA — Episodes" onClick={() => window.scrollTo(0, 0)}>
                 <Headphones className="mr-2 h-5 w-5" />
                 Listen to the Podcast
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="bg-transparent border-2 border-background text-background hover:bg-background hover:text-navy text-lg px-8 py-6">
-              <Link to="/blog" onClick={() => window.scrollTo(0, 0)}>
+              <Link to="/blog" data-track="home-cta" data-track-label="Home CTA — Blog" onClick={() => window.scrollTo(0, 0)}>
                 <BookOpen className="mr-2 h-5 w-5" />
                 Explore the Blog
               </Link>

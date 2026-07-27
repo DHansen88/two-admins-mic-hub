@@ -81,6 +81,8 @@ No spam — just the good stuff.
                     
                     <Button
                       type="submit"
+                      data-track="newsletter"
+                      data-track-label="Newsletter subscribe"
                       disabled={status === "submitting" || status === "success"}
                       className="h-12 px-6 rounded-xl bg-coral hover:bg-coral/90 text-white font-semibold text-base transition-all disabled:opacity-70 shadow-md shadow-coral/20 hover:shadow-lg hover:shadow-coral/30 shrink-0 w-full sm:w-auto">
                       
