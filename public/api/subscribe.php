@@ -113,12 +113,88 @@ function beehiivRequest(string $method, string $url, string $apiKey, ?array $pay
     ];
 }
 
+function addSubscriptionTags(
+    string $publicationId,
+    string $apiKey,
+    string $subscriptionId,
+    array $tags
+): array {
+    $cleanTags = array_values(array_unique(array_filter(array_map(
+        static fn($tag) => trim((string) $tag),
+        $tags
+    ))));
+
+    if (empty($cleanTags)) {
+        return ['success' => true, 'errors' => []];
+    }
+
+    $url = "https://api.beehiiv.com/v2/publications/" . rawurlencode($publicationId)
+        . "/subscriptions/" . rawurlencode($subscriptionId) . "/tags";
+    $result = beehiivRequest('POST', $url, $apiKey, [
+        'tags' => $cleanTags,
+    ]);
+
+    if ($result['error']) {
+        return [
+            'success' => false,
+            'errors' => ["tags-curl:" . $result['error']],
+        ];
+    }
+
+    if ($result['httpCode'] < 200 || $result['httpCode'] >= 300) {
+        return [
+            'success' => false,
+            'errors' => ["tags-http:" . $result['httpCode'] . ':' . ($result['response'] ?: '')],
+        ];
+    }
+
+    return ['success' => true, 'errors' => []];
+}
+
+function getSubscriptionIdByEmail(string $publicationId, string $apiKey, string $email): array {
+    $url = "https://api.beehiiv.com/v2/publications/" . rawurlencode($publicationId)
+        . "/subscriptions/by_email/" . rawurlencode($email);
+    $result = beehiivRequest('GET', $url, $apiKey);
+
+    if ($result['error']) {
+        return [
+            'success' => false,
+            'id' => null,
+            'errors' => ["lookup-curl:" . $result['error']],
+        ];
+    }
+
+    if ($result['httpCode'] < 200 || $result['httpCode'] >= 300) {
+        return [
+            'success' => false,
+            'id' => null,
+            'errors' => ["lookup-http:" . $result['httpCode'] . ':' . ($result['response'] ?: '')],
+        ];
+    }
+
+    $subscriptionId = $result['decoded']['data']['id'] ?? null;
+    if (!is_string($subscriptionId) || trim($subscriptionId) === '') {
+        return [
+            'success' => false,
+            'id' => null,
+            'errors' => ['lookup-missing-id'],
+        ];
+    }
+
+    return [
+        'success' => true,
+        'id' => $subscriptionId,
+        'errors' => [],
+    ];
+}
+
 function syncExistingConantSubscription(
     string $publicationId,
     string $apiKey,
     string $email,
     string $firstName,
     string $lastName,
+    array $tagNames,
     array $automationIds
 ): array {
     $errors = [];
@@ -135,6 +211,18 @@ function syncExistingConantSubscription(
             $errors[] = "custom-fields-curl:" . $updateResult['error'];
         } elseif ($updateResult['httpCode'] < 200 || $updateResult['httpCode'] >= 300) {
             $errors[] = "custom-fields-http:" . $updateResult['httpCode'];
+        }
+    }
+
+    if (!empty($tagNames)) {
+        $lookupResult = getSubscriptionIdByEmail($publicationId, $apiKey, $email);
+        if (!$lookupResult['success']) {
+            $errors = array_merge($errors, $lookupResult['errors']);
+        } else {
+            $tagResult = addSubscriptionTags($publicationId, $apiKey, $lookupResult['id'], $tagNames);
+            if (!$tagResult['success']) {
+                $errors = array_merge($errors, $tagResult['errors']);
+            }
         }
     }
 
@@ -208,6 +296,13 @@ $conantTagName = resolveConfigValue([
     'BEEHIIV_CONANT_TAG',
     'BEEHIIV_CONANT_TAG_NAME',
 ], 'conantleadership');
+$conantTagNames = resolveConfigList([
+    'BEEHIIV_CONANT_TAGS',
+    'BEEHIIV_CONANT_TAG_NAMES',
+]);
+if (empty($conantTagNames) && $conantTagName !== '') {
+    $conantTagNames = [$conantTagName];
+}
 $conantAutomationIds = resolveConfigList([
     'BEEHIIV_CONANT_AUTOMATION_IDS',
     'BEEHIIV_CONANT_AUTOMATION_ID',
@@ -232,9 +327,6 @@ $payload = array_filter([
     'send_welcome_email' => true,
     'double_opt_override' => 'on',
     'custom_fields' => $customFields,
-    // Best-effort compatibility path for legacy behavior; Beehiiv's documented
-    // routing options are automations and newsletter lists.
-    'tags' => ($conantLeadership && $conantTagName !== '') ? [$conantTagName] : null,
     'automation_ids' => ($conantLeadership && !empty($conantAutomationIds)) ? $conantAutomationIds : null,
     'newsletter_list_ids' => ($conantLeadership && !empty($conantNewsletterListIds)) ? $conantNewsletterListIds : null,
 ], fn($v) => $v !== null);
@@ -252,6 +344,25 @@ if ($curlError) {
 if ($httpCode >= 200 && $httpCode < 300) {
     $decoded = json_decode($response, true);
     $status = $decoded['data']['status'] ?? null;
+    $subscriptionId = $decoded['data']['id'] ?? null;
+
+    if ($conantLeadership && !empty($conantTagNames)) {
+        if (!is_string($subscriptionId) || trim($subscriptionId) === '') {
+            $lookupResult = getSubscriptionIdByEmail($publicationId, $apiKey, $email);
+            if (!$lookupResult['success']) {
+                error_log("Beehiiv ConantLeadership tag lookup failed: " . implode(', ', $lookupResult['errors']));
+                jsonResponse(['error' => 'Subscription saved, but ConantLeadership tag could not be applied. Please try again.'], 500);
+            }
+            $subscriptionId = $lookupResult['id'];
+        }
+
+        $tagResult = addSubscriptionTags($publicationId, $apiKey, $subscriptionId, $conantTagNames);
+        if (!$tagResult['success']) {
+            error_log("Beehiiv ConantLeadership tag failed: " . implode(', ', $tagResult['errors']));
+            jsonResponse(['error' => 'Subscription saved, but ConantLeadership tag could not be applied. Please try again.'], 500);
+        }
+    }
+
     jsonResponse([
         'success' => true,
         'message' => $status === 'validating'
@@ -260,13 +371,14 @@ if ($httpCode >= 200 && $httpCode < 300) {
         'status' => $status,
     ]);
 } elseif ($httpCode === 409) {
-    if ($conantLeadership && !empty($conantAutomationIds)) {
+    if ($conantLeadership) {
         $syncResult = syncExistingConantSubscription(
             $publicationId,
             $apiKey,
             $email,
             $firstName,
             $lastName,
+            $conantTagNames,
             $conantAutomationIds
         );
 
