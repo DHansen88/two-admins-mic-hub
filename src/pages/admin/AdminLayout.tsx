@@ -14,6 +14,7 @@ import {
   UserCircle,
   LogOut,
   ChevronLeft,
+  BarChart3,
 } from "lucide-react";
 
 const allNavItems = [
@@ -24,6 +25,7 @@ const allNavItems = [
   { label: "Author Library", path: "/admin/authors", icon: UserCircle, minRole: "manager" as const },
   { label: "Merchandise", path: "/admin/merchandise", icon: ShoppingBag, minRole: "manager" as const },
   { label: "Popups", path: "/admin/popups", icon: Megaphone, minRole: "manager" as const },
+  { label: "Site Analytics", path: "/admin/analytics", icon: BarChart3, minRole: "manager" as const },
   { label: "User Management", path: "/admin/users", icon: Users, minRole: "admin" as const },
 ];
 
@@ -47,7 +49,7 @@ const AdminLayout = () => {
 
     if (isDev) {
       // Bypass login in dev/preview
-      setUser({ name: "Dev Admin", role: "admin", email: "dev@localhost" } as any);
+      setUser({ id: 0, name: "Dev Admin", role: "admin", email: "dev@localhost" });
       setShowLogin(false);
       setCheckingSession(false);
       return;
@@ -154,7 +156,7 @@ const AdminLayout = () => {
       </aside>
 
       <main className="flex-1 min-w-0">
-        <div className="p-6 lg:p-8 max-w-5xl">
+        <div className="p-6 lg:p-8 max-w-7xl">
           <Outlet />
         </div>
       </main>

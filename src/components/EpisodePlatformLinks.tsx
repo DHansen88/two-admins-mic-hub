@@ -138,6 +138,9 @@ const EpisodePlatformLinks = ({
             data-track-label={`Listen on ${item.label}`}
             target="_blank"
             rel="noopener noreferrer"
+            data-analytics-click="listen_platform"
+            data-analytics-category="listen"
+            data-analytics-label={item.label}
             className={cn(
               "inline-flex items-center rounded-full font-semibold transition-transform duration-200 hover:-translate-y-0.5",
               compact ? "gap-1.5 px-3 py-1.5 text-xs" : "gap-2 px-3.5 py-2 text-sm",

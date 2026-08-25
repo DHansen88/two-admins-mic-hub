@@ -22,6 +22,9 @@ const BlogCard = ({ title, excerpt, date, readTime, topics = [], slug, author, f
       to={`/blog/${slug}`}
       className="block group"
       onClick={() => window.scrollTo(0, 0)}
+      data-analytics-click="blog_card"
+      data-analytics-category="blog"
+      data-analytics-label={title}
     >
       <Card className="h-full overflow-hidden bg-card border-border hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer rounded-xl">
         {/* Featured Image */}

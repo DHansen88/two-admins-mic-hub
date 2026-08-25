@@ -206,6 +206,137 @@ All colors MUST be HSL.
   min-height: 400px;
 }
 
+/* Public blog article rich text — match the admin editor without stacked prose margins. */
+.article-content {
+  color: hsl(var(--foreground) / 0.82);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.article-content > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.article-content p {
+  margin: 0;
+  text-align: left;
+}
+
+.article-content p + p {
+  margin-top: 0.85rem;
+}
+
+.article-content .article-blank-line {
+  display: none;
+}
+
+.article-content :is(h1, h2, h3, h4) {
+  color: hsl(var(--foreground));
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.article-content h1 {
+  font-size: 1.5rem;
+  margin-top: 1.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.article-content h2 {
+  font-size: 1.35rem;
+  margin-top: 1.6rem;
+  margin-bottom: 0.55rem;
+}
+
+.article-content h3 {
+  font-size: 1.2rem;
+  margin-top: 1.4rem;
+  margin-bottom: 0.45rem;
+}
+
+.article-content :is(h1, h2, h3, h4):first-child {
+  margin-top: 0;
+}
+
+.article-content :is(h1, h2, h3, h4) + .article-blank-line,
+.article-content hr + .article-blank-line,
+.article-content .article-blank-line:first-child,
+.article-content .article-blank-line:last-child {
+  display: none;
+}
+
+.article-content strong {
+  color: hsl(var(--foreground));
+  font-weight: 650;
+}
+
+.article-content em {
+  font-style: italic;
+}
+
+.article-content a {
+  color: hsl(var(--accent));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.article-content :is(ul, ol) {
+  margin: 0.9rem 0 1rem;
+  padding-left: 1.5rem;
+}
+
+.article-content ul {
+  list-style-type: disc;
+}
+
+.article-content ol {
+  list-style-type: decimal;
+}
+
+.article-content li {
+  margin: 0.35rem 0;
+  padding-left: 0.15rem;
+}
+
+.article-content li > p {
+  margin: 0;
+}
+
+.article-content blockquote {
+  border-left: 4px solid hsl(var(--border));
+  color: hsl(var(--foreground) / 0.72);
+  font-style: italic;
+  margin: 1.5rem 0;
+  padding-left: 1rem;
+}
+
+.article-content img {
+  border-radius: 0.5rem;
+  display: block;
+  height: auto;
+  margin: 1.5rem auto;
+  max-width: 100%;
+}
+
+.article-content hr {
+  border: 0;
+  border-top: 1px solid hsl(var(--border));
+  margin: 1.5rem 0;
+}
+
+@media (min-width: 768px) {
+  .article-content {
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+
+  .article-content p + p {
+    margin-top: 0.9rem;
+  }
+}
+
 /* Popup description text — respect line breaks, readable spacing */
 .popup-description {
   white-space: pre-line;

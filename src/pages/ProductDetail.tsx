@@ -17,6 +17,7 @@ import {
 } from "@/data/merchData";
 import { Button } from "@/components/ui/button";
 import { Star, Minus, Plus, ChevronLeft, ShoppingCart, ChevronRight, ZoomIn, X } from "lucide-react";
+import { trackClick, trackOutboundClick } from "@/lib/site-analytics";
 
 /* ── Star helpers ── */
 const Stars = ({ rating, size = "h-4 w-4" }: { rating: number; size?: string }) => (
@@ -172,7 +173,22 @@ const ProductDetail = () => {
   };
 
   const handlePurchase = () => {
+    trackClick("merch_checkout", {
+      event_category: "merch",
+      target_text: product.name,
+      target_url: product.paypalLink || "/merch/thank-you",
+      metadata: {
+        product_id: product.id,
+        quantity,
+        size: selectedSize,
+      },
+    });
+
     if (product.paypalLink) {
+      trackOutboundClick("merch_checkout_outbound", product.paypalLink, {
+        event_category: "merch",
+        target_text: product.name,
+      });
       window.open(product.paypalLink, "_blank");
       return;
     }

@@ -30,6 +30,7 @@ defined('BEEHIIV_API_KEY') || define('BEEHIIV_API_KEY', '');
 defined('BEEHIIV_PUBLICATION_ID') || define('BEEHIIV_PUBLICATION_ID', '');
 defined('BEEHIIV_STATE_FILE') || define('BEEHIIV_STATE_FILE', dirname(__DIR__, 2) . '/storage/beehiiv-state.json');
 defined('SITE_PUBLIC_URL') || define('SITE_PUBLIC_URL', 'https://twoadminsandamic.com');
+defined('ANALYTICS_SALT') || define('ANALYTICS_SALT', '');
 
 // Anonymous first-party analytics.
 // Salt used (together with the current date) to hash visitor IPs so no raw IP

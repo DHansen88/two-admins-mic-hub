@@ -11,6 +11,22 @@ import EpisodeCallout from "@/components/EpisodeCallout";
 import { useVisibleBlogBySlug, useVisibleRelatedPosts, useVisibleRelatedEpisodesForBlog, useVisibleEpisodes } from "@/hooks/useVisibleContent";
 import { ArrowLeft, Lightbulb, Linkedin, Globe } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { BlogPost as BlogPostData } from "@/lib/content-loader";
+
+type RichBlogPost = BlogPostData & {
+  html_content?: string;
+  coverImage?: string;
+  heroImage?: string;
+};
+
+function normalizeArticleHtml(html: string): string {
+  return html
+    .replace(/<br\s+class=["']ProseMirror-trailingBreak["']\s*\/?>/gi, "")
+    .replace(/<p>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>/gi, "")
+    .replace(/<p>\s*(?:<br\s*\/?>\s*)+/gi, "<p>")
+    .replace(/(?:<br\s*\/?>\s*(?:&nbsp;|\s)*)+<\/p>/gi, "</p>")
+    .replace(/(?:<div class="article-blank-line" aria-hidden="true"><\/div>\s*)+/gi, "");
+}
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -29,9 +45,10 @@ const BlogPost = () => {
 
   const renderedHtml = useMemo(() => {
     if (!post) return "";
-    if ((post as any).html_content) return (post as any).html_content;
+    const richPost = post as RichBlogPost;
+    if (richPost.html_content) return normalizeArticleHtml(richPost.html_content);
     if (post.blocks && post.blocks.length > 0) return "";
-    if (post.content) return marked.parse(post.content, { async: false, breaks: true }) as string;
+    if (post.content) return normalizeArticleHtml(marked.parse(post.content, { async: false, breaks: true }) as string);
     return "";
   }, [post]);
 
@@ -49,6 +66,7 @@ const BlogPost = () => {
 
   if (!post) return <Navigate to="/blog" replace />;
 
+  const richPost = post as RichBlogPost;
   const hasAuthorData = post.authors.some((a) => a.bio || a.avatar);
 
   return (
@@ -58,7 +76,7 @@ const BlogPost = () => {
         description={post.excerpt}
         path={`/blog/${post.slug}`}
         type="article"
-        image={(post as any).coverImage || (post as any).heroImage}
+        image={richPost.coverImage || richPost.heroImage || post.featuredImage}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "BlogPosting",
@@ -126,21 +144,7 @@ const BlogPost = () => {
             <BlogBlockRenderer blocks={post.blocks} />
           ) : renderedHtml ? (
             <div
-              className="article-content prose prose-lg max-w-none
-                [&>*+*]:mt-6 [&_div+div]:mt-6 [&_p:empty]:hidden
-                prose-headings:font-display prose-headings:text-foreground
-                prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-8 prose-h2:mb-4
-                prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-7 prose-h3:mb-3
-                prose-p:text-foreground/80 prose-p:text-base prose-p:md:text-lg prose-p:leading-[1.75] prose-p:mb-6 prose-p:text-left
-                prose-strong:text-foreground prose-strong:font-semibold
-                prose-li:text-foreground/80 prose-li:leading-relaxed prose-li:my-2 prose-li:pl-1 prose-li:marker:text-foreground/60
-                prose-ul:my-6 prose-ul:pl-6 prose-ul:list-disc prose-ol:my-6 prose-ol:pl-6 prose-ol:list-decimal
-                [&_li_p]:my-0 [&_ul_ul]:mt-3 [&_ol_ol]:mt-3
-                prose-blockquote:border-l-4 prose-blockquote:border-border prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-foreground/70 prose-blockquote:my-6
-                prose-img:rounded-lg prose-img:w-full prose-img:my-8
-                prose-hr:my-10 prose-hr:border-border
-                prose-a:text-accent prose-a:underline prose-a:underline-offset-2
-                animate-fade-in"
+              className="article-content animate-fade-in"
               dangerouslySetInnerHTML={{ __html: renderedHtml }}
             />
           ) : null}

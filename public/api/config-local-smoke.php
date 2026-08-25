@@ -21,4 +21,5 @@ echo json_encode([
     'ok' => true,
     'endpoint' => 'config-local-smoke',
     'exists' => true,
+    'has_analytics_salt' => defined('ANALYTICS_SALT') && ANALYTICS_SALT !== '',
 ]);

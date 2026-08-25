@@ -1,3 +1,5 @@
+import { trackClick } from "@/lib/site-analytics";
+
 export interface NewsletterSubscribePayload {
   email: string;
   first_name?: string;
@@ -16,6 +18,14 @@ export async function submitNewsletterSubscription(
   payload: NewsletterSubscribePayload
 ): Promise<NewsletterSubscribeResult> {
   try {
+    trackClick("newsletter_submit", {
+      event_category: "newsletter",
+      target_text: payload.conant_leadership ? "TAAM + ConantLeadership" : "TAAM",
+      metadata: {
+        conant_leadership: Boolean(payload.conant_leadership),
+      },
+    });
+
     const res = await fetch("/api/subscribe.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

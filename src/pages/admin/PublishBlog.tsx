@@ -57,6 +57,15 @@ function markdownToHtml(markdown: string): string {
   return marked.parse(markdown, { async: false, breaks: true }) as string;
 }
 
+function normalizeRichTextHtml(html: string): string {
+  return html
+    .replace(/<br\s+class=["']ProseMirror-trailingBreak["']\s*\/?>/gi, "")
+    .replace(/<p>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>/gi, "")
+    .replace(/<p>\s*(?:<br\s*\/?>\s*)+/gi, "<p>")
+    .replace(/(?:<br\s*\/?>\s*(?:&nbsp;|\s)*)+<\/p>/gi, "</p>")
+    .trim();
+}
+
 function normalizeMarkdownSpacing(markdown: string): string {
   return markdown
     .replace(/\r\n/g, "\n")
@@ -350,13 +359,13 @@ setAuthorAvatars(avatarMap);
         // Load HTML content first (from companion .html.json), fall back to markdown
         const contentBody = blog._content || blog.content || "";
         if (blog.html_content) {
-          setHtmlContent(blog.html_content);
+          setHtmlContent(normalizeRichTextHtml(blog.html_content));
           setMarkdownContent(contentBody);
           setEditorMode("rich");
         } else if (contentBody) {
           const md = contentBody;
           const basicHtml = markdownToHtml(md);
-          setHtmlContent(basicHtml);
+          setHtmlContent(normalizeRichTextHtml(basicHtml));
           setMarkdownContent(md);
           setEditorMode("rich");
         }
@@ -369,7 +378,7 @@ setAuthorAvatars(avatarMap);
     };
 
     loadBlog();
-  }, [searchParams, authorOptions]);
+  }, [searchParams, authorOptions, toast]);
 
   // Derive plain text content for word count, auto-gen etc.
   const currentPlainText = useMemo(() => {
@@ -400,9 +409,9 @@ setAuthorAvatars(avatarMap);
     const uploadedUrl = await uploadFeaturedImageToServer(file);
     setFeaturedImage(uploadedUrl);
     toast({ title: "Featured image uploaded" });
-  } catch (error: any) {
+  } catch (error) {
     toast({
-      title: error?.message || "Failed to upload image",
+      title: error instanceof Error ? error.message : "Failed to upload image",
       variant: "destructive",
     });
   }
@@ -492,7 +501,7 @@ setAuthorAvatars(avatarMap);
     const slug = customSlug || generateSlug(title) || "new";
     saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
-      htmlContent, markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
+      htmlContent: normalizeRichTextHtml(htmlContent), markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
     });
@@ -555,7 +564,7 @@ setAuthorAvatars(avatarMap);
     related_episode: relatedEpisode || undefined,
     show_episode_callout: showEpisodeCallout,
     content: currentMarkdown,
-    html_content: editorMode === "rich" ? htmlContent : undefined,
+    html_content: editorMode === "rich" ? normalizeRichTextHtml(htmlContent) : undefined,
     format: "md",
   });
 
@@ -586,8 +595,8 @@ setAuthorAvatars(avatarMap);
       });
       toast({ title: `Blog scheduled for ${date} at ${time}` });
       navigate("/admin/blog-posts");
-    } catch (e: any) {
-      toast({ title: "Failed to schedule", description: e.message, variant: "destructive" });
+    } catch (e) {
+      toast({ title: "Failed to schedule", description: e instanceof Error ? e.message : undefined, variant: "destructive" });
     }
   };
 
@@ -595,7 +604,7 @@ setAuthorAvatars(avatarMap);
     const slug = customSlug || generateSlug(title) || "new";
     saveDraft(`blog-${slug}`, {
       title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
-      htmlContent, markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
+      htmlContent: normalizeRichTextHtml(htmlContent), markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
       featuredImage, excerpt, readingTime, seoDescription,
       keyTakeaways, generatedNewsletter,
     });
@@ -643,7 +652,7 @@ setAuthorAvatars(avatarMap);
             <label className="text-sm font-medium text-foreground">URL Slug</label>
             <Input
               value={customSlug}
-              onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\-]/g, '-').replace(/-{2,}/g, '-'))}
+              onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-{2,}/g, '-'))}
               onBlur={() => setCustomSlug((s) => s.replace(/^-+|-+$/g, ''))}
               placeholder={generateSlug(title) || "auto-generated-from-title"}
             />

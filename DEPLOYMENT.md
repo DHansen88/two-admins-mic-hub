@@ -42,6 +42,7 @@ Before uploading, edit these files **inside the `dist/` folder**:
 | `api/config.php` | Set `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` with Hostinger MySQL credentials |
 | `api/config.php` | Change `ALLOWED_ORIGIN` to `'https://twoadminsandamic.com'` |
 | `api/config.php` | Change `INITIAL_ADMIN_PASSWORD` to a strong password |
+| `api/config.local.php` | Set a random `ANALYTICS_SALT` value for anonymous visitor hashing |
 | `api/subscribe.php` | Add your Beehiiv API key to `BEEHIIV_API_KEY` |
 
 ## 3. Upload to Hostinger
@@ -72,6 +73,8 @@ If the `Directory` field is set incorrectly, Hostinger may serve files from the 
        Deny from all
    </Files>
    ```
+3. Visit `https://yourdomain.com/api/config-local-smoke.php` and confirm `has_analytics_salt` is `true`
+4. Open a public page, then visit `https://yourdomain.com/admin/analytics` to confirm events appear
 
 ## 5. Verify
 
@@ -80,6 +83,7 @@ If the `Directory` field is set incorrectly, Hostinger may serve files from the 
 - ✅ Images and styles load correctly
 - ✅ Newsletter subscription works
 - ✅ Admin login works at `/admin/login`
+- ✅ Admin → Site Analytics shows page views and tagged clicks
 
 ## Build optimizations included
 

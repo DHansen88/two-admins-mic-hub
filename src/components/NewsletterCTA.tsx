@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Send, CheckCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trackClick } from "@/lib/site-analytics";
 
 const NewsletterCTA = () => {
   const [email, setEmail] = useState("");
@@ -19,6 +20,11 @@ const NewsletterCTA = () => {
     }
 
     setStatus("submitting");
+    trackClick("newsletter_submit", {
+      event_category: "newsletter",
+      target_text: conantLeadership ? "Footer newsletter + ConantLeadership" : "Footer newsletter",
+      metadata: { conant_leadership: conantLeadership },
+    });
 
     try {
       // Call our PHP backend proxy — keeps API key server-side
@@ -61,8 +67,9 @@ const NewsletterCTA = () => {
                     Stay in the Loop
                   </h2>
                 </div>
-                <p className="text-muted-foreground leading-relaxed text-sm md:text-base max-w-lg mx-auto lg:mx-0">Get episode drops, blog highlights, and admin-life tips delivered straight to your inbox. 
-No spam — just the good stuff.
+                <p className="text-muted-foreground leading-relaxed text-sm md:text-base max-w-lg mx-auto lg:mx-0">
+                  Get episode drops, blog highlights, and admin-life tips delivered straight to your inbox.
+                  No spam — just the good stuff.
                 </p>
               </div>
 

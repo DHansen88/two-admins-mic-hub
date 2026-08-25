@@ -109,7 +109,7 @@ const RichTextEditor = ({ content, onChange, minHeight = "400px" }: RichTextEdit
     },
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose dark:prose-invert max-w-none focus:outline-none px-4 py-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1",
+        class: "article-content article-content-editor max-w-none focus:outline-none px-4 py-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1",
         style: `min-height: ${minHeight}`,
       },
       handleDrop: (view, event) => {

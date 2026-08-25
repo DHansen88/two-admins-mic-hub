@@ -13,6 +13,7 @@ try {
         'connection' => false,
         'admin_users_exists' => false,
         'admin_activity_log_exists' => false,
+        'site_analytics_events_exists' => false,
     ];
 
     $db->query('SELECT 1');
@@ -22,6 +23,7 @@ try {
     $tableNames = array_map(static fn($row) => (string) ($row[0] ?? ''), $tables);
     $result['admin_users_exists'] = in_array('admin_users', $tableNames, true);
     $result['admin_activity_log_exists'] = in_array('admin_activity_log', $tableNames, true);
+    $result['site_analytics_events_exists'] = in_array('site_analytics_events', $tableNames, true);
 
     jsonResponse($result);
 } catch (Throwable $e) {
