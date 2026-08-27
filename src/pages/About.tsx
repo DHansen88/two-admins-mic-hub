@@ -16,10 +16,10 @@ const hosts = [{
   micBullets: ["Executive-level administrative expertise and real-world strategies", "Creative problem-solving and proactive leadership insights", "A blend of humor, heart, and no-nonsense professionalism"],
   tilt: "-rotate-2"
 }, {
-  name: "Melinda Vail Goodnight",
+  name: "Melinda Vail-Goodnight, CAP",
   title: "Founder & Co-Host",
   image: hostMelinda,
-  bio: "Melinda is a Senior Executive Assistant at Southwest Airlines, where she supports the Vice President and Chief Audit Executive. She also leads the Executive Assistants Professional Development Program at Southwest Airlines, focusing on training and development. Beyond her day-to-day responsibilities, Melinda is an active advocate, contributor, and resource for the administrative community. She has served as an advisory board member for The Admin Awards, contributing her expertise to recognize and celebrate excellence within the administrative profession. She is a respected voice in the admin community, an advocate for growth and recognition, and the kind of person who makes you better simply by being in the room. Outside of her professional work, Melinda enjoys time with her loving (and lively) family, which includes four sons, three daughters-in-law, and six wonderful grandchildren. Her hobbies include hiking, cooking, reading, gardening, and traveling whenever she can find the time.",
+  bio: "Melinda Vail-Goodnight, CAP, is a former Senior Executive Assistant at Southwest Airlines with more than 25 years of experience supporting senior leaders and building strong executive administrative partnerships.\n\nThroughout her career, Melinda has been a passionate advocate for the administrative profession, with a focus on elevating the role of Executive Assistants from support professionals to strategic business partners. She has led professional development and mentorship initiatives, spoken to administrative communities, and coached and mentored professionals at every stage of their careers.\n\nToday, Melinda is the creator of The Right Hand Advantage™ and co-host of Two Admins & a Mic™, where she brings candid conversations, humor, and real-world experience to topics affecting today's administrative professionals. She is also a member of the ConantLeadership STEPS Global Advisory Council and serves on the Advisory Board for The Admin Awards.\n\nHer work centers on one simple belief: when leaders and their administrative partners build relationships grounded in trust, communication, and mutual respect, both people, and the business perform better.",
   tags: ["Executive Support", "Professional Development", "Admin Advocacy"],
   micBullets: ["Senior-level executive support and organizational leadership", "Passion for professional development and mentoring admins", "Authentic perspectives on balancing career, family, and growth"],
   tilt: "rotate-2"
@@ -64,7 +64,7 @@ const HostCard = ({
         {/* Bio / What I Bring toggle */}
         <div className="relative min-h-[120px] cursor-pointer" onClick={() => setExpanded(!expanded)} onMouseEnter={() => setExpanded(true)} onMouseLeave={() => setExpanded(false)}>
           <div className={`transition-all duration-300 ${expanded ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"}`}>
-            <p className="text-muted-foreground leading-relaxed">{host.bio}</p>
+            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{host.bio}</p>
           </div>
           <div className={`absolute inset-0 transition-all duration-300 ${expanded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}>
             <p className="text-sm font-display font-semibold text-foreground mb-3">
@@ -109,7 +109,7 @@ const About = () => {
   return <div className="min-h-screen">
       <SEO
         title="About — Two Admins & a Mic™"
-        description="Meet Diana Hansen and Melinda Vail Goodnight — the executive admins behind the mic. Learn their story, expertise, and the mission driving the show."
+        description="Meet Diana Hansen and Melinda Vail-Goodnight, CAP — the executive admins behind the mic. Learn their story, expertise, and the mission driving the show."
         path="/about"
       />
       <Header />
