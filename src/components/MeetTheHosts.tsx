@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Award, Briefcase } from "lucide-react";
 import dianaHeadshot from "@/assets/images/authors/diana-headshot.jpeg";
-import melindaHeadshotAsset from "@/assets/melinda-headshot.png.asset.json";
+import melHeadshot from "@/assets/images/authors/mel-headshot.png";
 
 const hosts = [
   {
@@ -26,7 +26,7 @@ const hosts = [
   },
   {
     initial: "M",
-    headshot: melindaHeadshotAsset.url,
+    headshot: melHeadshot,
     name: "Melinda Vail-Goodnight, CAP",
     badge: "20+ Years Executive Support",
     badgeIcon: Briefcase,
