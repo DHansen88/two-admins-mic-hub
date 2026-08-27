@@ -14,7 +14,6 @@ import {
   UserCircle,
   LogOut,
   ChevronLeft,
-  BarChart3,
 } from "lucide-react";
 
 const allNavItems = [

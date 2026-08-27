@@ -27,10 +27,10 @@ const hosts = [
   {
     initial: "M",
     headshot: melHeadshot,
-    name: "Melinda Vail Goodnight",
+    name: "Melinda Vail-Goodnight, CAP",
     badge: "20+ Years Executive Support",
     badgeIcon: Briefcase,
-    bio: "Melinda is a Senior Executive Assistant at Southwest Airlines, supporting the Vice President and Chief Audit Executive. She leads the company’s Executive Assistants Professional Development Program, advancing training and growth across the administrative community. A respected advocate, she has served on The Admin Awards advisory board, championing excellence.",
+    bio: "Melinda Vail-Goodnight, CAP, is a former Senior Executive Assistant at Southwest Airlines with more than 25 years of experience supporting senior leaders and building strong executive administrative partnerships.\n\nThroughout her career, Melinda has been a passionate advocate for the administrative profession, with a focus on elevating the role of Executive Assistants from support professionals to strategic business partners. She has led professional development and mentorship initiatives, spoken to administrative communities, and coached and mentored professionals at every stage of their careers.\n\nToday, Melinda is the creator of The Right Hand Advantage™ and co-host of Two Admins & a Mic™, where she brings candid conversations, humor, and real-world experience to topics affecting today's administrative professionals. She is also a member of the ConantLeadership STEPS Global Advisory Council and serves on the Advisory Board for The Admin Awards.\n\nHer work centers on one simple belief: when leaders and their administrative partners build relationships grounded in trust, communication, and mutual respect, both people, and the business perform better.",
     skills: ["Operations", "Executive Support", "Process Optimization", "Communication"],
     meetLink: "/about#melinda",
     articlesLink: "/blog",
@@ -83,7 +83,7 @@ const MeetTheHosts = () => {
                   </div>
 
                   {/* Bio */}
-                  <p className="text-sm text-muted-foreground leading-relaxed">{host.bio}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{host.bio}</p>
 
 
                   {/* Buttons */}
