@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { Mic, Users, Target, Heart } from "lucide-react";
 import hostDmh from "@/assets/host-dmh.jpg";
-import hostMelinda from "@/assets/host-melinda.jpg";
+import hostMelinda from "@/assets/host-melinda.png";
 import conantLogo from "@/assets/conant-leadership-logo.png";
 const hosts = [{
   name: "Diana Hansen",
