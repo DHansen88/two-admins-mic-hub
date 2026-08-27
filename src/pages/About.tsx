@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { Mic, Users, Target, Heart } from "lucide-react";
 import hostDmh from "@/assets/host-dmh.jpg";
-import hostMelinda from "@/assets/host-melinda.png";
+import hostMelinda from "@/assets/host-melinda.jpg";
 import conantLogo from "@/assets/conant-leadership-logo.png";
 const hosts = [{
   name: "Diana Hansen",
@@ -19,7 +19,20 @@ const hosts = [{
   name: "Melinda Vail-Goodnight, CAP",
   title: "Founder & Co-Host",
   image: hostMelinda,
-  bio: "Melinda Vail-Goodnight, CAP, is a former Senior Executive Assistant at Southwest Airlines with more than 25 years of experience supporting senior leaders and building strong executive administrative partnerships.\n\nThroughout her career, Melinda has been a passionate advocate for the administrative profession, with a focus on elevating the role of Executive Assistants from support professionals to strategic business partners. She has led professional development and mentorship initiatives, spoken to administrative communities, and coached and mentored professionals at every stage of their careers.\n\nToday, Melinda is the creator of The Right Hand Advantage™ and co-host of Two Admins & a Mic™, where she brings candid conversations, humor, and real-world experience to topics affecting today's administrative professionals. She is also a member of the ConantLeadership STEPS Global Advisory Council and serves on the Advisory Board for The Admin Awards.\n\nHer work centers on one simple belief: when leaders and their administrative partners build relationships grounded in trust, communication, and mutual respect, both people, and the business perform better.",
+  bio: <>
+    <p>
+      Melinda Vail-Goodnight, CAP, is a former Senior Executive Assistant at Southwest Airlines with more than 25 years of experience supporting senior leaders and building strong executive administrative partnerships.
+    </p>
+    <p>
+      Throughout her career, Melinda has been a passionate advocate for the administrative profession, with a focus on elevating the role of Executive Assistants from support professionals to strategic business partners. She has led professional development and mentorship initiatives, spoken to administrative communities, and coached and mentored professionals at every stage of their careers.
+    </p>
+    <p>
+      Today, Melinda is the creator of <strong className="font-semibold text-foreground">The Right Hand Advantage™</strong> and co-host of <strong className="font-semibold text-foreground">Two Admins and a Mic</strong>, where she brings candid conversations, humor, and real-world experience to topics affecting today’s administrative professionals. She is also a member of the ConantLeadership STEPS Global Advisory Council and serves on the Advisory Board for The Admin Awards.
+    </p>
+    <p>
+      Her work centers on one simple belief: when leaders and their administrative partners build relationships grounded in trust, communication, and mutual respect, both people, and the business perform better.
+    </p>
+  </>,
   tags: ["Executive Support", "Professional Development", "Admin Advocacy"],
   micBullets: ["Senior-level executive support and organizational leadership", "Passion for professional development and mentoring admins", "Authentic perspectives on balancing career, family, and growth"],
   tilt: "rotate-2"
@@ -64,7 +77,7 @@ const HostCard = ({
         {/* Bio / What I Bring toggle */}
         <div className="relative min-h-[120px] cursor-pointer" onClick={() => setExpanded(!expanded)} onMouseEnter={() => setExpanded(true)} onMouseLeave={() => setExpanded(false)}>
           <div className={`transition-all duration-300 ${expanded ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"}`}>
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{host.bio}</p>
+            <div className="space-y-4 text-muted-foreground leading-relaxed">{host.bio}</div>
           </div>
           <div className={`absolute inset-0 transition-all duration-300 ${expanded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}>
             <p className="text-sm font-display font-semibold text-foreground mb-3">
