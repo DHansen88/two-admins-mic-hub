@@ -265,9 +265,13 @@ function handleSaveBlog(): void {
 
     $body = getRequestBody();
     $slug = sanitizeFilename($body['slug'] ?? '');
+    $requestedStatus = $body['status'] ?? 'published';
 
     if (!$slug) jsonResponse(['error' => 'Slug is required'], 400);
     if (empty($body['title'])) jsonResponse(['error' => 'Title is required'], 400);
+    if (!in_array($requestedStatus, ['draft', 'published'])) {
+        jsonResponse(['error' => 'Invalid status'], 400);
+    }
 
     $format = $body['format'] ?? 'md';
     $mdPath = BLOG_DIR . "/{$slug}.md";
@@ -286,13 +290,15 @@ function handleSaveBlog(): void {
             $authorList = [$body['author']];
         }
 
-        if (empty($authorList)) {
+        if ($requestedStatus !== 'draft' && empty($authorList)) {
             jsonResponse(['error' => 'At least one author is required'], 400);
         }
 
-        $frontmatter .= "authors:\n";
-        foreach ($authorList as $authorKey) {
-            $frontmatter .= "  - " . $authorKey . "\n";
+        if (!empty($authorList)) {
+            $frontmatter .= "authors:\n";
+            foreach ($authorList as $authorKey) {
+                $frontmatter .= "  - " . $authorKey . "\n";
+            }
         }
 
         if (!empty($body['author_avatars']) && is_array($body['author_avatars'])) {
@@ -358,7 +364,7 @@ function handleSaveBlog(): void {
             $authorList = [$body['author']];
         }
 
-        if (empty($authorList)) {
+        if ($requestedStatus !== 'draft' && empty($authorList)) {
             jsonResponse(['error' => 'At least one author is required'], 400);
         }
 
@@ -395,8 +401,10 @@ function handleSaveBlog(): void {
         }
     }
 
-    logContentAction($user, 'blog_published', "Published blog: {$body['title']}");
-    setContentStatus('blog', $slug, 'published');
+    $action = $requestedStatus === 'draft' ? 'blog_draft_saved' : 'blog_published';
+    $statusLabel = $requestedStatus === 'draft' ? 'Saved draft' : 'Published blog';
+    logContentAction($user, $action, "{$statusLabel}: {$body['title']}");
+    setContentStatus('blog', $slug, $requestedStatus);
 
     jsonResponse(['success' => true, 'slug' => $slug]);
 }

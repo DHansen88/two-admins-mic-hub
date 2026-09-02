@@ -273,6 +273,7 @@ const PublishBlog = () => {
   const [showGenerated, setShowGenerated] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [generatedNewsletter, setGeneratedNewsletter] = useState<{ subject: string; body: string } | null>(null);
+  const [showAuthorError, setShowAuthorError] = useState(false);
 
   useEffect(() => {
     setTags(getAllTags());
@@ -497,32 +498,7 @@ setAuthorAvatars(avatarMap);
     });
   };
 
-  const handleSaveDraft = async () => {
-    const slug = customSlug || generateSlug(title) || "new";
-    saveDraft(`blog-${slug}`, {
-      title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
-      htmlContent: normalizeRichTextHtml(htmlContent), markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
-      featuredImage, excerpt, readingTime, seoDescription,
-      keyTakeaways, generatedNewsletter,
-    });
-    await setStatusViaApi(slug, "draft");
-    toast({ title: "Draft saved" });
-    navigate("/admin/blog-posts");
-  };
-
-  const handlePublishNow = async () => {
-    const success = await handlePublishToServer();
-    if (!success) return;
-
-    const slug = customSlug || generateSlug(title);
-    await setStatusViaApi(slug, "published");
-    navigate("/admin/blog-posts");
-  };
-
-  const handlePublishToServer = async (): Promise<boolean> => {
-  const validAuthors = selectedAuthors.filter(Boolean);
-  const slug = customSlug || generateSlug(title);
-  const tagStyles = Object.fromEntries(
+  const buildTagStyles = () => Object.fromEntries(
     selectedTopics
       .map((topic) => {
         const match = tags.find((tag) => tag.name === topic);
@@ -536,40 +512,87 @@ setAuthorAvatars(avatarMap);
       .filter(Boolean) as Array<[string, { bgColor: string; textColor: string; borderColor?: string }]>
   );
 
+  const buildBlogPayload = (status: "draft" | "published") => {
+    const validAuthors = selectedAuthors.filter(Boolean);
+    const trimmedTitle = title.trim();
+    const draftTitle = trimmedTitle || "Untitled Draft";
+    const slug = customSlug || generateSlug(trimmedTitle) || `draft-${Date.now()}`;
+    const tagStyles = buildTagStyles();
+
+    return {
+      title: draftTitle,
+      slug,
+      author: validAuthors[0] || "",
+      authors: validAuthors,
+      author_avatars:
+        validAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
+          ? validAuthors.map((k) => authorAvatars[k] || "")
+          : undefined,
+      publish_date: publishDate,
+      tags: selectedTopics,
+      tag_styles: Object.keys(tagStyles).length > 0 ? tagStyles : undefined,
+      excerpt: excerpt || (currentPlainText ? generateExcerpt(currentPlainText) : ""),
+      featured_image: featuredImage || undefined,
+      key_takeaways: keyTakeaways,
+      related_episode: relatedEpisode || undefined,
+      show_episode_callout: showEpisodeCallout,
+      content: currentMarkdown,
+      html_content: editorMode === "rich" ? normalizeRichTextHtml(htmlContent) : undefined,
+      format: "md",
+      status,
+    };
+  };
+
+  const handleSaveDraft = async () => {
+    setShowAuthorError(false);
+    const draftPayload = buildBlogPayload("draft");
+    saveDraft(`blog-${draftPayload.slug}`, {
+      title: draftPayload.title, author: selectedAuthors.join(","), publishDate, selectedTopics, editorMode,
+      htmlContent: normalizeRichTextHtml(htmlContent), markdownContent: editorMode === "markdown" ? markdownContent : currentMarkdown,
+      featuredImage, excerpt, readingTime, seoDescription,
+      keyTakeaways, generatedNewsletter,
+    });
+    const result = await saveBlog(draftPayload);
+
+    if (result.success) {
+      saveToHistory("blog", { title: draftPayload.title, slug: draftPayload.slug, date: publishDate, author: draftPayload.authors.join(",") });
+      toast({ title: "Draft saved" });
+      navigate("/admin/blog-posts");
+      return;
+    }
+
+    toast({ title: result.error || "Draft save failed", variant: "destructive" });
+  };
+
+  const handlePublishNow = async () => {
+    const success = await handlePublishToServer();
+    if (!success) return;
+
+    const slug = customSlug || generateSlug(title);
+    await setStatusViaApi(slug, "published");
+    navigate("/admin/blog-posts");
+  };
+
+  const handlePublishToServer = async (): Promise<boolean> => {
+  const validAuthors = selectedAuthors.filter(Boolean);
+  const blogPayload = buildBlogPayload("published");
+
   if (!title || !currentPlainText) {
     toast({ title: "Title and content are required", variant: "destructive" });
     return false;
   }
 
   if (validAuthors.length === 0) {
+    setShowAuthorError(true);
     toast({ title: "Please select at least one valid author", variant: "destructive" });
     return false;
   }
+  setShowAuthorError(false);
 
-  const result = await saveBlog({
-    title,
-    slug,
-    author: validAuthors[0],
-    authors: validAuthors,
-    author_avatars:
-      validAuthors.map((k) => authorAvatars[k] || "").filter(Boolean).length > 0
-        ? validAuthors.map((k) => authorAvatars[k] || "")
-        : undefined,
-    publish_date: publishDate,
-    tags: selectedTopics,
-    tag_styles: Object.keys(tagStyles).length > 0 ? tagStyles : undefined,
-    excerpt: excerpt || generateExcerpt(currentPlainText),
-    featured_image: featuredImage || undefined,
-    key_takeaways: keyTakeaways,
-    related_episode: relatedEpisode || undefined,
-    show_episode_callout: showEpisodeCallout,
-    content: currentMarkdown,
-    html_content: editorMode === "rich" ? normalizeRichTextHtml(htmlContent) : undefined,
-    format: "md",
-  });
+  const result = await saveBlog(blogPayload);
 
   if (result.success) {
-    saveToHistory("blog", { title, slug, date: publishDate, author: validAuthors.join(",") });
+    saveToHistory("blog", { title, slug: blogPayload.slug, date: publishDate, author: validAuthors.join(",") });
     toast({ title: "Blog published to server!" });
     return true;
   }
@@ -687,6 +710,7 @@ setAuthorAvatars(avatarMap);
                         : "border-border hover:border-muted-foreground/30"
                     }`}
                     onClick={() => {
+                      setShowAuthorError(false);
                       setSelectedAuthors((prev) =>
                         prev.includes(a.id)
                           ? prev.filter((k) => k !== a.id)
@@ -711,7 +735,7 @@ setAuthorAvatars(avatarMap);
             </div>
 
 
-            {selectedAuthors.length === 0 && (
+            {showAuthorError && selectedAuthors.length === 0 && (
               <p className="text-xs text-destructive">Please select at least one author.</p>
             )}
           </div>
