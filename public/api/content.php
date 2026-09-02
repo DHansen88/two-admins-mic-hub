@@ -260,9 +260,6 @@ function handleSaveBlog(): void {
         jsonResponse(['error' => 'Method not allowed'], 405);
     }
 
-    $user = requireAuth();
-    checkPermission($user, 'canPublishContent');
-
     $body = getRequestBody();
     $slug = sanitizeFilename($body['slug'] ?? '');
     $requestedStatus = $body['status'] ?? 'published';
@@ -271,6 +268,11 @@ function handleSaveBlog(): void {
     if (empty($body['title'])) jsonResponse(['error' => 'Title is required'], 400);
     if (!in_array($requestedStatus, ['draft', 'published'])) {
         jsonResponse(['error' => 'Invalid status'], 400);
+    }
+
+    $user = requireAuth();
+    if ($requestedStatus !== 'draft') {
+        checkPermission($user, 'canPublishContent');
     }
 
     $format = $body['format'] ?? 'md';
